@@ -4,10 +4,14 @@
 # $action is set based on what we are supposed to do
 # this is then acted upon later in the page
 
+include_once('inc/typeinfo.php');
+
 function checkActions($auth) {
   global $act;
   global $PDATA;
   global $BASEURL, $nextaction;
+
+  $action = "";
 
   # first, we need to determine if we are actually logged in or not
   # if we are not logged in, the the action *has* to be 'login'
@@ -21,13 +25,15 @@ function checkActions($auth) {
 
   $PDATA = eatPathInfo();
   
-  $explicitaction = $PDATA['forceaction'];
-  $pathaction = $PDATA['action'];
-  $formaction = $_POST['action'];
+  $explicitaction = issetSet($PDATA, 'forceaction');
+  $pathaction = issetSet($PDATA, 'action');
+  $formaction = issetSet($_POST, 'action');
+  #$pathaction = $PDATA['action'];
+  #$formaction = $_POST['action'];
 
-  if (isset($explicitaction)) $action = $explicitaction;
-  if (isset($pathaction)) $action = $pathaction;
-  if (isset($formaction)) $action = $formaction;
+  if ($explicitaction) $action = $explicitaction;
+  if ($pathaction) $action = $pathaction;
+  if ($formaction) $action = $formaction;
 
   #protect admin functions
   if ($act[$action] > 999 && ! $auth->isadmin) return "forbidden!";
@@ -56,8 +62,8 @@ function actionRestart($auth, $newaction) {
 
 function eatPathInfo() {
   $pd = array();
-  $pathinfo = $_SERVER['PATH_INFO'];
-  if (isset($pathinfo)) {
+  $pathinfo = issetSet($_SERVER, 'PATH_INFO');
+  if ($pathinfo) {
     $path = explode('/', $pathinfo);
     $pd['action'] = $path[1];
     $actions = preg_grep("/^action=/", $path);

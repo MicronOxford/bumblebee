@@ -11,10 +11,13 @@ class OutputFormatter {
   }
 
   function format($data) {
+    $s = "";
     //FIXME use func_num_args and fun_get_arg
-    if (isset($data[$this->formatfields[0]]) && $data[$this->formatfields[0]]) {
-      $s = sprintf($this->format, $data[$this->formatfields[0]],
-                                  $data[$this->formatfields[1]]);
+    foreach ($this->formatfields as $k => $v) {
+      #if (isset($data[$this->formatfields[0]]) && $data[$this->formatfields[0]]) {
+      if (isset($data[$v]) && $data[$v]) {
+        $s = sprintf($this->format, $data[$v]);
+      }
     }
     return $s;
   }

@@ -14,7 +14,7 @@ $auth = new SystemAuth;
 ob_end_flush();
 
 $VERBOSESQL;
-$nextaction;
+$nextaction="";
 $PDATA = array();
 
 include_once 'actions.php';
@@ -54,8 +54,8 @@ $pagetitle = $actiontitles[$action] . ' - ' . $sitetitle;
 <head>
   <title><?=$pagetitle; ?></title>
   <link rel="stylesheet" href="<?=$BASEPATH?>/theme/babs.css" type="text/css" />
-  <link rel="icon" href="<?=$BASEPATH?>/theme/favicon.ico" />
-  <link rel="shortcut icon" href="<?=$BASEPATH?>/theme/favicon.ico" />
+  <link rel="icon" href="<?=$BASEPATH?>/theme/images/favicon.ico" />
+  <link rel="shortcut icon" href="<?=$BASEPATH?>/theme/images/favicon.ico" />
 <?php
   include 'jsfunctions.php'
 ?>

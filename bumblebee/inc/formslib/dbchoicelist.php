@@ -65,9 +65,8 @@ class DBList extends DBO {
     #echo "List update: ";
     if (isset($newval)) {
       #echo "set '$newval'";
-      if ($value != $newval) {
+      if ($this->id != $newval) {
         $this->changed += 1;
-        //FIXME check validity of input here
         $this->id = $newval;
       }
     }
@@ -75,6 +74,7 @@ class DBList extends DBO {
     #because we are a selection list, if we have changed, then we
     #may need to sync() and then fill() to make sure we are all there for the
     #next viewing and for sync() of the main object
+    //FIXME when could this have been made invalid?
     if ($this->changed && $this->id == -1 && ! $this->invalid) {
       #find out the new name
       //FIXME surely there's a better way of doing this?

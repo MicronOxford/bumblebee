@@ -69,7 +69,7 @@ class SystemAuth {
     $PASSWORD = $_POST['pass'];
     $USERNAME = $_POST['username'];
     $epass = md5($PASSWORD);
-    $q = "SELECT passwd,id,isadmin,suspended "
+    $q = "SELECT username,name,passwd,id,isadmin,suspended "
         ."FROM ".$this->table." WHERE username='$USERNAME'";
     $sql = mysql_query($q);
     if (! $sql) die (mysql_error());

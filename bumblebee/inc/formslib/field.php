@@ -8,11 +8,13 @@ class Field {
   var $name,
       $longname,
       $description,
+      $required = 0,
       $value,
       $ovalue;
   var $editable = -1, 
       $changed = 0,
-      $invalid = 0;
+      $invalid = 0,
+      $suppressValidation = -1;
   var $attr,
       $errorclass = "error";
   var $namebase;
@@ -25,33 +27,33 @@ class Field {
   }
 
   function update($data) {
-    $newval = $data["$this->namebase$this->name"];
-    echo "$this->name, $this->value, $newval<br />\n";
-    #if (isset($newval) && $this->editable) {
-    if ($this->editable) {
-      # we ignore new values if the field is not editable
-      if ($this->changed = ($this->value != $newval) || $newval == NULL) {
-      /*
-        //check the validity of the input 
-        if (isset($this->validator) && is_callable($this->validator)) {
-          echo $this->name .":". $this->validator."<br />" ;
-          echo is_empty_string($newval);
-          $validator = $this->validator;
-          $this->invalid = $validator($newval);
-        }
-        if (! $this->isvalid) {*/
+    if (isset($data["$this->namebase$this->name"])) {
+      $newval = issetSet($data, "$this->namebase$this->name");
+      #echo "$this->name, $this->value, $newval<br />\n";
+      if ($this->editable) {
+        # we ignore new values if the field is not editable
+        if ($this->changed = ($this->value != $newval)) {
           $this->ovalue = $this->value;
           $this->value = $newval;
-        #}
+        }
       }
     }
+    echo $this->changed;
     return $this->changed;
   }
 
   function isinvalid() {
+    echo "<br />";
     echo $this->name .":". $this->isInvalidTest.":";
     echo is_callable($this->isInvalidTest);
-    if (isset($this->isInvalidTest) && is_callable($this->isInvalidTest)) {
+    echo "$this->suppressValidation";
+    echo "req=$this->required";
+    if ($this->required) {
+      $this->invalid = ! (isset($this->value) && $this->value != "");# ? 0 : 1;
+    }
+    if (! $this->invalid && 
+        isset($this->isInvalidTest) && is_callable($this->isInvalidTest) 
+        && $this->suppressValidation == 0) {
       echo "checking ";
       $validator = $this->isInvalidTest;
       #$this->invalid = $this->id == -1 && $validator($this->value);

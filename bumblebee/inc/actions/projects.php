@@ -28,7 +28,7 @@ include_once 'inc/anchortablelist.php';
     if (isset($PDATA[1])) {
       $PD['id'] = $PDATA[1];
     }
-    #echo "<pre>".print_r($PD,true)."</pre>";
+    echo "<pre>".print_r($PD,true)."</pre>";
     return $PD;
   }
 

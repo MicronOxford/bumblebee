@@ -16,10 +16,12 @@ class Project extends DBRow {
     $this->addElement($f);
     $f = new TextField("name", "Name");
     $attrs = array('size' => "48");
+    $f->required = 1;
     $f->isInvalidTest = "is_empty_string";
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new TextField("longname", "");
+    $f->required = 1;
     $f->isInvalidTest = "is_empty_string";
     $f->setAttr($attrs);
     $this->addElement($f);
@@ -32,6 +34,7 @@ class Project extends DBRow {
     $newchargename->isInvalidTest = "is_empty_string";
     $f->list->append(array("-1","Create new: "), $newchargename);
     $f->setAttr($attrs);
+    $f->required = 1;
     $f->isInvalidTest = "is_invalid_radiochoice";
     $this->addElement($f);
     $this->fill();

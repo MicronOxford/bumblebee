@@ -7,6 +7,7 @@ include_once("dbobject.php");
 class DBRow extends DBO {
   var $fatal_sql = 1;
   var $namebase;
+  var $newObject = 0;
 
   function DBRow($table, $id) {
     $this->DBO($table, $id);
@@ -15,16 +16,26 @@ class DBRow extends DBO {
 
   function update($data) {
     #echo "Looking for updates: ";
-    #print_r($data);
-    foreach ($this->fields as $k => $v) {
-      #echo "Check $k";
-      if (isset($data["$this->namebase$k"])) {
-        #echo ",set '".$data["$this->namebase$k"]."'";
-        //FIXME check the validity of the input somehow
-        $this->changed += $this->fields[$k]->update($data);
+    #echo "<pre>".print_r($data,1),"</pre>";
+    if ($this->id == -1) {
+      $anychanges = 0;
+      foreach ($this->fields as $k => $v) {
+        if ($k != 'id') {
+          $anychanges += (isset($data["$this->namebase$k"]));
+          #echo "$k:anychanges = $anychanges<br />";
+        }
       }
-      $this->invalid += $this->fields[$k]->isinvalid();
-      #echo "<br />";
+      if (!$anychanges) {
+        $this->newObject = 1;
+      }
+    }
+    foreach ($this->fields as $k => $v) {
+      echo "Check $k";
+      #echo ",set '".$data["$this->namebase$k"]."'";
+      $this->changed += $this->fields[$k]->update($data);
+      if (! $this->newObject) {
+        $this->invalid += $this->fields[$k]->isinvalid();
+      }
     }
   }
 
@@ -68,6 +79,10 @@ class DBRow extends DBO {
     }
     if (! isset($this->fields[$el->name]->namebase)) {
       $this->fields[$el->name]->namebase = $this->namebase;
+      #echo "Altered field $el->name to $this->namebase\n";
+    }
+    if ($this->fields[$el->name]->suppressValidation == -1) {
+      $this->fields[$el->name]->suppressValidation = $this->suppressValidation;
       #echo "Altered field $el->name to $this->namebase\n";
     }
     #echo $el->name;

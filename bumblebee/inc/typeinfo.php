@@ -2,6 +2,11 @@
 # $Id$
 # functions for handling types, comparisons, conversions etc
 
+function issetSet(&$a, $k) {
+  return (isset($a[$k]) ? $a[$k] : NULL);
+}
+
+
 function is_alphabetic($var) {
   return preg_match("/^\w+$/", $var);
 }
@@ -28,6 +33,12 @@ function is_no_choice_set($v) {
 function is_invalid_radiochoice($v) {
   echo "'val=$v' ";
   return (is_no_choice_set($v) || $v <= 0);
+}
+
+function is_not_email_format($v) {
+  echo "'val=$v' ";
+  $pattern = "/^\w.+\@[A-Z_\-]+\.[A-Z_\-]/i";
+  return (! preg_match($pattern, $v));
 }
 
 /*

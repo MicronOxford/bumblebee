@@ -30,7 +30,7 @@ class TextField extends Field {
   }
 
   function selectable() {
-    $t .= "<input type='text' name='$this->namebase$this->name' "
+    $t  = "<input type='text' name='$this->namebase$this->name' "
          ."value='$this->value' ";
     $t .= (isset($this->attr['size']) ? "size='".$this->attr['size']."' " : "");
     $t .= (isset($this->attr['maxlength']) ? "maxlength='".$this->attr['maxlength']."' " : "");

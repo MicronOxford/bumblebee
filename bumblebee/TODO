@@ -4,7 +4,9 @@ create new doesn't validate properly in dblist
 
 create new marks all fields as being invalid -> suppress this?
 
+all empty fields come up as "changed" (e.g. in gorups)
 
+reflect postdata in case of re-login
 
 user auth => sessions
 masquerade => sessions
@@ -12,6 +14,8 @@ masquerade => sessions
 session.use_only_cookies
 session.cookie_lifetime
 $string = strip_tags($string, '<a><b><i><u>'
+
+define("CONSTANT", "Hello world.");
 
 $_SERVER['PHP_SELF']
 

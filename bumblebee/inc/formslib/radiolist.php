@@ -8,7 +8,9 @@ class RadioList extends ChoiceList {
   var $radioclass = "item";
 
   function RadioList($name, $description="") {
+    echo "Constructor: $this->value";
     $this->ChoiceList($name, $description);
+    echo "Constructor: $this->value";
   }
 
   function display() {
@@ -18,10 +20,10 @@ class RadioList extends ChoiceList {
   function format($data) {
     //$aclass  = (isset($this->aclass) ? " class='$this->aclass'" : "");
 
-    #print_r($data);
-
+    #echo "<pre>".print_r($data,1)."</pre>";
+    echo $this->value;
     $selected = ($data[$this->formatid] == $this->value ? " checked='1' " : "");
-    $t .= "<input type='radio' name='$this->name' "
+    $t  = "<input type='radio' name='$this->name' "
          ."value='".$data[$this->formatid]."' $selected /> "
          .$this->formatter[0]->format($data)
          .$this->formatter[1]->format($data);
@@ -33,6 +35,7 @@ class RadioList extends ChoiceList {
 
 
   function selectable() {
+    $t = "";
     foreach ($this->list->list as $k => $v) {
       $t .= $this->format($v);
       $t .= "<br />\n";
