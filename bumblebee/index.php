@@ -10,6 +10,8 @@ $UID;
 $EPASS;
 $ISADMIN;
 $USERNAME;
+$MASQUID;
+$MASQUSER;
 
 include 'actions.php';
 include 'determineaction.php';
@@ -40,7 +42,7 @@ $pagetitle = $actiontitles[$action] . ' - ' . $sitetitle;
 
 
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -55,67 +57,15 @@ include 'jsfunctions.php'
 </head>
 
 <body>
-  <form method="post">
+  <form method="post" action="./" >
 <?php
+  #<form method="post" action="./" >
   echo "decide what happens here: $action (". $act[$action] .")<br />";
   if (isset($ERRORMSG)) echo $ERRORMSG;
 
-  if ($ISADMIN) checkMasquerade();
+  if (($act[$action] != $act['masquerade']) && $ISADMIN) checkMasquerade();
 
-  if ($act[$action] > 999 && ! $ISADMIN) $action="forbidden!";
-  switch ($act[$action]) {
-    case $act['login']:
-      printLoginForm();
-      break;
-    case $act['main']:
-      if ($ISADMIN) printAdminMenu();
-      actionMain();
-      break;
-    case $act['view']:
-      actionView();
-      break;
-    case $act['groups']:
-      actionGroup();
-      break;
-    case $act['projects']:
-      actionProjects();
-      break;
-    case $act['users']:
-      actionUsers();
-      break;
-    case $act['instruments']:
-      actionInstruments();
-      break;
-    case $act['consumables']:
-      actionConsumables();
-      break;
-    case $act['consume']:
-      actionConsume();
-      break;
-    case $act['masquerade']:
-      actionMasquerade();
-      break;
-    case $act['costs']:
-      actionCosts();
-      break;
-    case $act['specialcosts']:
-      actionSpecialCosts();
-      break;
-    case $act['bookmeta']:
-      actionBookmeta();
-      break;
-    case $act['adminconfirm']:
-      actionAdminconfirm();
-      break;
-    case $act['emaillist']:
-      actionEmaillist();
-      break;
-    case $act['billing']:
-      actionBilling();
-      break;
-    default:
-      actionUnknown($action);
-  }
+  performAction($action);
   
   $query="SELECT * FROM users";
   if(!$sql = mysql_query($query)) die(sql_error());

@@ -156,12 +156,16 @@
   }
     
 
-  function returnBillingData() {
-    echo "<pre>\n";
+  function displayPost() {
+    echo "<table border='1'><tr><th>key</th><th>value</th></tr>\n";
     foreach ($_POST as $key => $supplied) {
-      echo "key='$key' value='$supplied'\n";
+      echo "<tr><td>'$key'</td><td>'$supplied'</td></tr>\n";
     }
-    echo "\n</pre>";
+    echo "\n</table>";
+  }
+
+  function returnBillingData() {
+    displayPost();
     $startdate = sprintf("%04d-%02d-%02d", $_POST['startyear'], $_POST['startmonth'], $_POST['startday']);
     $stopdate = sprintf("%04d-%02d-%02d", $_POST['stopyear'], $_POST['stopmonth'], $_POST['stopday']);
     #$q = "SELECT bookings.id,users.id,users.username,projects.id,projects.name,groups.id,groups.name,stoptime,starttime,ishalfday,isfullday "

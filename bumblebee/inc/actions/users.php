@@ -17,6 +17,21 @@
     }
   }
 
+  function getUsername($uid) {
+    $q = "SELECT username,name "
+        ."FROM users "
+        ."WHERE id = '$uid'";
+    $sql = mysql_query($q);
+    if (! $sql) die (mysql_error());
+    $g = mysql_fetch_row($sql);
+    #$user[] = $g['username'];
+    #$user[] = $g['name'];
+    #echo "$q=>name=".$user[0];
+    #echo "name=".$user[1];
+    #return $user;
+    return $g;
+  }
+
   function getUserOptions ($table, $i) {
     $q = "SELECT id,name,longname "
         ."FROM $table "
@@ -80,16 +95,19 @@
 
   function userselectbox($name, $firstoption)
   {
-    echo "<select name='$name'><option value='-1'>--- $firstoption</option>";
-        $q = "SELECT id,username,name "
-            ."FROM users "
-            ."ORDER BY username";
-        $sql = mysql_query($q);
-        if (! $sql) die (mysql_error());
-        while ($row = mysql_fetch_row($sql))
-        {
-          echo "<option value='$row[0]'>$row[1] ($row[2])</option>";
-        }                                    
+    echo "<select name='$name'>";
+    if ($firstoption != "") {
+      echo "<option value='-1'>--- $firstoption</option>";
+    }
+    $q = "SELECT id,username,name "
+        ."FROM users "
+        ."ORDER BY username";
+    $sql = mysql_query($q);
+    if (! $sql) die (mysql_error());
+    while ($row = mysql_fetch_row($sql))
+    {
+      echo "<option value='$row[0]'>$row[1] ($row[2])</option>";
+    }                                    
     echo "</select>";
   }
 
