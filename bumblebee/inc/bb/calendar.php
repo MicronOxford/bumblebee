@@ -10,17 +10,17 @@ include_once 'bookings/matrix.php';
 include_once 'bookings/bookingdata.php';
 
 class Calendar {
-  var $start,
-      $stop,
-      $numDays,
-      $instrument;
+  var $start;
+  var $stop;
+  var $numDays;
+  var $instrument;
   var $fatal_sql = 1;
   var $bookinglist;
   var $href = '';
-  var $dayClass = '',
-      $todayClass = '',
-      $rotateDayClass = '',
-      $rotateDayClassDatePart = '';
+  var $dayClass = '';
+  var $todayClass = '';
+  var $rotateDayClass = '';
+  var $rotateDayClassDatePart = '';
   
   function Calendar($start, $stop, $instrument) {
     $this->start = $start;
@@ -72,38 +72,66 @@ class Calendar {
   **/
   function _normalise() {
     $this->numDays = $this->stop->partDaysBetween($this->start);
-    $booking = 0;
+    
     //blat over the booking list so we can create the normalised list
     $bookings = $this->bookinglist;
     $this->bookinglist = array();
+        
+    // put a vacancy at the end so we don't run off the end of the list.
     $v = new Vacancy();
     $v->setTimes($this->stop,$this->stop);
     $bookings[] = $v;
-    $day = 0;
+    
+    //First: insert a vacancy between each non-consecutive booking
+    $bvlist = array();
+    $booking = 0;
     $now = $this->start;
+    echo "Normalising bookings<br />\n";    
     while ($now->ticks < $this->stop->ticks) {
-      $tomorrow = $now; $tomorrow->addDays(1); $tomorrow->dayRound();
-      #$now = $today;
-      #preDump(array($tomorrow, $now));
       if ($now->ticks < $bookings[$booking]->start->ticks) {
         // then we should create a pseudobooking
-        #echo "Found vacancy:";
+        echo "Found vacancy:";
+        echo "NOW=".$now->datetimestring . "<br />\n";
         $v = new Vacancy();
-        $stoptime = new SimpleDate(min($bookings[$booking]->start->ticks, $tomorrow->ticks),0);
-        #preDump($stoptime);
-        #echo " from $now->datetimestring to $stoptime->datetimestring<br/>";
-          
+        $stoptime = new SimpleDate($bookings[$booking]->start->ticks);
         $v->setTimes($now, $stoptime);
-        $this->bookinglist[] = $v;
+        $bvlist[] = $v;
         $now = $stoptime;
+        echo "Created vacancy: ".$v->start->datetimestring." to 
+                              ".$v->stop->datetimestring.".<br />\n";
       } else {
         // then this is the current timeslot
-        #echo "Found booking:";
-        #preDump($bookings[$booking]->start);
-        $this->bookinglist[] = $bookings[$booking];
+        echo "Found booking:";
+        echo $now->datetimestring . "<br />\n";
+        $bvlist[] = $bookings[$booking];
         $now = $bookings[$booking]->stop;
+        echo "Included booking: ".
+                $bookings[$booking]->start->datetimestring ." to "
+               .$bookings[$booking]->stop->datetimestring.".<br />\n";
         $booking++;
       }
+    }
+    
+    echo "Breaking up bookings<br />\n";    
+    //Second: break bookings over day boundaries
+    $booking=0;
+    for ($bv=0; $bv < count($bvlist); $bv++) {
+      echo "considering booking #$bv:<br />";
+      $cbook = $bvlist[$bv];
+      $cbook->original = $cbook;     
+      $today = $bvlist[$bv]->start; $today->dayRound();
+      do {  //until the current booking has been broken up across day boundaries(
+        echo "start=".$bvlist[$bv]->start->datetimestring
+              ." stop=".$bvlist[$bv]->stop->datetimestring
+              ."<br />\n";
+        $this->bookinglist[$booking] = $cbook;
+        $tomorrow = $today; $tomorrow->addDays(1); $tomorrow->dayRound();
+        $this->bookinglist[$booking]->start->max($today);
+        $this->bookinglist[$booking]->stop->min($tomorrow);
+        $today->addDays(1); $today->dayRound();
+        $booking++;
+        echo "CHECK: ".$this->bookinglist[$booking-1]->stop->datetimestring ." > " . $tomorrow->datetimestring."<br/>";
+      } while ($this->bookinglist[$booking-1]->original->stop->ticks > $tomorrow->ticks);
     }
   }
 

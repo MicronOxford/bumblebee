@@ -65,7 +65,7 @@ class SimpleDate {
   /** 
    * returns the number of days (or part thereof) between two dates ($this - $d) 
   **/
-  function daysBetween($d) {
+  function partDaysBetween($d) {
     //Calculate the number of days as a fraction.
     $numdays = $this->daysBetween($d);
     
@@ -73,7 +73,7 @@ class SimpleDate {
     //but daylight saving might cause problems.... 
     //The case we don't want to count an extra day just because the day range includes going
     //from summertime to wintertime so the date range includes an extra hour!
-    
+    return round($numdays);
     
     //(PHP's silly banker's rounding would also make like harder for us here...)
     //Since PHP stupidly uses bankers rounding, we subtract a fuzz factor 

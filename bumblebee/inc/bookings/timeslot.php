@@ -5,9 +5,9 @@
 include_once 'inc/dbforms/date.php';
 
 class TimeSlot {
-  var $start,
-      $stop,
-      $duration;
+  var $start;
+  var $stop;
+  var $duration;
   var $href = '';
   var $baseclass;
   

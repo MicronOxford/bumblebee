@@ -101,7 +101,7 @@ class ActionView extends ActionAction {
     $start->addDays($offset+1-7-$day);
     echo $start->datetimestring;
     $stop = $start;
-    $stop->addDays(7*5);
+    $stop->addDays(7*6);
     echo $stop->datetimestring;
     $cal = new Calendar($start, $stop, $this->PD['instrid']);
 
