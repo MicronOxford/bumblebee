@@ -1,5 +1,14 @@
 $Id$
 
+view -> base href
+last day in month calendar missing
+next/prev
+
+zoom
+view/edit
+
+css today, monthodd/even booking/vacant
+
 joindata::_countNumRows counts the rows too early (can we force a recount?)
 
 DBRow now has delete method too (and deleteProject($id) is not qw safe!!!)

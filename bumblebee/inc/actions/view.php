@@ -67,18 +67,22 @@ include_once 'inc/dbforms/date.php';
     $offset = issetSet($PD, 'offset');
     $offset -= 8;
     $now = new SimpleDate(time());
+    $now->dayRound();
     $day = date("w", $now); #the day of the week, 0=Sun, 6=Sat
     $start = $now;
     $start->addDays($offset+1-$day);
     $stop = $start;
-    $stop->addDays(7*6-1);
+    $stop->addDays(7*6);
     $cal = new Calendar($start, $stop, $PD['instrument']);
 
     # FIXME: get this from the instrument table?
-    $daystart    = 8;
-    $daystop     = 18;
-    $granularity = 0.25;
-    echo $cal->displayMonthAsTable($daystart,$daystop,$granularity);
+    $daystart    = new SimpleTime('08:00:00',1);
+    $daystop     = new SimpleTime('18:00:00',1);
+    $granularity = 15*60;
+    #$granularity = 60*60;
+    echo $cal->display();
+    $cal->setOutputStyles('', 'caltoday', array('monodd', 'moneven'), 'm');
+    echo $cal->displayMonthAsTable($daystart,$daystop,$granularity,4);
   }
 
 ?> 
