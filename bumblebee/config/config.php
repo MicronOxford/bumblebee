@@ -8,5 +8,5 @@ $BASEPATH   = '/pfpc/babs';
 $BASEURL    = "$BASEPATH/index.php";
 
 $VERBOSESQL = 0;
-#$VERBOSESQL = 1;
+$VERBOSESQL = 1;
 ?> 

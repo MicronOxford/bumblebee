@@ -2,29 +2,29 @@
 # $Id$
 # Book an instrument
 
-  function actionBook() {
+  function actionBook($auth) {
     if ($_POST['booking']==-1) {
-      createBooking();
+      createBooking($auth);
     } elseif ($_POST['deletebooking']) {
-      deleteBooking();
+      deleteBooking($auth);
     } else {
-      updateBooking();
+      updateBooking($auth);
     }
   }
 
-  function createBooking() {
+  function createBooking($auth) {
     $qi = "INSERT INTO";
     $qf = "";
-    bookingSQL($qi, $qf);
+    bookingSQL($auth, $qi, $qf);
   }
     
-  function updateBooking() {
+  function updateBooking($auth) {
     $qi = "UPDATE";
     $qf = " WHERE id='".$_POST['booking']."'";
-    bookingSQL($qi, $qf);
+    bookingSQL($auth, $qi, $qf);
   }
     
-  function bookingSQL($qi, $qf) {
+  function bookingSQL($auth, $qi, $qf) {
     #displayPost();
     $startdate = $_POST['date'];
     $bookwhen = $_POST['date'] ." ". $_POST['starttime'];
@@ -64,7 +64,7 @@
       if (! $sql) die (mysql_error());
       echo "<h2>Booking made</h2>";
       $_POST['isodate']   = $_POST['date'];
-      actionRestart("view");
+      actionRestart($auth, "view");
     }
   }
 
@@ -100,13 +100,13 @@
     return true;
   }
 
-  function deleteBooking() {
+  function deleteBooking($auth) {
     $q = "DELETE FROM bookings WHERE id='".$_POST['booking']."'";
     echoSQL("<div class='sql'>$q</div>");
     $sql = mysql_query($q);
     if (! $sql) die (mysql_error());
     echo "<h2>Booking deleted</h2>";
     $_POST['isodate']   = $_POST['date'];
-    actionRestart("view");
+    actionRestart($auth, "view");
   }
 ?>

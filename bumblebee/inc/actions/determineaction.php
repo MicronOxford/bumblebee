@@ -4,19 +4,14 @@
 # $action is set based on what we are supposed to do
 # this is then acted upon later in the page
 
-function is_alphabetic($var) {
-  return preg_match("/^\w+$/", $var);
-}
-
-function checkActions() {
+function checkActions($auth) {
   global $act;
-  global $ISADMIN;
   global $PDATA;
   global $BASEURL, $nextaction;
 
   # first, we need to determine if we are actually logged in or not
   # if we are not logged in, the the action *has* to be 'login'
-  if (! isLoggedIn()) return 'login';
+  if (! $auth->isLoggedIn()) return 'login';
 
   #We can have action verbs past to us in three different ways.
   # 1. first PATH_INFO
@@ -35,8 +30,7 @@ function checkActions() {
   if (isset($formaction)) $action = $formaction;
 
   #protect admin functions
-  if ($act[$action] > 999 && ! $ISADMIN) return "forbidden!";
-  if ($act[$action] == $act["logout"]) logout();
+  if ($act[$action] > 999 && ! $auth->isadmin) return "forbidden!";
 
   # We also need to check to see if we are trying to change privileges
   #if (isset($_POST['changemasq']) && $_POST['changemasq']) return 'masquerade';
@@ -46,11 +40,18 @@ function checkActions() {
   return $action;
 }
 
-function actionRestart($newaction) {
+function checkLogout(&$auth, $action) {
+  if ($action == 'logout') {
+    $auth->logout(); 
+  }
+}
+
+
+function actionRestart($auth, $newaction) {
   global $action;
   #$_POST['action']=$newaction;
   $action=$newaction;
-  performAction($action);
+  performAction($auth, $action);
 }
 
 function eatPathInfo() {
@@ -87,9 +88,8 @@ function eatPathInfo() {
   */
 }
 
-function performAction($action) {
+function performAction(&$auth, $action) {
   global $act;
-  global $ISADMIN;
 
   switch ($act[$action]) {
     case $act['login']:
@@ -99,10 +99,10 @@ function performAction($action) {
       actionLogout();
       break;
     case $act['view']:
-      actionView();
+      actionView($auth);
       break;
     case $act['book']:
-      actionBook();
+      actionBook($auth);
       break;
     case $act['groups']:
       actionGroup();
@@ -123,7 +123,7 @@ function performAction($action) {
       actionConsume();
       break;
     case $act['masquerade']:
-      actionMasquerade();
+      actionMasquerade($auth);
       break;
     case $act['costs']:
       actionCosts();

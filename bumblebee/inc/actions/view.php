@@ -3,54 +3,53 @@
 # View the status of an instrument -- present the user with a calendar
 # that can be used to make bookings.
 
-  function actionView() {
-    viewMungePath();
-    if (! isset($_POST['instrument'])) {
-      viewSelectInstrument();
-    } elseif (isset($_POST['bookid'])) {
-      showBooking();
-    } elseif (isset($_POST['startticks'])) {
-      makeBooking();
-    } elseif (isset($_POST['isodate'])) {
-      showZoom();
+  function actionView($auth) {
+    $PD = viewMungePath();
+    if (! isset($PD['instrument'])
+       || $PD['instrument'] < 1 
+       || $PD['instrument'] =="" ) {
+      viewSelectInstrument($auth, $PD);
+    } elseif (isset($PD['bookid'])) {
+      showBooking($auth, $PD);
+    } elseif (isset($PD['startticks'])) {
+      makeBooking($auth, $PD);
+    } elseif (isset($PD['isodate'])) {
+      showZoom($PD);
     } else {
-      showCalendar($_POST['instrument']);
+      showCalendar($PD);
     }
   }
 
   function viewMungePath() {
     global $PDATA;
-    #echo "<pre>";
-    #print_r($PDATA);
-    #echo "</pre>";
-    #echo "<pre>";
-    #echo $_POST;
-    #echo "</pre>";
-    #$_POST['foo']=1;
-    #echo $_POST['foo'];
-    if (isset($PDATA[1])) $_POST['instrument'] = $PDATA[1];
+    $PD = array();
+    foreach ($_POST as $k => $v) {
+      $PD[$k] = $v;
+    }
+    if (isset($PDATA[1])) {
+      $PD['instrument'] = $PDATA[1];
+    }
     #if (isset($PDATA[2])) {
     for ($i=2; isset($PDATA[$i]); $i++) {
       if (preg_match("/o=(-?\d+)/", $PDATA[$i], $m)) {
-        #echo "found a cal offset";
-        #echo $m[1];
-        $_POST['caloffset'] = $m[1];
+        $PD['caloffset'] = $m[1];
       } elseif (preg_match("/\d\d\d\d-\d\d-\d\d/", $PDATA[$i], $m)) {
-        $_POST['isodate'] = $PDATA[$i];
+        $PD['isodate'] = $PDATA[$i];
       } elseif (preg_match("/(\d+)-(\d+)/", $PDATA[$i], $m)) {
-        $_POST['startticks'] = $m[1];
-        $_POST['stopticks'] = $m[2];
+        $PD['startticks'] = $m[1];
+        $PD['stopticks'] = $m[2];
       } elseif (preg_match("/(\d+)/", $PDATA[$i], $m)) {
-        $_POST['bookid'] = $m[1];
+        $PD['bookid'] = $m[1];
       } else {
         echo "I don't know what to do with that data!";
       }
     }
-    #if (isset($PDATA[1])) $_POST['instrument'] = $PDATA[1];
+    #if (isset($PDATA[1])) $PD['instrument'] = $PDATA[1];
     #echo "<pre>";
-    #echo $_POST;
-    #echo $_POST['caloffset'];
+    #echo $PD;
+    #echo $PD['caloffset'];
     #echo "</pre>";
+    return $PD;
   }
 
   function keyExist ($keypattern) {
@@ -99,9 +98,10 @@
     <?
   }
 
-  function showCalendar ($instrument) {
+  function showCalendar ($PD) {
+    $instrument = $PD['instrument'];
     displayInstrument ($instrument);
-    $startdate = calcuateStartDate($_POST['caloffset']);
+    $startdate = calcuateStartDate($PD['caloffset']);
     $stopdate  = calcuateStopDate ($startdate);
     ?>
       <p>Calendar for period <?=$startdate?> - <?=$stopdate?></p>
@@ -109,7 +109,7 @@
       <input type='hidden' name='instrument' value='<?=$instrument?>' />
     <?
     $bookings = selectBookings($instrument, $startdate, $stopdate);
-    generateCalendar($bookings, $startdate, $stopdate);
+    generateCalendar($PD, $bookings, $startdate, $stopdate);
   }
 
   function calcuateStartDate($offset) {
@@ -182,12 +182,12 @@
     return $datelist;
   }
 
-  function generateCalendar($bookings, $starttime, $stoptime) {
+  function generateCalendar($PD, $bookings, $starttime, $stoptime) {
     global $BASEURL, $BASEPATH;
-    $instrument = $_POST['instrument'];
+    $instrument = $PD['instrument'];
     $href="$BASEURL/view/$instrument";
     $dates = selectDates($starttime, $stoptime);
-    $offset = $_POST['caloffset'];
+    $offset = $PD['caloffset'];
     ?>
       <table class='centrein'><tr><td>
       <a class='but' href='<?=$href."/o=".($offset-27)?>'>&laquo; Earlier</a>
@@ -249,7 +249,8 @@
         $entry = "<div class='calbookperson'>"
                 ."<a href='mailto:".$t['rec']['email']."'>"
                 .$t['rec']['name']."</a></div>";
-        showBookingsGraphical($t, $height, $entry);
+        $href="$BASEURL/view/$instrument";
+        showBookingsGraphical($href, $t, $height, $entry);
         #showBookingsListing($t['rec']);
       }
       echo "</ul></td>\n";
@@ -270,10 +271,8 @@
     echo "</li>\n";
   }
   
-  function showBookingsGraphical($t, $height, $entry) {
-    global $BASEURL, $BASEPATH;
-    $instrument = $_POST['instrument'];
-    $href="$BASEURL/view/$instrument";
+  function showBookingsGraphical($href, $t, $height, $entry) {
+    global $BASEPATH;
     $free = isset($t['free']);
     $startticks = $t['start'];
     $stopticks = $t['stop'];
@@ -335,15 +334,14 @@
     return $alltimes;
   }
 
-  function showZoom() {
-    global $ISADMIN;
+  function showZoom($PD) {
     global $BASEURL, $BASEPATH;
-    $instrument = $_POST['instrument'];
+    $instrument = $PD['instrument'];
     $href="$BASEURL/view/$instrument";
 
-    $instrument = $_POST['instrument'];
+    $instrument = $PD['instrument'];
     displayInstrument ($instrument);
-    $startdate = $_POST['isodate'];
+    $startdate = $PD['isodate'];
     $stopdate  = isodate(dateAddDays($startdate, 1));
     $d = strtotime($startdate);
     $bookings = selectBookings($instrument, $startdate, $stopdate);
@@ -410,7 +408,8 @@
                  ."Log entry: " . $t['rec']['log']
                  ."</div>";
       }
-      showBookingsGraphical($t, $height, $entry);
+      $href="$BASEURL/view/$instrument";
+      showBookingsGraphical($href, $t, $height, $entry);
       #showBookingsListing($t['rec']);
       echo "\n";
     }
@@ -422,12 +421,11 @@
     
   }
 
-  function showBooking() {
-    global $UID, $MASQUID, $MASQUSER, $ISADMIN;
+  function showBooking($auth, $PD) {
     #displayPost();
-    $instrument = $_POST['instrument'];
+    $instrument = $PD['instrument'];
     displayInstrument ($instrument);
-    $bookid = $_POST['bookid'];
+    $bookid = $PD['bookid'];
     $q = "SELECT bookings.id AS bookid,bookwhen,duration,"
         ."DATE_ADD(bookwhen, INTERVAL duration HOUR_SECOND) AS stoptime,"
         ."ishalfday,isfullday,"
@@ -458,41 +456,37 @@
     #echo "<pre>";
     #print_r($g);
     #echo "</pre>";
-    if ($ISADMIN || $g['userid']==$UID) {
-      editBooking($g);
+    if ($auth->isadmin || $g['userid']==$auth->uid) {
+      editBooking($auth, $g);
     } else {
-      displayBooking($g);
+      displayBooking($auth, $g);
     }
   }
 
-  function makeBooking() {
-    global $UID, $MASQUID, $MASQUSER;
+  function makeBooking($auth, $PD) {
     #displayPost();
     $g = array();
-    #preg_match("/(.+)-(.+)/", $_POST['makebooking'], $times);
-    #$ticks = $_POST['makebooking'];
-    $startticks = $_POST['startticks'];
-    $stopticks  = $_POST['stopticks'];
+    $startticks = $PD['startticks'];
+    $stopticks  = $PD['stopticks'];
     $g['ticks']     = $startticks;
     $g['starttime'] = isotime($startticks);
     $g['stoptime']  = isotime($stopticks);
     $g['date']      = isodate($startticks);
-    $g['instrument']= $_POST['instrument'];
+    $g['instrument']= $PD['instrument'];
     $g['bookid']    = -1;
     if (isset($MASQUID)) {
       $g['userid']  = $MASQUID;
-      $g['bookedby']= $UID;
+      $g['bookedby']= $auth->uid;
     } else {
-      $g['userid']  = $UID;
+      $g['userid']  = $auth->uid;
     }
-    $instrument = $_POST['instrument'];
+    $instrument = $PD['instrument'];
     displayInstrument ($instrument);
-    editBooking($g);
+    editBooking($auth, $g);
   }
 
   function displayBooking($g) {
-    global $UID, $MASQUID, $MASQUSER, $ISADMIN;
-    echo "<input type='hidden' name='caloffset' value='".$_POST['caloffset']."' />";
+    echo "<input type='hidden' name='caloffset' value='".$PD['caloffset']."' />";
     echo "<h2>Booking details</h2>";
     displayInstrument($g['instrument']);
     echo "<table>";
@@ -519,10 +513,9 @@
     echo "</table>";
   }
 
-  function editBooking($g) {
-    global $UID, $MASQUID, $MASQUSER, $ISADMIN;
+  function editBooking($auth, $g) {
     $past = ($g['ticks'] < time());
-    $edit = ($ISADMIN || ! $past) || ($g['bookid'] < 0);
+    $edit = ($auth->isadmin || ! $past) || ($g['bookid'] < 0);
     #echo "<pre>";
     #print_r($g);
     #echo "</pre>";
@@ -531,8 +524,8 @@
     } else {
       echo "<p>Booking for instrument use:</p>";
     }
+    /*  <input type='hidden' name='caloffset' value='<?=$PD['caloffset']?>' />*/
     ?>
-      <input type='hidden' name='caloffset' value='<?=$_POST['caloffset']?>' />
       <input type='hidden' name='action' value='book' />
       <input type='hidden' name='booking' value='<?=$g['bookid']?>' />
       <input type='hidden' name='instrument' value='<?=$g['instrument']?>' />
@@ -566,8 +559,8 @@
       $userid = $g['userid'];
       echo "<input type='hidden' name='userid' value='$userid' />";
     } else {
-      $userid = $UID;
-      echo "<input type='hidden' name='userid' value='$UID' />";
+      $userid = $auth->uid;
+      echo "<input type='hidden' name='userid' value='$userid' />";
     }
 
     $q = "SELECT projectid,isdefault,name,longname "
@@ -594,7 +587,7 @@
     echo "<tr><td>Log entry</td>"
         ."<td><textarea name='log' rows='5' cols='40'>".$g['log']."</textarea></td></tr>";
     
-    if ($ISADMIN) {
+    if ($auth->isadmin) {
       ?>
         <tr><td>Booking IP address</td>
         <td><?=$g['ip']?></td></tr>
@@ -621,29 +614,32 @@
     <?
   }
 
-  function viewSelectInstrument() {
-    global $ISADMIN, $UID;
-
+  function viewSelectInstrument($auth, $PD) {
+    global $BASEURL;
+    $URL = "$BASEURL/view";
+    $UID = $auth->uid;
     ?>
       <h1>Welcome</h1>
       <table>
       <tr><th>Select instrument to view</th></tr>
       <tr><td>
-        <select name="instrument">
+      <ul class="selectlist">
     <?
 
     $q = "SELECT instruments.id,instruments.name "
         ."FROM instruments "
         ."LEFT JOIN permissions ON instruments.id=permissions.instrid "
-        ."WHERE userid='".$UID."'";
+        ."WHERE userid='$UID'";
     $sql = mysql_query($q);
     if (! $sql) die (mysql_error());
     while ($row = mysql_fetch_row($sql)) {
-      echo "<option value='$row[0]'>$row[1]</option>";
+      #echo "<option value='$row[0]'>$row[1]</option>";
+      echo "<li><a href='$URL/$row[0]'>$row[1]</a></li>";
     }                                    
-
+    #<select name="instrument">
+    #</select>
     ?>
-        </select>
+      </ul>
       </td></tr>
       <tr><td>
         <input type="submit" name="submit" value="Select instrument" />
