@@ -15,12 +15,16 @@ class TextField extends Field {
     $errorclass = ($this->isValid ? "" : "class='inputerror'");
     $t = "<tr $errorclass><td>$this->longname</td>\n"
         ."<td title='$this->description'>";
-    if ($this->editable) {
+    if ($this->editable && ! $this->hidden) {
       $t .= $this->selectable();
     } else {
-      $t .= xssqw($this->value);
+      if (!$this->hidden) $t .= xssqw($this->value);
       $t .= "<input type='hidden' name='$this->namebase$this->name' "
            ."value='".xssqw($this->value)."' />";
+    }
+    if ($this->duplicateName) {
+      $t .= "<input type='hidden' name='$this->duplicateName' "
+             ."value='".xssqw($this->value)."' />";
     }
     $t .= "</td>\n";
     for ($i=0; $i<$cols-2; $i++) {

@@ -43,7 +43,7 @@ include_once 'emaillist.php';
 include_once 'billing.php';
 include_once 'unknownaction.php';
 
-$pagetitle = $actiontitles[$action] . ' - ' . $sitetitle;
+$pagetitle = $actiontitles[$action] . ' - ' . $CONFIG['main']['SiteTitle'];
 
 
 include 'theme/pageheader.php';

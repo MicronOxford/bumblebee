@@ -1,10 +1,12 @@
 <?
 # $Id$
 # database connection scripts
-$dbhost = 'localhost';
-$dbusername = 'bumblebee';
-$dbpasswd = 'BABSuser123';
-$dbname = 'bumblebeedb';
+
+$db_ini = parse_ini_file('db.ini');
+$dbhost = $db_ini['host'];
+$dbusername = $db_ini['username'];
+$dbpasswd = $db_ini['passwd'];
+$dbname = $db_ini['database'];
 
 $connection = mysql_pconnect($dbhost, $dbusername, $dbpasswd)
     or die ('Couldn\'t connect to server.');

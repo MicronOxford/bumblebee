@@ -4,7 +4,7 @@
 
 include_once 'inc/consumableuse.php';
 include_once 'inc/consumable.php';
-include_once 'inc/datefunctions.php';
+include_once 'inc/dbforms/date.php';
 include_once 'inc/networkfunctions.php';
 include_once 'inc/dbforms/anchortablelist.php';
 
@@ -113,9 +113,9 @@ include_once 'inc/dbforms/anchortablelist.php';
     $consumableid = isset($PD['consumableid']) ? $PD['consumableid'] : -1;
     $uid = $auth->uid;
     $ip = getRemoteIP();
-    $today = isodate(time());
+    $today = new SimpleDate(time());
     $rec = new ConsumableUse($recordid, $userid, $consumableid,
-                              $uid, $ip, $today);
+                              $uid, $ip, $today->datestring);
     $rec->update($PD);
     $rec->checkValid();
     #$project->fields['defaultclass']->invalid = 1;

@@ -62,7 +62,7 @@ class DBChoiceList extends DBO {
     } elseif ($join == '') {
       $this->join = array();
     } else {
-      $this->join = array(0=>array($join,"$join.id=${join}id"));
+      $this->join = array($join=>"$join.id=${join}id");
     }
     $this->choicelist = array();
     $this->appendedfields = array();

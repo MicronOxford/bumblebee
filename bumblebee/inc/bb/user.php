@@ -43,11 +43,10 @@ class User extends DBRow {
                        'userid', $this->id,
                        'projects', 'Project membership');
     $projectfield = new DropList('projectid', 'Project');
-    $projectfield->connectDB('projects', array('id', 'name'));
+    $projectfield->connectDB('projects', array('id', 'name', 'longname'));
     $projectfield->prepend(array('0','(none)'));
     $projectfield->setDefault(0);
-    $projectfield->setFormat('id', '%s', array('name'), ' (%s)', array('longname')
-);
+    $projectfield->setFormat('id', '%s', array('name'), ' (%s)', array('longname'));
     $f->addElement($projectfield);
     $f->joinSetup('projectid', array('minspare' => 2));
     $this->addElement($f);

@@ -7,6 +7,7 @@ include_once 'bookings/booking.php';
 include_once 'bookings/vacancy.php';
 include_once 'bookings/cell.php';
 include_once 'bookings/matrix.php';
+include_once 'bookings/bookingdata.php';
 
 class Calendar {
   var $start,
@@ -38,30 +39,14 @@ class Calendar {
   }
 
   function _fill() {
-    $q = 'SELECT bookings.id AS bookid,bookwhen,duration,'
-        .'DATE_ADD(bookwhen, INTERVAL duration HOUR_SECOND) AS stoptime,'
-        .'ishalfday,isfullday,'
-        .'discount,log,comments,projectid,'
-        .'users.name AS name, '
-        .'users.username AS username, '
-        .'users.email AS email, '
-        .'masq.name AS masquser, '
-        .'masq.username AS masqusername, '
-        .'projects.name AS project '
-        .'FROM bookings '
-        .'LEFT JOIN users ON bookings.userid=users.id '
-        .'LEFT JOIN users AS masq ON bookings.bookedby=masq.id '
-        .'LEFT JOIN projects ON bookings.projectid=projects.id '
-        .'WHERE bookings.instrument='.qw($this->instrument).' '
-        .'AND bookwhen BETWEEN '.qw($this->start->datetimestring)
-                        .' AND '.qw($this->stop->datetimestring).' '
-        .'ORDER BY bookwhen';
-    $this->bookinglist = array();
-    $sql = db_get($q, $this->fatal_sql);
-    //FIXME: mysql specific function
-    while ($g = mysql_fetch_array($sql)) {
-      $this->bookinglist[] = new Booking($g); 
-    }
+    $bookdata = new BookingData (
+          array(
+            'instrument' => $this->instrument,
+            'start'      => $this->start->datetimestring,
+            'stop'       => $this->stop->datetimestring
+               )
+                               );
+    $this->bookinglist = $bookdata->dataArray();
   }
 
   /**
@@ -135,6 +120,29 @@ class Calendar {
     return $matrixlist;
   }
 
+  function _getDayClass($today, $t) {
+    $class = $this->dayClass;
+    $class .= ' '.$this->rotateDayClass[date($this->rotateDayClassDatePart, $t->ticks) % count($this->rotateDayClass)];
+    if ($today->datestring==$t->datestring) {
+      $class .= ' '.$this->todayClass;
+    }
+    return $class;
+  }
+
+  function display() {
+    return $this->displayAsTable();
+  }
+
+  function displayAsTable() {
+    $t = "<table class='tabularobject'>";
+    foreach ($this->bookinglist as $k => $v) {
+      #$t .= '<tr><td>'.$v[0].'</td><td>'.$v[1].'</td></tr>'."\n";
+      $t .= $v->display();
+    }
+    $t .= "</table>";
+    return $t;
+  }
+
   /**
    * Display the booking details in a table with rowspan based on
    * the duration of the booking
@@ -191,7 +199,7 @@ class Calendar {
       }
       $t .= '<tr>';
       if ($dayRow % $reportPeriod == 0) {
-        $t .= '<td>';
+        $t .= '<td rowspan="'.$reportPeriod.'">';
         $t .= $timecolumn[$dayRow]->timestring;
         $t .= '</td>';
       }
@@ -214,24 +222,55 @@ class Calendar {
     return $t;
   }
 
-  function _getDayClass($today, $t) {
-    $class = $this->dayClass;
-    $class .= ' '.$this->rotateDayClass[date($this->rotateDayClassDatePart, $t->ticks) % count($this->rotateDayClass)];
-    if ($today->datestring==$t->datestring) {
-      $class .= ' '.$this->todayClass;
+  /**
+   * Display the booking details in a table with rowspan based on
+   * the duration of the booking
+  **/
+  function displayDayAsTable($daystart, $daystop, $granularity, 
+                                    $reportPeriod) {
+    global $BASEPATH;
+    $matrix = $this->_collectMatrix($daystart, $daystop, $granularity);
+    $numRowsPerDay =  ceil($daystop->subtract($daystart) / $granularity);
+    $numRows = $numRowsPerDay;
+
+    #report the time in a time column on the LHS every nth row:
+    $timecolumn = array();
+    $time = $daystart;
+    for ($row=0; $row<$numRowsPerDay; $row++) {
+      $timecolumn[$row] = $time;
+      $time->addSecs($granularity);
     }
-    return $class;
-  }
 
-  function display() {
-    return $this->displayAsTable();
-  }
-
-  function displayAsTable() {
-    $t = "<table class='tabularobject'>";
-    foreach ($this->bookinglist as $k => $v) {
-      #$t .= '<tr><td>'.$v[0].'</td><td>'.$v[1].'</td></tr>'."\n";
-      $t .= $v->display();
+    $today = new SimpleDate(time());
+    
+    $t = "<table class='tabularobject calendar'>";
+    $t .= '<tr><th></th>';
+    $t .= "<td class='caldayzoom'>";
+    $t .= "<div class='caldate'>" . strftime("%e", $this->start->ticks);
+    $t .= "<span class='calmonth "
+    #.($month == $lastmonth ? "contmonth" : "startmonth") . "'> "
+      ."startmonth" . "'> "
+      . strftime("%B", $this->start->ticks)
+    ."</span>";
+    $t .= "</div>";
+    $t .= "</td>";
+    $t .= "</tr>";
+    for ($row = 0; $row < $numRows; $row++) {
+      $t .= "<tr>";
+      if ($row % $reportPeriod == 0) {
+        $t .= '<td rowspan="'.$reportPeriod.'">';
+        $t .= $timecolumn[$row]->timestring;
+        $t .= '</td>';
+      }
+      if (isset($matrix[0]->rows[$row])) {
+        #$t .= '<td>';
+        #preDump($matrix[$currentidx]->rows[$dayRow]);
+        $b =& $matrix[0]->rows[$row];
+        $class = $this->_getDayClass($today, $b->booking->start);
+        $t .= "\n\t".$b->display($class, $this->href)."\n";
+        #$t .= '</td>';
+      }
+      $t .= '</tr>';
     }
     $t .= "</table>";
     return $t;

@@ -11,7 +11,7 @@ class Vacancy extends TimeSlot {
   function Vacancy($arr='') {
     if (is_array($arr)) {
       $this->TimeSlot($arr['bookwhen'], $arr['stoptime'], $arr['duration']);
-      echo "Vacancy from ".$this->start->datetimestring." to ".$this->stop->datetimestring."<br />\n";
+      #echo "Vacancy from ".$this->start->datetimestring." to ".$this->stop->datetimestring."<br />\n";
     }
     $this->baseclass='vacancy';
   }

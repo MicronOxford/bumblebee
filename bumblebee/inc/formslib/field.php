@@ -24,6 +24,7 @@ class Field {
   var $duplicateName;
   var $editable = -1, 
       $changed = 0,
+      $hidden,
       $isValid = 1,
       $suppressValidation = -1,
       $useNullValues = 0;
@@ -54,7 +55,7 @@ class Field {
   function update($data) {
     if (isset($data["$this->namebase$this->name"]) || $this->useNullValues) {
       $newval = issetSet($data, "$this->namebase$this->name");
-      #echo "$this->name, $this->value, $newval<br />\n";
+      echo "$this->name, $this->value, $newval<br />\n";
       if ($this->editable) {
         // we ignore new values if the field is not editable
         if ($this->changed = ($this->getValue() != $newval)) {
@@ -64,6 +65,11 @@ class Field {
       } else {
         //ensure that the value is copied in from the default value if
         //it is unset.
+        $this->value = $this->getValue();
+      }
+    } else {
+      if ($this->getValue() != $this->value) {
+        $this->changed = 0;
         $this->value = $this->getValue();
       }
     }
@@ -141,6 +147,7 @@ class Field {
   }
 
   function getValue() {
+    #echo "FIELD: ".$this->value.":".$this->defaultValue."<br />";
     return (isset($this->value) ? $this->value : $this->defaultValue);
   }
 

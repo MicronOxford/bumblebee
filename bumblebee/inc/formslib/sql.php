@@ -57,5 +57,9 @@ function echoSQLerror($echo, $fatal=0) {
   return $echo;
 }
   
+function quickSQLSelect($table, $key, $value, $fatal=1) {
+  $q = "SELECT * FROM $table WHERE $key=".qw($value);
+  return db_get_single($q, $fatal);
+}
 
 ?> 

@@ -44,7 +44,7 @@ class SimpleDate {
   }
 
   function addTime($t) {
-    $this->ticks = mktime(
+    /*$this->ticks = mktime(
                             date('H',$t->ticks) + date('H',$this->ticks),
                             date('i',$t->ticks) + date('i',$this->ticks),
                             date('s',$t->ticks) + date('s',$this->ticks),
@@ -52,6 +52,8 @@ class SimpleDate {
                             date('d',$this->ticks),
                             date('y',$this->ticks)
                         );
+    */
+    $this->ticks += $t->seconds();
     $this->_setStr();
   }
 
@@ -73,6 +75,34 @@ class SimpleDate {
     return new SimpleTime($timestring,1);
   }
 
+  function setTime($s) {
+    #echo $this->datetimestring.'-'.$this->ticks.'/'.$s.'<br/>';
+    $this->dayRound();
+    #echo $this->datetimestring.'-'.$this->ticks.'<br/>';
+    $time = new SimpleTime($s,1);
+    #echo $time->timestring.'-'.$time->ticks.'<br/>';
+    $this->addTime($time);
+    ##echo $this->datetimestring.'-'.$this->ticks.'<br/>';
+  }
+    
+
+  function min($t) {
+    $this->setTicks(min($t->ticks, $this->ticks));
+  }
+
+  function max($t) {
+    $this->setTicks(max($t->ticks, $this->ticks));
+  }
+  
+  /**
+   * round time down to the nearest $g time-granularity measure
+  **/
+  function floorTime($g) {
+    $tp = $this->timePart();
+    $tp->floorTime($g);
+    $this->setTime($tp->timestring);
+  }
+  
 } // class SimpleDate
 
 
@@ -96,7 +126,9 @@ class SimpleTime {
 
   function _setStr() {
     #echo "SimpleDate::Str $this->ticks<br />";
-    $this->timestring = strftime('%H:%M', $this->ticks);
+    #$this->timestring = strftime('%H:%M', $this->ticks);
+    //$ticks = $this->seconds();
+    $this->timestring = sprintf('%02d:%02d', $this->ticks/3600, $this->ticks%3600);
   }
 
   function setTicks($t) {
@@ -106,7 +138,17 @@ class SimpleTime {
 
   function _setTicks($s) {
     #echo "SimpleDate::Ticks $this->string<br />";
-    $this->ticks = strtotime($s);
+    //$this->ticks = strtotime($s);
+    #echo "matching $s for time HH:MM or HH:MM:SS\n";
+    if (preg_match('/^(\d\d):(\d\d):(\d\d)$/', $s, $t)) {
+      #preDump($t);
+      $this->ticks = $t[1]*3600+$t[2]*60+$t[3];
+    } else {
+      preg_match('/^(\d\d):(\d\d)$/', $s, $t);
+      #preDump($t);
+      $this->ticks = $t[1]*3600+$t[2]*60;
+    }
+    #echo $this->ticks;
   }
 
   function subtract($d) {
@@ -119,11 +161,35 @@ class SimpleTime {
   }
 
   function seconds() {
+    return $this->ticks;
+    /*
     return date('s',$this->ticks)
          + date('i',$this->ticks)*60
          + date('H',$this->ticks)*60*60;
+    */
+  }
+  
+  function min($t) {
+    $this->setTicks(min($t->ticks, $this->ticks));
   }
 
+  function max($t) {
+    $this->setTicks(max($t->ticks, $this->ticks));
+  }
+
+  /**
+   * round time down to the nearest $g time-granularity measure
+  **/
+  function floorTime($g) {
+    $gt = $g->seconds();
+    $this->setTicks(floor(($this->ticks+1)/$gt)*$gt);
+  }
+  
+  function ceilTime($g) {
+    $gt = $g->seconds();
+    $this->setTicks(ceil(($this->ticks-1)/$gt)*$gt);
+  }
+  
 } // class SimpleTime
 
 ?> 

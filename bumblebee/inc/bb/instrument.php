@@ -10,6 +10,7 @@ include_once 'dbforms/exampleentries.php';
 class Instrument extends DBRow {
   
   function Instrument($id) {
+    global $CONFIG;
     $this->DBRow("instruments", $id);
     $this->editable = 1;
     $f = new TextField("id", "Instrument ID");
@@ -29,6 +30,24 @@ class Instrument extends DBRow {
     $f = new TextField("location", "Location");
     $f->required = 1;
     $f->isInvalidTest = "is_nonempty_string";
+    $f->setAttr($attrs);
+    $this->addElement($f);
+    $f = new TextField("usualopen", "Opening Time (HH:MM)");
+    $f->required = 1;
+    $f->defaultValue = $CONFIG['instruments']['usualopen'];
+    $f->isInvalidTest = "is_valid_time";
+    $f->setAttr($attrs);
+    $this->addElement($f);
+    $f = new TextField("usualclose", "Closing Time (HH:MM)");
+    $f->required = 1;
+    $f->defaultValue = $CONFIG['instruments']['usualclose'];
+    $f->isInvalidTest = "is_valid_time";
+    $f->setAttr($attrs);
+    $this->addElement($f);
+    $f = new TextField("granularity", "Booking size (HH:MM)");
+    $f->required = 1;
+    $f->defaultValue = $CONFIG['instruments']['granularity'];
+    $f->isInvalidTest = "is_valid_time";
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new RadioList("class", "Charging class");
