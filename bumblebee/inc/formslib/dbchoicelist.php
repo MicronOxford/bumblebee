@@ -5,25 +5,30 @@
 include_once("dbobject.php");
 
 class DBList extends DBO {
-  var $restriction;
+  var $restriction,
+      $order,
+      $limit;
   var $editable = 0,
       $changed = 0;
   var $list;
 
-  function DBList($table, $fields="", $restriction="1", $order="name") {
-    $this->table = $table;
+  function DBList($table, $fields="", $restriction="1",
+                  $order="name", $idfield='id', $limit="") {
+    $this->DBO($table, "", $idfield);
     $this->fields = (is_array($fields) ? $fields : array($fields));
     $this->restriction = $restriction;
     $this->order = $order;
+    $this->limit = $limit;
     $this->fill();
   }
 
   function fill() {
     $f = implode(", ", $this->fields);
-    $q = "SELECT id, $f "
+    $q = "SELECT $this->idfield, $f "
         ."FROM $this->table "
         ."WHERE $this->restriction "
-        ."ORDER BY $this->order";
+        ."ORDER BY $this->order "
+        .($this->limit != "" ? "LIMIT $this->limit" : "");
     $sql = db_get($q, $this->fatal_sql);
     if (! $sql) {
       return 0;
@@ -65,28 +70,30 @@ class DBList extends DBO {
     #echo "List update: ";
     if (isset($newval)) {
       #echo "set '$newval'";
-      if ($this->id != $newval) {
+      if ($this->id != $newval || $this->id < 0) {
         $this->changed += 1;
         $this->id = $newval;
       }
     }
-    #echo "<br />";
     #because we are a selection list, if we have changed, then we
     #may need to sync() and then fill() to make sure we are all there for the
     #next viewing and for sync() of the main object
-    //FIXME when could this have been made invalid?
-    if ($this->changed && $this->id == -1 && ! $this->invalid) {
+    if ($this->id < 0) {
       #find out the new name
       //FIXME surely there's a better way of doing this?
       foreach ($this->list as $k => $v) {
-        if (isset($v['_field'])) {
+        preDump($v);
+        if (isset($v['_field']) && $v['_field'] != "") {
           $this->list[$k]['_field']->update($data);
+          $this->invalid += $this->list[$k]['_field']->isinvalid();
         }
       }
       #echo "Syncing<br />";
-      $this->sync();
-      //FIXME this means that the "Create new:" or whatever field is lost
-      $this->fill();
+      if (! $this->invalid) {
+        $this->sync();
+        //FIXME this means that the "Create new:" or whatever field is lost
+        $this->fill();
+      }
     }
     return $this->invalid;
   }
@@ -100,7 +107,7 @@ class DBList extends DBO {
         #records through this object
       } else {
         #it's a new record, insert it
-        $q = "INSERT ".$this->table." SET $vals";
+        $q = "INSERT $this->table SET $vals";
         $sql_result = db_quiet($q, $this->fatal_sql);
         $this->id = db_new_id();
       }

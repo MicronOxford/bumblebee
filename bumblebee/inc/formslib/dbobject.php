@@ -8,6 +8,7 @@ include_once("sql.php");
 
 class DBO {
   var $table,
+      $idfield,
       $id=-1;
   var $fields;
   var $editable = 0, 
@@ -18,9 +19,10 @@ class DBO {
   var $fatal_sql = 1;
   var $namebase;
 
-  function DBO($table, $id) {
+  function DBO($table, $id, $idfield = 'id') {
     $this->table = $table;
     $this->id = $id;
+    $this->idfield = $idfield;
     $this->fields = array();
   }
 

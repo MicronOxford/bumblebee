@@ -9,8 +9,8 @@ class DBRow extends DBO {
   var $namebase;
   var $newObject = 0;
 
-  function DBRow($table, $id) {
-    $this->DBO($table, $id);
+  function DBRow($table, $id, $idfield='id') {
+    $this->DBO($table, $id, $idfield);
     $this->fields = array();
   }
 
@@ -20,7 +20,7 @@ class DBRow extends DBO {
     if ($this->id == -1) {
       $anychanges = 0;
       foreach ($this->fields as $k => $v) {
-        if ($k != 'id') {
+        if ($k != $this->idfield) {
           $anychanges += (isset($data["$this->namebase$k"]));
           #echo "$k:anychanges = $anychanges<br />";
         }
@@ -30,9 +30,10 @@ class DBRow extends DBO {
       }
     }
     foreach ($this->fields as $k => $v) {
-      echo "Check $k";
-      #echo ",set '".$data["$this->namebase$k"]."'";
+      #echo "Check $k";
+      #echo "ov:".$this->fields[$k]->value;
       $this->changed += $this->fields[$k]->update($data);
+      #echo "nv:".$this->fields[$k]->value;
       if (! $this->newObject) {
         $this->invalid += $this->fields[$k]->isinvalid();
       }
@@ -45,7 +46,9 @@ class DBRow extends DBO {
       $vals = $this->_sqlvals();
       if ($this->id != -1) {
         #it's an existing record, so update
-        $q = "UPDATE ".$this->table." SET $vals WHERE id=".qw($this->id);
+        $q = "UPDATE $this->table "
+            ."SET $vals "
+            ."WHERE $this->idfield=".qw($this->id);
         $sql_result = db_quiet($q, $this->fatal_sql);
       } else {
         #it's a new record, insert it
@@ -97,12 +100,15 @@ class DBRow extends DBO {
   }
 
   function fill() {
-    $q = "SELECT * FROM $this->table WHERE id=".qw($this->id);
+    $q = "SELECT * FROM "
+        ."$this->table "
+        ."WHERE $this->idfield=".qw($this->id);
     $g = db_get_single($q);
     #echo "<pre>";print_r($g);echo "</pre>";
     foreach ($this->fields as $k => $v) {
       #echo "Filling $k = ".$g[$k];
-      $this->fields[$k]->set($g[$k]);
+      $val = issetSet($g,$k);
+      $this->fields[$k]->set($val);
       #echo $this->fields[$k]->text_dump();
     }
     #in case we get no rows back from the database, we have to have an id

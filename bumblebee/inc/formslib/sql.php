@@ -49,7 +49,8 @@ function echoSQLerror($echo, $fatal=0) {
     if ($VERBOSESQL) {
       echo "<div class='sql error'>$echo</div>";
     }
-    if ($fatal) {
+   if ($fatal) {
+      preDump(debug_backtrace());
       die("<b>Fatal SQL error. Aborting.</b>");
     }
   }

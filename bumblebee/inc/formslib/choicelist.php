@@ -29,10 +29,21 @@ class ChoiceList extends Field {
     return $this->text_dump();
   }
 
-  function setFormat($id, $f1, $f2, $v1, $v2) {
-    $this->formatid = $id;
-    $this->formatter = array(new OutputFormatter($f1, $v1),
-                             new OutputFormatter($f2, $v2));
+  function setFormat() {
+    #called as: setFormat($id, $f1, $v1, $f2, $v2, ...) {
+    #f1, v1 etc must be in pairs.
+    #f1 is an sprintf format and v1 is an array of names that
+    #will be used to fill the sprintf format
+    $argc = func_num_args();
+    $argv = func_get_args();
+    #echo "<pre>Var args: $argc\n".print_r($argv,1)."</pre>";
+    $this->formatid = $argv[0];
+    $this->formatter = array();
+    for ($i = 1; $i < $argc; $i+=2) {
+      #echo "<pre>Adding: $i\n".print_r($argv[$i],1).print_r($argv[$i+1],1)."</pre>";
+      $this->formatter[] = new OutputFormatter($argv[$i],
+                                               $argv[$i+1]);
+    }
   }
 
   function format($data) {
@@ -61,10 +72,16 @@ class ChoiceList extends Field {
   
   function update($data) {
     #echo "updating $this->name (ov: $this->value)";
+    #echo $this->list->id;
     Field::update($data);
     $this->list->update($this->value, $data);
-    $this->value = $this->list->id;
-    $this->changed += $this->list->changed;
+    if ($this->list->id != -1) {
+      #if the data were valid, then list->update() would change list->id from
+      # -1 to the real value of the newly created entry
+      $this->value = $this->list->id;
+      $this->changed += $this->list->changed;
+    }
+    #echo $this->list->id;
     #echo " (nv: $this->value)";
     return $this->changed;
   }

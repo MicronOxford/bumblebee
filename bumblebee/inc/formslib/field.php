@@ -38,27 +38,29 @@ class Field {
         }
       }
     }
-    echo $this->changed;
+    #echo $this->changed;
     return $this->changed;
   }
 
   function isinvalid() {
+    /*
     echo "<br />";
     echo $this->name .":". $this->isInvalidTest.":";
     echo is_callable($this->isInvalidTest);
     echo "$this->suppressValidation";
     echo "req=$this->required";
+    */
     if ($this->required) {
       $this->invalid = ! (isset($this->value) && $this->value != "");# ? 0 : 1;
     }
     if (! $this->invalid && 
         isset($this->isInvalidTest) && is_callable($this->isInvalidTest) 
         && $this->suppressValidation == 0) {
-      echo "checking ";
+      #echo "checking ";
       $validator = $this->isInvalidTest;
       #$this->invalid = $this->id == -1 && $validator($this->value);
       $this->invalid = $validator($this->value);
-      echo $this->invalid;
+      #echo ($this->invalid ? "INVALID" : "VALID");
     }
     return $this->invalid;
   }

@@ -54,7 +54,7 @@ include_once 'inc/anchortablelist.php';
     $groupselect->connectDB("groups", array("id", "name", "longname"));
     $groupselect->list->prepend(array("-1","Create new group"));
     $groupselect->hrefbase = "$BASEURL/groups/";
-    $groupselect->setFormat("id", "%s"," %s", array("name"), array("longname"));
+    $groupselect->setFormat("id", "%s", array("name"), " %s", array("longname"));
     #echo $groupselect->list->text_dump();
     echo $groupselect->display();
   }

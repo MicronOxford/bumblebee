@@ -38,7 +38,7 @@ include_once 'inc/anchortablelist.php';
     $projectselect->connectDB("projects", array("id", "name", "longname"));
     $projectselect->list->prepend(array("-1","Create new project"));
     $projectselect->hrefbase = "$BASEURL/projects/";
-    $projectselect->setFormat("id", "%s"," %s", array("name"), array("longname"));
+    $projectselect->setFormat("id", "%s", array("name"), " %s", array("longname"));
     echo $projectselect->display();
   }
 

@@ -1,19 +1,17 @@
 $Id$
 
-create new doesn't validate properly in dblist
+radiolist always returns ischanged on update()
 
-create new marks all fields as being invalid -> suppress this?
-
-all empty fields come up as "changed" (e.g. in gorups)
+make sure large data structures are being passed by reference not value
+(speed up)
 
 reflect postdata in case of re-login
 
 user auth => sessions
 masquerade => sessions
 
-session.use_only_cookies
-session.cookie_lifetime
-$string = strip_tags($string, '<a><b><i><u>'
+$string = strip_tags($string, '<a><b><i><u>')
+also do this in qw? $string = strip_tags($string, '')
 
 define("CONSTANT", "Hello world.");
 
