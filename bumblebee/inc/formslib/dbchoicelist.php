@@ -48,6 +48,14 @@ class DBChoiceList extends DBO {
    *     * using the field $idfield as the control variable in the list
    *       (i.e. the value='' in a radio list etc)
    *     * with an SQL LIMIT statement of $limit
+   *
+   * @param string $table  the table to be queried for filling
+   * @param mixed $fields  string for the field or array of field names
+   * @param string $restriction  an SQL restriction clause to be used in a WHERE
+   * @param string $order  SQL ORDER clause
+   * @param string $idfield  the field that should be used as the uniquely identifying value
+   * @param string $limit  any LIMIT clause
+   * @param mixed $join  string or array (preferably) that defines the LEFT JOIN
    */
   function DBChoiceList($table, $fields='', $restriction='',
                   $order='', $idfield='id', $limit='', $join='') {
@@ -71,9 +79,9 @@ class DBChoiceList extends DBO {
   }
 
   /**
-    * Fill the object from the database using the already initialised
-    * members (->table etc).
-   **/
+   * Fill the object from the database using the already initialised
+   * members (->table etc).
+   */
   function fill() {
     $fields = $this->fields;
     $fields[] = isset($this->idfieldreal) ? 
@@ -125,10 +133,14 @@ class DBChoiceList extends DBO {
   }
 
   /**
-    * append or prepend a special field (such as "Create new:") to the 
-    * choicelist. Keep a copy of the field so it can be added again later if
-    * necessary, and then use a private function to actually do the adding
-   **/
+   * append (or prepend) a special field (such as "Create new:") to the choicelist
+   *
+   * @param string $values ???
+   * @param Field $field (optional) a field class object to be placed next to this entry, if possible
+   *
+   * Keep a copy of the field so it can be added again later if
+   * necessary, and then use a private function to actually do the adding
+   */
   function append($values, $field='') {
     $fa = $this->_mkaddedarray($values, $field);
     //keep a copy of the field so it can be added again after a fill()
@@ -136,6 +148,9 @@ class DBChoiceList extends DBO {
     $this->_append($fa);
   }
 
+  /**
+   * as per the append() method
+   */
   function prepend($values, $field='') {
     $fa = $this->_mkaddedarray($values, $field);
     //keep a copy of the field so it can be added again after a fill()
@@ -144,10 +159,10 @@ class DBChoiceList extends DBO {
   }
 
   /**
-    * private functions _append and _prepend that will actually add the field
-    * to the field list after it has been properly constructed and saved for
-    * future reference
-   **/
+   * private functions _append and _prepend that will actually add the field
+   * to the field list after it has been properly constructed and saved for
+   * future reference
+   */
   function _append($fa) {
     array_push($this->choicelist, $fa);
   }
@@ -246,10 +261,10 @@ class DBChoiceList extends DBO {
   }
 
   /**
-    * synchronise with the database -- this also creates the true value for
-    * this field if it is undefined
-    * returns false on success
-   **/
+   * synchronise with the database -- this also creates the true value for
+   * this field if it is undefined
+   * returns false on success
+   */
   function sync() {
     #preDump($this);
     if ($this->changed && $this->isValid) {
@@ -266,6 +281,11 @@ class DBChoiceList extends DBO {
     }
   }
 
+  /**
+   * Returns an SQL assignment clause
+   * 
+   * @return string of form name='value'
+   */
   function _sqlvals() {
     $vals = array();
     if ($this->changed) {

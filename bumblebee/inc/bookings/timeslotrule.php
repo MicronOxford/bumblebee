@@ -358,7 +358,7 @@ class RuleSlot {
     $cdur = $this->tgran;
     for ($i=0; $i<=$this->numslotsFollowing; $i++) {
       #echo $i.': length='.$cslot->tgran->timestring.', sum='.$cdur->timestring."<br />\n";
-      array_push($duration, $cdur->timestring);
+      $duration[$cdur->timestring] = $cdur->timestring;
       $cdur->addTime($cslot->tgran);
       $cslot = $cslot->nextSlot;
     }

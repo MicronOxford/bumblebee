@@ -4,13 +4,23 @@ allow bookings to cross from one day to the next
 
 allow set timeslots for instruments
 
+test free allocation and overnight slots
+
+
+pass/log book vs future/bookings setup for instruments
+
+
 
 
 gracefully handle lack of mysql db
 
 feedback when entry updated!
 
-permit user change passwd
+permit user change passwd, 
+
+fix up radius handling
+
+
 
 locking of records when editing?
 

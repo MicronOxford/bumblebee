@@ -56,7 +56,7 @@ class TimeField extends Field {
   function selectable() {
     #echo "TIME=".$this->time->timestring."\n";
     $this->_determineRepresentation();
-    $this->setTime($this->getValue());
+    $this->setTime(parent::getValue());
     $t = '';
     switch ($this->representation) {
       case TF_DROP:
@@ -77,6 +77,30 @@ class TimeField extends Field {
     }
     return $t;
   }
+  
+/*  function getValue() {
+    #echo "TIME=".$this->time->timestring."\n";
+    $this->_determineRepresentation();
+    switch ($this->representation) {
+      case TF_DROP:
+        $val = parent::getValue();
+        $this->_prepareDropDown();
+        $t .= $this->droplist->selectable();
+        break;
+      case TF_FREE:
+        $t .= "<input type='text' name='$this->namebase$this->name' "
+            ."value='".xssqw($this->time->timestring)."' ";
+        $t .= (isset($this->attr['size']) ? "size='".$this->attr['size']."' " : "");
+        $t .= (isset($this->attr['maxlength']) ? "maxlength='".$this->attr['maxlength']."' " : "");
+        $t .= "/>";
+        break;
+      case TF_FIXED:
+        $t .= $this->time->timestring;
+        $t .= $this->hidden;
+        break;
+    }
+    return $t;
+  }*/
   
   function hidden() {
     return "<input type='hidden' name='$this->namebase$this->name' "
@@ -189,12 +213,12 @@ class TimeField extends Field {
   }
 
   /** 
-   * create a TimeSlotRule for validation of the times that we are using
+   * associate a TimeSlotRule for validation of the times that we are using
    *
-   * @param string $list initialisation string for a TimeSlotRule
+   * @param TimeSlotRule $list a valid TimeSlotRule
    */
-  function setSlotPicture($list) {
-    $this->list = new TimeSlotRule($list);
+  function setSlots($list) {
+    $this->list = $list;
   }
 
   /** 

@@ -86,6 +86,7 @@ class Field {
         $this->value = $this->getValue();
       }
     }
+    if ($this->DEBUG) echo "$this->name ". ($this->changed ? "CHANGED" : "SAME");
     return $this->changed;
   }
 
@@ -100,19 +101,20 @@ class Field {
    *     is there a validity test && is the data valid?
    */
   function isValid() {
-    
+    /*    
     echo "<br />";
     echo $this->name .":". $this->isValidTest.":";
     echo is_callable($this->isValidTest);
     echo "$this->suppressValidation";
-    echo "req=$this->required";
+    echo "req=$this->required";*/
     
     $this->isValid = 1;
     if ($this->required) {
-      $this->isValid = (isset($this->value) && $this->value != "");
+      #$this->isValid = (isset($this->value) && $this->value != "");
+      $this->isValid = ($this->getValue() != '');
     }
     if ($this->isValid && $this->suppressValidation == 0) {
-      $this->isValid = ValidTester($this->isValidTest, $this->value);
+      $this->isValid = ValidTester($this->isValidTest, $this->getValue());
     }
     if ($this->DEBUG) echo ($this->isValid ? "VALID" : "INVALID");
     return $this->isValid;
@@ -176,7 +178,7 @@ class Field {
   }
 
   function getValue() {
-    echo "FIELD $this->name: ".$this->value.":".$this->defaultValue."<br />";
+//     echo "FIELD $this->name: ".$this->value.":".$this->defaultValue."<br />";
     return (isset($this->value) ? $this->value : $this->defaultValue);
   }
 

@@ -58,12 +58,19 @@ class SimpleDate {
   }
 
   function addTime($t) {
+    if (is_a($t, 'SimpleTime')) {
+      $this->ticks += $t->seconds();
+      $this->_setStr();
+    } else {
+      $this->ticks += $t;
+      $this->_setStr();
+    }
     //echo $t->part('s').'-';
     //echo $t->part('i').'-';
     //echo $t->part('H')."\n";
     //either code works fine, but doing this directly will be much faster
-    $this->ticks += $t->seconds();
-    $this->_setStr();
+/*    $this->ticks += $t->seconds();
+    $this->_setStr();*/
     //$this->addTimeParts($t->part('s'),$t->part('i'),$t->part('H'),0,0,0);
   }
 

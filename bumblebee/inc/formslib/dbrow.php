@@ -18,7 +18,7 @@ include_once('dbobject.php');
  *   $obj->checkValid();
  *   #synchronise with database
  *   $obj->sync();
-**/
+ */
 class DBRow extends DBO {
   var $fatal_sql = 1;
   var $namebase;
@@ -38,7 +38,7 @@ class DBRow extends DBO {
   /** 
    *  update the value of each of the objects fields according to the user 
    *  input data, and validate the data if appropriate
-  **/
+   */
   function update($data) {
     if ($this->DEBUG) echo "<br/><br/>DBRow:$this->namebase. Looking for updates:<br />";
     // First, check to see if this record is new

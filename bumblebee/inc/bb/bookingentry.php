@@ -10,11 +10,16 @@ include_once 'dbforms/droplist.php';
 include_once 'dbforms/referencefield.php';
 include_once 'dbforms/dummyfield.php';
 
+include_once 'bookings/timeslotrule.php';
 include_once 'calendar.php';
 
 class BookingEntry extends DBRow {
+  var $slotrules;
+  var $starttime;
+  var $duration;
   
   function BookingEntry($id, $auth, $instrumentid, $ip, $start, $duration, $granlist) {
+    $this->slotrules = new TimeSlotRule($granlist);
     $isadmin = $auth->isSystemAdmin() || $auth->isInstrumentAdmin($instrumentid);
     if ($id > 0 && $isadmin) {
       $row = quickSQLSelect('bookings', 'id', $id);
@@ -33,6 +38,7 @@ class BookingEntry extends DBRow {
     $f->duplicateName = 'instrid';
     $f->defaultValue = $instrumentid;
     $this->addElement($f);
+    $this->starttime = &$f;
     $f = new DateTimeField('bookwhen', 'Start');
     $f->required = 1;
     $f->defaultValue = $start;
@@ -41,15 +47,16 @@ class BookingEntry extends DBRow {
     $f->setAttr($attrs);
     $f->setManualRepresentation($isadmin ? TF_FREE : TF_AUTO);
 //     echo $f->manualRepresentation .'-'.$f->time->manualRepresentation."\n";
-    $f->setSlotPicture($granlist);
+    $f->setSlots($this->slotrules);
     $this->addElement($f);
+    $this->duration = &$f;
     $f = new TimeField('duration', 'Duration');
     $f->required = 1;
     $f->isInvalidTest = 'is_valid_time';
     $f->defaultValue = $duration;
     $f->setManualRepresentation($isadmin ? TF_FREE : TF_AUTO);
 //     echo $f->manualRepresentation .'-'.$f->time->manualRepresentation."\n";
-    $f->setSlotPicture($granlist);
+    $f->setSlots($this->slotrules);
     $f->setSlotStart($start);
     $this->addElement($f);
     $f = new DropList('projectid', 'Project');
@@ -114,7 +121,7 @@ class BookingEntry extends DBRow {
     parent::update($data);
     if ($this->changed) {
       //FIXME
-      //$this->_checkGranularity();
+//       $this->_checkGranularity();
     }
     return $this->changed;
   }
@@ -125,9 +132,8 @@ class BookingEntry extends DBRow {
   **/
   function checkValid() {
     parent::checkValid();
-    if ($this->isValid) {
-      $this->_checkIsFree();
-    }
+    $this->isValid = $this->isValid && $this->_checkIsFree();
+    $this->isValid = $this->isValid && $this->_legalSlot();
     return $this->isValid;
   }
 
@@ -150,6 +156,7 @@ class BookingEntry extends DBRow {
   **/
   function _checkIsFree() {
     #preDump($this);
+    $doubleBook = 0;
     $instrument = $this->fields['instrument']->getValue();
     $start = $this->fields['bookwhen']->getValue();
     $d = new SimpleDate($start,1);
@@ -166,17 +173,25 @@ class BookingEntry extends DBRow {
     $row = db_get_single($q, $this->fatal_sql);
     if (is_array($row)) {
       // then the booking actually overlaps another!
-      $this->isValid = 0;
+      $doubleBook = 1;
       $this->errorMessage = "Sorry, the instrument is not free at this time";
       echo $this->errorMessage;
       preDump($row);
     }
+    return ! $doubleBook;
   }
 
-  /**   FIXME
-   * munge the entered data so that it fits into the granularity required
-  **/
-  function _checkGranularity() {
+  /** 
+   * Ensure that the entered data fits the granularity criteria specified for this instrument
+   */
+  function _legalSlot() {
+    #echo "BookingEntry::_checkGranularity\n";
+    $starttime = new SimpleDate($this->starttime->getValue());
+    $stoptime = $starttime;
+    $stoptime->addTime($this->duration->getValue());
+    return $this->slotrules->isValidSlot($starttime, $stoptime);
+    
+/*
     $row = quickSQLSelect('instruments', 'id', $this->fields['instrument']->getValue());
     $g = new SimpleTime($row['granularity'],1);
     $start = new SimpleDate($this->fields['bookwhen']->getValue(),1);
@@ -185,6 +200,7 @@ class BookingEntry extends DBRow {
     $duration = new SimpleTime($this->fields['duration']->getValue(),1);
     $duration->ceilTime($g);
     $this->fields['duration']->set($duration->timestring);
+    */
   }
 
   

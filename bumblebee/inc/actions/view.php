@@ -78,13 +78,6 @@ class ActionView extends ActionAction {
   function selectInstrument() {
     global $BASEURL;
     $instrselect = new AnchorTableList("Instrument", "Select which instrument to view");
-//         $f->connectDB('projects', 
-//                   array('id', 'name', 'longname'), 
-//                   'userid='.qw($euid),
-//                   'name', 
-//                   'id', 
-//                   NULL, 
-//                   array('userprojects'=>'projectid=id'));
     if ($this->auth->isSystemAdmin()) {
       $instrselect->connectDB("instruments", 
                             array("id", "name", "longname")
@@ -205,8 +198,12 @@ class ActionView extends ActionAction {
     $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
     $booking = new BookingEntry($bookid,$this->auth,$this->PD['instrid'],$ip, $start, $duration, $row['timeslotpicture']);
     $booking->update($this->PD);
+    #echo "CHECKVALID\n";
     $booking->checkValid();
+    #echo "VALID=$booking->isValid\n";
     $booking->sync();
+    #echo "FINISH SYNC\n";
+    #preDump($booking);
     #echo $group->text_dump();
     echo $booking->display();
     if ($booking->id < 0) {

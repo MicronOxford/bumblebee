@@ -95,13 +95,13 @@ class DateTimeField extends Field {
   }
   
   /** 
-   * create a TimeSlotRule for validation of the times that we are using
+   * associate a TimeSlotRule for validation of the times that we are using
    *
-   * @param string $list initialisation string for a TimeSlotRule
+   * @param TimeSlotRule $list a TimeSlotRule
    */
-  function setSlotPicture($list) {
-    $this->list = new TimeSlotRule($list);
-    $this->time->setSlotPicture($list);
+  function setSlots($list) {
+    $this->list = $list;
+    $this->time->setSlots($list);
     $this->calcDateTimeParts();
   }
   
@@ -118,12 +118,14 @@ class DateTimeField extends Field {
   /**
    *
    */
-  function isValid() {
+/*  function isValid() {
     echo "DateTimeField::isValid<br/>\n";
-    echo $this->value;
-    echo $this->getValue();
+    echo 'Value='.$this->value.'<br/>';
+    echo 'GETValue='.$this->getValue().'<br/>';
     parent::isValid();
-  }
+    $this->isValid = $this->isValid && $this->list->
+    return $this->isValid;
+  }*/
   
   
 } // class DateTimeField
