@@ -2,8 +2,7 @@
 # $Id$
 # edit the groups
 
-  function actionCosts()
-  {
+  function actionCosts() {
     if (! isset($_POST['category'])) {
       selectcost();
     } elseif (! isset($_POST['updatecategory'])) {
@@ -15,8 +14,7 @@
     }
   }
 
-  function selectcost()
-  {
+  function selectcost() {
     echo <<<END
     <table>
     <tr><th>Select cost category to view/edit</th></tr>
@@ -46,15 +44,7 @@ END;
 END;
   }
 
-  function editcost($userclass)
-  {
-    /*
-    $q = "SELECT name FROM userclass WHERE id='$userclass'";
-    $sql = mysql_query($q);
-    if (! $sql) die (mysql_error());
-    $g = mysql_fetch_array($sql);
-    $userclassname = $g['name'];
-    */
+  function editcost($userclass) {
     $i=1;
     if ($userclass != "-1") {
       #$q = "SELECT stdrates.*,costs.*,instruments.name,instruments.longname "
@@ -110,22 +100,10 @@ END;
     echo "<tr><th colspan='2'>Instruments classes</th></tr>";
     costsInstrumentStdRate($i,$g);
     $i++;
-    #while ($gpid != "-1" && ($g = mysql_fetch_array($sql))) {
     while ($g = mysql_fetch_array($sql)) {
       costsInstrumentStdRate($i,$g);
       $i++;
     }
-    /*
-    for ($j=0; $j<2; $j++) {
-      costsInstrumentStdRate($i,array());
-      $i++;
-    }*/
-
-    /*
-    <tr><td>
-      <input type='checkbox' name='delete' value='1'> Delete category</input>
-    </td>
-    */
     echo <<<END
     <tr><td></td>
     <td>
@@ -151,48 +129,27 @@ END;
     }
     $instrlist = implode(", ",$instrumentlist);
       
-    #if (isset($g['instrclassname'])) {
-      echo "\n";
-      echo "<input type='hidden' name='class$i-costid' value='".$g['costid']."'>";
-      echo "<input type='hidden' name='class$i-classid' value='".$g['instrclassid']."'>";
-      #echo "<tr><td>".$g['instrclassname']."</td><td>".$g['longname']."</td></tr>";
-      echo "<tr><td>".$g['instrclassname']."</td><td>($instrlist)</td></tr>";
-    #} else {
-      #echo "<tr><td>Select:</td><td>";
-      ##instrumentSelectBox("instr$i-instrid","select instrument");
-      #echo "</td></tr>";
-    #}
+    echo "\n";
+    echo "<input type='hidden' name='class$i-costid' value='".$g['costid']."'>";
+    echo "<input type='hidden' name='class$i-classid' value='".$g['instrclassid']."'>";
+    echo "<tr><td>".$g['instrclassname']."</td><td>($instrlist)</td></tr>";
     echo "<tr><td>Hour:</td>"
           ."<td><input type='text' name='class$i-hour' size='16' value='".$g['cost_hour']."' /></td></tr>";
     echo "<tr><td>Half day:</td><td><input type='text' name='class$i-halfday' size='16' value='".$g['cost_halfday']."' /></td></tr>";
     echo "<tr><td>Full day:</td><td><input type='text' name='class$i-fullday' size='16' value='".$g['cost_fullday']."' /></td></tr>";
-    /*if (isset($g['name'])) {
-      echo "<tr><td></td><td>"
-          ."<input type='checkbox' name='class$i-delete' value='1'> Delete this rate</input>"
-          ."</td></tr>";
-    }*/
   }
-
-/*
-  function deletecosts($gpid)
-  {
-    $q = "DELETE FROM stdrates WHERE category='$gpid'";
-    if (!mysql_query($q)) die(mysql_error());
-    echo "action: '$q' successful";
-  }
-  */
 
   function updatecost($gpid) {
     if (isset($_POST["userclassid"]) && $_POST["userclassid"] != -1) {
       $q="UPDATE userclass SET name='".$_POST['userclassname']."' WHERE id='".$_POST['userclassid']."'";
       if (!mysql_query($q)) die(mysql_error());
-      echo "<div class='sql'>$q</div>";
+      echoSQL($q);
     } else {
       $q="INSERT INTO userclass (name) VALUES ('".$_POST['userclassname']."')";
       if (!mysql_query($q)) die(mysql_error());
       $_POST["userclassid"]=mysql_insert_id();
-      echo "<div class='sql'>$q</div>";
-      echo "id=".$_POST["userclassid"]."\n";
+      echoSQL($q);
+      #echo "id=".$_POST["userclassid"]."\n";
     }
     for ($i=1; isset($_POST["class$i-classid"]); $i++) {
       if (isset($_POST["class$i-costid"]) && $_POST["class$i-costid"]!='') {
@@ -205,13 +162,6 @@ END;
     }
   }
 
-  /*
-  function deletesinglerate($i) {
-    $q = "DELETE FROM stdrates WHERE id='".$_POST["class$i-id"]."'";
-    if (!mysql_query($q)) die(mysql_error());
-    echo "action: '$q' successful";
-  }*/
-  
   function updatesinglerate($i) {
     $q = "UPDATE costs SET "
         ."cost_hour='".$_POST["class$i-hour"]."',"
@@ -219,11 +169,10 @@ END;
         ."cost_fullday='".$_POST["class$i-fullday"]."' "
         ."WHERE id='".$_POST["class$i-costid"]."'";
     if (!mysql_query($q)) die(mysql_error());
-    echo "<div class='sql'>action: '$q' successful</div>";
+    echoSQL($q, 1);
   }
 
-  function insertsinglerate($i)
-  {
+  function insertsinglerate($i) {
     $q = "INSERT INTO costs "
         ."(instrumentclass,userclass,cost_hour,cost_halfday,cost_fullday) "
         ."VALUES "
@@ -232,7 +181,7 @@ END;
         .")";
     #echo "action: '$q' attempting";
     if (!mysql_query($q)) die(mysql_error());
-    echo "<div class='sql'>action: '$q' successful</div>";
+    echoSQL($q);
   }
 
 ?> 

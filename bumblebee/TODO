@@ -1,34 +1,29 @@
 $Id$
 
-masquerade => cookie
+user auth => sessions
+masquerade => sessions
+
+session.use_only_cookies
+session.cookie_lifetime
+$string = strip_tags($string, '<a><b><i><u>'
+
+$_SERVER['PHP_SELF']
+
+Objects for forms... (date, time, simple string)
+
+INPUT VALIDATION (do this through objects?)
 
 check for noise in error logs
 
-calendar zoom view < and > butons
-
 use redirect header to react to override action= 
 
+divs => table cells for calendar
 
-cookies for auth (function setcookie)
-remove all "buttons"
-use links (using PATHINFO?) for non form submit actions
-if(isset($PATH_INFO)) {
-     $viewcode = explode('/', $PATH_INFO);
-       $num = count($viewcode);
-       if($num % 2 == 0) {
-           $viewcode[] = '';
-           $num++;
-       }
-       for($i = 1; $i < $num; $i += 2) {
+hour => halfday => fullday from costs table
 
-           $$viewcode[$i] = $viewcode[$i+1];
+15minute granularity on time objects.
 
-         }
-   }
-
-$arr = explode('/', $PATH_INFO);
-$_SERVER['PATH_INFO']
-list($first, $last) = explode('/', substr($PATH_INFO,1));
+log book reporting
 
 locking on making bookings
 locking of records while editing?
@@ -36,6 +31,8 @@ locking of records while editing?
 permit deletion of instrument classes
 
 allow user to change password
+radius authentication (encapsulate user stuff better)
+
 
 escape SQL input for bad characters. esp '. (magic_quotes_gpc solves this?)
 escape HTML in output?

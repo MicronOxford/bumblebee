@@ -201,13 +201,13 @@
     echo "deleting user data<br />";
     $q = "DELETE FROM users WHERE id='$gpid'";
     if (!mysql_query($q)) die(mysql_error());
-    echo "<div class='sql'>action: '$q' successful</div>";
+    echoSQL($q, 1);
     $q = "DELETE FROM userprojects WHERE userid='$gpid'";
     if (!mysql_query($q)) die(mysql_error());
-    echo "<div class='sql'>action: '$q' successful</div>";
+    echoSQL($q, 1);
     $q = "DELETE FROM permissions WHERE userid='$gpid'";
     if (!mysql_query($q)) die(mysql_error());
-    echo "<div class='sql'>action: '$q' successful</div>";
+    echoSQL($q, 1);
   }
 
   function insertuser()
@@ -220,7 +220,7 @@
         ."'".$_POST['editusername']."','".$_POST['name']."','".md5($_POST['passwd'])."','".$_POST['email']."','".$_POST['phone']."','".$_POST['suspended']."','".$_POST['isadmin']."'"
         .")";
     if (!mysql_query($q)) die(mysql_error());
-    echo "<div class='sql'>action: '$q' successful</div>";
+    echoSQL($q,1);
     $newuserid = mysql_insert_id();
     updateuserprojects($newuserid);
     updateuserpermissions($newuserid);
@@ -242,7 +242,7 @@
     #echo "SQL='$q'";
     #echo "<br />now run the query<br />";
     if (!mysql_query($q)) die(mysql_error());
-    echo "<div class='sql'>action: '$q' successful</div>";
+    echoSQL($q,1);
     updateuserprojects($gpid);
     updateuserpermissions($gpid);
   }
@@ -278,7 +278,7 @@
         } elseif ($action == "remove") {
           $q="DELETE FROM userprojects WHERE userid='$id' AND projectid='$proj'";
         }
-        echo "Projects: $q<br />";
+        echoSQL($q, "Projects");
         if (!mysql_query($q)) die(mysql_error());
       }
     }
@@ -288,7 +288,7 @@
     $q="UPDATE userprojects SET isdefault='0' WHERE userid='$id'";
     if (!mysql_query($q)) die(mysql_error());
     $q="UPDATE userprojects SET isdefault='1' WHERE userid='$id' AND projectid='$default'";
-    echo "Default projects $q<br />";
+    echoSQL($q, "Default projects");
     if (!mysql_query($q)) die(mysql_error());
   }
 
@@ -343,10 +343,10 @@
         } elseif ($action == "remove") {
           $q="DELETE FROM permissions where userid='$id' AND instrid='$instrid'";
         }
-        echo "<div class='sql'>Permissions: '$q' successful</div>";
+        echoSQL($q, 1);
         if (!mysql_query($q)) die(mysql_error());
       }
     }
-    echo "<div class='sql'>Note that the UPDATE queries may not have been necessary</div>";
+    echoSQL("Note that the UPDATE queries may not have been necessary");
   }
 ?> 

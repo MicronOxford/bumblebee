@@ -121,7 +121,7 @@ function insertInstruments() {
       ."'".$_POST['name']."','".$_POST['longname']."','".$_POST['location']."','$class'"
       .")";
   if (!mysql_query($q)) die(mysql_error());
-  echo "<div class='sql'>action: '$q' successful</div>";
+  echoSQL($q, 1);
 }
 
 function updateInstruments($gpid) {
@@ -133,7 +133,7 @@ function updateInstruments($gpid) {
       ."class='".$class."' "
       ."WHERE id='$gpid'";
   if (!mysql_query($q)) die(mysql_error());
-  echo "<div class='sql'>action: '$q' successful</div>";
+  echoSQL($q, 1);
 }
 
 function checkClassInfo() {
@@ -149,7 +149,7 @@ function checkClassInfo() {
 function createNewInstrumentClass() {
   $q = "INSERT INTO instrumentclass (name) VALUES ('".$_POST['newclassname']."')";
   if (!mysql_query($q)) die(mysql_error());
-  echo "<div class='sql'>action: '$q' successful</div>";
+  echoSQL($q, 1);
   $class = mysql_insert_id();
   return $class;
 }

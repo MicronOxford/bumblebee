@@ -59,13 +59,12 @@
           ."comments='".$_POST['comments']."', "
           ."log='".$_POST['log']."'"
           .$qf;
-      echo "<div class='sql'>$q</div>";
+      echoSQL($q);
       $sql = mysql_query($q);
       if (! $sql) die (mysql_error());
       echo "<h2>Booking made</h2>";
-      $_POST['action'] = 'view';
-      $_POST['zoom']   = $_POST['date'];
-      actionView();
+      $_POST['isodate']   = $_POST['date'];
+      actionRestart("view");
     }
   }
 
@@ -103,12 +102,11 @@
 
   function deleteBooking() {
     $q = "DELETE FROM bookings WHERE id='".$_POST['booking']."'";
-    echo "<div class='sql'>$q</div>";
+    echoSQL("<div class='sql'>$q</div>");
     $sql = mysql_query($q);
     if (! $sql) die (mysql_error());
     echo "<h2>Booking deleted</h2>";
-    $_POST['action'] = 'view';
-    $_POST['zoom']   = $_POST['date'];
-    actionView();
+    $_POST['isodate']   = $_POST['date'];
+    actionRestart("view");
   }
 ?>

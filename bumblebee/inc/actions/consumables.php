@@ -96,7 +96,7 @@ END;
   {
     $q = "DELETE FROM consumables WHERE id='$gpid'";
     if (!mysql_query($q)) die(mysql_error());
-    echo "<div class='sql'>action: '$q' successful</div>";
+    echoSQL($q, 1);
   }
 
   function insertconsumable()
@@ -108,7 +108,7 @@ END;
         ."'".$_POST['name']."','".$_POST['longname']."','".$_POST['cost']."'"
         .")";
     if (!mysql_query($q)) die(mysql_error());
-    echo "<div class='sql'>action: '$q' successful</div>";
+    echoSQL($q, 1);
   }
 
   function updateconsumable($gpid)
@@ -122,7 +122,7 @@ END;
     #echo "SQL='$q'";
     #echo "<br />now run the query<br />";
     if (!mysql_query($q)) die(mysql_error());
-    echo "<div class='sql'>action: '$q' successful</div>";
+    echoSQL($q, 1);
   }
 
 ?> 

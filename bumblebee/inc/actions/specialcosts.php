@@ -94,8 +94,10 @@
       <input type='hidden' name='project' value='$proj' />
     </td></tr>
     </table>
-    <div class='sql'>Looked up existing data using:<br /> $q<br />$qc<br />$qs</div>
 END;
+    echoSQL($q);
+    echoSQL($qc);
+    echoSQL($qs);
   }
 
   function specialCostListing($i, $gs) {
@@ -133,9 +135,9 @@ END;
         ."instrid='".$_POST["cost$i-iid"]."'";
         #."WHERE projectid='$proj' AND instrid='".$_POST["cost$i-iid"]."'";
     if (!mysql_query($qc)) die(mysql_error());
-    echo "<div class='sql'>action: '$qc' successful</div>";
+    echoSQL($qc, 1);
     if (!mysql_query($qpr)) die(mysql_error());
-    echo "<div class='sql'>action: '$qpr' successful</div>";
+    echoSQL($qpr, 1);
   }
 
   function insertspecialsinglerate($proj,$i) {
@@ -146,20 +148,20 @@ END;
         ."'".$_POST["cost$i-ch"]."','".$_POST["cost$i-chd"]."','".$_POST["cost$i-cfd"]."'"
         .")";
     if (!mysql_query($qc)) die(mysql_error());
-    echo "<div class='sql'>action: '$qc' successful</div>";
+    echoSQL($qc, 1);
     $cost=mysql_insert_id();
     $qpr = "INSERT INTO projectrates SET "
         ."rate='$cost', "
         ."projectid='$proj', "
         ."instrid='".$_POST["cost$i-iid"]."'";
     if (!mysql_query($qpr)) die(mysql_error());
-    echo "<div class='sql'>action: '$qpr' successful</div>";
+    echoSQL($qpr, 1);
   }
 
   function deletespecialsinglerate($proj,$i) {
     $q = "DELETE FROM stdrates WHERE category='$gpid'";
     if (!mysql_query($q)) die(mysql_error());
-    echo "<div class='sql'>action: '$q' successful</div>";
+    echoSQL($q, 1);
   }
 
 ?> 

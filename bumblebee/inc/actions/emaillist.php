@@ -72,6 +72,6 @@
     while ($g = mysql_fetch_array($sql)) {
       echo $g['email'] ."<br />";
     }
-    echo "<div class='sql'>action: '$q' successful</div>";
+    echoSQL($q, 1);
   }
 ?> 

@@ -144,7 +144,7 @@ END;
   function deleteproject($gpid) {
     $q = "DELETE FROM projects WHERE id='$gpid'";
     if (!mysql_query($q)) die(mysql_error());
-    echo "<div class='sql'>action: '$q' successful</div>";
+    echoSQL($q, 1);
   }
 
   function insertproject() {
@@ -156,7 +156,7 @@ END;
         ."'".$_POST['name']."','".$_POST['longname']."','$class'"
         .")";
     if (!mysql_query($q)) die(mysql_error());
-    echo "<div class='sql'>action: '$q' successful</div>";
+    echoSQL($q, 1);
     $prid = mysql_insert_id();
     updategroupproject($prid);
   }
@@ -171,9 +171,9 @@ END;
     }
     $insert = substr($insert,0,-1);  #cut off the final comma!
     if (!mysql_query($delete)) die(mysql_error());
-    echo "<div class='sql'>action: '$delete' successful</div>";
+    echoSQL($delete, 1);
     if (!mysql_query($insert)) die(mysql_error());
-    echo "<div class='sql'>action: '$insert' successful</div>";
+    echoSQL($insert, 1);
   }
 
   function updateproject($prid) {
@@ -185,8 +185,8 @@ END;
         ."WHERE id='$prid'";
     
     if (!mysql_query($update)) die(mysql_error());
-    echo "<div class='sql'>action: '$update' successful</div>";
-     updategroupproject($prid);
+    echoSQL($update, 1);
+    updategroupproject($prid);
   }
 
 function checkUserClassInfo() {
@@ -202,7 +202,7 @@ function checkUserClassInfo() {
 function createNewUserClass() {
   $q = "INSERT INTO userclass (name) VALUES ('".$_POST['newclassname']."')";
   if (!mysql_query($q)) die(mysql_error());
-  echo "<div class='sql'>action: '$q' successful</div>";
+  echoSQL($q,1);
   $class = mysql_insert_id();
   return $class;
 }

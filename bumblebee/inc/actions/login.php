@@ -4,13 +4,15 @@
 
 function printLoginForm() {
 ?>
+  <h2>Login required</h2>
+  <p>Please login to view or book instrument usage</p>
   <table>
   <tr>
-    <td>username:</td>
+    <td>Username:</td>
     <td><input name="username" type="text" size="16" /></td>
   </tr>
   <tr>
-    <td>password:</td>
+    <td>Password:</td>
     <td><input name="pass" type="password" size="16" /></td>
   </tr>
   <tr>
@@ -22,18 +24,31 @@ function printLoginForm() {
 }
 
 function actionLogout() {
+  global $BASEURL;
   #logout();
-?>
-  <h2>Successfully logged out</h2>
-  <p>Thank you for using BABS!</p>
-<?
+  ?>
+    <h2>Successfully logged out</h2>
+    <p>Thank you for using BABS!</p>
+    <p>(<a href='<?=$BASEURL?>/'>login</a>)</p>
+  <?
 }
 
 function isLoggedIn() {
+  global $ISLOGGEDIN;
+  return $ISLOGGEDIN;
+}
+
+function checkLogin() {
+  global $ISLOGGEDIN;
+  $ISLOGGEDIN = loginInfoOK();
+}
+
+function loginInfoOK() {
   #return false if we require a login
   #if credentials are OK then return true
   global $ERRORMSG;
   global $USERNAME, $UID, $EPASS, $ISADMIN;
+
   # first, we need to determine if we are actually logged in or not
   # if we are not logged in, the the action *has* to be 'login'
 
@@ -117,10 +132,12 @@ function isLoggedIn() {
 }
 
 function logout() {
+  global $ISLOGGEDIN;
   #set the cookie to null value AND set the expiry time to one hour ago
   #to force the cookie to be invalidated for our purposes and cleared
   #from the browser's cache
   setcookie("auth", "", time()-3600, "/");
+  $ISLOGGEDIN = false;
 }
 
 function setLoginCookie() {
