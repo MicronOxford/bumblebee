@@ -37,8 +37,8 @@ class ActionListing {
       "masquerade=Masquerade as another user",
       "costs=Edit standard costs",
       "specialcosts=Edit or create special charges",
-      "bookmeta=Points system and booking controls",
-      "adminconfirm=Booking confirmation",
+      #"bookmeta=Points system and booking controls",
+      #"adminconfirm=Booking confirmation",
       "emaillist=Email lists",
       "billing=Prepare billing summaries"
     );

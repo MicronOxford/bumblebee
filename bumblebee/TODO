@@ -1,5 +1,7 @@
 $Id$
 
+permit user change passwd
+
 locking of records when editing?
 
 zoom out link

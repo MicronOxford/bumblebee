@@ -45,13 +45,13 @@ class ActionInstruments extends ActionAction {
 
   function selectInstruments() {
     global $BASEURL;
-    $groupselect = new AnchorTableList("Instrument", "Select which instrument to view");
-    $groupselect->connectDB("instruments", array("id", "name", "longname"));
-    $groupselect->list->prepend(array("-1","Create new instrument"));
-    $groupselect->hrefbase = "$BASEURL/instruments/";
-    $groupselect->setFormat("id", "%s", array("name"), " %s", array("longname"));
+    $select = new AnchorTableList("Instrument", "Select which instrument to view");
+    $select->connectDB("instruments", array("id", "name", "longname"));
+    $select->list->prepend(array("-1","Create new instrument"));
+    $select->hrefbase = "$BASEURL/instruments/";
+    $select->setFormat("id", "%s", array("name"), " %s", array("longname"));
     #echo $groupselect->list->text_dump();
-    echo $groupselect->display();
+    echo $select->display();
   }
 
   function deleteInstruments()   {

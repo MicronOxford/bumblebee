@@ -6,7 +6,7 @@
 
 include_once 'login.php';
 include_once 'view.php';
-include_once 'book.php';
+#include_once 'book.php';
 
 #admin functions
 //include_once 'adminmenu.php';

@@ -47,7 +47,7 @@ $pagetitle = $action->title . ' - ' . $CONFIG['main']['SiteTitle'];
 
 //FIXME
 include_once 'adminmenu.php';
-include_once 'masquerade.php';
+include_once 'action/masquerade.php';
 
 include 'theme/pageheader.php';
 include 'theme/contentheader.php';

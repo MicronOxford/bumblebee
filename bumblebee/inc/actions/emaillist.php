@@ -3,16 +3,39 @@
 # return a list of the email addresses depending on what we've been asked
 # for... e.g. per instrument for the "announce" list.
 
-  function actionEmaillist()
-  {
-    if (! isset($_POST['selectlist'])) {
-      selectlists();
+include_once 'inc/dbforms/checkbox.php';
+include_once 'inc/dbforms/checkboxtablelist.php';
+include_once 'action/actionaction.php';
+
+class ActionEmailList extends ActionAction {
+
+  function ActionEmailList($auth, $pdata) {
+    parent::ActionAction($auth, $pdata);
+    $this->mungePathData();
+  }
+
+  function go() {
+    if (! isset($this->PD['selectlist'])) {
+      $this->selectLists();
     } else {
-      returnlists();
+      $this->returnLists();
     }
   }
 
-  function selectlists() {
+  function selectLists() {
+    global $BASEURL;
+    $select = new CheckBoxTableList("Instrument", "Select which instrument to view");
+    $announce = new CheckBox('announce', 'Announce');
+    $select->addCheckBox($unbook);
+    $unbook = new CheckBox('unbook', 'Unbook');
+    $select->addCheckBox($unbook);
+    $select->connectDB("instruments", array("id", "name", "longname"));
+    $select->setFormat("id", "%s", array("name"), " %s", array("longname"));
+    #echo $groupselect->list->text_dump();
+    echo $select->display();
+  }
+
+  function selectlistsold() {
     echo "<h2>Please select the email lists to return</h2>";
     $q = "SELECT DISTINCT * "
         ."FROM instruments "
@@ -46,7 +69,7 @@
     }
   }
 
-  function returnlists() {
+  function returnLists() {
     $q = "SELECT DISTINCT users.email "
         ."FROM permissions "
         ."LEFT JOIN users ON users.id=permissions.userid "
@@ -74,4 +97,5 @@
     }
     echoSQL($q, 1);
   }
+}
 ?> 
