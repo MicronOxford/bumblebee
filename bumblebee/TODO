@@ -1,5 +1,14 @@
 $Id$
 
+masquerade => cookie
+
+check for noise in error logs
+
+calendar zoom view < and > butons
+
+use redirect header to react to override action= 
+
+
 cookies for auth (function setcookie)
 remove all "buttons"
 use links (using PATHINFO?) for non form submit actions

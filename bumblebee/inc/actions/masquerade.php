@@ -11,9 +11,10 @@
     } elseif ($_POST['user'] >= 0) {
       echo "<input type='hidden' name='masquerade' value='".$_POST['user']."' />";
     }
-    actionMain();
+    actionRestart("");
   }
 
+  ### FIXME this is broken. needs to become cookies
   function checkMasquerade() {
     global $MASQUID, $MASQUSER;
     #displayPost();
@@ -23,7 +24,7 @@
       echo "<div class='masquerade'>"
           ."Masquerading as ".$MASQUSER[1] ." (" .$MASQUSER[0] .") ";
       echo "<input type='hidden' name='masquerade' value='".$_POST['masquerade']."' />";
-      echo "<button type='submit' name='changemasq' value='1'>Change Masquerade</button>";
+      #echo "<button type='submit' name='changemasq' value='1'>Change Masquerade</button>";
       echo "</div>";
     }
   }
