@@ -1,6 +1,6 @@
 <?php
 # $Id$
-# record consumables usage
+# record consumables usage on a per-use basis
 
 include_once 'inc/consumableuse.php';
 include_once 'inc/consumable.php';
