@@ -17,12 +17,12 @@ class Group extends DBRow {
     $attrs = array('size' => "48");
     $f->setAttr($attrs);
     $f->required = 1;
-    $f->isInvalidTest = "is_empty_string";
+    $f->isInvalidTest = "is_nonempty_string";
     $this->addElement($f);
     $f = new TextField("longname", "");
     $f->setAttr($attrs);
     $f->required = 1;
-    $f->isInvalidTest = "is_empty_string";
+    $f->isInvalidTest = "is_nonempty_string";
     $this->addElement($f);
     $f = new TextField("addr1", "Address 1");
     $f->setAttr($attrs);
@@ -45,7 +45,7 @@ class Group extends DBRow {
     $f = new TextField("email", "email");
     $f->setAttr($attrs);
     $f->required = 1;
-    $f->isInvalidTest = "is_not_email_format";
+    $f->isInvalidTest = "is_email_format";
     $this->addElement($f);
     $f = new TextField("fax", "Fax");
     $f->setAttr($attrs);

@@ -13,7 +13,7 @@ class DBO {
   var $fields;
   var $editable = 0, 
       $changed = 0,
-      $invalid = 0,
+      $isvalid = 0,
       $suppressValidation = 0;
   var $dumpheader = "DBO object";
   var $fatal_sql = 1;

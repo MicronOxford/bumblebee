@@ -24,31 +24,40 @@ function qw($v) {
   return "'$v'";
 }
 
-function is_empty_string($v) {
+function is_nonempty_string($v) {
   #echo "'val=$v' ";
-  return (strlen($v) == 0);
+  return !(strlen($v) == 0);
 }
 
-function is_no_choice_set($v) {
+function choice_set($v) {
   #echo "'val=$v' ";
-  return ($v == NULL || $v == "");
+  return !($v == NULL || $v == "");
 }
 
-function is_invalid_radiochoice($v) {
+function is_valid_radiochoice($v) {
   #echo "'val=$v' ";
-  return (is_no_choice_set($v) || $v <= 0);
+  return (choice_set($v) && $v > 0);
 }
 
-function is_not_email_format($v) {
+function is_email_format($v) {
   #echo "'val=$v' ";
   $pattern = "/^\w.+\@[A-Z_\-]+\.[A-Z_\-]/i";
-  return (! preg_match($pattern, $v));
+  return (preg_match($pattern, $v));
 }
 
-function is_not_number($v) {
+function is_number($v) {
   #echo "'val=$v' ";
-  return (! (is_int($v) || is_float($v)));
+  return (is_int($v) || is_float($v));
 }
+
+function sum_is_100($vs) {
+  $sum=0;
+  foreach ($vs as $k => $v) {
+    $sum += $v;
+  }
+  return ($sum == 100);
+}
+
 
 /*
 echo "<pre>qw test\n";

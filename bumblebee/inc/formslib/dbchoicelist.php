@@ -11,6 +11,7 @@ class DBList extends DBO {
   var $editable = 0,
       $changed = 0;
   var $list;
+  var $length;
 
   function DBList($table, $fields="", $restriction="1",
                   $order="name", $idfield='id', $limit="") {
@@ -37,6 +38,7 @@ class DBList extends DBO {
       while ($g = mysql_fetch_array($sql)) {
         $this->list[] = $g; #['key']] = $g['value'];
       }
+      $this->length = count($this->list);
       return 1;
     }
   }
@@ -67,14 +69,19 @@ class DBList extends DBO {
   }
 
   function update($newval, $data) {
-    #echo "List update: ";
+    // ###### FIXME: this function is fundamentally broken at the moment
+    // ###### top priority fix!
+    echo "List update: ";
+    echo "(changed=$this->changed)";
+    echo "(id=$this->id)";
     if (isset($newval)) {
-      #echo "set '$newval'";
+      echo "set '$newval'";
       if ($this->id != $newval || $this->id < 0) {
         $this->changed += 1;
         $this->id = $newval;
       }
     }
+    echo "(changed=$this->changed)";
     #because we are a selection list, if we have changed, then we
     #may need to sync() and then fill() to make sure we are all there for the
     #next viewing and for sync() of the main object
@@ -85,22 +92,26 @@ class DBList extends DBO {
         preDump($v);
         if (isset($v['_field']) && $v['_field'] != "") {
           $this->list[$k]['_field']->update($data);
-          $this->invalid += $this->list[$k]['_field']->isinvalid();
+          $this->isvalid += $this->list[$k]['_field']->isvalid();
         }
       }
       #echo "Syncing<br />";
-      if (! $this->invalid) {
+      if ($this->isvalid) {
         $this->sync();
         //FIXME this means that the "Create new:" or whatever field is lost
         $this->fill();
       }
     }
-    return $this->invalid;
+    return $this->isvalid;
+  }
+
+  function set($value) {
+    $this->id = $value;
   }
 
   function sync() {
     #returns false on success
-    if ($this->changed && ! $this->invalid) {
+    if ($this->changed && $this->isvalid) {
       $vals = $this->_sqlvals();
       if ($this->id != -1) {
         #it's an existing record, but we don't make changes to

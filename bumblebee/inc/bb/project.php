@@ -6,7 +6,7 @@ include_once 'dbrow.php';
 include_once 'textfield.php';
 include_once 'radiolist.php';
 include_once 'droplist.php';
-include_once 'multilist.php';
+include_once 'joindata.php';
 
 class Project extends DBRow {
   
@@ -19,12 +19,12 @@ class Project extends DBRow {
     $f = new TextField("name", "Name");
     $attrs = array('size' => "48");
     $f->required = 1;
-    $f->isInvalidTest = "is_empty_string";
+    $f->isInvalidTest = "is_nonempty_string";
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new TextField("longname", "");
     $f->required = 1;
-    $f->isInvalidTest = "is_empty_string";
+    $f->isInvalidTest = "is_nonempty_string";
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new RadioList("defaultclass", "Default charging band");
@@ -38,19 +38,20 @@ class Project extends DBRow {
     $f->list->append(array("-1","Create new: "), $newchargename);
     $f->setAttr($attrs);
     $f->required = 1;
-    $f->isInvalidTest = "is_invalid_radiochoice";
+    $f->isInvalidTest = "is_valid_radiochoice";
     $this->addElement($f);
-    $f = new MultiList("projectgroups",
+    $f = new JoinData("projectgroups",
                        "projectid", $this->id, 
-                       "groups", "Group membership");
+                       "groups", "Group membership (%)");
+    $groupfield = new DropList("groupid", "Group");
+    $groupfield->connectDB("groups", array("id", "name"));
+    $groupfield->list->prepend(array("-1","(none)"));
+    $groupfield->setFormat("id", "%s", array("name"), " (%s)", array("longname"));
+    $f->addElement($groupfield);
     $percentfield = new TextField("grouppc", "");
-    $percentfield->isInvalidTest = "is_not_number";
-    $f->addElement($percentfield);
-    $controlfield = new DropList("groupid", "Group");
-    $controlfield->connectDB("groups", array("id", "name"));
-    $controlfield->list->prepend(array("-1","(none)"));
-    $controlfield->setFormat("id", "%s", array("name"), " (%s)", array("longname"));
-    $f->controlField($controlfield, "groupid", array('total' => 3));
+    $percentfield->isInvalidTest = "is_number";
+    $f->addElement($percentfield, "sum_is_100");
+    $f->joinSetup("groupid", array('total' => 3));
     $this->addElement($f);
     $this->fill();
     $this->dumpheader = "Project object";

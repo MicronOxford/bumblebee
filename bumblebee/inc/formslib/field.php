@@ -13,12 +13,12 @@ class Field {
       $ovalue;
   var $editable = -1, 
       $changed = 0,
-      $invalid = 0,
+      $isvalid = 0,
       $suppressValidation = -1;
   var $attr,
       $errorclass = "error";
   var $namebase;
-  var $isInvalidTest = "isset";
+  var $isValidTest = "isset";
 
   function Field($name, $longname="", $description="") {
     $this->name = $name;
@@ -42,7 +42,7 @@ class Field {
     return $this->changed;
   }
 
-  function isinvalid() {
+  function isvalid() {
     /*
     echo "<br />";
     echo $this->name .":". $this->isInvalidTest.":";
@@ -50,19 +50,20 @@ class Field {
     echo "$this->suppressValidation";
     echo "req=$this->required";
     */
+    $this->isvalid = 1;
     if ($this->required) {
-      $this->invalid = ! (isset($this->value) && $this->value != "");# ? 0 : 1;
+      $this->isvalid = (isset($this->value) && $this->value != "");
     }
-    if (! $this->invalid && 
-        isset($this->isInvalidTest) && is_callable($this->isInvalidTest) 
+    if ($this->isvalid && 
+        isset($this->isValidTest) && is_callable($this->isValidTest) 
         && $this->suppressValidation == 0) {
       #echo "checking ";
-      $validator = $this->isInvalidTest;
+      $validator = $this->isValidTest;
       #$this->invalid = $this->id == -1 && $validator($this->value);
-      $this->invalid = $validator($this->value);
-      #echo ($this->invalid ? "INVALID" : "VALID");
+      $this->isvalid = $validator($this->value);
+      #echo ($this->isvalid ? "VALID" : "INVALID");
     }
-    return $this->invalid;
+    return $this->isvalid;
   }
 
   function set($value) {
@@ -79,7 +80,7 @@ class Field {
   function text_dump() {
     $t  = "$this->name =&gt; $this->value ";
     $t .= ($this->editable ? "(editable)" : "(read-only)");
-    $t .= ($this->invalid ? "(invalid)" : "");
+    $t .= ($this->isvalid ? "" : "(invalid)");
     $t .= "\n";
     return $t;
   }

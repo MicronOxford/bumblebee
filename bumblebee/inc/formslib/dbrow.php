@@ -15,14 +15,14 @@ class DBRow extends DBO {
   }
 
   function update($data) {
-    #echo "Looking for updates: ";
+    echo "Looking for updates: ";
     #echo "<pre>".print_r($data,1),"</pre>";
     if ($this->id == -1) {
       $anychanges = 0;
       foreach ($this->fields as $k => $v) {
         if ($k != $this->idfield) {
           $anychanges += (isset($data["$this->namebase$k"]));
-          #echo "$k:anychanges = $anychanges<br />";
+          echo "$k:anychanges = $anychanges<br />";
         }
       }
       if (!$anychanges) {
@@ -30,19 +30,19 @@ class DBRow extends DBO {
       }
     }
     foreach ($this->fields as $k => $v) {
-      #echo "Check $k";
-      #echo "ov:".$this->fields[$k]->value;
+      echo "Check $k";
+      echo "ov:".$this->fields[$k]->value;
       $this->changed += $this->fields[$k]->update($data);
-      #echo "nv:".$this->fields[$k]->value;
+      echo "nv:".$this->fields[$k]->value."<br />";
       if (! $this->newObject) {
-        $this->invalid += $this->fields[$k]->isinvalid();
+        $this->isvalid += $this->fields[$k]->isvalid();
       }
     }
   }
 
   function sync() {
     #returns false on success
-    if ($this->changed && ! $this->invalid) {
+    if ($this->changed && $this->isvalid) {
       $vals = $this->_sqlvals();
       if ($this->id != -1) {
         #it's an existing record, so update

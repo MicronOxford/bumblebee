@@ -53,7 +53,7 @@ class ChoiceList extends Field {
   }
 
   function displayInTable($cols) {
-    $errorclass = ($this->invalid ? "class='inputerror'" : "");
+    $errorclass = ($this->isvalid ? "" : "class='inputerror'");
     $t = "<tr $errorclass><td>$this->description</td>\n"
         ."<td title='$this->description'>";
     if ($this->editable) {
@@ -84,6 +84,11 @@ class ChoiceList extends Field {
     #echo $this->list->id;
     #echo " (nv: $this->value)";
     return $this->changed;
+  }
+
+  function set($value) {
+    $this->list->set($value);
+    Field::set($value);
   }
 
 } // class ChoiceList
