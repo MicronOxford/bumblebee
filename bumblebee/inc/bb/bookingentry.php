@@ -1,0 +1,183 @@
+<?php
+# $Id$
+# Booking object
+
+include_once 'dbforms/dbrow.php';
+include_once 'dbforms/textfield.php';
+include_once 'dbforms/droplist.php';
+include_once 'dbforms/referencefield.php';
+include_once 'dbforms/dummyfield.php';
+
+include_once 'calendar.php';
+
+class BookingEntry extends DBRow {
+  
+  function BookingEntry($id, $auth, $instrumentid, $ip, $start, $duration) {
+    $isadmin = $auth->isSystemAdmin() || $auth->isInstrumentAdmin($instrumentid);
+    if ($id > 0 && $isadmin) {
+      $row = quickSQLSelect('bookings', 'id', $id);
+      $euid = $row['userid'];
+    } else {
+      $euid = $auth->getEUID();
+    }
+    $this->DBRow('bookings', $id);
+    $this->editable = 1;
+    $f = new TextField('id', 'Booking ID');
+    $f->editable = 0;
+    $f->duplicateName = 'bookid';
+    $this->addElement($f);
+    $f = new ReferenceField('instrument', 'Instrument');
+    $f->extraInfo('instruments', 'id', 'name');
+    $f->duplicateName = 'instrid';
+    $f->defaultValue = $instrumentid;
+    $this->addElement($f);
+    $f = new TextField('bookwhen', 'Start (YYYY-MM-DD HH:MM)');
+    $attrs = array('size' => '48');
+    $f->required = 1;
+    $f->defaultValue = $start;
+    $f->isInvalidTest = 'is_valid_datetime';
+    $f->setAttr($attrs);
+    $this->addElement($f);
+    #FIXME: granularity, lose :SS at least!
+    $f = new TextField('duration', 'Duration (HH:MM)');
+    $f->required = 1;
+    $f->isInvalidTest = 'is_valid_time';
+    $f->defaultValue = $duration;
+    $f->setAttr($attrs);
+    $this->addElement($f);
+    # FIXME restrict this to available projects
+    $f = new DropList('projectid', 'Project');
+    $f->connectDB('projects', 
+                  array('id', 'name', 'longname'), 
+                  'userid='.qw($euid),
+                  'name', 
+                  'id', 
+                  NULL, 
+                  array('userprojects'=>'projectid=id'));
+    # FIXME can we truncate longname in some way? %15.15s?
+    $f->setFormat('id', '%s', array('name'), ' (%s)', array('longname'));
+    $this->addElement($f);
+    $f = new TextField('comments', 'Comments');
+    $f->setAttr($attrs);
+    $this->addElement($f);
+    $f = new TextField('log', 'Log');
+    $f->setAttr($attrs);
+    $this->addElement($f);
+    $f = new ReferenceField('userid', 'User');
+    $f->extraInfo('users', 'id', 'name');
+    $f->value = $euid;
+    $this->addElement($f);
+    $f = new ReferenceField('bookedby', 'Recorded by');
+    $f->extraInfo('users', 'id', 'name');
+    $f->value = $auth->uid;
+    $f->editable = $isadmin;
+    $f->hidden = !$isadmin;
+    $this->addElement($f);
+    /*$f = new CheckBox('ishalfday', 'Half-day booking');
+    $f->editable = $isadmin;
+    $f->hidden = !$isadmin;
+    $this->addElement($f);
+    $f = new CheckBox('isfullday', 'Full-day booking');
+    $f->editable = $isadmin;
+    $f->hidden = !$isadmin;
+    $this->addElement($f);*/
+    $f = new TextField('discount', 'Discount (%)');
+    $f->isInvalidTest = 'is_number';
+    $f->defaultValue = '0';
+    $f->editable = $isadmin;
+    $f->hidden = !$isadmin;
+    $f->setAttr($attrs);
+    $this->addElement($f);
+    $f = new TextField('ip', 'Computer IP');
+    $f->value = $ip;
+    $f->editable = 0;
+    $this->addElement($f);
+    $this->fill();
+    $this->dumpheader = 'Booking entry object';
+    $f = new DummyField('edit');
+    $f->value = '1';
+    $this->addElement($f);
+  }
+  
+  /** 
+   * override the default update() method with a custom one that allows us to
+   * munge the start and finish times to fit in with the permitted granularity
+  **/
+  function update($data) {
+    parent::update($data);
+    if ($this->changed) {
+      $this->_checkGranularity();
+    }
+    return $this->changed;
+  }
+
+  /** 
+   * override the default checkValid() method with a custom one that also checks that the
+   * booking is permissible (i.e. the instrument is indeed free)
+  **/
+  function checkValid() {
+    parent::checkValid();
+    if ($this->isValid) {
+      $this->_checkIsFree();
+    }
+    return $this->isValid;
+  }
+
+  function display() {
+    return $this->displayAsTable();
+  }
+
+  function displayAsTable() {
+    $t = "<table class='tabularobject'>";
+    foreach ($this->fields as $k => $v) {
+      $t .= $v->displayInTable(2);
+    }
+    $t .= "</table>";
+    return $t;
+  }
+  
+  /**
+   * check that the booking slot is indeed free before booking it
+   * FIXME: this is still a race condition!
+  **/
+  function _checkIsFree() {
+    #preDump($this);
+    $instrument = $this->fields['instrument']->getValue();
+    $start = $this->fields['bookwhen']->getValue();
+    $d = new SimpleDate($start,1);
+    $d->addTime(new SimpleTime($this->fields['duration']->getValue(),1));
+    $stop = $d->datetimestring;
+    $q = 'SELECT id, bookwhen, duration, '
+        .'DATE_ADD( bookwhen, INTERVAL duration HOUR_SECOND ) AS stoptime '
+        .'FROM bookings '
+        .'WHERE instrument='.qw($instrument).' '
+        .'AND id<>'.qw($this->id).' '
+        .'HAVING (bookwhen <= '.qw($start).' AND stoptime > '.qw($start).') '
+        .'OR (bookwhen < '.qw($stop).' AND stoptime >= '.qw($stop).') '
+        .'OR (bookwhen >= '.qw($start).' AND stoptime <= '.qw($stop).')';
+    $row = db_get_single($q, $this->fatal_sql);
+    if (is_array($row)) {
+      // then the booking actually overlaps another!
+      $this->isValid = 0;
+      $this->errorMessage = "Sorry, the instrument is not free at this time";
+      echo $this->errorMessage;
+      preDump($row);
+    }
+  }
+
+  /**
+   * munge the entered data so that it fits into the granularity required
+  **/
+  function _checkGranularity() {
+    $row = quickSQLSelect('instruments', 'id', $this->fields['instrument']->getValue());
+    $g = new SimpleTime($row['granularity'],1);
+    $start = new SimpleDate($this->fields['bookwhen']->getValue(),1);
+    $start->floorTime($g);
+    $this->fields['bookwhen']->set($start->datetimestring);
+    $duration = new SimpleTime($this->fields['duration']->getValue(),1);
+    $duration->ceilTime($g);
+    $this->fields['duration']->set($duration->timestring);
+  }
+
+  
+} //class BookingEntry
