@@ -47,7 +47,7 @@ class Booking extends TimeSlot {
   function display($displayAdmin, $displayOwner) {
     return $this->displayInTable(2, $displayAdmin, $displayOwner);
   }
-
+  
   function displayInTable($cols, $displayAdmin, $displayOwner) {
     /*
     $bookinglength = "";
@@ -87,8 +87,8 @@ class Booking extends TimeSlot {
   }
 
   function generateBookingTitle() {
-    return 'Booking from '. $this->start->datetimestring
-         .' - '. $this->stop->datetimestring;
+    return 'Booking from '. $this->original->start->datetimestring
+         .' - '. $this->original->stop->datetimestring;
   }
 
 } //class Booking

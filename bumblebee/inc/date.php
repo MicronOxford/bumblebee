@@ -12,13 +12,23 @@ class SimpleDate {
   var $datetimestring = '';
 
 
-  function SimpleDate($time, $type=0) {
+/*  function SimpleDate($time, $type=0) {
     #echo "New SimpleDate: $time, $type<br />";
     if ($type) {
       $this->setStr($time);
     } else {
       $this->setTicks($time);
     }
+  }*/
+  function SimpleDate($time) {
+    #echo "New SimpleDate: $time, $type<br />";
+    if (is_numeric($time)) {
+      $this->setTicks($time);
+    } elseif (is_a($time, 'SimpleDate')) {
+      $this->setTicks($time->ticks);
+    } else {
+      $this->setStr($time);
+    } 
   }
 
   function setStr($s) {
@@ -125,14 +135,15 @@ class SimpleDate {
   }
 
   function setTime($s) {
-    #echo $this->datetimestring.'-'.$this->ticks.'/'.$s.'<br/>';
+//     echo $this->dump().$s.'<br/>';
     $this->dayRound();
-    #echo $this->datetimestring.'-'.$this->ticks.'<br/>';
-    $time = new SimpleTime($s,1);
-    #echo $time->timestring.'-'.$time->ticks.'<br/>';
-    $this->addTime($time);
-    ##echo $this->datetimestring.'-'.$this->ticks.'<br/>';
-  }
+//     echo $this->dump().'<br/>';
+    $time = new SimpleTime($s);
+//     echo $time->dump().'<br/>';
+    $this->addTimeParts($time->part('s'), $time->part('i'), $time->part('H'), 0,0,0);
+//     echo $this->dump().'<br/>';
+    return $this;
+  }  
     
 
   function min($t) {
@@ -170,7 +181,16 @@ class SimpleDate {
    * 0 == Sunday, 6 == Saturday
   **/
   function dow() {
-    return date('w', $date->ticks);
+    return date('w', $this->ticks);
+  }
+  
+  /**
+   * dump the datetimestring and ticks in a readable format
+  **/
+  function dump($html=1) {
+    $s = 'ticks = ' . $this->ticks . ', ' . $this->datetimestring;
+    $s .= ($html ? '<br />' : '') . "\n";
+    return $s;
   }
   
 } // class SimpleDate
@@ -180,12 +200,22 @@ class SimpleTime {
   var $timestring = '';
   var $ticks = '';
 
-  function SimpleTime($time, $type=0) {
+/*  function SimpleTime($time, $type=0) {
     #echo "New SimpleTime: $time, $type<br />";
     if ($type) {
       $this->setStr($time);
     } else {
       $this->setTicks($time);
+    }
+  }*/
+  function SimpleTime($time) {
+    #echo "New SimpleTime: $time, $type<br />";
+    if (is_numeric($time)) {
+      $this->setTicks($time);
+    } elseif (is_a($time, 'SimpleTime')) {
+      $this->setTicks($time->ticks);
+    } else {
+      $this->setStr($time);
     }
   }
 
@@ -285,6 +315,14 @@ class SimpleTime {
     $this->_setStr();
   }
   
+  /**
+   * dump the timestring and ticks in a readable format
+  **/
+  function dump($html=1) {
+    $s = 'ticks = ' . $this->ticks . ', ' . $this->timestring;
+    $s .= ($html ? '<br />' : '') . "\n";
+    return $s;
+  }
 } // class SimpleTime
 
 ?> 

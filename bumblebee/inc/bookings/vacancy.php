@@ -24,7 +24,7 @@ class Vacancy extends TimeSlot {
   function display() {
     return $this->displayInTable();
   }
-
+  
   function displayInTable() {
     return '<tr><td>Vacant'
             .'</td><td>'.$this->start->datetimestring
@@ -33,19 +33,26 @@ class Vacancy extends TimeSlot {
             .'</td></tr>'."\n";
   }
 
-  function displayCellDetails() {
+  function displayCellDetails($isadmin=0) {
+//     preDump(debug_backtrace());
     global $BASEPATH;
-    $startticks = $this->start->ticks;
-    $stopticks = $this->stop->ticks;
     $t = '';
-    $t .= "<div style='float:right;'><a href='$this->href/$startticks-$stopticks' class='but' title='Make booking'><img src='$BASEPATH/theme/images/book.png' alt='Make booking' class='calicon' /></a></div>&nbsp;";
+    if ($isadmin || ! $this->isDisabled) {
+      $startticks = $this->start->ticks;
+      $stopticks = $this->stop->ticks;
+      $t .= "<div style='float:right;'><a href='$this->href/$startticks-$stopticks' class='but' title='Make booking'><img src='$BASEPATH/theme/images/book.png' alt='Make booking' class='calicon' /></a></div>&nbsp;";
+    }
     return $t;
   }
 
   function generateBookingTitle() {
     $t = '';
-    $t .= 'Vacancy from '. $this->start->datetimestring
-         .' - '. $this->stop->datetimestring;
+    if ($this->isDisabled) {
+      $t .= 'Unavailable from ';
+    } else {
+      $t .= 'Vacancy from ';
+    }
+    $t .= $this->start->datetimestring .' - '. $this->stop->datetimestring;
     return $t;
   }
 

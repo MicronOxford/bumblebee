@@ -17,22 +17,25 @@ class Calendar {
   var $instrument;
   var $fatal_sql = 1;
   var $bookinglist;
+  var $_bvlist;
   var $href = '';
   var $dayClass = '';
   var $todayClass = '';
   var $rotateDayClass = '';
   var $rotateDayClassDatePart = '';
   var $timeslots;
+  var $isAdminView=0;
   
-  var $DEBUG_CAL = 0;
+  var $DEBUG_CAL = 0;    // 0 to turn off debug logging, 10 to turn on all debug logging
   
   function Calendar($start, $stop, $instrument) {
     $this->start = $start;
     $this->stop  = $stop;
     $this->instrument = $instrument;
-    $this->log("Creating calendar from $start->datestring to $stop->datestring");
+    $this->log("Creating calendar from $start->datestring to $stop->datestring", 5);
     $this->_fill();
-    $this->_normalise();
+    $this->_insertVacancies();
+    $this->_breakAcrossDays();
   }
 
   function setOutputStyles($class, $today, $day, $dayrotate='m') {
@@ -44,6 +47,9 @@ class Calendar {
   
   function setTimeSlotPicture($pic) {
     $this->timeslots = new TimeSlotRule($pic);
+    //break bookings over the predefined pictures
+    $this->log('Breaking up bookings according to defined rules');
+    $this->_breakAccordingToList($this->timeslots);
   }
 
   function _fill() {
@@ -67,19 +73,16 @@ class Calendar {
    *   23:59 on 2004-01-02, but there was only a booking from 10:00 to 11:00
    *   on 2004-01-01, then we should create vacancy pseudo-bookings from
    *   2004-01-01-00:00 to 2004-01-01-10:00 and from
-   *   2004-01-01-11:00 to 2004-01-01-23:59 and from
-   *   2004-01-02-00:00 to 2004-01-02-23:59.
-   *
-   * Actually, 24:00 will be used rather than 23:59 as it makes more
-   * sense within the scope of non-overlapping bookings.
+   *   2004-01-01-11:00 to 2004-01-01-24:00 and from
+   *   2004-01-02-00:00 to 2004-01-02-24:00.
    *
    * Bookings are NOT restricted to remaining on one day (i.e. a booking from
    * 20:00:00 until 10:00:00 the next day is OK.
    *
   **/
-  function _normalise() {
+  function _insertVacancies() {
     $this->numDays = $this->stop->partDaysBetween($this->start);
-    $this->log("Creating calendar for $this->numDays days");
+    $this->log("Creating calendar for $this->numDays days", 5);
     //blat over the booking list so we can create the normalised list
     $bookings = $this->bookinglist;
     $this->bookinglist = array();
@@ -89,7 +92,7 @@ class Calendar {
     $v->setTimes($this->stop,$this->stop);
     $bookings[] = $v;
     
-    //First: insert a vacancy between each non-consecutive booking
+    //insert a vacancy between each non-consecutive booking
     $bvlist = array();
     $booking = 0;
     $now = $this->start;
@@ -103,29 +106,52 @@ class Calendar {
         $bvlist[] = $v;
         $now = $stoptime;
         $this->log('Created vacancy: '.$v->start->datetimestring
-                  .' to '.$v->stop->datetimestring);
+                  .' to '.$v->stop->datetimestring, 9);
       } else {
         // then this is the current timeslot
         $bvlist[] = $bookings[$booking];
         $now = $bookings[$booking]->stop;
         $this->log('Included booking: '.
                 $bookings[$booking]->start->datetimestring .' to '
-               .$bookings[$booking]->stop->datetimestring);
+               .$bookings[$booking]->stop->datetimestring, 9);
         $booking++;
       }
     }
+    $this->bookinglist = $bvlist;
+  }
     
-    $this->log('Breaking up bookings');
-    //Second: break bookings over day boundaries
+  /**
+   * Break up bookings that span days (for display purposes only)
+   *
+   * For example:
+   *
+   *   If we had a vacancy pseudo-bookings from
+   *     2004-01-01-11:00 to 2004-01-02-24:00, then we would 
+   *   break it up into two bookings as follows:
+   *     2004-01-01-11:00 to 2004-01-01-24:00 and 
+   *     2004-01-02-00:00 to 2004-01-02-24:00.
+   *
+  **/
+  function _breakAcrossDays() {
+    $this->log('Breaking up bookings across days');
+    //break bookings over day boundaries
+    $daylist = new TimeSlotRule('[0-6]<00:00-24:00/*>');
+    $this->_breakAccordingToList($daylist);
+    
+    
+/*  OLD VERSION OF DAY BREAK CODE
+    $bl = $this->bookinglist;
+    $this->bookinglist = array();
+    $this->log('Breaking up bookings according to list');
     $booking=0;
-    for ($bv=0; $bv < count($bvlist); $bv++) {
+    for ($bv=0; $bv < count($bl); $bv++) {
       $this->log('considering booking #'.$bv);
-      $cbook = $bvlist[$bv];
+      $cbook = $bl[$bv];
       $cbook->original = $cbook;     
-      $today = $bvlist[$bv]->start; $today->dayRound();
+      $today = $bl[$bv]->start; $today->dayRound();
       do {  //until the current booking has been broken up across day boundaries(
-        $this->log('start='.$bvlist[$bv]->start->datetimestring
-              .' stop='.$bvlist[$bv]->stop->datetimestring);
+        $this->log('start='.$bl[$bv]->start->datetimestring
+              .' stop='.$bl[$bv]->stop->datetimestring);
         $this->bookinglist[$booking] = $cbook;
         $tomorrow = $today; $tomorrow->addDays(1); $tomorrow->dayRound();
         $this->bookinglist[$booking]->start->max($today);
@@ -134,8 +160,72 @@ class Calendar {
         $booking++;
       } while ($this->bookinglist[$booking-1]->original->stop->ticks > $tomorrow->ticks);
     }
+ */
   }
 
+  /**
+   * Break up bookings that span elements of a defined list (e.g. allowable times or 
+   * days). A TimeSlotRule ($list) is used to define how the times should be broken up
+  **/
+  function _breakAccordingToList($list) {
+    $bl = $this->bookinglist;
+    $this->bookinglist = array();
+    $this->log('Breaking up bookings according to list');
+    $this->log($list->dump());
+    $booking=0;
+    for ($bv=0; $bv < count($bl); $bv++) {
+      $this->log('considering timeslot #'.$bv.': '
+                      .$bl[$bv]->start->datetimestring.' - '.$bl[$bv]->stop->datetimestring, 8);
+      $cbook = $bl[$bv];
+      $cbook->original = $cbook;  
+      $start = $list->findSlotStart($bl[$bv]->start);
+      if ($start == 0) {
+        // then the original start time must be outside the proper limits
+        $start = $list->findNextSlot($bl[$bv]->start);
+      }
+      do {  //until the current booking has been broken up across list boundaries
+        $this->log('ostart='.$bl[$bv]->start->datetimestring 
+              .' ostop='.$bl[$bv]->stop->datetimestring, 10);
+        $stop  = $list->findSlotStop($start);
+        $this->log('cstart='.$start->datetimestring
+              .' cstop='.$stop->datetimestring, 10);
+//         $this->log('cstart='.$start->datetimestring);
+//         $this->log(' cstop='.$stop->datetimestring, 10);
+        $this->bookinglist[$booking] = $cbook;
+        
+        // while PHP's handling of methods is broken, we have to this as a two-step operation:
+        // all we want to do is:
+        //    $this->bookinglist[$booking]->start->max($start);
+        // but that causes the start property to change from and Object to an &Object (see a var_dump)
+        // see http://bugs.php.net/bug.php?id=24485 and http://bugs.php.net/bug.php?id=30787
+        $newstart = $this->bookinglist[$booking]->start;
+        $newstart->max($start);
+        $this->bookinglist[$booking]->start = $newstart;
+
+        //...and again:          
+        //$this->bookinglist[$booking]->stop->min($stop);
+        $newstop = $this->bookinglist[$booking]->stop;
+        $newstop->min($stop);
+        $this->bookinglist[$booking]->stop = $newstop;
+        
+        $this->bookinglist[$booking]->isDisabled = $list->slotDisabled($start);
+        
+        $this->log('sstart='.$this->bookinglist[$booking]->start->datetimestring
+              .' sstop='.$this->bookinglist[$booking]->stop->datetimestring, 10);
+        $start = $list->findNextSlot($start);
+        $booking++;
+        $this->log('oticks='.$this->bookinglist[$booking-1]->original->stop->ticks
+                   .'nticks='.$start->ticks,10);
+        $this->log('nextstart='.$start->datetimestring,10);
+        $this->log('');
+      } while ($this->bookinglist[$booking-1]->original->stop->ticks > $start->ticks);
+    }
+//     echo "<pre>";
+//     var_dump($this->bookinglist);
+//     echo "</pre>";
+  }
+
+  
   /**
    * Generate a booking matrix for all the days we are interested in
   **/
@@ -144,7 +234,7 @@ class Calendar {
     for ($day = 0; $day < $this->numDays; $day++) {
       $today = $this->start;
       $today->addDays($day);
-      $matrix = new bookingMatrix($daystart, $daystop, $today, 
+      $matrix = new BookingMatrix($daystart, $daystop, $today, 
                                         $granularity, $this->bookinglist);
       $matrix->prepareMatrix();
       $matrixlist[] = $matrix;
@@ -169,7 +259,7 @@ class Calendar {
     $t = "<table class='tabularobject'>";
     foreach ($this->bookinglist as $k => $v) {
       #$t .= '<tr><td>'.$v[0].'</td><td>'.$v[1].'</td></tr>'."\n";
-      $t .= $v->display();
+      $t .= $v->displayShort();
     }
     $t .= "</table>";
     return $t;
@@ -238,13 +328,15 @@ class Calendar {
       for ($day=0; $day<7; $day++) {
         $current = $weekstart;
         $current->addDays($day);
-        $currentidx = $current->daysBetween($this->start);
+        $currentidx = $current->dsDaysBetween($this->start);
         if (isset($matrix[$currentidx]->rows[$dayRow])) {
           #$t .= '<td>';
           #preDump($matrix[$currentidx]->rows[$dayRow]);
           $b =& $matrix[$currentidx]->rows[$dayRow];
           $class = $this->_getDayClass($today, $b->booking->start);
-          $t .= "\n\t".$b->display($class, $this->href)."\n";
+          $class .= ($b->booking->isDisabled ? ' disabled' : '');
+          //echo "$class <br />\n";
+          $t .= "\n\t".$b->display($class, $this->href, $this->isAdminView)."\n";
           #$t .= '</td>';
         }
       }
@@ -299,7 +391,7 @@ class Calendar {
         #preDump($matrix[$currentidx]->rows[$dayRow]);
         $b =& $matrix[0]->rows[$row];
         $class = $this->_getDayClass($today, $b->booking->start);
-        $t .= "\n\t".$b->display($class, $this->href)."\n";
+        $t .= "\n\t".$b->display($class, $this->href, $this->isAdminView)."\n";
         #$t .= '</td>';
       }
       $t .= '</tr>';

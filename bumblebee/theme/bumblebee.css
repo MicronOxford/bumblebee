@@ -310,6 +310,10 @@ th.caldow {
   /*background-color: #ccffcc;*/
 }
 
+.disabled {
+  background-color: #fff;
+}
+
 .booktimezoom .vacancy {
   background-color: #ccffcc;
   margin: 0;

@@ -33,7 +33,7 @@ class BookingMatrix {
       $bookDay->dayRound();
       if ($bookDay->ticks == $this->day->ticks) {
         $bookDayStart = $bookDay;
-        $bookDayStart->addTime($this->dayStart);
+        $bookDayStart->setTime($this->dayStart);
         $starttime = $b->start->subtract($bookDayStart);
         if ($starttime > 0) {
           //then the start of the booking is after the start time of the matrix
@@ -43,7 +43,7 @@ class BookingMatrix {
           $rowstart = 0;
         }
         $bookDayStop = $bookDay;
-        $bookDayStop->addTime($this->dayStop);
+        $bookDayStop->setTime($this->dayStop);
         $stoptime = $b->stop->subtract($bookDayStop);
         if ($stoptime < 0) {
           //the stop time is before the stop time of the matrix

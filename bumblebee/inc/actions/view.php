@@ -116,6 +116,7 @@ class ActionView extends ActionAction {
     #echo $cal->display();
     $href=$BASEURL.'/view/'.$this->PD['instrid'];
     $cal->href=$href;
+    $cal->isAdminView = $this->auth->isSystemAdmin() || $this->auth->isInstrumentAdmin($this->PD['instrid']);
     $cal->setOutputStyles('', $CONFIG['calendar']['todaystyle'], 
                 preg_split('/\//',$CONFIG['calendar']['monthstyle']), 'm');
     echo $this->_linksForwardBack($href,"/o=".($offset-28),"","/o=".($offset+28));
@@ -144,10 +145,13 @@ class ActionView extends ActionAction {
     # FIXME: get this from the instrument table?
     $daystart    = new SimpleTime('00:00:00',1);
     $daystop     = new SimpleTime('23:59:59',1);
+    $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
+    $cal->setTimeSlotPicture($row['timeslotpicture']);
     $granularity = 15*60;
     #echo $cal->display();
     $href=$BASEURL.'/view/'.$this->PD['instrid'];
     $cal->href=$href;
+    $cal->isAdminView = $this->auth->isSystemAdmin() || $this->auth->isInstrumentAdmin($this->PD['instrid']);
     $cal->setOutputStyles('', 'caltoday', array('monodd', 'moneven'), 'm');
     echo $this->_linksForwardBack($href.'/', $start->datestring.'/o=-1', $today->datestring, $start->datestring.'/o=1');
     echo $cal->displayDayAsTable($daystart,$daystop,$granularity,4);
