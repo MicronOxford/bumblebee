@@ -41,6 +41,7 @@ class JoinData extends Field {
       $jtRightIDCol;
   var $protoRow,
       $rows;
+  var $colspan;
   var $format,
       $number;
   var $radioclass = "item";
@@ -112,7 +113,7 @@ class JoinData extends Field {
     #$errorclass = ($this->isValid ? "" : "class='inputerror'");
     $errorclass = '';
     for ($i=0; $i<$this->number; $i++) { 
-      $t .= "<tr $errorclass><td>\n";
+      $t .= "<tr $errorclass><td colspan='$this->colspan'>\n";
       #$t .= "FOO$i";
       $t .= $this->rows[$i]->displayInTable(2);
       $t .= "</td></tr>\n";
@@ -121,6 +122,7 @@ class JoinData extends Field {
   }
 
   function displayInTable($cols) {
+    //$cols += $this->colspan;
     $t = "<tr><td colspan='$cols'>$this->description</td></tr>\n";
     if ($this->editable) {
       $t .= $this->selectable();
@@ -163,7 +165,7 @@ class JoinData extends Field {
         ."WHERE $this->jtLeftIDCol=".qw($this->jtLeftID);
     #trigger_error("Stub function", E_USER_WARNING);
     $g = db_get_single($q);
-    preDump($g);
+    //preDump($g);
     return $g[0];
   }
 

@@ -13,9 +13,9 @@ $auth = new BumbleBeeAuth();
 #ALL is ready to roll now, start the output again.
 ob_end_flush();
 
-$VERBOSESQL;
-$nextaction="";
-$PDATA = array();
+#$VERBOSESQL;
+#$nextaction="";
+#$PDATA = array();
 
 include_once 'action/actionfactory.php';
 

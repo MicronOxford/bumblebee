@@ -49,6 +49,7 @@ class User extends DBRow {
     $projectfield->setFormat('id', '%s', array('name'), ' (%s)', array('longname'));
     $f->addElement($projectfield);
     $f->joinSetup('projectid', array('minspare' => 2));
+    $f->colspan = 2;
     $this->addElement($f);
 
     // association of users with instrumental permissions
@@ -78,6 +79,7 @@ class User extends DBRow {
     $f->addElement($bookPointsRecharge);
     */
     $f->joinSetup('instrid', array('minspare' => 2));
+    $f->colspan = 2;
     $this->addElement($f);
 
     $this->fill($id);

@@ -121,7 +121,7 @@ class ChoiceList extends Field {
       $this->changed = $this->list->changed;
       $this->isValid = $this->list->isValid;
     }
-    echo "ChoiceList::Update->isValid= $this->isValid";
+    if ($this->DEBUG) echo "ChoiceList::Update->isValid= $this->isValid";
     #Field::set($this->list->id);
     #echo $this->list->id;
     #echo " (nv: $this->value)";
@@ -142,7 +142,7 @@ class ChoiceList extends Field {
     * This permits two rounds of checks on the data to be performed.
    **/
   function isValid() {
-    echo "ChoiceList::isValid=$this->isValid";
+    if ($this->DEBUG) echo "ChoiceList::isValid=$this->isValid";
     return $this->isValid && Field::isValid();
   }
 

@@ -23,7 +23,7 @@ class ActionAction {
       $this->PD['id'] = $this->PDATA[1];
     }
     #$PD['defaultclass'] = 12;
-    echo "<pre>".print_r($this->PD,true)."</pre>";
+    echoData($this->PD);
   }
 
 } //class ActionAction

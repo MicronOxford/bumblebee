@@ -19,8 +19,7 @@ class TextField extends Field {
       $t .= $this->selectable();
     } else {
       if (!$this->hidden) $t .= xssqw($this->value);
-      $t .= "<input type='hidden' name='$this->namebase$this->name' "
-           ."value='".xssqw($this->value)."' />";
+      $t .= $this->hidden();
     }
     if ($this->duplicateName) {
       $t .= "<input type='hidden' name='$this->duplicateName' "
@@ -41,6 +40,11 @@ class TextField extends Field {
     $t .= (isset($this->attr['maxlength']) ? "maxlength='".$this->attr['maxlength']."' " : "");
     $t .= "/>";
     return $t;
+  }
+  
+  function hidden() {
+    return "<input type='hidden' name='$this->namebase$this->name' "
+           ."value='".xssqw($this->value)."' />";
   }
 
 } // class TextField

@@ -28,7 +28,7 @@ class DBRow extends DBO {
   var $restriction = '';
   var $recStart = '',
       $recNum   = '';
-  var $DEBUG = 1;
+  var $DEBUG = 0;
   
   function DBRow($table, $id, $idfield='id') {
     $this->DBO($table, $id, $idfield);
@@ -51,7 +51,7 @@ class DBRow extends DBO {
     $this->newObject = 1;
     foreach ($this->fields as $k => $v) {
       if ($k != $this->idfield && isset($data[$this->namebase.$k])) {
-        echo "I AM NOT NEW $k:changed<br />";
+        if ($this->DEBUG) echo "I AM NOT NEW $k:changed<br />";
         $this->newObject = 0;
         break;
       }
@@ -59,8 +59,8 @@ class DBRow extends DBO {
   
     // check each field in turn to allow it to update its data
     foreach ($this->fields as $k => $v) {
-      if ($this->DEBUG) echo "Check $k ov:".$this->fields[$k]->value;
-      echo '('.$this->fields[$k]->useNullValues .'/'. $this->newObject.')';
+      if ($this->DEBUG) echo "Check $k ov:".$this->fields[$k]->value
+                            .'('.$this->fields[$k]->useNullValues .'/'. $this->newObject.')';
       if (!($this->fields[$k]->useNullValues && $this->newObject)) {
         $this->changed += $this->fields[$k]->update($data);
       }

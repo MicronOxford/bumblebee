@@ -69,7 +69,7 @@ class ActionView extends ActionAction {
         echo "I don't know what to do with that data!";
       }
     }
-    preDump($this->PD);
+    echoData($this->PD);
   }
 
   function selectInstrument() {
@@ -171,7 +171,7 @@ class ActionView extends ActionAction {
   function editCreateBooking($bookid, $start, $duration) {
     global $BASEURL;
     $ip = $this->auth->getRemoteIP();
-    echo $ip;
+    //echo $ip;
     $booking = new BookingEntry($bookid,$this->auth,$this->PD['instrid'],$ip, $start, $duration);
     $booking->update($this->PD);
     $booking->checkValid();

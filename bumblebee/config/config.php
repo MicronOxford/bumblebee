@@ -8,6 +8,7 @@ $BASEPATH   = $CONFIG['main']['BasePath'];
 $BASEURL    = $CONFIG['main']['BaseURL'];
 
 $VERBOSESQL = $CONFIG['error_handling']['VerboseSQL'];
+$VERBOSEDATA = $CONFIG['error_handling']['VerboseData'];
 
 ini_set("session.use_only_cookies",1); #don't permit ?PHPSESSID= stuff
 #ini_set("session.cookie_lifetime",60*60*1); #login expires after x seconds

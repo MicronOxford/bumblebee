@@ -65,7 +65,7 @@ class ActionConsume extends ActionAction {
       }
     }
     #$PD['defaultclass'] = 12;
-    preDump($this->PD);
+    echoData($this->PD);
   }
 
   function selectConsumeUser() {

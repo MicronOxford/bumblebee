@@ -32,7 +32,7 @@ class Field {
       $errorclass = "error";
   var $namebase;
   var $isValidTest = "isset";
-  var $DEBUG = 1;
+  var $DEBUG = 0;
 
   function Field($name, $longname="", $description="") {
     $this->name = $name;

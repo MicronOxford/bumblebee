@@ -14,6 +14,13 @@ function preDump($v) {
   echo "</pre>\n";
 }
 
+function echoData($v) {
+  global $VERBOSEDATA;
+  if ($VERBOSEDATA) {
+    preDump($v);
+  }
+}
+
 
 function is_alphabetic($var) {
   return preg_match("/^\w+$/", $var);
