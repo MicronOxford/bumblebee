@@ -5,34 +5,28 @@
 include_once 'inc/group.php';
 include_once 'inc/dbforms/anchortablelist.php';
 
-  function actionGroup() {
+class ActionGroup extends ActionAction  {
+
+  function ActionGroup($auth, $pdata) {
+    parent::ActionAction($auth, $pdata);
+    $this->mungePathData();
+  }
+
+  function go() {
     global $BASEURL;
-    $PD = groupMungePathData();
-    if (! isset($PD['id'])) {
-      selectgroup();
-    } elseif (isset($PD['delete'])) {
-      deleteGroup($PD['id']);
+    if (! isset($this->PD['id'])) {
+      $this->selectgroup();
+    } elseif (isset($this->PD['delete'])) {
+      $this->deleteGroup($this->PD['id']);
     } else {
-      editGroup($PD);
+      $this->editGroup();
     }
     echo "<br /><br /><a href='$BASEURL/groups'>Return to group list</a>";
   }
 
-  function groupMungePathData() {
-    global $PDATA;
-    $PD = array();
-    foreach ($_POST as $k => $v) {
-      $PD[$k] = $v;
-    }
-    if (isset($PDATA[1])) {
-      $PD['id'] = $PDATA[1];
-    }
-    return $PD;
-  }
-
-  function editGroup($PD) {
-    $group = new Group($PD['id']);
-    $group->update($PD);
+  function editGroup() {
+    $group = new Group($this->PD['id']);
+    $group->update($this->PD);
     $group->checkValid();
     $group->sync();
     #echo $group->text_dump();
@@ -62,8 +56,11 @@ include_once 'inc/dbforms/anchortablelist.php';
 
   function deletegroup($gpid)
   {
-    $q = "DELETE FROM groups WHERE id='$gpid'";
-    db_quiet($q,1);
-  }
+    $group = new Group($this->PD['id']);
+    $group->delete();
 
+    #$q = "DELETE FROM groups WHERE id='$gpid'";
+    #db_quiet($q,1);
+  }
+}
 ?> 

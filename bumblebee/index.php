@@ -17,12 +17,12 @@ $VERBOSESQL;
 $nextaction="";
 $PDATA = array();
 
-include_once 'actions.php';
-include_once 'determineaction.php';
+include_once 'action/actionfactory.php';
 
-$action = checkActions($auth);
-checkLogout($auth, $action);
+$action = new ActionFactory($auth);
+checkLogout($auth, $action);//FIXME??
 
+/*
 include_once 'login.php';
 include_once 'view.php';
 include_once 'book.php';
@@ -42,9 +42,12 @@ include_once 'adminconfirm.php';
 include_once 'emaillist.php';
 include_once 'billing.php';
 include_once 'unknownaction.php';
+*/
+$pagetitle = $action->title . ' - ' . $CONFIG['main']['SiteTitle'];
 
-$pagetitle = $actiontitles[$action] . ' - ' . $CONFIG['main']['SiteTitle'];
-
+//FIXME
+include_once 'adminmenu.php';
+include_once 'masquerade.php';
 
 include 'theme/pageheader.php';
 include 'theme/contentheader.php';
@@ -66,13 +69,13 @@ include 'theme/contentheader.php';
   }
   ?>
     <div class="content">
-      <form method="post" action="<?=$nextaction?>" >
+      <form method="post" action="<?=$action->nexthref?>" >
       <?
         #echo "decide what happens here: $action (". $act[$action] .")<br />";
         if (! $auth->isLoggedIn()) {
           echo $auth->loginError();
         }
-        performAction($auth, $action);
+        $action->go();//($auth, $action);
       ?>
       </form>
     </div>

@@ -135,22 +135,22 @@ class DBRow extends DBO {
   **/
   function delete() {
     // If the input isn't valid then bail out straight away
-    if (! ($this->changed && $this->isValid) ) {
+    //if (! ($this->changed && $this->isValid) ) {
       #echo "not deleting: changed=$this->changed valid=$this->isValid<br />";
-      return -1;
-    }
+      //return -1;
+    //}
     #echo "deleting: changed=$this->changed valid=$this->isValid<br />";
     $sql_result = -1;
     //obtain the *clean* parameter='value' data that has been SQL-cleansed
     //this will also trip any complex fields to sync
-    $vals = $this->_sqlvals();
-    if ($vals != "") {
+    //$vals = $this->_sqlvals();
+    //if ($vals != "") {
       $q = "DELETE FROM $this->table "
           ."WHERE $this->idfield=".qw($this->id)
           .(($this->restriction !== '') ? ' AND '.$this->restriction : '')
           ." LIMIT 1";
       $sql_result = db_quiet($q, $this->fatal_sql);
-    }
+    //}
     return $sql_result;
   }
 

@@ -8,67 +8,72 @@ include_once 'inc/bookingentryro.php';
 include_once 'inc/dbforms/anchortablelist.php';
 include_once 'inc/dbforms/date.php';
 
-  function actionView($auth) {
+class ActionView extends ActionAction {
+
+  function ActionView($auth, $PDATA) {
+    parent::ActionAction($auth, $PDATA);
+    $this->PD = $this->mungePathData();
+  }
+
+  function go() {
     global $BASEURL;
-    $PD = viewMungePathData();
-    if (! isset($PD['instrid'])
-          || $PD['instrid'] < 1
-          || $PD['instrid'] == '') {
-      viewSelectInstrument($PD, $auth);
-    } elseif (isset($PD['isodate'])) {
-      viewInstrumentDay($PD);
+    if (! isset($this->PD['instrid'])
+          || $this->PD['instrid'] < 1
+          || $this->PD['instrid'] == '') {
+      $this->selectInstrument();
+    } elseif (isset($this->PD['isodate'])) {
+      $this->instrumentDay();
       #FIXME need to make a proper return link
       echo "<br /><br /><a href='$BASEURL/'>Return to instrument list</a>";
-    } elseif (isset($PD['startticks']) && isset($PD['stopticks'])) {
-      viewCreateBooking($PD, $auth);
+    } elseif (isset($this->PD['startticks']) && isset($this->PD['stopticks'])) {
+      $this->createBooking();
       #FIXME need to make a proper return link
       echo "<br /><br /><a href='$BASEURL/'>Return to instrument list</a>";
-    } elseif (isset($PD['bookid']) && isset($PD['edit'])) {
-      viewEditBooking($PD, $auth);
+    } elseif (isset($this->PD['bookid']) && isset($this->PD['edit'])) {
+      $this->editBooking();
       #FIXME need to make a proper return link
       echo "<br /><br /><a href='$BASEURL/'>Return to instrument list</a>";
-    } elseif (isset($PD['bookid'])) {
-      viewBooking($PD, $auth);
+    } elseif (isset($this->PD['bookid'])) {
+      $this->booking();
       #FIXME need to make a proper return link
       echo "<br /><br /><a href='$BASEURL/'>Return to instrument list</a>";
-    } elseif (isset($PD['instrid'])) {
-      viewInstrumentMonth($PD);
+    } elseif (isset($this->PD['instrid'])) {
+      $this->instrumentMonth();
       echo "<br /><br /><a href='$BASEURL/'>Return to instrument list</a>";
     } else {
       # shouldn't get here
     }
   }
 
-  function viewMungePathData() {
-    global $PDATA;
-    $PD = array();
+  function mungePathData() {
+    $this->PD = array();
     foreach ($_POST as $k => $v) {
-      $PD[$k] = $v;
+      $this->PD[$k] = $v;
     }
-    if (isset($PDATA[1])) {
-      $PD['instrid'] = $PDATA[1];
+    if (isset($this->PDATA[1])) {
+      $this->PD['instrid'] = $this->PDATA[1];
     }
-    for ($i=2; isset($PDATA[$i]); $i++) {
-      if (preg_match("/o=(-?\d+)/", $PDATA[$i], $m)) {
-        $PD['caloffset'] = $m[1];
-      } elseif (preg_match("/\d\d\d\d-\d\d-\d\d/", $PDATA[$i], $m)) {
-        $PD['isodate'] = $PDATA[$i];
-      } elseif (preg_match("/(\d+)-(\d+)/", $PDATA[$i], $m)) {
-        $PD['startticks'] = $m[1];
-        $PD['stopticks'] = $m[2];
-      } elseif (preg_match("/(\d+)/", $PDATA[$i], $m)) {
-        $PD['bookid'] = $m[1];
-      } elseif (preg_match("/edit/", $PDATA[$i], $m)) {
-        $PD['edit'] = 1;
+    for ($i=2; isset($this->PDATA[$i]); $i++) {
+      if (preg_match("/o=(-?\d+)/", $this->PDATA[$i], $m)) {
+        $this->PD['caloffset'] = $m[1];
+      } elseif (preg_match("/\d\d\d\d-\d\d-\d\d/", $this->PDATA[$i], $m)) {
+        $this->PD['isodate'] = $this->PDATA[$i];
+      } elseif (preg_match("/(\d+)-(\d+)/", $this->PDATA[$i], $m)) {
+        $this->PD['startticks'] = $m[1];
+        $this->PD['stopticks'] = $m[2];
+      } elseif (preg_match("/(\d+)/", $this->PDATA[$i], $m)) {
+        $this->PD['bookid'] = $m[1];
+      } elseif (preg_match("/edit/", $this->PDATA[$i], $m)) {
+        $this->PD['edit'] = 1;
       } else {
         echo "I don't know what to do with that data!";
       }
     }
-    preDump($PD);
-    return $PD;
+    preDump($this->PD);
+    return $this->PD;
   }
 
-  function viewSelectInstrument($PD, $auth) {
+  function selectInstrument() {
     global $BASEURL;
     $instrselect = new AnchorTableList("Instrument", "Select which instrument to view");
     $instrselect->connectDB("instruments", array("id", "name", "longname"));
@@ -77,13 +82,13 @@ include_once 'inc/dbforms/date.php';
     echo $instrselect->display();
   }
 
-  function viewInstrumentMonth($PD) {
+  function instrumentMonth() {
     global $BASEURL;
     global $CONFIG;
     # FIXME: get this from a configuration table or file?
     #Show a window 6 weeks long starting 2 weeks before the current date
     #Displayed week starts on Monday
-    $offset = issetSet($PD, 'caloffset');
+    $offset = issetSet($this->PD, 'caloffset');
     #$offset -= 8;
     $now = new SimpleDate(time());
     #$day = date("w Z", $now);
@@ -97,24 +102,24 @@ include_once 'inc/dbforms/date.php';
     $start->addDays($offset+1-7-$day);
     $stop = $start;
     $stop->addDays(7*6);
-    $cal = new Calendar($start, $stop, $PD['instrid']);
+    $cal = new Calendar($start, $stop, $this->PD['instrid']);
 
-    $row = quickSQLSelect('instruments', 'id', $PD['instrid']);
+    $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
     $daystart    = new SimpleTime($row['usualopen'],1);
     $daystop     = new SimpleTime($row['usualclose'],1);
     $granularity = $CONFIG['calendar']['granularity'];
     $timelines   = $CONFIG['calendar']['timelines'];
     #$granularity = 60*60;
     #echo $cal->display();
-    $href=$BASEURL.'/view/'.$PD['instrid'];
+    $href=$BASEURL.'/view/'.$this->PD['instrid'];
     $cal->href=$href;
     $cal->setOutputStyles('', $CONFIG['calendar']['todaystyle'], 
                 preg_split('/\//',$CONFIG['calendar']['monthstyle']), 'm');
-    echo viewLinksForwardBack($href,"/o=".$offset-28,"","/o=".$offset+28);
+    echo $this->_linksForwardBack($href,"/o=".($offset-28),"","/o=".($offset+28));
     echo $cal->displayMonthAsTable($daystart,$daystop,$granularity,$timelines);
   }
 
-  function viewLinksForwardBack($href, $back, $today, $forward) {
+  function _linksForwardBack($href, $back, $today, $forward) {
     return '<div style="text-align:center">'
         .'<a href="'.$href.$back.'">&laquo; earlier</a> | '
         .'<a href="'.$href.$today.'">today</a> | '
@@ -122,33 +127,33 @@ include_once 'inc/dbforms/date.php';
         .'</div>';
   }
 
-  function viewInstrumentDay($PD) {
+  function instrumentDay() {
     global $BASEURL;
-    $start = new SimpleDate($PD['isodate'],1);
+    $start = new SimpleDate($this->PD['isodate'],1);
     $start->dayRound();
-    $offset = issetSet($PD, 'caloffset');
+    $offset = issetSet($this->PD, 'caloffset');
     $start->addDays($offset);
     $stop = $start;
     $stop->addDays(1);
     $today = new SimpleDate(time());
-    $cal = new Calendar($start, $stop, $PD['instrid']);
+    $cal = new Calendar($start, $stop, $this->PD['instrid']);
 
     # FIXME: get this from the instrument table?
     $daystart    = new SimpleTime('00:00:00',1);
     $daystop     = new SimpleTime('23:59:59',1);
     $granularity = 15*60;
     #echo $cal->display();
-    $href=$BASEURL.'/view/'.$PD['instrid'];
+    $href=$BASEURL.'/view/'.$this->PD['instrid'];
     $cal->href=$href;
     $cal->setOutputStyles('', 'caltoday', array('monodd', 'moneven'), 'm');
-    echo viewLinksForwardBack($href.'/', $start->datestring.'/o=-1', $today->datestring, $start->datestring.'/o=1');
+    echo $this->_linksForwardBack($href.'/', $start->datestring.'/o=-1', $today->datestring, $start->datestring.'/o=1');
     echo $cal->displayDayAsTable($daystart,$daystop,$granularity,4);
   }
 
-  function viewCreateBooking($PD, $auth) {
-    $start = new SimpleDate($PD['startticks']);
-    $stop  = new SimpleDate($PD['stopticks']);
-    $row = quickSQLSelect('instruments', 'id', $PD['instrid']);
+  function createBooking() {
+    $start = new SimpleDate($this->PD['startticks']);
+    $stop  = new SimpleDate($this->PD['stopticks']);
+    $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
     $day = $start;
     $daystart = $day;
     $daystop = $day;
@@ -157,19 +162,19 @@ include_once 'inc/dbforms/date.php';
     $start->max($daystart);
     $stop->min($daystop);
     $duration = new SimpleTime($stop->subtract($start));
-    viewEditCreateBooking($PD, -1, $auth, $start->datetimestring, $duration->timestring);
+    $this->editCreateBooking(-1, $start->datetimestring, $duration->timestring);
   }
 
-  function viewEditBooking($PD, $auth) {
-    viewEditCreateBooking($PD, $PD['bookid'], $auth, -1, -1);
+  function editBooking() {
+    $this->editCreateBooking($this->PD['bookid'], -1, -1);
   }
 
-  function viewEditCreateBooking($PD, $bookid, $auth, $start, $duration) {
+  function editCreateBooking($bookid, $start, $duration) {
     global $BASEURL;
     $ip = getRemoteIP();
     echo $ip;
-    $booking = new BookingEntry($bookid,$auth,$PD['instrid'],$ip, $start, $duration);
-    $booking->update($PD);
+    $booking = new BookingEntry($bookid,$this->auth,$this->PD['instrid'],$ip, $start, $duration);
+    $booking->update($this->PD);
     $booking->checkValid();
     $booking->sync();
     #echo $group->text_dump();
@@ -181,20 +186,21 @@ include_once 'inc/dbforms/date.php';
       $submit = "Update booking";
       $delete = "Delete booking";
     }
-    #$submit = ($PD['id'] < 0 ? "Create new" : "Update entry");
+    #$submit = ($this->PD['id'] < 0 ? "Create new" : "Update entry");
     echo "<input type='submit' name='submit' value='$submit' />";
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
   }
 
-  function viewBooking($PD, $auth) {
+  function booking() {
     global $BASEURL;
-    $booking = new BookingEntryRO($PD['bookid']);
-    $isOwnBooking = $auth->isMe($booking->data->userid);
-    $isAdminView = $auth->isSystemAdmin() || $auth->isInstrumentAdmin($PD['instrid']);
+    $booking = new BookingEntryRO($this->PD['bookid']);
+    $isOwnBooking = $this->auth->isMe($booking->data->userid);
+    $isAdminView = $this->auth->isSystemAdmin() || $this->auth->isInstrumentAdmin($this->PD['instrid']);
     echo $booking->display($isAdminView, $isOwnBooking);
     if ($isOwnBooking || $isAdminView) {
-      echo "<p><a href='$BASEURL/view/".$PD['instrid'].'/'.$PD['bookid']."/edit'>Edit booking</a></p>\n";
+      echo "<p><a href='$BASEURL/view/".$this->PD['instrid'].'/'.$this->PD['bookid']."/edit'>Edit booking</a></p>\n";
     }
   }
 
+} // class ActionView
 ?> 
