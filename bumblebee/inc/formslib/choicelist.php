@@ -111,7 +111,7 @@ class ChoiceList extends Field {
     parent::update($data);
     $this->list->editable = $this->editable;
     $this->list->extendable = $this->extendable;
-    echo "ID=".$this->list->id;
+    #echo "ID=".$this->list->id;
     if ($this->changed) {
       // only update the list if things have changed
       $this->list->update($this->value, $data);
@@ -138,7 +138,7 @@ class ChoiceList extends Field {
     * This permits two rounds of checks on the data to be performed.
    **/
   function isValid() {
-    echo "ChoiceList::isValid=$this->isValid";
+    #echo "ChoiceList::isValid=$this->isValid";
     return $this->isValid && Field::isValid();
   }
 
@@ -149,7 +149,7 @@ class ChoiceList extends Field {
     * to then know our actual value (at last). 
    **/
   function sqlSetStr() {
-    echo "Choicelist::sqlSetStr";
+    #echo "Choicelist::sqlSetStr";
     $this->list->sync();
     $this->value = $this->list->id;
     #preDump($this);

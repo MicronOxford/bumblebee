@@ -51,7 +51,7 @@ class Field {
   function update($data) {
     if (isset($data["$this->namebase$this->name"])) {
       $newval = issetSet($data, "$this->namebase$this->name");
-      echo "$this->name, $this->value, $newval<br />\n";
+      #echo "$this->name, $this->value, $newval<br />\n";
       if ($this->editable) {
         // we ignore new values if the field is not editable
         if ($this->changed = ($this->value != $newval)) {
@@ -71,13 +71,13 @@ class Field {
    *     is there a validity test && is the data valid?
   **/
   function isValid() {
-    /**/
+    /*
     echo "<br />";
     echo $this->name .":". $this->isValidTest.":";
     echo is_callable($this->isValidTest);
     echo "$this->suppressValidation";
     echo "req=$this->required";
-    /**/
+    */
     $this->isValid = 1;
     if ($this->required) {
       $this->isValid = (isset($this->value) && $this->value != "");
@@ -85,7 +85,7 @@ class Field {
     if ($this->isValid && $this->suppressValidation == 0) {
       $this->isValid = ValidTester($this->isValidTest, $this->value);
     }
-    echo ($this->isValid ? "VALID" : "INVALID");
+    #echo ($this->isValid ? "VALID" : "INVALID");
     return $this->isValid;
   }
 

@@ -166,15 +166,17 @@ class DBChoiceList extends DBO {
    * $data, which is passed on to any appended or prepended fields.
    **/
   function update($newval, $data) {
+    /*
     echo "DBChoiceList update: ";
     echo "(changed=$this->changed)";
     echo "(id=$this->id)";
     echo "(newval=$newval)";
+    */
     if (isset($newval)) {
       //check to see if the newval is legal (does it exist on our choice list?)
       $isExisting = 0;
       foreach ($this->choicelist as $k => $v) {
-        echo "($isExisting:".$v['id'].":$newval)";
+        //echo "($isExisting:".$v['id'].":$newval)";
         if ($v['id'] == $newval && $v['id'] >= 0) {
           $isExisting = 1;
           break;
@@ -182,14 +184,14 @@ class DBChoiceList extends DBO {
       }
       if ($isExisting) {
         // it is a legal, existing value, so we adopt it 
-        echo "isExisting";
+        //echo "isExisting";
         $this->changed += ($newval != $this->id);
         $this->id = $newval;
         $this->isValid = 1;
         //isValid handling done by the Field that inherits it
       } elseif ($this->extendable) {
         // then it is a new value and we should accept it
-        echo "isExtending";
+        //echo "isExtending";
         $this->changed += 1;
         //$this->id = $newval;
         //If we are extending the list, then we should have a negative
@@ -198,24 +200,24 @@ class DBChoiceList extends DBO {
         //FIXME is this right? 
         $this->id = -1;
         foreach ($this->choicelist as $k => $v) {
-          preDump($v);
+          //preDump($v);
           if (isset($v['_field']) && $v['_field'] != "") {
             $this->choicelist[$k]['_field']->update($data);
             $this->isValid += $this->choicelist[$k]['_field']->isValid();
           }
         }
       } else {
-        echo "isInvalid";
+        #echo "isInvalid";
         // else, it's a new value and we should not accept it
         $this->isValid = 0;
       }
     }
-    echo " DBchoiceList::changed=$this->changed<br />";
+    #echo " DBchoiceList::changed=$this->changed<br />";
     return $this->isValid;
   }
 
   function set($value) {
-    echo "DBchoiceList::set = $value<br/>";
+    #echo "DBchoiceList::set = $value<br/>";
     $this->id = $value;
   }
 
@@ -227,7 +229,7 @@ class DBChoiceList extends DBO {
   function sync() {
     #preDump($this);
     if ($this->changed && $this->isValid) {
-      echo "Syncing...<br />";
+      //echo "Syncing...<br />";
       if ($this->id == -1) {
         //it's a new record, insert it
         $vals = $this->_sqlvals();
@@ -259,10 +261,10 @@ class DBChoiceList extends DBO {
   function selectedvalue() {
     $val = array();
     foreach ($this->choicelist as $k => $v) {
-      echo "H:$this->idfield, $k, $v, $this->id";
+      //echo "H:$this->idfield, $k, $v, $this->id";
       if ($v[$this->idfield] == $this->id) {
         foreach ($this->fields as $f) {
-          echo "G=$f";
+          //echo "G=$f";
           $val[] = $v[$f];
         }
       }
@@ -271,11 +273,11 @@ class DBChoiceList extends DBO {
   }
 
   function setDefault($val) {
-    echo "DBChoiceList::setDefault: $val";
+    //echo "DBChoiceList::setDefault: $val";
     if (isset($this->id) || $this->id < 0) {
       $this->id = $val;
     }
-    echo $this->id;
+    //echo $this->id;
   }
 
 } // class DBChoiceList

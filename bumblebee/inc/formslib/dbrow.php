@@ -38,7 +38,7 @@ class DBRow extends DBO {
    *  input data, and validate the data if appropriate
   **/
   function update($data) {
-    echo "<br/><br/>DBRow:$this->namebase.Looking for updates:<br />";
+    #echo "<br/><br/>DBRow:$this->namebase. Looking for updates:<br />";
     // First, check to see if this record is new
     if ($this->id == -1) {
       $this->insertRow = 1;
@@ -47,7 +47,7 @@ class DBRow extends DBO {
       $this->newObject = 1;
       foreach ($this->fields as $k => $v) {
         if ($k != $this->idfield && isset($data[$this->namebase.$k])) {
-          echo "$k:changed<br />";
+          #echo "$k:changed<br />";
           $this->newObject = 0;
           break;
         }
@@ -55,11 +55,11 @@ class DBRow extends DBO {
     }
     // check each field in turn to allow it to update its data
     foreach ($this->fields as $k => $v) {
-      echo "Check $k ";
-      echo "ov:".$this->fields[$k]->value;
+      #echo "Check $k ";
+      #echo "ov:".$this->fields[$k]->value;
       $this->changed += $this->fields[$k]->update($data);
-      echo "nv:".$this->fields[$k]->value." ";
-      echo "<br />";
+      #echo "nv:".$this->fields[$k]->value." ";
+      #echo "<br />";
     }
     #$this->checkValid();
     return $this->changed;
@@ -75,10 +75,10 @@ class DBRow extends DBO {
     // suppress validation
     foreach ($this->fields as $k => $v) {
       if (! $this->newObject) {
-        echo "Checking valid ".$this->fields[$k]->namebase."$k ";
+        #echo "Checking valid ".$this->fields[$k]->namebase."$k ";
         $this->isValid = $this->fields[$k]->isValid() && $this->isValid;
       }
-      echo "<br />";
+      #echo "<br />";
     }
     return $this->isValid;
   }
@@ -95,10 +95,10 @@ class DBRow extends DBO {
   function sync() {
     // If the input isn't valid then bail out straight away
     if (! ($this->changed && $this->isValid) ) {
-      echo "not syncing: changed=$this->changed valid=$this->isValid<br />";
+      #echo "not syncing: changed=$this->changed valid=$this->isValid<br />";
       return -1;
     }
-    echo "syncing: changed=$this->changed valid=$this->isValid<br />";
+    #echo "syncing: changed=$this->changed valid=$this->isValid<br />";
     $sql_result = -1;
     //obtain the *clean* parameter='value' data that has been SQL-cleansed
     //this will also trip any complex fields to sync
@@ -134,10 +134,10 @@ class DBRow extends DBO {
   function delete() {
     // If the input isn't valid then bail out straight away
     if (! ($this->changed && $this->isValid) ) {
-      echo "not deleting: changed=$this->changed valid=$this->isValid<br />";
+      #echo "not deleting: changed=$this->changed valid=$this->isValid<br />";
       return -1;
     }
-    echo "deleting: changed=$this->changed valid=$this->isValid<br />";
+    #echo "deleting: changed=$this->changed valid=$this->isValid<br />";
     $sql_result = -1;
     //obtain the *clean* parameter='value' data that has been SQL-cleansed
     //this will also trip any complex fields to sync
@@ -162,7 +162,7 @@ class DBRow extends DBO {
         //not added to the return list for the row
         $sqlval = $this->fields[$k]->sqlSetStr();
         if ($sqlval) {
-          echo "SQLUpdate: '$sqlval' <br />";
+          #echo "SQLUpdate: '$sqlval' <br />";
           $vals[] = $sqlval;
         }
         #$vals[] = "$k=" . qw($v->value);
@@ -218,7 +218,7 @@ class DBRow extends DBO {
     #echo "<pre>";print_r($g);echo "</pre>";
     if (is_array($g)) { 
       foreach ($this->fields as $k => $v) {
-        echo "Filling $k ";
+        #echo "Filling $k ";
         $val = issetSet($g,$k);
         $this->fields[$k]->set($val);
         #echo $this->fields[$k]->text_dump();
@@ -227,7 +227,7 @@ class DBRow extends DBO {
     //in case we get no rows back from the database, we have to have an id
     //present otherwise we're in trouble next time
     #echo "Completed fill, id=$this->id\n";
-    echo "Filling $this->idfield ";
+    #echo "Filling $this->idfield ";
     $this->fields[$this->idfield]->set($this->id);
   }
 

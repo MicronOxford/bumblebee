@@ -167,7 +167,7 @@ class JoinData extends Field {
     * to then know our actual value (at last).
    **/
   function sqlSetStr() {
-    echo "JoinData::sqlSetStr";
+    #echo "JoinData::sqlSetStr";
     $this->_joinSync();
     //We return an empty string as this is only a join table entry,
     //so it has no representation within the row itself.
@@ -197,7 +197,7 @@ class JoinData extends Field {
   function isValid() {
     $this->isValid = 1;
     for ($i=0; $i < $this->number; $i++) {
-      echo "val". $this->rows[$i]->fields[$this->jtRightIDCol]->value.";";
+      #echo "val". $this->rows[$i]->fields[$this->jtRightIDCol]->value.";";
       if ($this->rows[$i]->fields[$this->jtRightIDCol]->value == 0
          && $this->rows[$i]->changed) {
         $this->rows[$i]->isValid = 1;
@@ -206,7 +206,7 @@ class JoinData extends Field {
       #if ($this->rows[$i]->changed) {
         $this->isValid = $this->rows[$i]->checkValid() && $this->isValid;
       }
-      echo "JoinData::isValid = '$this->isValid'";
+      #echo "JoinData::isValid = '$this->isValid'";
     }
     //now we need to check the validity of sets of data (e.g. sum of the same
     //field across the different rows.
