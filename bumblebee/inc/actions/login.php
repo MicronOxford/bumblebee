@@ -1,4 +1,5 @@
 <?php
+# $Id$
 # print out a login form
 
 function printLoginForm()

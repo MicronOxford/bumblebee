@@ -1,4 +1,5 @@
 <?php
+# $Id$
 # return a list of the email addresses depending on what we've been asked
 # for... e.g. per instrument for the "announce" list.
 

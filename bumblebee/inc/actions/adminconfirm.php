@@ -1,4 +1,5 @@
 <?php
+# $Id$
 # maintain a list of actions that require the approval of an admin
 
   function actionAdminconfirm() {

@@ -1,4 +1,5 @@
 <?
+# $Id$
 # database connection scripts
 $dbhost = 'localhost';
 $dbusername = 'babs';

@@ -1,4 +1,5 @@
 <?php
+# $Id$
 include 'config.php'; 
 #start the database session
 include 'db.php'; 

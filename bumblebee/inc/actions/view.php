@@ -1,4 +1,5 @@
 <?php
+# $Id$
 # View the status of an instrument -- present the user with a calendar
 # that can be used to make bookings.
 

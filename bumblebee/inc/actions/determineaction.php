@@ -1,4 +1,5 @@
 <?
+# $Id$
 # work out what it was we were supposed to be doing
 # $action is set based on what we are supposed to do
 # this is then acted upon later in the page

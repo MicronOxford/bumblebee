@@ -1,4 +1,5 @@
 <?php
+# $Id$
 # allow the admin user to masquerade as another user to make some 
 # bookings. A bit like "su".
 

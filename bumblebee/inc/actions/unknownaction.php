@@ -1,4 +1,5 @@
 <?php
+# $Id$
 # an unknown action... ERROR!
 
 function actionUnknown($action)
