@@ -20,6 +20,7 @@ class TextField extends Field {
       $t .= "/>";
     } else {
       $t .= $this->value;
+      $t .= "<input type='hidden' name='$this->name' value='$this->value' />";
     }
     $t .= "</td>\n";
     for ($i=0; $i<$cols-2; $i++) {

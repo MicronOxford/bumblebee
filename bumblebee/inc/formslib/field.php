@@ -21,11 +21,20 @@ class Field {
   }
 
   function update($data, $base="") {
-    if (isset($data["$base-$this->name"])) {
-      $this->ovalue = $this->value;
-      $this->value = $data["$base-$this->name"];
-      $this->changed = ($this->value != $this->ovalue);
+    $newval = $data["$base$this->name"];
+    if (isset($newval)) {
+      $this->changed = ($this->value != $newval);
+      if ($this->changed) {
+        if ($this->editable) {
+          $this->ovalue = $this->value;
+          $this->value = $newval;
+        } else {
+          $this->changed = 0;
+          #FIXME this is an error condition... flag it?
+        }
+      }
     }
+    return $this->changed;
   }
 
   function set($value) {

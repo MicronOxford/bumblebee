@@ -52,6 +52,7 @@ class Auth {
     $this->uid = $_SESSION['uid'];
     $this->username = $_SESSION['username'];
     $this->name = $_SESSION['name'];
+    ## FIXME Should we double check this?
     $this->isadmin = $_SESSION['isadmin'];
     return 1;
   }
@@ -85,10 +86,10 @@ class Auth {
       return 0;
     }
     # if we got to here, then we're logged in!
-    $_SESSION['uid'] = $row['id'];
-    $_SESSION['username'] = $row['username'];
-    $_SESSION['name'] = $row['name'];
-    $_SESSION['isadmin'] = $row['isadmin'];
+    $_SESSION['uid'] = $this->uid = $row['id'];
+    $_SESSION['username'] = $this->username = $row['username'];
+    $_SESSION['name'] = $this->name = $row['name'];
+    $_SESSION['isadmin'] = $this->isadmin = $row['isadmin'];
     return 1;
   }
 }
