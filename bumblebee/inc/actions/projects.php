@@ -46,6 +46,7 @@ include_once 'inc/dbforms/anchortablelist.php';
   function editProject($PD) {
     $project = new Project($PD['id']);
     $project->update($PD);
+    $project->checkValid();
     #$project->fields['defaultclass']->invalid = 1;
     $project->sync();
     echo $project->display();

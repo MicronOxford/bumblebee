@@ -22,17 +22,20 @@ class DBRow extends DBO {
   var $fatal_sql = 1;
   var $namebase;
   var $newObject = 0;
+  var $recStart = '',
+      $recNum   = '';
 
   function DBRow($table, $id, $idfield='id') {
     $this->DBO($table, $id, $idfield);
     #$this->fields = array();
   }
   
-  /** update the value of each of the objects fields according to the user 
+  /** 
+   *  update the value of each of the objects fields according to the user 
    *  input data, and validate the data if appropriate
   **/
   function update($data) {
-    echo "Looking for updates:<br />";
+    echo "<br/><br/>DBRow:$this->namebase.Looking for updates:<br />";
     // First, check to see if this record is new
     if ($this->id == -1) {
       // We're a new object, but has the user filled the form in, or is the
@@ -46,22 +49,34 @@ class DBRow extends DBO {
         }
       }
     }
-    $this->isValid = 1;
     // check each field in turn to allow it to update its data
     foreach ($this->fields as $k => $v) {
       echo "Check $k ";
       echo "ov:".$this->fields[$k]->value;
       $this->changed += $this->fields[$k]->update($data);
       echo "nv:".$this->fields[$k]->value." ";
+      echo "<br />";
+    }
+    #$this->checkValid();
+    return $this->changed;
+  }
+
+  /**
+   * check the validity of the data
+  **/
+  function checkValid() {
+    $this->isValid = 1;
+    // check each field in turn to allow it to update its data
+    // if this object has not been filled in by the user, then 
+    // suppress validation
+    foreach ($this->fields as $k => $v) {
       if (! $this->newObject) {
-        // if this object has not been filled in by the user, then 
-        // suppress validation
-        echo "checking valid";
-        #$this->isValid = $this->isValid && $this->fields[$k]->isValid();
-        $this->isValid += $this->fields[$k]->isValid();
+        echo "Checking valid ".$this->fields[$k]->namebase."$k ";
+        $this->isValid = $this->fields[$k]->isValid() && $this->isValid;
       }
       echo "<br />";
     }
+    return $this->isValid;
   }
 
   /**
@@ -76,8 +91,10 @@ class DBRow extends DBO {
   function sync() {
     // If the input isn't valid then bail out straight away
     if (! ($this->changed && $this->isValid) ) {
+      echo "not syncing: changed=$this->changed valid=$this->isValid<br />";
       return -1;
     }
+    echo "syncing: changed=$this->changed valid=$this->isValid<br />";
     $sql_result = -1;
     //obtain the *clean* parameter='value' data that has been SQL-cleansed
     //this will also trip any complex fields to sync
@@ -119,7 +136,7 @@ class DBRow extends DBO {
       }
     }
     #echo "<pre>"; print_r($vals); echo "</pre>";
-    return join(',',$vals);
+    return join(', ',$vals);
   }
 
   /** 
@@ -161,11 +178,12 @@ class DBRow extends DBO {
   function fill() {
     $q = "SELECT * FROM "
         ."$this->table "
-        ."WHERE $this->idfield=".qw($this->id);
+        ."WHERE $this->idfield=".qw($this->id).' '
+        .(($this->recStart !== '') && ($this->recNum !== '') ? "LIMIT $this->recStart,$this->recNum" : '');
     $g = db_get_single($q);
     #echo "<pre>";print_r($g);echo "</pre>";
     foreach ($this->fields as $k => $v) {
-      #echo "Filling $k = ".$g[$k];
+      echo "Filling $k ";
       $val = issetSet($g,$k);
       $this->fields[$k]->set($val);
       #echo $this->fields[$k]->text_dump();
@@ -173,7 +191,8 @@ class DBRow extends DBO {
     //in case we get no rows back from the database, we have to have an id
     //present otherwise we're in trouble next time
     #echo "Completed fill, id=$this->id\n";
-    $this->fields['id']->set($this->id);
+    echo "Filling $this->idfield ";
+    $this->fields[$this->idfield]->set($this->id);
   }
 
   /** 
@@ -190,6 +209,22 @@ class DBRow extends DBO {
 
   function display() {
     return $this->text_dump();
+  }
+
+  function displayInTable($j) {
+    $t = "<table class='tabularobject'>";
+    foreach ($this->fields as $k => $v) {
+      $t .= $v->displayInTable($j);
+    }
+    $t .= "</table>";
+    return $t;
+  }
+
+  function changeNamebase($newname) {
+    $this->namebase = $newname;
+    foreach ($this->fields as $k => $v) {
+      $this->fields[$k]->namebase = $newname;
+    }
   }
 
 } // class dbrow

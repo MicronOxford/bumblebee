@@ -43,7 +43,7 @@ class DropList extends ChoiceList {
     return $t;
   }
 
-} // class RadioList
+} // class ChoiceList
 
 
 ?> 

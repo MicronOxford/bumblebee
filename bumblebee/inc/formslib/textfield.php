@@ -8,7 +8,7 @@ include_once("typeinfo.php");
 class TextField extends Field {
 
   function TextField($name, $longname="", $description="") {
-    Field::Field($name, $longname, $description);
+    parent::Field($name, $longname, $description);
   }
 
   function displayInTable($cols) {

@@ -33,6 +33,7 @@ include_once 'inc/dbforms/anchortablelist.php';
   function editGroup($PD) {
     $group = new Group($PD['id']);
     $group->update($PD);
+    $group->checkValid();
     $group->sync();
     #echo $group->text_dump();
     echo $group->display();

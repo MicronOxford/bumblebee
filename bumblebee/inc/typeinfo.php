@@ -63,7 +63,10 @@ function is_email_format($v) {
 
 function is_number($v) {
   #echo "'val=$v' ";
-  return (is_int($v) || is_float($v));
+  #echo "i=".is_int($v);
+  #echo "f=".is_float($v);
+  #return (is_int($v) || is_float($v));
+  return is_numeric($v);
 }
 
 function sum_is_100($vs) {

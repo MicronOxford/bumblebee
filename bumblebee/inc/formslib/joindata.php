@@ -4,7 +4,7 @@
 # for use in a DBRow although has autonomous data.
 
 include_once('field.php');
-include_once('fieldarray.php');
+include_once('dbrow.php');
 
 /**
   * If the element in the table is a selection list then the setup will be
@@ -36,13 +36,13 @@ class JoinData extends Field {
   var $joinTable,
       $jtOuterColumn,
       $jtoVal;
-  var $fields;
+  var $protoRow,
+      $rows;
   var $values;
   var $format,
       $number;
   var $radioclass = "item";
-  var $elements,
-      $groupValidTest;
+  var $groupValidTest;
 
   function JoinData($joinTable, $jtOuterColumn, $jtoVal,
                      $name, $description="") {
@@ -50,8 +50,11 @@ class JoinData extends Field {
     $this->joinTable = $joinTable;
     $this->jtOuterColumn = $jtOuterColumn;
     $this->jtoVal = $jtoVal;
-    $this->fields = array();
-    $this->elements = array();
+    $this->protoRow = new DBRow($joinTable, $jtoVal, $jtOuterColumn);
+    $field = new Field($jtOuterColumn);
+    $this->protoRow->addElement($field);
+    $this->protoRow->editable = 1;
+    $this->rows = array();
     $this->groupValidTest = array();
   }
 
@@ -71,87 +74,65 @@ class JoinData extends Field {
   }
 
   function addElement($field, $groupValidTest=NULL) {
-    $this->elements[] = $field;
+    $this->protoRow->addElement($field);
     $this->groupValidTest[] = $groupValidTest;
   }
 
-  function _createRow() {
-    $this->fields[] = new FieldArray($this->name.'-'.count($this->fields).'-',
-                                     $this->elements);
+  function _createRow($rowNum) {
+    #$this->rows[] = $this->protoRow;
+    $newrow = $this->protoRow;
+    #foreach ($this->protoRow->fields as $k => $f) {
+      #$newrow->fields[$k] = $f;
+      #$newrow->fields[$k]->list = $f->list;
+    #}
+    #$newrow = new DBRow($this->joinTable, $this->jtoVal, $this->jtOuterColumn);
+    #$field = new Field($this->jtOuterColumn);
+    #$newrow->addElement($field);
+    #$newrow->editable = 1;
+    $this->rows[$rowNum] = $newrow;
+    $this->rows[$rowNum]->changeNamebase($this->name.'-'.$rowNum.'-');
   }
-  /*
-    $i = count($this->fields);
-    $this->fields[$i] = array();
-    for ($j=0; $j<count($this->elements); $j++) {
-      $j++;
-      $this->fields[$i][$j] = $this->elements[$j];
-      $this->fields[$i][$j]->namebase = $this->name."-$i-";
-    }
-  }*/
 
   function _fill() {
     $sjtoVal = qw($this->jtoVal);
-    #$getfields = array($this->matchfield);
-    foreach ($this->elements as $k=>$v) {
-      $getfields[] = $v->name;
-    }
-    $this->values = new DBList($this->joinTable, $getfields,
-                              "$this->jtOuterColumn = $sjtoVal",
-                              $this->jtOuterColumn,
-                              $this->jtOuterColumn);
-    #echo "<pre>".print_r($this->values,1)."</pre>";
     $this->_calcMaxNumber($this->values->length);
-    for ($i=0; $i<$this->number; $i++) {
-      $this->_createRow();
-      for ($j=0; $j<count($this->elements) && $i<$this->values->length; $j++) {
-        if (isset($this->values->list[$i][$this->elements[$j]->name])) {
-          echo $i;
-          echo ($this->elements[$j]->name);
-          $this->fields[$i]->set($j, $this->values->list[$i][$this->elements[$j]->name]);
-        }
+    for ($i=0; $i < $this->number; $i++) {
+      $this->_createRow($i);
+      //$this->rows[$i]->recNum = 1;
+      //$this->rows[$i]->recStart = $i;
+      //$this->rows[$i]->fill();
+      if ($i==0) {
+        $this->rows[$i]->fields['groupid']->value = $i+1;
+        $this->rows[$i]->fields['groupid']->list->id = $i+5;
+        $this->rows[$i]->fields['groupid']->list->idfield = $i+9;
+        $this->rows[$i]->fields['groupid']->formatter[]=$i;
       }
+      ## FIXME: changing rows[$i]->list somehow changes rows[0]->list
+      echo "$i:";
+      preDump($this->rows[$i]);
+      preDump($this->rows[0]);
     }
+    echo "FOOOOOOO";
+    preDump($this);
+    return;
   }
 
   function display() {
     return $this->selectable();
   }
 
-/*
-  function format($data) {
-    //$aclass  = (isset($this->aclass) ? " class='$this->aclass'" : "");
-
-    #echo "<pre>".print_r($data,1)."</pre>";
-    #echo $this->value;
-    $selected = ($data[$this->formatid] == $this->value ? " checked='1' " : "");
-    $t  = "<input type='radio' name='$this->name' "
-         ."value='".$data[$this->formatid]."' $selected /> ";
-    foreach ($this->formatter as $k => $v) {
-      $t .= $this->formatter[$k]->format($data);
-    }
-    if (isset($data['_field']) && $data['_field']) {
-      $t .= $data['_field']->selectable();
-    }
-    return $t;
-  }
-*/
-
   function selectable() {
     $t = "";
-    $errorclass = ($this->isValid ? "" : "class='inputerror'");
+    #$errorclass = ($this->isValid ? "" : "class='inputerror'");
+    $errorclass = '';
     for ($i=0; $i<$this->number; $i++) { 
-      $t .= "<tr $errorclass>\n";
-      for ($j=0; $j < count($this->elements); $j++) {
-        $t .= '<td>';
-        #$t .= $this->fields[$i][$j]->selectable();
-        $t .= $this->fields[$i]->selectable($j);
-        $t .= "</td>\n";
-      }
-      $t .= "</tr>\n";
+      $t .= "<tr $errorclass><td>\n";
+      #$t .= "FOO$i";
+      $t .= $this->rows[$i]->displayInTable(2);
+      $t .= "</td></tr>\n";
     }
     return $t;
   }
-
 
   function displayInTable($cols) {
     $t = "<tr><td colspan='$cols'>$this->description</td></tr>\n";
@@ -170,10 +151,8 @@ class JoinData extends Field {
   }
 
   function update($data) {
-    for ($i=0; $i < count($this->fields); $i++) {
-      for ($j=0; $j < count($this->elements); $j++) {
-        $this->changed += $this->fields[$i]->update($j, $data);
-      }
+    for ($i=0; $i < $this->number; $i++) {
+      $this->changed += $this->rows[$i]->update($data);
     }
     return $this->changed;
   }
@@ -194,12 +173,26 @@ class JoinData extends Field {
     * synchronise the join table
    **/
   function _joinSync() {
-    //FIXME 
-    for ($i=0; $i < count($this->fields); $i++) {
-      for ($j=0; $j < count($this->elements); $j++) {
-        $this->changed += $this->fields[$i]->update($j, $data);
-      }
+    for ($i=0; $i < $this->number; $i++) {
+      $this->changed += ! $this->rows[$i]->sync();
     }
+  }
+
+  /**
+   * override the isValid method of the Field class, using the
+   * checkValid method of each member row completed as well as 
+   * cross checks on other fields.
+  **/
+  function isValid() {
+    $this->isValid = 1;
+    for ($i=0; $i < $this->number; $i++) {
+      echo "val". $this->rows[$i]->fields[$this->matchfield]->value.";";
+      if ($this->rows[$i]->fields[$this->matchfield]->value > 0) {
+        $this->isValid = $this->rows[$i]->checkValid() && $this->isValid;
+      }
+      echo "JoinData::isValid = '$this->isValid'";
+    }
+    return $this->isValid;
   }
   
 } // class JoinData

@@ -95,6 +95,10 @@ class ChoiceList extends Field {
     return $t;
   }
 
+  function selectedvalue() {
+    return $this->list->selectedvalue();
+  }
+
   /**
    * Update the value of the field and also the complex field within
    * based on the user data.
@@ -103,9 +107,10 @@ class ChoiceList extends Field {
    * for all error checking to be performed.
    **/
   function update($data) {
-    Field::update($data);
+    parent::update($data);
     $this->list->editable = $this->editable;
     $this->list->extendable = $this->extendable;
+    echo "ID=".$this->list->id;
     $this->list->update($this->value, $data);
     #Field::set($this->list->id);
     $this->changed = $this->list->changed;
@@ -120,7 +125,7 @@ class ChoiceList extends Field {
    **/
   function set($value) {
     $this->list->set($value);
-    Field::set($value);
+    parent::set($value);
   }
 
   /**

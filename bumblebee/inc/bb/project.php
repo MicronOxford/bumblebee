@@ -27,6 +27,7 @@ class Project extends DBRow {
     $f->isValidTest = "is_nonempty_string";
     $f->setAttr($attrs);
     $this->addElement($f);
+    /*
     $f = new RadioList("defaultclass", "Default charging band");
     $f->connectDB("userclass", array("id", "name"));
     $f->setFormat("id", "%s", array("name"));
@@ -42,6 +43,7 @@ class Project extends DBRow {
     $f->editable = 1;
     $f->isValidTest = "is_valid_radiochoice";
     $this->addElement($f);
+    */
     $f = new JoinData("projectgroups",
                        "projectid", $this->id, 
                        "groups", "Group membership (%)");

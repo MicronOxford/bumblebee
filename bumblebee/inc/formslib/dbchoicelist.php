@@ -54,6 +54,7 @@ class DBList extends DBO {
     $this->restriction = $restriction;
     $this->order = $order;
     $this->limit = $limit;
+    $this->list = array();
     $this->appendedfields = array();
     $this->prependedfields = array();
     $this->fill();
@@ -77,7 +78,6 @@ class DBList extends DBO {
       //then the SQL query was unsuccessful and we should bail out
       return 0;
     } else {
-      $this->list = array();
       //FIXME mysql specific array
       while ($g = mysql_fetch_array($sql)) {
         $this->list[] = $g; #['key']] = $g['value'];
@@ -210,10 +210,12 @@ class DBList extends DBO {
         $this->isValid = 0;
       }
     }
+    echo " DBList::changed=$this->changed<br />";
     return $this->isValid;
   }
 
   function set($value) {
+    echo "DBList::set = $value<br/>";
     $this->id = $value;
   }
 
@@ -252,6 +254,20 @@ class DBList extends DBO {
     #echo "<pre>"; print_r($this->fields); echo "</pre>";
     #echo "<pre>"; print_r($vals); echo "</pre>";
     return join(",",$vals);
+  }
+
+  function selectedvalue() {
+    $val = array();
+    foreach ($this->list as $k => $v) {
+      echo "H:$this->idfield, $k, $v, $this->id";
+      if ($v[$this->idfield] == $this->id) {
+        foreach ($this->fields as $f) {
+          echo "G=$f";
+          $val[] = $v[$f];
+        }
+      }
+    }
+    return implode(' ', $val);
   }
 
 } // class DBList
