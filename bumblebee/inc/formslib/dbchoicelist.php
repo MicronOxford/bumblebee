@@ -2,7 +2,7 @@
 # $Id$
 # a choice list based on an SQL statement, live db object to add extra entries
 
-include_once("dbobject.php");
+include_once 'dbobject.php';
 
 /**
   * Primitive class on which selection lists can be built from the
@@ -26,29 +26,29 @@ include_once("dbobject.php");
   *   $f->list->append(array("-1","Create new: "), $newentryfield);
  **/
 class DBChoiceList extends DBO {
-  var $join,
-      $restriction,
-      $order,
-      $limit;
-  var $editable = 0,
-      $extendable = 0,
-      $changed = 0;
+  var $join;
+  var $restriction;
+  var $order;
+  var $limit;
+  var $editable = 0;
+  var $extendable = 0;
+  var $changed = 0;
   var $choicelist;
   var $length;
-  var $appendedfields,
-      $prependedfields;
+  var $appendedfields;
+  var $prependedfields;
   var $DEBUG = 1;
 
   /** 
-    * Construct a new DBList object based on:
-    *     * database table ($table)
-    *     * calling for the fields in the array (or scalar) $fields
-    *     * with an SQL restriction (WHERE clause) $restriction
-    *     * ordering the listing by $order
-    *     * using the field $idfield as the control variable in the list
-    *       (i.e. the value='' in a radio list etc)
-    *     * with an SQL LIMIT statement of $limit
-   **/
+   * Construct a new DBList object based on:
+   *     * database table ($table)
+   *     * calling for the fields in the array (or scalar) $fields
+   *     * with an SQL restriction (WHERE clause) $restriction
+   *     * ordering the listing by $order
+   *     * using the field $idfield as the control variable in the list
+   *       (i.e. the value='' in a radio list etc)
+   *     * with an SQL LIMIT statement of $limit
+   */
   function DBChoiceList($table, $fields='', $restriction='',
                   $order='', $idfield='id', $limit='', $join='') {
     $this->DBO($table, "", $idfield);
@@ -200,8 +200,8 @@ class DBChoiceList extends DBO {
       //check to see if the newval is legal (does it exist on our choice list?)
       $isExisting = 0;
       foreach ($this->choicelist as $k => $v) {
-        if ($this->DEBUG) echo "($isExisting:".$v['id'].":$newval)";
-        if ($v['id'] == $newval && $v['id'] >= 0) {
+        if ($this->DEBUG) echo "($isExisting:".$v[$this->idfield].":$newval)";
+        if ($v[$this->idfield] == $newval && $v[$this->idfield] >= 0) {
           $isExisting = 1;
           break;
         }

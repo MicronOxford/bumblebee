@@ -14,22 +14,22 @@ include_once("validtester.php");
   *     $f = new TextField("name", "Name");
  **/
 class Field {
-  var $name,
-      $longname,
-      $description,
-      $required = 0,
-      $value,
-      $ovalue,
-      $defaultValue = '';
+  var $name;
+  var $longname;
+  var $description;
+  var $required = 0;
+  var $value;
+  var $ovalue;
+  var $defaultValue = '';
   var $duplicateName;
-  var $editable = -1, 
-      $changed = 0,
-      $hidden,
-      $isValid = 1,
-      $suppressValidation = -1,
-      $useNullValues = 0;
-  var $attr,
-      $errorclass = "error";
+  var $editable = -1;
+  var $changed = 0;
+  var $hidden;
+  var $isValid = 1;
+  var $suppressValidation = -1;
+  var $useNullValues = 0;
+  var $attr;
+  var $errorclass = "error";
   var $namebase;
   var $isValidTest = "isset";
   var $DEBUG = 0;
@@ -122,7 +122,13 @@ class Field {
 
   /**
    * set display attributes for the field.
-  **/
+   *
+   * the attribute fielde are parsed differently for each different field subclass
+   *
+   * @param array $attrs attribute_name => value
+   * @access public
+   * 
+   */
   function setattr($attrs) {
     foreach ($attrs as $k => $v) {
       $this->attr[$k] = $v;
@@ -131,7 +137,9 @@ class Field {
 
   /** 
    * quick and dirty display of the field status
-  **/
+   *
+   * @return string simple text representation of the class's value and attributes
+   */
   function text_dump() {
     $t  = "$this->name =&gt; ".$this->getValue();
     $t .= ($this->editable ? "(editable)" : "(read-only)");

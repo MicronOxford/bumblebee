@@ -42,6 +42,9 @@ class ActionView extends ActionAction {
       echo "<br /><br /><a href='$BASEURL/'>Return to instrument list</a>";
     } else {
       # shouldn't get here
+      $err = 'I shouldn\'t be able to to get here: action/view.php::go()';
+      $this->log($err);
+      trigger_error($err, E_USER_WARNING);
     }
   }
 
@@ -180,7 +183,8 @@ class ActionView extends ActionAction {
     global $BASEURL;
     $ip = $this->auth->getRemoteIP();
     //echo $ip;
-    $booking = new BookingEntry($bookid,$this->auth,$this->PD['instrid'],$ip, $start, $duration);
+    $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
+    $booking = new BookingEntry($bookid,$this->auth,$this->PD['instrid'],$ip, $start, $duration, $row['timeslotpicture']);
     $booking->update($this->PD);
     $booking->checkValid();
     $booking->sync();
@@ -202,10 +206,12 @@ class ActionView extends ActionAction {
     global $BASEURL;
     $booking = new BookingEntryRO($this->PD['bookid']);
     $isOwnBooking = $this->auth->isMe($booking->data->userid);
-    $isAdminView = $this->auth->isSystemAdmin() || $this->auth->isInstrumentAdmin($this->PD['instrid']);
+    $isAdminView = $this->auth->isSystemAdmin() 
+                  || $this->auth->isInstrumentAdmin($this->PD['instrid']);
     echo $booking->display($isAdminView, $isOwnBooking);
     if ($isOwnBooking || $isAdminView) {
-      echo "<p><a href='$BASEURL/view/".$this->PD['instrid'].'/'.$this->PD['bookid']."/edit'>Edit booking</a></p>\n";
+      echo "<p><a href='$BASEURL/view/".$this->PD['instrid']
+            .'/'.$this->PD['bookid']."/edit'>Edit booking</a></p>\n";
     }
   }
 

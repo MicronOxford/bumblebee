@@ -4,6 +4,8 @@
 
 include_once 'dbforms/dbrow.php';
 include_once 'dbforms/textfield.php';
+include_once 'dbforms/datetimefield.php';
+include_once 'dbforms/timefield.php';
 include_once 'dbforms/droplist.php';
 include_once 'dbforms/referencefield.php';
 include_once 'dbforms/dummyfield.php';
@@ -12,7 +14,7 @@ include_once 'calendar.php';
 
 class BookingEntry extends DBRow {
   
-  function BookingEntry($id, $auth, $instrumentid, $ip, $start, $duration) {
+  function BookingEntry($id, $auth, $instrumentid, $ip, $start, $duration, $granlist) {
     $isadmin = $auth->isSystemAdmin() || $auth->isInstrumentAdmin($instrumentid);
     if ($id > 0 && $isadmin) {
       $row = quickSQLSelect('bookings', 'id', $id);
@@ -31,21 +33,23 @@ class BookingEntry extends DBRow {
     $f->duplicateName = 'instrid';
     $f->defaultValue = $instrumentid;
     $this->addElement($f);
-    $f = new TextField('bookwhen', 'Start (YYYY-MM-DD HH:MM)');
-    $attrs = array('size' => '48');
+    $f = new DateTimeField('bookwhen', 'Start');
     $f->required = 1;
     $f->defaultValue = $start;
     $f->isInvalidTest = 'is_valid_datetime';
+    $attrs = array('size' => '24');
     $f->setAttr($attrs);
+    $f->manualRepresentation = $isadmin ? TF_FREE : TF_AUTO;
+    $f->setSlotPicture($granlist);
     $this->addElement($f);
-    #FIXME: granularity, lose :SS at least!
-    $f = new TextField('duration', 'Duration (HH:MM)');
+    $f = new TimeField('duration', 'Duration');
     $f->required = 1;
     $f->isInvalidTest = 'is_valid_time';
     $f->defaultValue = $duration;
-    $f->setAttr($attrs);
+    $f->manualRepresentation = $isadmin ? TF_FREE : TF_AUTO;
+    $f->setDateTime($start);
+    $f->setSlotPicture($granlist, $start);
     $this->addElement($f);
-    # FIXME restrict this to available projects
     $f = new DropList('projectid', 'Project');
     $f->connectDB('projects', 
                   array('id', 'name', 'longname'), 
@@ -57,6 +61,7 @@ class BookingEntry extends DBRow {
     # FIXME can we truncate longname in some way? %15.15s?
     $f->setFormat('id', '%s', array('name'), ' (%s)', array('longname'));
     $this->addElement($f);
+    $attrs = array('size' => '48');
     $f = new TextField('comments', 'Comments');
     $f->setAttr($attrs);
     $this->addElement($f);
@@ -106,7 +111,8 @@ class BookingEntry extends DBRow {
   function update($data) {
     parent::update($data);
     if ($this->changed) {
-      $this->_checkGranularity();
+      //FIXME
+      //$this->_checkGranularity();
     }
     return $this->changed;
   }
@@ -165,7 +171,7 @@ class BookingEntry extends DBRow {
     }
   }
 
-  /**
+  /**   FIXME
    * munge the entered data so that it fits into the granularity required
   **/
   function _checkGranularity() {

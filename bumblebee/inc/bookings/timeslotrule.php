@@ -133,6 +133,16 @@ class TimeSlotRule {
     #var_dump($this->slots);
   }
   
+  function allSlotStart() {
+    echo "STUB timeslotrule 137";
+    return array('09:00','10:00','15:00');
+  }
+  
+  function allSlotDurations() {
+    echo "STUB timeslotrule 141";
+    return array('01:00');
+  }
+  
   /**
    * return true if the specified date & time correspond to a valid starting time according
    * to this object's slot rules.
@@ -180,6 +190,14 @@ class TimeSlotRule {
 //     echo "Disabled: $startdate->datetimestring\n";
 //     preDump($slot);
     return $slot->isDisabled;
+  }
+
+  /**
+   * return true if the specified dates & times are valid as above, but only occupy one slot
+  **/
+  function slotGranular($startdate) {
+    $slot = $this->_findSlot($startdate, TSSTART, TSSLOT);
+    return $slot->isGranular;
   }
     
   /**
@@ -238,7 +256,7 @@ class TimeSlotRule {
     $timecmp = $match;
     if ($match == TSWITHIN) $timecmp = TSSTOP;
     if ($match == TSNEXT)   $timecmp = TSSTART;
-//     echo "($time->timestring, $dow)";
+    echo "($time->timestring, $dow)";
 //     preDump($this->slots[$dow]);
 //     echo "Asking for ($dow, $slot, $timecmp, $match)<br />";
     while(
@@ -290,11 +308,12 @@ class TimeSlotRule {
         $finalslot = $slot;
       }
     }
-//     echo "ReallyFinal ($dow, $finalslot, $match, $return)<br />";
+    echo "ReallyFinal ($dow, $finalslot, $match, $return)<br />";
     if ($return == TSSLOT) {
       $ts = new TimeSlot($day->setTime($this->slots[$dow][$finalslot][TSSTART]),
                          $day->setTime($this->slots[$dow][$finalslot][TSSTOP])  );
-      $ts->isDisabled = issetSet($this->slots[$dow][$finalslot], 'notavailable');
+      $ts->isDisabled =   issetSet($this->slots[$dow][$finalslot], 'notavailable');
+      $ts->isGranular = ! issetSet($this->slots[$dow][$finalslot], 'unrestricted');
       return $ts;
     } else {
 //     echo "making foo";

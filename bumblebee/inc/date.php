@@ -48,7 +48,8 @@ class SimpleDate {
   }
 
   function _setTicks($s) {
-    #echo "SimpleDate::Ticks $this->string<br />";
+    #echo "SimpleDate::Ticks $s<br />";
+    #preDump(debug_backtrace());
     $this->ticks = strtotime($s);
   }
 
