@@ -86,6 +86,7 @@ class DateTimeField extends Field {
    */
   function update($data) {
     if ($this->date->update($data) || $this->time->update($data)) {
+      echo "<b>DateTimeField::update<b><br/>\n";
       $data[$this->namebase.$this->name] = $this->date->value .' '. $this->time->value;
       parent::update($data);
 //       $this->calcDateTimeParts();
@@ -113,7 +114,18 @@ class DateTimeField extends Field {
     $this->_manualRepresentation = $flag;
     $this->time->setManualRepresentation($flag);
   }
-
+  
+  /**
+   *
+   */
+  function isValid() {
+    echo "DateTimeField::isValid<br/>\n";
+    echo $this->value;
+    echo $this->getValue();
+    parent::isValid();
+  }
+  
+  
 } // class DateTimeField
 
 

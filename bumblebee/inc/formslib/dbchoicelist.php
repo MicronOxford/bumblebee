@@ -5,26 +5,26 @@
 include_once 'dbobject.php';
 
 /**
-  * Primitive class on which selection lists can be built from the
-  * results of an SQL query. This may be used to determine the choices
-  * that a user is permitted to select (e.g. dropdown list or radio buttons)
-  * or also to permit additional entries to be created.
-  *
-  * Used in a 1:many relationship (i.e. a field in a table that is the
-  * primary key in another table)
-  *
-  * Note that this class has no real way of displaying itself properly,
-  * so it would usually be inherited and the descendent class used.
-  *
-  * Typical usage:
-  *   $f = new RadioList("myfield", "Field name");
-  *   $f->connectDB("mytable", array("id", "name"));
-  *   $f->setFormat("id", "%s", array("name"));
-  *   $newentryfield = new TextField("name","");
-  *   $newentryfield->namebase = "newentry-";
-  *   $newentryfield->suppressValidation = 0;
-  *   $f->list->append(array("-1","Create new: "), $newentryfield);
- **/
+ * Primitive class on which selection lists can be built from the
+ * results of an SQL query. This may be used to determine the choices
+ * that a user is permitted to select (e.g. dropdown list or radio buttons)
+ * or also to permit additional entries to be created.
+ *
+ * Used in a 1:many relationship (i.e. a field in a table that is the
+ * primary key in another table)
+ *
+ * Note that this class has no real way of displaying itself properly,
+ * so it would usually be inherited and the descendent class used.
+ *
+ * Typical usage:
+ *   $f = new RadioList("myfield", "Field name");
+ *   $f->connectDB("mytable", array("id", "name"));
+ *   $f->setFormat("id", "%s", array("name"));
+ *   $newentryfield = new TextField("name","");
+ *   $newentryfield->namebase = "newentry-";
+ *   $newentryfield->suppressValidation = 0;
+ *   $f->list->append(array("-1","Create new: "), $newentryfield);
+ */
 class DBChoiceList extends DBO {
   var $join;
   var $restriction;
@@ -157,9 +157,9 @@ class DBChoiceList extends DBO {
   }
 
   /**
-    * add back in the extra fields that were appended/prepended to the
-    * choicelist. Use this if they fields are lost due to a fill()
-   **/
+   * add back in the extra fields that were appended/prepended to the
+   * choicelist. Use this if they fields are lost due to a fill()
+   */
   function _reAddExtraFields() {
     foreach ($this->appendedfields as $k => $v) {
       $this->_append($v);
@@ -188,7 +188,7 @@ class DBChoiceList extends DBO {
    * 
    * The (possibly) new value is in $newval, while ancillary user data is in
    * $data, which is passed on to any appended or prepended fields.
-   **/
+   */
   function update($newval, $data) {
     if ($this->DEBUG) {
       echo "DBChoiceList update: ";

@@ -78,7 +78,26 @@ class ActionView extends ActionAction {
   function selectInstrument() {
     global $BASEURL;
     $instrselect = new AnchorTableList("Instrument", "Select which instrument to view");
-    $instrselect->connectDB("instruments", array("id", "name", "longname"));
+//         $f->connectDB('projects', 
+//                   array('id', 'name', 'longname'), 
+//                   'userid='.qw($euid),
+//                   'name', 
+//                   'id', 
+//                   NULL, 
+//                   array('userprojects'=>'projectid=id'));
+    if ($this->auth->isSystemAdmin()) {
+      $instrselect->connectDB("instruments", 
+                            array("id", "name", "longname")
+                            );
+    } else {                        
+      $instrselect->connectDB("instruments", 
+                            array("id", "name", "longname"),
+                            'userid='.qw($this->auth->getEUID()),
+                            'name', 
+                            'id', 
+                            NULL, 
+                            array('permissions'=>'instrid=id'));
+    }
     $instrselect->hrefbase = "$BASEURL/view/";
     $instrselect->setFormat("id", "%s", array("name"), " %s", array("longname"));
     echo $instrselect->display();

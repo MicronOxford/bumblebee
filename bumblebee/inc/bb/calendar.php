@@ -28,6 +28,13 @@ class Calendar {
   
   var $DEBUG_CAL = 0;    // 0 to turn off debug logging, 10 to turn on all debug logging
   
+  /**
+   * Create a calendar object, can display bookings in calendar format
+   * 
+   * @param SimpleDate $start    start time to display bookings from
+   * @param SimpleDate $stop     stop time to display bookings until
+   * @param integer $instrument  what instrument number to display bookings for
+   */ 
   function Calendar($start, $stop, $instrument) {
     $this->start = $start;
     $this->stop  = $stop;
@@ -38,13 +45,26 @@ class Calendar {
     $this->_breakAcrossDays();
   }
 
-  function setOutputStyles($class, $today, $day, $dayrotate='m') {
-    $this->dayClass = $class;
+  /**
+   * set the CSS style names by which 
+   *
+   * @param string $dayClass   class to use in every day header
+   * @param string $today      class to use on today's date
+   * @param mixed  $day        string for class on each day, or array to rotate through
+   * @param string $dayrotate  time-part ('m', 'd', 'y' etc) on which day CDD should be rotated
+   */
+  function setOutputStyles($dayClass, $today, $day, $dayrotate='m') {
+    $this->dayClass = $dayClass;
     $this->todayClass = $today;
     $this->rotateDayClass = is_array($day) ? $day : array($day);
     $this->rotateDayClassDatePart = $dayrotate;
   }
   
+  /**
+   * set the time slot picture (passed straight to a TimeSlotRule object) to apply 
+   *
+   * @param string $pic   timeslot picture for this instrument and this calendar
+   */
   function setTimeSlotPicture($pic) {
     $this->timeslots = new TimeSlotRule($pic);
     //break bookings over the predefined pictures
@@ -52,6 +72,8 @@ class Calendar {
     $this->_breakAccordingToList($this->timeslots);
   }
 
+  /**
+   */
   function _fill() {
     $bookdata = new BookingData (
           array(
@@ -79,7 +101,7 @@ class Calendar {
    * Bookings are NOT restricted to remaining on one day (i.e. a booking from
    * 20:00:00 until 10:00:00 the next day is OK.
    *
-  **/
+   */
   function _insertVacancies() {
     $this->numDays = $this->stop->partDaysBetween($this->start);
     $this->log("Creating calendar for $this->numDays days", 5);
@@ -131,13 +153,13 @@ class Calendar {
    *     2004-01-01-11:00 to 2004-01-01-24:00 and 
    *     2004-01-02-00:00 to 2004-01-02-24:00.
    *
-  **/
+   */
   function _breakAcrossDays() {
     $this->log('Breaking up bookings across days');
     //break bookings over day boundaries
     $daylist = new TimeSlotRule('[0-6]<00:00-24:00/*>');
     $this->_breakAccordingToList($daylist);
-    
+  }    
     
 /*  OLD VERSION OF DAY BREAK CODE
     $bl = $this->bookinglist;
@@ -161,12 +183,11 @@ class Calendar {
       } while ($this->bookinglist[$booking-1]->original->stop->ticks > $tomorrow->ticks);
     }
  */
-  }
-
+ 
   /**
    * Break up bookings that span elements of a defined list (e.g. allowable times or 
    * days). A TimeSlotRule ($list) is used to define how the times should be broken up
-  **/
+   */
   function _breakAccordingToList($list) {
     $bl = $this->bookinglist;
     $this->bookinglist = array();
@@ -178,23 +199,18 @@ class Calendar {
                       .$bl[$bv]->start->datetimestring.' - '.$bl[$bv]->stop->datetimestring, 8);
       $cbook = $bl[$bv];
       $cbook->original = $cbook;
-//       $slot = $list->findSlotByStart($bl[$bv]->start);  
       $slot = $list->findSlotFromWithin($bl[$bv]->start);  
       #$start = $list->findSlotStart($bl[$bv]->start);
       if ($slot == 0) {
         // then the original start time must be outside the proper limits
         $slot = $list->findNextSlot($bl[$bv]->start);
-//         $slot = $list->findSlotByStart($start);
       }
       do {  //until the current booking has been broken up across list boundaries
-//         preDump($slot->dump());
         $this->log('ostart='.$bl[$bv]->start->datetimestring 
               .' ostop='.$bl[$bv]->stop->datetimestring, 10);
         $stop  = $slot->stop;
         $this->log('cstart='.$slot->start->datetimestring
               .' cstop='.$slot->stop->datetimestring, 10);
-//         $this->log('cstart='.$start->datetimestring);
-//         $this->log(' cstop='.$stop->datetimestring, 10);
         $this->bookinglist[$booking] = $cbook;
         
         // while PHP's handling of methods is broken, we have to this as a two-step operation:
@@ -224,9 +240,6 @@ class Calendar {
         $this->log('');
       } while ($this->bookinglist[$booking-1]->original->stop->ticks > $slot->start->ticks);
     }
-//     echo "<pre>";
-//     var_dump($this->bookinglist);
-//     echo "</pre>";
   }
 
   
@@ -248,7 +261,8 @@ class Calendar {
 
   function _getDayClass($today, $t) {
     $class = $this->dayClass;
-    $class .= ' '.$this->rotateDayClass[date($this->rotateDayClassDatePart, $t->ticks) % count($this->rotateDayClass)];
+    $class .= ' '.$this->rotateDayClass[date($this->rotateDayClassDatePart, $t->ticks) 
+                      % count($this->rotateDayClass)];
     if ($today->datestring==$t->datestring) {
       $class .= ' '.$this->todayClass;
     }
@@ -272,7 +286,7 @@ class Calendar {
   /**
    * Display the booking details in a table with rowspan based on
    * the duration of the booking
-  **/
+   */
   function displayMonthAsTable($daystart, $daystop, $granularity, 
                                     $reportPeriod) {
     global $BASEPATH;
@@ -353,7 +367,12 @@ class Calendar {
   /**
    * Display the booking details in a table with rowspan based on
    * the duration of the booking
-  **/
+   *
+   * @param SimpleTime $daystart    time from which bookings should be displayed
+   * @param SimpleTime $daystop     time up until which bookings should be displayed
+   * @param integer    $granularity seconds per row in display
+   * @param integer    $reportPeriod  seconds between reporting the time in a column down the side
+   */
   function displayDayAsTable($daystart, $daystop, $granularity, 
                                     $reportPeriod) {
     global $BASEPATH;
@@ -404,6 +423,14 @@ class Calendar {
     return $t;
   }
   
+  /** 
+   * logging function -- logs debug info to stdout
+   *
+   * @param string $string  text to be logged
+   * @param integer $prio optional (default value 10) debug level of the message 
+   *
+   * The higher $prio, the more verbose (in the debugging sense) the output.
+   */
   function log ($string, $prio=10) {
     if ($prio <= $this->DEBUG_CAL) {
       echo $string."<br />\n";

@@ -5,8 +5,6 @@ allow bookings to cross from one day to the next
 allow set timeslots for instruments
 
 
-show only instruments with permissions to book
-
 
 gracefully handle lack of mysql db
 
