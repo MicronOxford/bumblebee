@@ -2,10 +2,10 @@
 # $Id$
 # Instrument object (extends dbo), with extra customisations for other links
 
-include_once 'dbrow.php';
-include_once 'textfield.php';
-include_once 'radiolist.php';
-include_once 'exampleentries.php';
+include_once 'dbforms/dbrow.php';
+include_once 'dbforms/textfield.php';
+include_once 'dbforms/radiolist.php';
+include_once 'dbforms/exampleentries.php';
 
 class Instrument extends DBRow {
   

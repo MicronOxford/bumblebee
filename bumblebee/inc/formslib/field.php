@@ -13,7 +13,7 @@ class Field {
       $ovalue;
   var $editable = -1, 
       $changed = 0,
-      $isvalid = 0,
+      $isValid = 0,
       $suppressValidation = -1;
   var $attr,
       $errorclass = "error";
@@ -29,7 +29,7 @@ class Field {
   function update($data) {
     if (isset($data["$this->namebase$this->name"])) {
       $newval = issetSet($data, "$this->namebase$this->name");
-      #echo "$this->name, $this->value, $newval<br />\n";
+      echo "$this->name, $this->value, $newval<br />\n";
       if ($this->editable) {
         # we ignore new values if the field is not editable
         if ($this->changed = ($this->value != $newval)) {
@@ -42,33 +42,41 @@ class Field {
     return $this->changed;
   }
 
-  function isvalid() {
-    /*
+  function isValid() {
+    /**/
     echo "<br />";
-    echo $this->name .":". $this->isInvalidTest.":";
-    echo is_callable($this->isInvalidTest);
+    echo $this->name .":". $this->isValidTest.":";
+    echo is_callable($this->isValidTest);
     echo "$this->suppressValidation";
     echo "req=$this->required";
-    */
-    $this->isvalid = 1;
+    /**/
+    $this->isValid = 1;
     if ($this->required) {
-      $this->isvalid = (isset($this->value) && $this->value != "");
+      $this->isValid = (isset($this->value) && $this->value != "");
     }
-    if ($this->isvalid && 
+    if ($this->isValid && 
         isset($this->isValidTest) && is_callable($this->isValidTest) 
         && $this->suppressValidation == 0) {
       #echo "checking ";
       $validator = $this->isValidTest;
       #$this->invalid = $this->id == -1 && $validator($this->value);
-      $this->isvalid = $validator($this->value);
-      #echo ($this->isvalid ? "VALID" : "INVALID");
+      $this->isValid = $validator($this->value);
     }
-    return $this->isvalid;
+    echo ($this->isValid ? "VALID" : "INVALID");
+    return $this->isValid;
   }
 
   function set($value) {
     #echo "Updating field $this->name. New value=$value\n";
     $this->value = $value;
+  }
+
+  /**
+   * return a SQL-injection-cleansed string that can be used in an SQL
+   * UPDATE or INSERT statement. i.e. "name='Stuart'".
+  **/
+  function sqlSetStr() {
+    return $this->name .'='. qw($this->value);
   }
 
   function setattr($attrs) {
@@ -80,7 +88,7 @@ class Field {
   function text_dump() {
     $t  = "$this->name =&gt; $this->value ";
     $t .= ($this->editable ? "(editable)" : "(read-only)");
-    $t .= ($this->isvalid ? "" : "(invalid)");
+    $t .= ($this->isValid ? "" : "(invalid)");
     $t .= "\n";
     return $t;
   }

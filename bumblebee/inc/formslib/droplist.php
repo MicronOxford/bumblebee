@@ -8,6 +8,7 @@ class DropList extends ChoiceList {
 
   function DropList($name, $description="") {
     $this->ChoiceList($name, $description);
+    $this->extendable = 0;
   }
 
   function display() {

@@ -2,21 +2,41 @@
 # $Id$
 # JoinData: object to deal with JOINed data in the database, mimicks a Field
 # for use in a DBRow although has autonomous data.
-# If the element in the table is a selection list then the setup will be
-# as a join table.
-#
-# We respect the 'field' interface while overriding pretty much all of it.
 
 include_once('field.php');
 include_once('fieldarray.php');
 
+/**
+  * If the element in the table is a selection list then the setup will be
+  * as a join table.
+  *
+  * We respect the 'field' interface while overriding pretty much all of it.
+  *
+  * Primitive class on which selection lists can be built from the
+  * results of an SQL query. This may be used to determine the choices
+  * that a user is permitted to select (e.g. dropdown list or radio buttons)
+  *
+  * Used in a many:many or many:1 relationships (i.e. a field in a 
+  * table that is the listed in a join table 
+  *
+  * Typical usage:
+  *   $f = new JoinData("jointable",
+                       "id1", $table1_key,
+                       "fieldname", "label1");
+  *   $f2 = new DropList("id2", "label2");
+  *   $f2->connectDB("table2", array("id", "name"));
+  *   $f2->list->prepend(array("-1","(none)"));
+  *   $f2->setFormat("id", "%s", array("name"), " (%s)", array("longname"));
+  *   $f->addElement($f2);
+  *   $f3 = new TextField("field3", "");
+  *   $f->addElement($f3, "sum_is_100");
+  *   $f->joinSetup("id2", array('total' => 3));
+ **/
 class JoinData extends Field {
   var $joinTable,
       $jtOuterColumn,
       $jtoVal;
-  #var $controlfield;
   var $fields;
-  #var $matchfield;
   var $values;
   var $format,
       $number;
@@ -45,7 +65,6 @@ class JoinData extends Field {
   function _calcMaxNumber($numrows) {
     if (isset($this->format['total'])) {
       $this->number = $this->format['total'];
-      return;
     } else {
       $this->number = $this->$numrows;
     }
@@ -84,12 +103,11 @@ class JoinData extends Field {
     $this->_calcMaxNumber($this->values->length);
     for ($i=0; $i<$this->number; $i++) {
       $this->_createRow();
-      for ($j=0; $j<count($this->elements); $j++) {
+      for ($j=0; $j<count($this->elements) && $i<$this->values->length; $j++) {
         if (isset($this->values->list[$i][$this->elements[$j]->name])) {
-          #echo $this->values->list[$i][$this->matchfield];
-          ##############FIXME
-          #$this->fields[$i][$j]->value = $this->values->list[$i][$this->elements[$j]->value];
-          $this->fields[$i]->set($j, $this->values->list[$i][$this->elements[$j]->value]);
+          echo $i;
+          echo ($this->elements[$j]->name);
+          $this->fields[$i]->set($j, $this->values->list[$i][$this->elements[$j]->name]);
         }
       }
     }
@@ -120,7 +138,7 @@ class JoinData extends Field {
 
   function selectable() {
     $t = "";
-    $errorclass = ($this->isvalid ? "" : "class='inputerror'");
+    $errorclass = ($this->isValid ? "" : "class='inputerror'");
     for ($i=0; $i<$this->number; $i++) { 
       $t .= "<tr $errorclass>\n";
       for ($j=0; $j < count($this->elements); $j++) {
@@ -154,16 +172,36 @@ class JoinData extends Field {
   function update($data) {
     for ($i=0; $i < count($this->fields); $i++) {
       for ($j=0; $j < count($this->elements); $j++) {
-        #$this->changed += $this->fields[$i][$j]->update($data);
         $this->changed += $this->fields[$i]->update($j, $data);
       }
     }
-    //return $this->changed;
-    $this->changed = 0;
-    return 0;
+    return $this->changed;
+  }
+
+  /**
+    * trip the complex field within us to sync(), which allows us
+    * to then know our actual value (at last).
+   **/
+  function sqlSetStr() {
+    echo "JoinData::sqlSetStr";
+    $this->_joinSync();
+    //We return an empty string as this is only a join table entry,
+    //so it has no representation within the row itself.
+    return "";
+  }
+
+  /**
+    * synchronise the join table
+   **/
+  function _joinSync() {
+    //FIXME 
+    for ($i=0; $i < count($this->fields); $i++) {
+      for ($j=0; $j < count($this->elements); $j++) {
+        $this->changed += $this->fields[$i]->update($j, $data);
+      }
+    }
   }
   
 } // class JoinData
 
 ?> 
-

@@ -3,6 +3,7 @@
 # textfield object
 
 include_once("field.php");
+include_once("typeinfo.php");
 
 class TextField extends Field {
 
@@ -11,15 +12,15 @@ class TextField extends Field {
   }
 
   function displayInTable($cols) {
-    $errorclass = ($this->isvalid ? "" : "class='inputerror'");
+    $errorclass = ($this->isValid ? "" : "class='inputerror'");
     $t = "<tr $errorclass><td>$this->longname</td>\n"
         ."<td title='$this->description'>";
     if ($this->editable) {
       $t .= $this->selectable();
     } else {
-      $t .= $this->value;
+      $t .= xssqw($this->value);
       $t .= "<input type='hidden' name='$this->namebase$this->name' "
-           ."value='$this->value' />";
+           ."value='".xssqw($this->value)."' />";
     }
     $t .= "</td>\n";
     for ($i=0; $i<$cols-2; $i++) {
@@ -31,7 +32,7 @@ class TextField extends Field {
 
   function selectable() {
     $t  = "<input type='text' name='$this->namebase$this->name' "
-         ."value='$this->value' ";
+         ."value='".xssqw($this->value)."' ";
     $t .= (isset($this->attr['size']) ? "size='".$this->attr['size']."' " : "");
     $t .= (isset($this->attr['maxlength']) ? "maxlength='".$this->attr['maxlength']."' " : "");
     $t .= "/>";

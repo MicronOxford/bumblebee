@@ -17,7 +17,6 @@ class RadioList extends ChoiceList {
 
   function format($data) {
     //$aclass  = (isset($this->aclass) ? " class='$this->aclass'" : "");
-
     #echo "<pre>".print_r($data,1)."</pre>";
     #echo $this->value;
     $selected = ($data[$this->formatid] == $this->value ? " checked='1' " : "");

@@ -3,7 +3,7 @@
 # edit the user details, project associations and permissions
 
 include_once 'inc/user.php';
-include_once 'inc/anchortablelist.php';
+include_once 'inc/dbforms/anchortablelist.php';
 
 
   function actionUsers() {

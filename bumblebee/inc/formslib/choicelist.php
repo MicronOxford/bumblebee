@@ -6,18 +6,35 @@ include_once "field.php";
 include_once "outputformatter.php";
 include_once "dblist.php";
 
+/** 
+  * ChoiceList extends Field
+  *
+  * A field class that can only take a restricted set of values, such as
+  * a radio list or a drop-down list.
+  *
+  * This class cannot adequately represent itself and is designed to be
+  * inherited by a representation (such as RadioList or DropDownList)
+ **/
 class ChoiceList extends Field {
-  var $name,
-      $description;
-  var $list;
+  var $list; //contains the DBList object which has the restricted choices
   var $formatter, $formatid;
 
-  function ChoiceList($name, $description="") {
+  function ChoiceList($name, $description='') {
+    //inherited members from Field
     $this->name = $name;
     $this->description = $description;
   }
 
-  function connectDB($table, $fields="", $restriction="1", $order="name") {
+  /**
+    * Create a DBList object within this class that is connected to the
+    * available choices in the database and will handle the actual parsing 
+    * of user input etc
+    *
+    * If php supported multiple inheritance, then $this->list would not be
+    * a member of the class, rather DBList would be multiply inherited along
+    * with Field.
+   **/
+  function connectDB($table, $fields='', $restriction='', $order='name') {
     $this->list = new DBList($table, $fields, $restriction, $order);
   }
 
@@ -29,23 +46,31 @@ class ChoiceList extends Field {
     return $this->text_dump();
   }
 
+  /**
+    * Create a set of OutputFormatter objects to handle the display of this
+    * object. 
+    *
+    *  called as: setFormat($id, $f1, $v1, $f2, $v2, ...) {
+    *    - f1, v1 etc must be in pairs.
+    *    - f1 is an sprintf format (see PHP manual)
+    *    - v1 is an array of array indices that will be used to fill the
+    *      fields in the sprintf format from a $data array passed to the
+    *      formatter when asked to display itself
+   **/
   function setFormat() {
-    #called as: setFormat($id, $f1, $v1, $f2, $v2, ...) {
-    #f1, v1 etc must be in pairs.
-    #f1 is an sprintf format and v1 is an array of names that
-    #will be used to fill the sprintf format
     $argc = func_num_args();
     $argv = func_get_args();
-    #echo "<pre>Var args: $argc\n".print_r($argv,1)."</pre>";
     $this->formatid = $argv[0];
     $this->formatter = array();
     for ($i = 1; $i < $argc; $i+=2) {
-      #echo "<pre>Adding: $i\n".print_r($argv[$i],1).print_r($argv[$i+1],1)."</pre>";
-      $this->formatter[] = new OutputFormatter($argv[$i],
-                                               $argv[$i+1]);
+      $this->formatter[] = new OutputFormatter($argv[$i], $argv[$i+1]);
     }
   }
 
+  /**
+    * A test text-based format function for the object. Returns a 
+    * text-based representation only.
+   **/
   function format($data) {
     $s = $data[$this->formatid] .":". $this->formatter[0]->format($data)
         ."(". $this->formatter[1]->format($data).")";
@@ -53,7 +78,7 @@ class ChoiceList extends Field {
   }
 
   function displayInTable($cols) {
-    $errorclass = ($this->isvalid ? "" : "class='inputerror'");
+    $errorclass = ($this->isValid ? "" : "class='inputerror'");
     $t = "<tr $errorclass><td>$this->description</td>\n"
         ."<td title='$this->description'>";
     if ($this->editable) {
@@ -69,26 +94,57 @@ class ChoiceList extends Field {
     $t .= "</tr>";
     return $t;
   }
-  
+
+  /**
+   * Update the value of the field and also the complex field within
+   * based on the user data.
+   * This does *not* create new elements within the complex field (list)
+   * at this stage: that is deferred until the latest possible point
+   * for all error checking to be performed.
+   **/
   function update($data) {
-    #echo "updating $this->name (ov: $this->value)";
-    #echo $this->list->id;
     Field::update($data);
+    $this->list->editable = $this->editable;
+    $this->list->extendable = $this->extendable;
     $this->list->update($this->value, $data);
-    if ($this->list->id != -1) {
-      #if the data were valid, then list->update() would change list->id from
-      # -1 to the real value of the newly created entry
-      $this->value = $this->list->id;
-      $this->changed += $this->list->changed;
-    }
+    #Field::set($this->list->id);
+    $this->changed = $this->list->changed;
+    $this->isValid = $this->list->isValid;
     #echo $this->list->id;
     #echo " (nv: $this->value)";
     return $this->changed;
   }
 
+  /**
+    * Set the value of this field, both in the Field and in the DBList
+   **/
   function set($value) {
     $this->list->set($value);
     Field::set($value);
+  }
+
+  /**
+    * Check the validity of the data. 
+    * Return TRUE iff the DBList isValid and the Field isValid.
+    * This permits two rounds of checks on the data to be performed.
+   **/
+  function isValid() {
+    echo "ChoiceList::isValid=$this->isValid";
+    return $this->isValid && Field::isValid();
+  }
+
+  /**
+    * Obtain the SQL data necessary for including the foreign key in
+    * the DBRow to which we belong.
+    * trip the complex field within us to sync(), which allows us
+    * to then know our actual value (at last). 
+   **/
+  function sqlSetStr() {
+    echo "Choicelist::sqlSetStr";
+    $this->list->sync();
+    $this->value = $this->list->id;
+    preDump($this);
+    return Field::sqlSetStr();
   }
 
 } // class ChoiceList

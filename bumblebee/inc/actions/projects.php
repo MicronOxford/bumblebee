@@ -3,7 +3,7 @@
 # edit the projects
 
 include_once 'inc/project.php';
-include_once 'inc/anchortablelist.php';
+include_once 'inc/dbforms/anchortablelist.php';
 
 
   function actionProjects() {
@@ -28,6 +28,7 @@ include_once 'inc/anchortablelist.php';
     if (isset($PDATA[1])) {
       $PD['id'] = $PDATA[1];
     }
+    #$PD['defaultclass'] = 12;
     echo "<pre>".print_r($PD,true)."</pre>";
     return $PD;
   }

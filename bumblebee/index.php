@@ -46,56 +46,37 @@ include_once 'unknownaction.php';
 $pagetitle = $actiontitles[$action] . ' - ' . $sitetitle;
 
 
-?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+include 'theme/pageheader.php';
+include 'theme/contentheader.php';
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <title><?=$pagetitle; ?></title>
-  <link rel="stylesheet" href="<?=$BASEPATH?>/theme/babs.css" type="text/css" />
-  <link rel="icon" href="<?=$BASEPATH?>/theme/images/favicon.ico" />
-  <link rel="shortcut icon" href="<?=$BASEPATH?>/theme/images/favicon.ico" />
-<?php
-  include 'jsfunctions.php'
-?>
-</head>
-
-<body>
-<?
-  include 'theme/header.php'
-?>
-
-  <?
-    if ($auth->isLoggedIn()) {
-      ?>
-        <div class='fmenu'>
-          <h3>Menu</h3>
-          <ul>
-            <li><a href='<?=$BASEURL?>/'>Main</a></li>
-            <li><a href='<?=$BASEURL?>/logout'>Logout</a></li>
-          </ul>
-        <?
-          if ($auth->isadmin) printAdminMenu();
-          #if (($act[$action] != $act['masquerade']) && $ISADMIN) checkMasquerade();
-        ?>
-        </div>
-      <?
-    }
-  ?>
-  <div class="content">
-    <form method="post" action="<?=$nextaction?>" >
-    <?
-      #echo "decide what happens here: $action (". $act[$action] .")<br />";
-      if (! $auth->isLoggedIn()) {
-        echo $auth->loginError();
-      }
-      performAction($auth, $action);
+  if ($auth->isLoggedIn()) {
     ?>
-    </form>
-  </div>
-  <?
-    include 'theme/footer.php'
+      <div class='fmenu'>
+        <h3>Menu</h3>
+        <ul>
+          <li><a href='<?=$BASEURL?>/'>Main</a></li>
+          <li><a href='<?=$BASEURL?>/logout'>Logout</a></li>
+        </ul>
+      <?
+        if ($auth->isadmin) printAdminMenu();
+        #if (($act[$action] != $act['masquerade']) && $ISADMIN) checkMasquerade();
+      ?>
+      </div>
+    <?
+  }
   ?>
-</body>
-</html>
+    <div class="content">
+      <form method="post" action="<?=$nextaction?>" >
+      <?
+        #echo "decide what happens here: $action (". $act[$action] .")<br />";
+        if (! $auth->isLoggedIn()) {
+          echo $auth->loginError();
+        }
+        performAction($auth, $action);
+      ?>
+      </form>
+    </div>
+  <?
+    include 'theme/contentfooter.php';
+    include 'theme/pagefooter.php';
+  ?>

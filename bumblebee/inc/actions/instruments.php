@@ -3,7 +3,7 @@
 # edit/create instruments
 
 include_once 'inc/instrument.php';
-include_once 'inc/anchortablelist.php';
+include_once 'inc/dbforms/anchortablelist.php';
 
   function actionInstruments() {
     global $BASEURL;

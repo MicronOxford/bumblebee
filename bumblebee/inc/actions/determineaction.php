@@ -4,7 +4,7 @@
 # $action is set based on what we are supposed to do
 # this is then acted upon later in the page
 
-include_once('inc/typeinfo.php');
+include_once('inc/dbforms/typeinfo.php');
 
 function checkActions($auth) {
   global $act;

@@ -4,43 +4,91 @@
 
 include_once("dbobject.php");
 
+/**
+  * Primitive class on which selection lists can be built from the
+  * results of an SQL query. This may be used to determine the choices
+  * that a user is permitted to select (e.g. dropdown list or radio buttons)
+  * or also to permit additional entries to be created.
+  *
+  * Used in a 1:many relationship (i.e. a field in a table that is the
+  * primary key in another table)
+  *
+  * Note that this class has no real way of displaying itself properly,
+  * so it would usually be inherited and the descendent class used.
+  *
+  * Typical usage:
+  *   $f = new RadioList("myfield", "Field name");
+  *   $f->connectDB("mytable", array("id", "name"));
+  *   $f->setFormat("id", "%s", array("name"));
+  *   $newentryfield = new TextField("name","");
+  *   $newentryfield->namebase = "newentry-";
+  *   $newentryfield->suppressValidation = 0;
+  *   $f->list->append(array("-1","Create new: "), $newentryfield);
+ **/
 class DBList extends DBO {
   var $restriction,
       $order,
       $limit;
   var $editable = 0,
+      $extendable = 0,
       $changed = 0;
   var $list;
   var $length;
+  var $appendedfields,
+      $prependedfields;
 
-  function DBList($table, $fields="", $restriction="1",
-                  $order="name", $idfield='id', $limit="") {
+  /** 
+    * Construct a new DBList object based on:
+    *     * database table ($table)
+    *     * calling for the fields in the array (or scalar) $fields
+    *     * with an SQL restriction (WHERE clause) $restriction
+    *     * ordering the listing by $order
+    *     * using the field $idfield as the control variable in the list
+    *       (i.e. the value='' in a radio list etc)
+    *     * with an SQL LIMIT statement of $limit
+   **/
+  function DBList($table, $fields='', $restriction='',
+                  $order='', $idfield='id', $limit='') {
     $this->DBO($table, "", $idfield);
     $this->fields = (is_array($fields) ? $fields : array($fields));
     $this->restriction = $restriction;
     $this->order = $order;
     $this->limit = $limit;
+    $this->appendedfields = array();
+    $this->prependedfields = array();
     $this->fill();
   }
 
+  /**
+    * Fill the object from the database using the already initialised
+    * members (->table etc).
+   **/
   function fill() {
     $f = implode(", ", $this->fields);
     $q = "SELECT $this->idfield, $f "
         ."FROM $this->table "
-        ."WHERE $this->restriction "
-        ."ORDER BY $this->order "
-        .($this->limit != "" ? "LIMIT $this->limit" : "");
+        #."WHERE $this->restriction "
+        #."ORDER BY $this->order "
+        .($this->restriction != '' ? "WHERE $this->restriction " : '')
+        .($this->order != '' ? "ORDER BY $this->order " : '')
+        .($this->limit != '' ? "LIMIT $this->limit " : '');
     $sql = db_get($q, $this->fatal_sql);
     if (! $sql) {
+      //then the SQL query was unsuccessful and we should bail out
       return 0;
     } else {
       $this->list = array();
+      //FIXME mysql specific array
       while ($g = mysql_fetch_array($sql)) {
         $this->list[] = $g; #['key']] = $g['value'];
       }
       $this->length = count($this->list);
-      return 1;
+      //if this fill() has been called after extra fields have been prepended
+      //or appended to the field list, then we need to re-add them as they
+      //will be lost by this process
+      $this->_reAddExtraFields();
     }
+    return 1;
   }
   
   function _mkaddedarray($values, $field='') {
@@ -52,12 +100,49 @@ class DBList extends DBO {
     return $a;
   }
 
+  /**
+    * append or prepend a special field (such as "Create new:") to the 
+    * list. Keep a copy of the field so it can be added again later if
+    * necessary, and then use a private function to actually do the adding
+   **/
   function append($values, $field='') {
-    array_push($this->list, $this->_mkaddedarray($values, $field));
+    $fa = $this->_mkaddedarray($values, $field);
+    //keep a copy of the field so it can be added again after a fill()
+    $this->appendedfields[] = $fa;
+    $this->_append($fa);
   }
 
   function prepend($values, $field='') {
-    array_unshift($this->list, $this->_mkaddedarray($values, $field));
+    $fa = $this->_mkaddedarray($values, $field);
+    //keep a copy of the field so it can be added again after a fill()
+    $this->prependedfields[] = $fa;
+    $this->_prepend($fa);
+  }
+
+  /**
+    * private functions _append and _prepend that will actually add the field
+    * to the field list after it has been properly constructed and saved for
+    * future reference
+   **/
+  function _append($fa) {
+    array_push($this->list, $fa);
+  }
+
+  function _prepend($fa) {
+    array_unshift($this->list, $fa);
+  }
+
+  /**
+    * add back in the extra fields that were appended/prepended to the
+    * list. Use this if they fields are lost due to a fill()
+   **/
+  function _reAddExtraFields() {
+    foreach ($this->appendedfields as $k => $v) {
+      $this->_append($v);
+    }
+    foreach ($this->prependedfields as $k => $v) {
+      $this->_prepend($v);
+    }
   }
 
   function display() {
@@ -68,61 +153,88 @@ class DBList extends DBO {
     return "<pre>SimpleList:\n".print_r($this->list, true)."</pre>";
   }
 
+  /** 
+   * update the value of the list based on user data:
+   *   - if it is within the range of current values, then take the value
+   *   - if the field contains a new value (and is allowed to) then keep
+   *     an illegal value, mark as being changed, and wait until later for
+   *     the field to be updated
+   *   - if the field contains a new value (and is not allowed to) or an 
+   *     out-of-range value, then flag as being invalid
+   * 
+   * The (possibly) new value is in $newval, while ancillary user data is in
+   * $data, which is passed on to any appended or prepended fields.
+   **/
   function update($newval, $data) {
-    // ###### FIXME: this function is fundamentally broken at the moment
-    // ###### top priority fix!
-    echo "List update: ";
+    echo "DBList update: ";
     echo "(changed=$this->changed)";
     echo "(id=$this->id)";
+    echo "(newval=$newval)";
     if (isset($newval)) {
-      echo "set '$newval'";
-      if ($this->id != $newval || $this->id < 0) {
-        $this->changed += 1;
-        $this->id = $newval;
-      }
-    }
-    echo "(changed=$this->changed)";
-    #because we are a selection list, if we have changed, then we
-    #may need to sync() and then fill() to make sure we are all there for the
-    #next viewing and for sync() of the main object
-    if ($this->id < 0) {
-      #find out the new name
-      //FIXME surely there's a better way of doing this?
+      //check to see if the newval is legal (does it exist on our choice list?)
+      $isExisting = 0;
       foreach ($this->list as $k => $v) {
-        preDump($v);
-        if (isset($v['_field']) && $v['_field'] != "") {
-          $this->list[$k]['_field']->update($data);
-          $this->isvalid += $this->list[$k]['_field']->isvalid();
+        echo "($isExisting:".$v['id'].":$newval)";
+        if ($v['id'] == $newval && $v['id'] > 0) {
+          $isExisting = 1;
+          break;
         }
       }
-      #echo "Syncing<br />";
-      if ($this->isvalid) {
-        $this->sync();
-        //FIXME this means that the "Create new:" or whatever field is lost
-        $this->fill();
+      if ($isExisting) {
+        // it is a legal, existing value, so we adopt it 
+        echo "isExisting";
+        $this->changed += ($newval != $this->id);
+        $this->id = $newval;
+        $this->isValid = 1;
+        //isValid handling done by the Field that inherits it
+      } elseif ($this->extendable) {
+        // then it is a new value and we should accept it
+        echo "isExtending";
+        $this->changed += 1;
+        //$this->id = $newval;
+        //If we are extending the list, then we should have a negative
+        //number as the current value to trip the creation of the new
+        //entry later on in sync()
+        //FIXME is this right? 
+        $this->id = -1;
+        foreach ($this->list as $k => $v) {
+          preDump($v);
+          if (isset($v['_field']) && $v['_field'] != "") {
+            $this->list[$k]['_field']->update($data);
+            $this->isValid += $this->list[$k]['_field']->isValid();
+          }
+        }
+      } else {
+        echo "isInvalid";
+        // else, it's a new value and we should not accept it
+        $this->isValid = 0;
       }
     }
-    return $this->isvalid;
+    return $this->isValid;
   }
 
   function set($value) {
     $this->id = $value;
   }
 
+  /**
+    * synchronise with the database -- this also creates the true value for
+    * this field if it is undefined
+    * returns false on success
+   **/
   function sync() {
-    #returns false on success
-    if ($this->changed && $this->isvalid) {
-      $vals = $this->_sqlvals();
-      if ($this->id != -1) {
-        #it's an existing record, but we don't make changes to
-        #records through this object
-      } else {
-        #it's a new record, insert it
+    preDump($this);
+    if ($this->changed && $this->isValid) {
+      echo "Syncing...<br />";
+      if ($this->id == -1) {
+        //it's a new record, insert it
+        $vals = $this->_sqlvals();
         $q = "INSERT $this->table SET $vals";
         $sql_result = db_quiet($q, $this->fatal_sql);
         $this->id = db_new_id();
+        $this->fill();
+        return $sql_result;
       }
-      return $sql_result;
     }
   }
 

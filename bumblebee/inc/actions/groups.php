@@ -3,7 +3,7 @@
 # edit the groups
 
 include_once 'inc/group.php';
-include_once 'inc/anchortablelist.php';
+include_once 'inc/dbforms/anchortablelist.php';
 
   function actionGroup() {
     global $BASEURL;

@@ -1,5 +1,15 @@
 $Id$
 
+" " to ' ' where possible
+
+XSS checks
+
+inc/* isinvalidtest isvalidtest fubar => USE THE POSITIVE: isValid
+
+separate generic field, form, sql classes from user project etc classes
+
+->layout switch? use as call back function?
+
 radiolist always returns ischanged on update()
 
 make sure large data structures are being passed by reference not value

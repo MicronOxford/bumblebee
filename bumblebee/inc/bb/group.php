@@ -2,8 +2,8 @@
 # $Id$
 # Group object (extends dbo)
 
-include_once 'dbrow.php';
-include_once 'textfield.php';
+include_once 'dbforms/dbrow.php';
+include_once 'dbforms/textfield.php';
 
 class Group extends DBRow {
   
@@ -17,12 +17,12 @@ class Group extends DBRow {
     $attrs = array('size' => "48");
     $f->setAttr($attrs);
     $f->required = 1;
-    $f->isInvalidTest = "is_nonempty_string";
+    $f->isValidTest = "is_nonempty_string";
     $this->addElement($f);
     $f = new TextField("longname", "");
     $f->setAttr($attrs);
     $f->required = 1;
-    $f->isInvalidTest = "is_nonempty_string";
+    $f->isValidTest = "is_nonempty_string";
     $this->addElement($f);
     $f = new TextField("addr1", "Address 1");
     $f->setAttr($attrs);
@@ -45,7 +45,7 @@ class Group extends DBRow {
     $f = new TextField("email", "email");
     $f->setAttr($attrs);
     $f->required = 1;
-    $f->isInvalidTest = "is_email_format";
+    $f->isValidTest = "is_email_format";
     $this->addElement($f);
     $f = new TextField("fax", "Fax");
     $f->setAttr($attrs);
@@ -58,6 +58,7 @@ class Group extends DBRow {
   }
 
   function display() {
+    echo preDump($this);
     return $this->displayAsTable();
   }
 

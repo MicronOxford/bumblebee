@@ -2,7 +2,7 @@
 # $Id$
 # Authorisation object
 
-include_once ('inc/typeinfo.php');
+include_once ('dbforms/typeinfo.php');
 
 class SystemAuth {
   var $uid,

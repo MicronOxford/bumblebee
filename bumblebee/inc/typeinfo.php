@@ -16,12 +16,28 @@ function is_alphabetic($var) {
 }
 
 function qw($v) {
+  ///FIXME check magic_quotes-Gpc in here somewhere?
+  // http://www.sitepoint.com/article/php-anthology-3-php-mysql/7
   # remove \ from strings
   $v = preg_replace('/\\\\/', '', $v);
   # replace ' with \' in strings, but not \' with \\', as that would be bad
   $v = preg_replace("/'/", "\\'", $v);
   # return the string in single quotes
   return "'$v'";
+}
+
+/**
+ * xssqw -- quote words against XSS attacks
+ * replace some bad HTML characters with entities to protext against 
+ * cross-site scripting attacks. the generated code should be clean of 
+ * nasty HTML
+**/
+function xssqw($v) {
+  $v = preg_replace('/\'/', '\&#39;', $v);
+  $v = preg_replace('/\"/', '\&#34;', $v);
+  $v = preg_replace('/\</', '\&lt;', $v);
+  $v = preg_replace('/\>/', '\&gt;', $v);
+  return $v;
 }
 
 function is_nonempty_string($v) {

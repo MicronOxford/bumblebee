@@ -2,8 +2,22 @@
 # $Id$
 # database objects (self-initialising and self-updating object)
 
-include_once("dbobject.php");
+include_once('dbobject.php');
 
+/**
+ * Object representing a database row (and extensible to represent joined rows)
+ * Usage:
+ *   #set database connection parameters
+ *   $obj = new DBRow("users", 14, "userid");
+ *   #set the fields required and their attributes
+ *   $obj->addElement(....);
+ *   #connect to the database
+ *   $obj->fill();
+ *   #check to see if user data changes some values
+ *   $obj->update($POST);
+ *   #synchronise with database
+ *   $obj->sync();
+**/
 class DBRow extends DBO {
   var $fatal_sql = 1;
   var $namebase;
@@ -11,70 +25,109 @@ class DBRow extends DBO {
 
   function DBRow($table, $id, $idfield='id') {
     $this->DBO($table, $id, $idfield);
-    $this->fields = array();
+    #$this->fields = array();
   }
-
+  
+  /** update the value of each of the objects fields according to the user 
+   *  input data, and validate the data if appropriate
+  **/
   function update($data) {
-    echo "Looking for updates: ";
-    #echo "<pre>".print_r($data,1),"</pre>";
+    echo "Looking for updates:<br />";
+    // First, check to see if this record is new
     if ($this->id == -1) {
-      $anychanges = 0;
+      // We're a new object, but has the user filled the form in, or is the
+      // user about to fill the form in?
+      $this->newObject = 1;
       foreach ($this->fields as $k => $v) {
-        if ($k != $this->idfield) {
-          $anychanges += (isset($data["$this->namebase$k"]));
-          echo "$k:anychanges = $anychanges<br />";
+        if ($k != $this->idfield && isset($data[$this->namebase.$k])) {
+          echo "$k:changed<br />";
+          $this->newObject = 0;
+          break;
         }
       }
-      if (!$anychanges) {
-        $this->newObject = 1;
-      }
     }
+    $this->isValid = 1;
+    // check each field in turn to allow it to update its data
     foreach ($this->fields as $k => $v) {
-      echo "Check $k";
+      echo "Check $k ";
       echo "ov:".$this->fields[$k]->value;
       $this->changed += $this->fields[$k]->update($data);
-      echo "nv:".$this->fields[$k]->value."<br />";
+      echo "nv:".$this->fields[$k]->value." ";
       if (! $this->newObject) {
-        $this->isvalid += $this->fields[$k]->isvalid();
+        // if this object has not been filled in by the user, then 
+        // suppress validation
+        echo "checking valid";
+        #$this->isValid = $this->isValid && $this->fields[$k]->isValid();
+        $this->isValid += $this->fields[$k]->isValid();
       }
+      echo "<br />";
     }
   }
 
+  /**
+   * synchronise this object's fields with the database.
+   * If the object is new, then INSERT the data, if the object is pre-existing
+   * then UPDATE the data. Fancier fields that are only pretending to
+   * do be simple fields (such as JOINed data) should perform their updates
+   * during the _sqlvals() call 
+   *
+   * Note, this function returns false on success
+  **/
   function sync() {
-    #returns false on success
-    if ($this->changed && $this->isvalid) {
-      $vals = $this->_sqlvals();
+    // If the input isn't valid then bail out straight away
+    if (! ($this->changed && $this->isValid) ) {
+      return -1;
+    }
+    $sql_result = -1;
+    //obtain the *clean* parameter='value' data that has been SQL-cleansed
+    //this will also trip any complex fields to sync
+    $vals = $this->_sqlvals();
+    if ($vals != "") {
       if ($this->id != -1) {
-        #it's an existing record, so update
+        //it's an existing record, so update
         $q = "UPDATE $this->table "
             ."SET $vals "
             ."WHERE $this->idfield=".qw($this->id);
         $sql_result = db_quiet($q, $this->fatal_sql);
       } else {
-        #it's a new record, insert it
-        $q = "INSERT ".$this->table." SET $vals";
+        //it's a new record, insert it
+        $q = "INSERT $this->table SET $vals";
         $sql_result = db_quiet($q, $this->fatal_sql);
+        # FIXME: do we need to check that this was successful in here?
+        //the record number can now be copied into the object's data.
         $this->id = db_new_id();
-        $this->fields['id']->set($this->id);
+        $this->fields[$this->idfield]->set($this->id);
       }
-      return $sql_result;
     }
+    return $sql_result;
   }
 
   function _sqlvals() {
     $vals = array();
-    if ($this->changed) {
-      #echo "This has changed";
-      foreach ($this->fields as $k => $v) {
-        if ($v->changed) {
-          $vals[] = "$k=" . qw($v->value);
+    foreach ($this->fields as $k => $v) {
+      if ($v->changed) {
+        //obtain a string of the form "name='Stuart'" from the field.
+        //Complex fields can use this as a JIT syncing point, and may
+        //choose to return nothing here, in which case their entry is
+        //not added to the return list for the row
+        $sqlval = $this->fields[$k]->sqlSetStr();
+        if ($sqlval) {
+          echo "SQLUpdate: '$sqlval' <br />";
+          $vals[] = $sqlval;
         }
+        #$vals[] = "$k=" . qw($v->value);
       }
     }
     #echo "<pre>"; print_r($vals); echo "</pre>";
-    return join(",",$vals);
+    return join(',',$vals);
   }
 
+  /** 
+   * Add an element into the fields[] array. The element must conform
+   * to the Fields class (or at least its interface!) as that will be
+   * assumed elsewhere in this object.
+   * Inheritable attributes are also set here.
+  **/
   function addElement($el) {
     $this->fields[$el->name] = $el;
     if ($this->fields[$el->name]->editable == -1) {
@@ -92,6 +145,9 @@ class DBRow extends DBO {
     #echo "foo:".$this->fields[$el->name]->name.":bar";
   }
 
+  /** 
+   * Add multiple elements into the fields[] array.
+  **/
   function addElements($els) {
     foreach ($els as $e) {
       #echo $e->text_dump();
@@ -99,6 +155,9 @@ class DBRow extends DBO {
     }
   }
 
+  /**
+   * Fill this object (i.e. its fields) from the SQL query
+  **/
   function fill() {
     $q = "SELECT * FROM "
         ."$this->table "
@@ -111,12 +170,15 @@ class DBRow extends DBO {
       $this->fields[$k]->set($val);
       #echo $this->fields[$k]->text_dump();
     }
-    #in case we get no rows back from the database, we have to have an id
-    #present otherwise we're in trouble next time
+    //in case we get no rows back from the database, we have to have an id
+    //present otherwise we're in trouble next time
     #echo "Completed fill, id=$this->id\n";
     $this->fields['id']->set($this->id);
   }
 
+  /** 
+   * Quick and dirty dump of fields (values only, not a full print_r
+  **/
   function text_dump() {
     $t  = "<pre>$this->dumpheader $this->table (id=$this->id)\n{\n";
     foreach ($this->fields as $k => $v) {
@@ -130,6 +192,6 @@ class DBRow extends DBO {
     return $this->text_dump();
   }
 
-} // class dbo
+} // class dbrow
 
 ?> 

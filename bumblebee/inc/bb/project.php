@@ -2,11 +2,11 @@
 # $Id$
 # Project object (extends dbo), with extra customisations for other links
 
-include_once 'dbrow.php';
-include_once 'textfield.php';
-include_once 'radiolist.php';
-include_once 'droplist.php';
-include_once 'joindata.php';
+include_once 'dbforms/dbrow.php';
+include_once 'dbforms/textfield.php';
+include_once 'dbforms/radiolist.php';
+include_once 'dbforms/droplist.php';
+include_once 'dbforms/joindata.php';
 
 class Project extends DBRow {
   
@@ -19,12 +19,12 @@ class Project extends DBRow {
     $f = new TextField("name", "Name");
     $attrs = array('size' => "48");
     $f->required = 1;
-    $f->isInvalidTest = "is_nonempty_string";
+    $f->isValidTest = "is_nonempty_string";
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new TextField("longname", "");
     $f->required = 1;
-    $f->isInvalidTest = "is_nonempty_string";
+    $f->isValidTest = "is_nonempty_string";
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new RadioList("defaultclass", "Default charging band");
@@ -33,12 +33,14 @@ class Project extends DBRow {
     $newchargename = new TextField("name","");
     $newchargename->namebase = "newcharge-";
     $newchargename->setAttr(array('size' => 24));
-    $newchargename->isInvalidTest = "is_empty_string";
+    $newchargename->isValidTest = "is_nonempty_string";
     $newchargename->suppressValidation = 0;
     $f->list->append(array("-1","Create new: "), $newchargename);
     $f->setAttr($attrs);
     $f->required = 1;
-    $f->isInvalidTest = "is_valid_radiochoice";
+    $f->extendable = 1;
+    $f->editable = 1;
+    $f->isValidTest = "is_valid_radiochoice";
     $this->addElement($f);
     $f = new JoinData("projectgroups",
                        "projectid", $this->id, 
@@ -49,7 +51,7 @@ class Project extends DBRow {
     $groupfield->setFormat("id", "%s", array("name"), " (%s)", array("longname"));
     $f->addElement($groupfield);
     $percentfield = new TextField("grouppc", "");
-    $percentfield->isInvalidTest = "is_number";
+    $percentfield->isValidTest = "is_number";
     $f->addElement($percentfield, "sum_is_100");
     $f->joinSetup("groupid", array('total' => 3));
     $this->addElement($f);
