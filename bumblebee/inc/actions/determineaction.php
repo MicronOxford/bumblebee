@@ -126,7 +126,7 @@ function performAction(&$auth, $action) {
       actionConsumables();
       break;
     case $act['consume']:
-      actionConsume();
+      actionConsume($auth);
       break;
     case $act['masquerade']:
       actionMasquerade($auth);

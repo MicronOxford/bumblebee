@@ -72,7 +72,7 @@ class JoinData extends Field {
       $this->number = $this->format['total'];
       return;
     }
-    $this->number = _countRowsInJoin();
+    $this->number = $this->_countRowsInJoin();
     if (isset($this->format['minspare'])) {
       $this->number += $this->format['minspare'];
       return;
@@ -158,8 +158,13 @@ class JoinData extends Field {
   **/ 
   function _countRowsInJoin() {
     #FIXME: stub function
-    trigger_error("Stub function", E_USER_WARNING);
-    return 5;
+    $q = "SELECT COUNT(*) "
+        ."FROM $this->joinTable "
+        ."WHERE $this->jtLeftIDCol=".qw($this->jtLeftID);
+    #trigger_error("Stub function", E_USER_WARNING);
+    $g = db_get_single($q);
+    preDump($g);
+    return $g[0];
   }
 
   /**

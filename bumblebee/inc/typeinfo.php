@@ -73,6 +73,10 @@ function is_number($v) {
   return is_numeric($v);
 }
 
+function is_cost_amount($v) {
+   return is_numeric($v);
+}
+
 function sum_is_100($vs) {
   #echo "<br/>Checking sum<br/>";
   $sum=0;

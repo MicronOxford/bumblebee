@@ -43,6 +43,7 @@ class Instrument extends DBRow {
     $newclassname->suppressValidation = 0;
     $f->list->append(array("-1","Create new: "), $newclassname);
     $f->setAttr($attrs);
+    $f->extendable = 1;
     $f->required = 1;
     $f->isInvalidTest = "is_valid_radiochoice";
     $this->addElement($f);

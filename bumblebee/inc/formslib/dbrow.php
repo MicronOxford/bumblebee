@@ -15,6 +15,7 @@ include_once('dbobject.php');
  *   $obj->fill();
  *   #check to see if user data changes some values
  *   $obj->update($POST);
+ *   $obj->checkValid();
  *   #synchronise with database
  *   $obj->sync();
 **/
@@ -38,7 +39,7 @@ class DBRow extends DBO {
    *  input data, and validate the data if appropriate
   **/
   function update($data) {
-    #echo "<br/><br/>DBRow:$this->namebase. Looking for updates:<br />";
+    echo "<br/><br/>DBRow:$this->namebase. Looking for updates:<br />";
     // First, check to see if this record is new
     if ($this->id == -1) {
       $this->insertRow = 1;
@@ -47,7 +48,7 @@ class DBRow extends DBO {
       $this->newObject = 1;
       foreach ($this->fields as $k => $v) {
         if ($k != $this->idfield && isset($data[$this->namebase.$k])) {
-          #echo "$k:changed<br />";
+          echo "$k:changed<br />";
           $this->newObject = 0;
           break;
         }
@@ -55,11 +56,12 @@ class DBRow extends DBO {
     }
     // check each field in turn to allow it to update its data
     foreach ($this->fields as $k => $v) {
-      #echo "Check $k ";
-      #echo "ov:".$this->fields[$k]->value;
+      echo "Check $k ";
+      echo "ov:".$this->fields[$k]->value;
       $this->changed += $this->fields[$k]->update($data);
-      #echo "nv:".$this->fields[$k]->value." ";
-      #echo "<br />";
+      echo "nv:".$this->fields[$k]->value." ";
+      echo ($this->changed ? 'changed' : 'not changed');
+      echo "<br />";
     }
     #$this->checkValid();
     return $this->changed;
@@ -95,14 +97,14 @@ class DBRow extends DBO {
   function sync() {
     // If the input isn't valid then bail out straight away
     if (! ($this->changed && $this->isValid) ) {
-      #echo "not syncing: changed=$this->changed valid=$this->isValid<br />";
+      echo "not syncing: changed=$this->changed valid=$this->isValid<br />";
       return -1;
     }
-    #echo "syncing: changed=$this->changed valid=$this->isValid<br />";
+    echo "syncing: changed=$this->changed valid=$this->isValid<br />";
     $sql_result = -1;
     //obtain the *clean* parameter='value' data that has been SQL-cleansed
     //this will also trip any complex fields to sync
-    $vals = $this->_sqlvals();
+    $vals = $this->_sqlvals($this->insertRow);
     if ($vals != "") {
       if (! $this->insertRow) {
         //it's an existing record, so update
@@ -152,15 +154,15 @@ class DBRow extends DBO {
     return $sql_result;
   }
 
-  function _sqlvals() {
+  function _sqlvals($force=0) {
     $vals = array();
     foreach ($this->fields as $k => $v) {
-      if ($v->changed) {
+      if ($v->changed || $force) {
         //obtain a string of the form "name='Stuart'" from the field.
         //Complex fields can use this as a JIT syncing point, and may
         //choose to return nothing here, in which case their entry is
         //not added to the return list for the row
-        $sqlval = $this->fields[$k]->sqlSetStr();
+        $sqlval = $this->fields[$k]->sqlSetStr($force);
         if ($sqlval) {
           #echo "SQLUpdate: '$sqlval' <br />";
           $vals[] = $sqlval;

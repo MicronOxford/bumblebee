@@ -19,11 +19,14 @@ class Field {
       $description,
       $required = 0,
       $value,
-      $ovalue;
+      $ovalue,
+      $defaultValue = '';
+  var $duplicateName;
   var $editable = -1, 
       $changed = 0,
       $isValid = 1,
-      $suppressValidation = -1;
+      $suppressValidation = -1,
+      $useNullValues = 0;
   var $attr,
       $errorclass = "error";
   var $namebase;
@@ -49,15 +52,19 @@ class Field {
     * $data['person-phonenumber'] is used for the value.
    **/
   function update($data) {
-    if (isset($data["$this->namebase$this->name"])) {
+    if (isset($data["$this->namebase$this->name"]) || $this->useNullValues) {
       $newval = issetSet($data, "$this->namebase$this->name");
       #echo "$this->name, $this->value, $newval<br />\n";
       if ($this->editable) {
         // we ignore new values if the field is not editable
-        if ($this->changed = ($this->value != $newval)) {
-          $this->ovalue = $this->value;
+        if ($this->changed = ($this->getValue() != $newval)) {
+          $this->ovalue = $this->getValue();
           $this->value = $newval;
         }
+      } else {
+        //ensure that the value is copied in from the default value if
+        //it is unset.
+        $this->value = $this->getValue();
       }
     }
     return $this->changed;
@@ -85,7 +92,7 @@ class Field {
     if ($this->isValid && $this->suppressValidation == 0) {
       $this->isValid = ValidTester($this->isValidTest, $this->value);
     }
-    #echo ($this->isValid ? "VALID" : "INVALID");
+    echo ($this->isValid ? "VALID" : "INVALID");
     return $this->isValid;
   }
 
@@ -103,7 +110,7 @@ class Field {
    * UPDATE or INSERT statement. i.e. "name='Stuart'".
   **/
   function sqlSetStr() {
-    return $this->name .'='. qw($this->value);
+    return $this->name .'='. qw($this->getValue());
   }
 
   /**
@@ -119,7 +126,7 @@ class Field {
    * quick and dirty display of the field status
   **/
   function text_dump() {
-    $t  = "$this->name =&gt; $this->value ";
+    $t  = "$this->name =&gt; ".$this->getValue();
     $t .= ($this->editable ? "(editable)" : "(read-only)");
     $t .= ($this->isValid ? "" : "(invalid)");
     $t .= "\n";
@@ -133,7 +140,10 @@ class Field {
   function displayInTable() {
   }
 
-} // class Field
+  function getValue() {
+    return (isset($this->value) ? $this->value : $this->defaultValue);
+  }
 
+} // class Field
 
 ?> 

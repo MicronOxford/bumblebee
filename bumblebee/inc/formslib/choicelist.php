@@ -18,7 +18,7 @@ include_once "dbchoicelist.php";
 class ChoiceList extends Field {
   var $list; //contains the DBList object which has the restricted choices
   var $formatter, $formatid;
-  var $defaultValue = '';
+  var $extendable = 0;
 
   function ChoiceList($name, $description='') {
     //inherited members from Field
@@ -35,8 +35,10 @@ class ChoiceList extends Field {
     * a member of the class, rather DBList would be multiply inherited along
     * with Field.
    **/
-  function connectDB($table, $fields='', $restriction='', $order='name') {
-    $this->list = new DBChoiceList($table, $fields, $restriction, $order);
+  function connectDB($table, $fields='', $restriction='', $order='name',
+                      $idfield='id', $limit='', $join='') {
+    $this->list = new DBChoiceList($table, $fields, $restriction, $order,
+                      $idfield, $limit, $join);
   }
 
   function text_dump() {
@@ -113,11 +115,13 @@ class ChoiceList extends Field {
     $this->list->extendable = $this->extendable;
     #echo "ID=".$this->list->id;
     if ($this->changed) {
+      echo "haschanged";
       // only update the list if things have changed
       $this->list->update($this->value, $data);
       $this->changed = $this->list->changed;
       $this->isValid = $this->list->isValid;
     }
+    echo "ChoiceList::Update->isValid= $this->isValid";
     #Field::set($this->list->id);
     #echo $this->list->id;
     #echo " (nv: $this->value)";
@@ -138,7 +142,7 @@ class ChoiceList extends Field {
     * This permits two rounds of checks on the data to be performed.
    **/
   function isValid() {
-    #echo "ChoiceList::isValid=$this->isValid";
+    echo "ChoiceList::isValid=$this->isValid";
     return $this->isValid && Field::isValid();
   }
 
@@ -148,12 +152,12 @@ class ChoiceList extends Field {
     * trip the complex field within us to sync(), which allows us
     * to then know our actual value (at last). 
    **/
-  function sqlSetStr() {
+  function sqlSetStr($force) {
     #echo "Choicelist::sqlSetStr";
     $this->list->sync();
     $this->value = $this->list->id;
     #preDump($this);
-    return Field::sqlSetStr();
+    return Field::sqlSetStr($force);
   }
 
   function prepend($a) {

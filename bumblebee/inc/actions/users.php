@@ -28,17 +28,17 @@ include_once 'inc/dbforms/anchortablelist.php';
     if (isset($PDATA[1])) {
       $PD['id'] = $PDATA[1];
     }
-    #echo "<pre>".print_r($PD,true)."</pre>";
+    preDump($PD);
     return $PD;
   }
 
   function selectUser() {
     global $BASEURL;
     $projectselect = new AnchorTableList("Users", "Select which user to view");
-    $projectselect->connectDB("user", array("id", "name", "longname"));
+    $projectselect->connectDB("users", array("id", "name", "username"));
     $projectselect->list->prepend(array("-1","Create new user"));
     $projectselect->hrefbase = "$BASEURL/users/";
-    $projectselect->setFormat("id", "%s", array("name"), " %s", array("longname"));
+    $projectselect->setFormat("id", "%s", array("name"), " %s", array("username"));
     echo $projectselect->display();
   }
 
@@ -46,6 +46,7 @@ include_once 'inc/dbforms/anchortablelist.php';
     $project = new User($PD['id']);
     $project->update($PD);
     #$project->fields['defaultclass']->invalid = 1;
+    $project->checkValid();
     $project->sync();
     echo $project->display();
     if ($project->id < 0) {

@@ -9,7 +9,7 @@ function ValidTester($validator, $data) {
   if (isset($validator) && is_callable($validator)) {
     $isValid = $validator($data);
   } 
-  #echo "[$data, $validator, $isValid]";
+  echo "[$data, $validator, $isValid]";
   return $isValid;
 }
 

@@ -66,6 +66,7 @@ include_once 'inc/dbforms/anchortablelist.php';
     db_quiet($q, 1);
   }
 
+/*
   function updategroupproject($prid) {
     $delete = "DELETE FROM projectgroups WHERE projectid='$prid'";
     $insert = "INSERT INTO projectgroups (projectid,groupid,grouppc) VALUES ";
@@ -97,5 +98,5 @@ include_once 'inc/dbforms/anchortablelist.php';
     }                                    
     echo "</select>";
   }
-
+*/
 ?> 

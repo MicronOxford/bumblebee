@@ -1,7 +1,12 @@
 $Id$
 
+joindata::_countNumRows counts the rows too early (can we force a recount?)
 
+DBRow now has delete method too (and deleteProject($id) is not qw safe!!!)
 
+clean up action functions.
+should most actions just be invoking objects? (help with namespace)
+should groups, projects, users actions etc be invocations of the *same* obj?
 
 " " to ' ' where possible
 

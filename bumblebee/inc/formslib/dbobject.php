@@ -9,6 +9,7 @@ include_once("sql.php");
 class DBO {
   var $table,
       $idfield,
+      $idfieldreal,
       $id=-1;
   var $fields;
   var $editable = 0, 
@@ -22,7 +23,12 @@ class DBO {
   function DBO($table, $id, $idfield = 'id') {
     $this->table = $table;
     $this->id = $id;
-    $this->idfield = $idfield;
+    if (is_array($idfield)) {
+      $this->idfieldreal = $idfield[0];
+      $this->idfield = $idfield[1];
+    } else {
+      $this->idfield = $idfield;
+    }
     $this->fields = array();
   }
 

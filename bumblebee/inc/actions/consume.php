@@ -1,84 +1,185 @@
 <?php
 # $Id$
-# edit the groups
+# record consumables usage
 
-  function actionConsume()
-  {
-    if (! isset($_POST['consumable']) || $_POST['consumable'] == -1
-        || ! isset($_POST['userid'])) {
-      selectconsumable();
-    } elseif (! isset($_POST['updateconsume'])) {
-      edituse($_POST['consumable']);
+include_once 'inc/consumableuse.php';
+include_once 'inc/consumable.php';
+include_once 'inc/datefunctions.php';
+include_once 'inc/networkfunctions.php';
+include_once 'inc/dbforms/anchortablelist.php';
+
+
+  function actionConsume($auth) {
+    global $BASEURL;
+    $PD = consumeMungePathData();
+    if (isset($PD['list']) && isset($PD['consumableid'])) {
+      listConsumeConsumable($PD['consumableid']);
+    } elseif (isset($PD['list']) && isset($PD['user'])) {
+      listConsumeUser($PD['user']);
+    } elseif (isset($PD['delete'])) {
+      deleteConsumeRecord($PD['id']);
+    } elseif (  
+                (! isset($PD['id'])) && 
+                ( 
+                  (! isset($PD['user'])) || (! isset($PD['consumableid'])) 
+                )
+             ) {
+      if (! isset($PD['user'])) {
+        selectConsumeUser($PD);
+      }
+      if (! isset($PD['consumableid'])) {
+        selectConsumeConsumable($PD);
+      }
     } else {
-      insertuse();
+      editConsumeRecord($PD, $auth);
     }
+    echo "<br /><br /><a href='$BASEURL/consume'>Return to consumable use list</a>";
   }
 
-  function edituse($gpid)
-  {
-    global $USERNAME;
-    $q = "SELECT * "
-        ."FROM consumables "
-        ."WHERE id='$gpid'";
-    $sql = mysql_query($q);
-    if (! $sql) die (mysql_error());
-    $g = mysql_fetch_array($sql);
-    $userid = $_POST['userid'];
-    $q = "SELECT * "
-        ."FROM users "
-        ."WHERE id='$userid'";
-    $sql = mysql_query($q);
-    if (! $sql) die (mysql_error());
-    $u = mysql_fetch_array($sql);
-
-    echo "<table>"
-        ."<tr><th>Record consumable use</th></tr>";
-    echo "<tr><td>Name</td><td>".$g['name']."</td></tr>";
-    echo "<tr><td></td><td>".$g['longname']."</td></tr>";
-    echo "<tr><td>Cost</td><td>".sprintf("$%01.2f ea",$g['cost'])."</td></tr>";
-    echo "<tr><td>Date</td>"
-        ."<td><input type='text' name='usewhen' size='48' value='"
-        .date("Y-m-d")."' /></td></tr>";
-    echo "<tr><td>Added by</td>"
-        ."<td>$USERNAME</td></tr>";
-    echo "<tr><td>Consumed by</td>"
-        ."<td>"
-        .$u['name'] ." (". $u['username'] .")"
-        ."</td></tr>";
-    echo "<td>Project</td><td>";
-    projectselectbox('projectid','select project');
-    echo "</td></tr>";
-    echo "<tr><td>Quantity</td>"
-        ."<td><input type='text' name='quantity' size='48' value='1'/></td></tr>";
-    echo "<tr><td>Comments</td>"
-        ."<td><input type='text' name='comments' size='48'/></td></tr>";
-    echo "<tr><td>Log</td>"
-        ."<td><input type='text' name='log' size='48'/></td></tr>";
-    echo "<tr><td>
-      <button name='action' type='submit' value='consume'>
-        Create record
-      </button>
-      <input type='hidden' name='userid' value='$userid' />
-      <input type='hidden' name='consumable' value='$gpid' />
-      <input type='hidden' name='updateconsume' value='$gpid' />
-    </td></tr>
-    </table>";
+  function consumeMungePathData() {
+    global $PDATA;
+    $PD = array();
+    foreach ($_POST as $k => $v) {
+      $PD[$k] = $v;
+    }
+    $lPDATA = $PDATA;
+    array_shift($lPDATA);
+    while (count($lPDATA)) {
+      if (isset($lPDATA[0]) && $lPDATA[0]=='user' && is_numeric($lPDATA[1])) {
+        array_shift($lPDATA);
+        $PD['user'] = array_shift($lPDATA);
+      } elseif (isset($lPDATA[0]) && $lPDATA[0]=='consumable' && is_numeric($lPDATA[1])) {
+        array_shift($lPDATA);
+        $PD['consumableid'] = array_shift($lPDATA);
+      } elseif (isset($lPDATA[0]) && $lPDATA[0]=='list') {
+        $PD['list'] = 1;
+        array_shift($lPDATA);
+      } elseif (isset($lPDATA[0]) && is_numeric($lPDATA[0])) {
+        $PD['id'] = array_shift($lPDATA);
+      } else {
+        //this record is unwanted... drop it
+        array_shift($lPDATA);
+      }
+    }
+    #$PD['defaultclass'] = 12;
+    preDump($PD);
+    return $PD;
   }
 
-  function insertuse()
-  { 
-    global $UID;
-    $ip = (getenv('HTTP_X_FORWARDED_FOR'))
-        ?  getenv('HTTP_X_FORWARDED_FOR')
-        :  getenv('REMOTE_ADDR');
-    $q = "INSERT INTO consumables_use "
-        ."(usewhen,consumable,quantity,addedby,userid,projectid,ip,comments,log) "
-        ."VALUES "
-        ."("
-        ."'".$_POST['usewhen']."','".$_POST['consumable']."','".$_POST['quantity']."','".$UID."','".$_POST['userid']."','".$_POST['projectid']."','".$ip."','".$_POST['comments']."','".$_POST['log']."'"
-        .")";
-    if (!mysql_query($q)) die(mysql_error());
-    echoSQL($q, 1);
+  function selectConsumeUser($PD) {
+    global $BASEURL;
+    $extrapath = '';
+    $listpath = '';
+    if (isset($PD['consumableid'])) {
+      $extrapath =  "consumable/$PD[consumableid]/";
+      $listpath = "$BASEURL/consume/${extrapath}list";
+    }
+    #$extrapath = (isset($PD['consumableid']) ? "consumable/$PD[consumableid]/" : "");
+    $userselect = new AnchorTableList('Users', 'Select which user is consuming');
+    $userselect->connectDB("users", array('id', 'name', 'username'));
+    $userselect->hrefbase = "$BASEURL/consume/${extrapath}user/";
+    $userselect->setFormat('id', '%s', array('name'), ' %s', array('username'));
+
+    if ($listpath) {
+      echo "<p><a href='$listpath'>View listing</a> "
+          ."for selected consumable</p>\n";
+    }
+    echo $userselect->display();
+  }
+
+  function selectConsumeConsumable($PD) {
+    global $BASEURL;
+    $extrapath = '';
+    $listpath = '';
+    if (isset($PD['user'])) {
+      $extrapath =  "user/$PD[user]/";
+      $listpath = "$BASEURL/consume/${extrapath}list";
+    }
+    $projectselect = new AnchorTableList('Consumables', 'Select which Consumables to use');
+    $projectselect->connectDB('consumables', array('id', 'name', 'longname'));
+    $projectselect->hrefbase = "$BASEURL/consume/${extrapath}consumable/";
+    $projectselect->setFormat('id', '%s', array('name'), ' %s', array('longname'));
+    
+    if ($listpath) {
+      echo "<p><a href='$listpath'>View listing</a> "
+          .'for selected user</p>'."\n";
+    }
+    echo $projectselect->display();
+  }
+
+  function editConsumeRecord($PD, $auth) {
+    $recordid = isset($PD['id']) ? $PD['id'] : -1;
+    $userid   = isset($PD['user']) ? $PD['user'] : -1;
+    $consumableid = isset($PD['consumableid']) ? $PD['consumableid'] : -1;
+    $uid = $auth->uid;
+    $ip = getRemoteIP();
+    $today = isodate(time());
+    $rec = new ConsumableUse($recordid, $userid, $consumableid,
+                              $uid, $ip, $today);
+    $rec->update($PD);
+    $rec->checkValid();
+    #$project->fields['defaultclass']->invalid = 1;
+    $rec->sync();
+    echo $rec->display();
+    if ($rec->id < 0) {
+      $submit = 'Record consumable use';
+      $delete = '0';
+    } else {
+      $submit = 'Update entry';
+      $delete = 'Delete entry';
+    }
+    echo "<input type='submit' name='submit' value='$submit' />";
+    if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
+  }
+
+  function deleteConsumeRecord($id) {
+    $q = "DELETE FROM consumables_use WHERE id='$id'";
+    db_quiet($q, 1);
+  }
+
+  function listConsumeConsumable($consumableID) {
+    global $BASEURL;
+    $extrapath = '';
+    $listpath = '';
+    $consumable = new Consumable($consumableID);
+    echo '<p>Consumption records for '
+        .$consumable->fields['name']->value."</p>\n";
+    $recselect = new AnchorTableList('Consumption Record', 'Select the consumption record to view',3);
+    $recselect->setTableHeadings(array('Date', 'User','Quantity'));
+    $recselect->connectDB('consumables_use',
+                          array(array('consumables_use.id','conid'), 'consumable', 'usewhen', 'username', 'name', 'quantity'),
+                          'consumable='.qw($consumableID),
+                          'usewhen',
+                          array('consumables_use.id','conid'),
+                          NULL,
+                          array('users'=>'userid=users.id'));
+    $recselect->hrefbase = "$BASEURL/consume/";
+    $recselect->setFormat('conid', '%s', array('usewhen'), ' %s (%s)', array('name', 'username'), '%s', array('quantity'));
+
+    echo $recselect->display();
+  }
+
+  function listConsumeUser($userID) {
+    global $BASEURL;
+    $extrapath = '';
+    $listpath = '';
+    $user = new User($userID);
+    echo '<p>Consumption records for '
+        .$user->fields['username']->value
+        .' ('.$user->fields['name']->value.")</p>\n";
+    $recselect = new AnchorTableList('Consumption Record', 'Select the consumption record to view',3);
+    $recselect->setTableHeadings(array('Date', 'Item','Quantity'));
+    $recselect->connectDB('consumables_use',
+                          array(array('consumables_use.id','conid'), 'consumable', 'usewhen', 'name', 'longname', 'quantity'),
+                          'userid='.qw($userID),
+                          'usewhen',
+                          array('consumables_use.id','conid'),
+                          NULL,
+                          array('consumables'=>'consumable=consumables.id'));
+    $recselect->hrefbase = "$BASEURL/consume/";
+    $recselect->setFormat('conid', '%s', array('usewhen'), ' %s (%s)', array('name', 'longname'), '%s', array('quantity'));
+
+    echo $recselect->display();
   }
 
 ?> 

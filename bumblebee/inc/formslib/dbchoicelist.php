@@ -26,7 +26,8 @@ include_once("dbobject.php");
   *   $f->list->append(array("-1","Create new: "), $newentryfield);
  **/
 class DBChoiceList extends DBO {
-  var $restriction,
+  var $join,
+      $restriction,
       $order,
       $limit;
   var $editable = 0,
@@ -36,6 +37,7 @@ class DBChoiceList extends DBO {
   var $length;
   var $appendedfields,
       $prependedfields;
+  var $DEBUG = 1;
 
   /** 
     * Construct a new DBList object based on:
@@ -48,12 +50,20 @@ class DBChoiceList extends DBO {
     *     * with an SQL LIMIT statement of $limit
    **/
   function DBChoiceList($table, $fields='', $restriction='',
-                  $order='', $idfield='id', $limit='') {
+                  $order='', $idfield='id', $limit='', $join='') {
     $this->DBO($table, "", $idfield);
     $this->fields = (is_array($fields) ? $fields : array($fields));
     $this->restriction = $restriction;
+    #$this->idfield = $idfield;
     $this->order = $order;
     $this->limit = $limit;
+    if (is_array($join)) {
+      $this->join = $join;
+    } elseif ($join == '') {
+      $this->join = array();
+    } else {
+      $this->join = array(0=>array($join,"$join.id=${join}id"));
+    }
     $this->choicelist = array();
     $this->appendedfields = array();
     $this->prependedfields = array();
@@ -65,11 +75,24 @@ class DBChoiceList extends DBO {
     * members (->table etc).
    **/
   function fill() {
-    $f = implode(", ", $this->fields);
-    $q = "SELECT $this->idfield, $f "
+    $fields = $this->fields;
+    $fields[] = isset($this->idfieldreal) ? 
+                      array($this->idfieldreal, $this->idfield) :
+                      $this->idfield;
+    $aliasfields = array();
+    foreach ($fields as $v) {
+      $aliasfields[] = is_array($v) ? "$v[0] AS $v[1]" : $v;
+    }
+    $f = implode(", ", $aliasfields);
+    $joinSyntax = '';
+    foreach ($this->join as $k => $v) {
+      $joinSyntax .= 'LEFT JOIN '.$k.' ON '.$v.' ';
+    }
+    $q = "SELECT $f "
         ."FROM $this->table "
         #."WHERE $this->restriction "
         #."ORDER BY $this->order "
+        .$joinSyntax
         .($this->restriction != '' ? "WHERE $this->restriction " : '')
         .($this->order != '' ? "ORDER BY $this->order " : '')
         .($this->limit != '' ? "LIMIT $this->limit " : '');
@@ -78,6 +101,7 @@ class DBChoiceList extends DBO {
       //then the SQL query was unsuccessful and we should bail out
       return 0;
     } else {
+      $this->choicelist = array();
       //FIXME mysql specific array
       while ($g = mysql_fetch_array($sql)) {
         $this->choicelist[] = $g; #['key']] = $g['value'];
@@ -166,17 +190,17 @@ class DBChoiceList extends DBO {
    * $data, which is passed on to any appended or prepended fields.
    **/
   function update($newval, $data) {
-    /*
-    echo "DBChoiceList update: ";
-    echo "(changed=$this->changed)";
-    echo "(id=$this->id)";
-    echo "(newval=$newval)";
-    */
+    if ($this->DEBUG) {
+      echo "DBChoiceList update: ";
+      echo "(changed=$this->changed)";
+      echo "(id=$this->id)";
+      echo "(newval=$newval)";
+    }
     if (isset($newval)) {
       //check to see if the newval is legal (does it exist on our choice list?)
       $isExisting = 0;
       foreach ($this->choicelist as $k => $v) {
-        //echo "($isExisting:".$v['id'].":$newval)";
+        if ($this->DEBUG) echo "($isExisting:".$v['id'].":$newval)";
         if ($v['id'] == $newval && $v['id'] >= 0) {
           $isExisting = 1;
           break;
@@ -184,14 +208,14 @@ class DBChoiceList extends DBO {
       }
       if ($isExisting) {
         // it is a legal, existing value, so we adopt it 
-        //echo "isExisting";
+        if ($this->DEBUG) echo "isExisting";
         $this->changed += ($newval != $this->id);
         $this->id = $newval;
         $this->isValid = 1;
         //isValid handling done by the Field that inherits it
       } elseif ($this->extendable) {
         // then it is a new value and we should accept it
-        //echo "isExtending";
+        if ($this->DEBUG) echo "isExtending";
         $this->changed += 1;
         //$this->id = $newval;
         //If we are extending the list, then we should have a negative
@@ -207,7 +231,7 @@ class DBChoiceList extends DBO {
           }
         }
       } else {
-        #echo "isInvalid";
+        if ($this->DEBUG) echo "isInvalid";
         // else, it's a new value and we should not accept it
         $this->isValid = 0;
       }

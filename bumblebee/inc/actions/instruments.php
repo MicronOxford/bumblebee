@@ -34,6 +34,7 @@ include_once 'inc/dbforms/anchortablelist.php';
   function editInstruments($PD) {
     $instrument = new Instrument($PD['id']);
     $instrument->update($PD);
+    $instrument->checkValid();
     $instrument->sync();
     #echo $instrument->text_dump();
     echo $instrument->display();
