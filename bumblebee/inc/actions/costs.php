@@ -2,49 +2,63 @@
 # $Id$
 # edit the groups
 
-  function actionCosts() {
-    if (! isset($_POST['category'])) {
-      selectcost();
-    } elseif (! isset($_POST['updatecategory'])) {
-      editcost($_POST['category']);
+include_once 'inc/costs.php';
+include_once 'inc/dbforms/anchortablelist.php';
+
+class ActionCosts extends ActionAction {
+
+  function ActionCosts($auth, $pdata) {
+    parent::ActionAction($auth, $pdata);
+    $this->mungePathData();
+  }
+
+  function go() {
+    global $BASEURL;
+    if (! isset($this->PD['category'])) {
+      $this->selectCost();
+    } else {
+      $this->editCost();
+    }
+    /* elseif (! isset($this->PD['updatecategory'])) {
+      $this->editCost($_POST['category']);
     #} elseif ($_POST['delete'] == 1) {
     #  deletecost($_POST['category']);
     } else {
-      updatecost($_POST['updatecategory']);
-    }
+      $this->updatecost($_POST['updatecategory']);
+    }*/
+    echo "<br /><br /><a href='$BASEURL/costs'>Return to costs list</a>";
   }
 
   function selectcost() {
-    echo <<<END
-    <table>
-    <tr><th>Select cost category to view/edit</th></tr>
-    <tr><td>
-      <select name="category">
-        <option value='-1'>--- Create new category</option>
-END;
-        $q = "SELECT id,name "
-            ."FROM userclass "
-            #."LEFT JOIN costs ON (costs.id=stdrates.costid) "
-            ."ORDER BY name ";
-        $sql = mysql_query($q);
-        if (! $sql) die (mysql_error());
-        while ($row = mysql_fetch_row($sql))
-        {
-          echo "<option value='$row[0]'>$row[1]</option>";
-        }                                    
-    echo <<<END
-      </select>
-    </td></tr>
-    <tr><td>
-      <button name="action" type="submit" value="costs">
-        Edit/create category
-      </button>
-    </td></tr>
-    </table>
-END;
+    global $BASEURL;
+    $select = new AnchorTableList("Cost", "Select which user class to view usage costs");
+    $select->connectDB("userclass", array("id", "name"));
+    $select->list->prepend(array("-1","Create new user class"));
+    $select->hrefbase = "$BASEURL/groups/";
+    $select->setFormat("id", "%s", array("name"));
+    #echo $groupselect->list->text_dump();
+    echo $select->display();
   }
 
-  function editcost($userclass) {
+  function editCost() {
+    $cost = new Cost($this->PD['id']);
+    $cost->update($this->PD);
+    $cost->checkValid();
+    $cost->sync();
+    #echo $group->text_dump();
+    echo $cost->display();
+    if ($cost->id < 0) {
+      $submit = "Create new user class";
+      $delete = "0";
+    } else {
+      $submit = "Update entry";
+      $delete = "Delete entry";
+    }
+    echo "<input type='submit' name='submit' value='$submit' />";
+    if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
+  }
+  
+  function editcostold($userclass) {
     $i=1;
     if ($userclass != "-1") {
       #$q = "SELECT stdrates.*,costs.*,instruments.name,instruments.longname "
@@ -183,5 +197,6 @@ END;
     if (!mysql_query($q)) die(mysql_error());
     echoSQL($q);
   }
+}
 
 ?> 

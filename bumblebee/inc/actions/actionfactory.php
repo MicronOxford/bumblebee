@@ -90,7 +90,7 @@ class ActionFactory {
     global $action;
     #$_POST['action']=$newaction;
     $this->_verb=$newaction;
-    $this->_makeAction();
+    $this->_action = $this->_makeAction();
     $this->go();
   }
   
@@ -151,13 +151,14 @@ class ActionFactory {
         return new ActionConsumables($this->_auth, $this->PDATA);
       case $act['consume']:
         return new ActionConsume($this->_auth, $this->PDATA);
-      case $act['masquerade']:
-        /*return new ActionMasquerade($auth);
+      /*case $act['masquerade']:
+        return new ActionMasquerade($auth);
+        */
       case $act['costs']:
         return new ActionCosts();
       case $act['specialcosts']:
         return new ActionSpecialCosts();
-      case $act['bookmeta']:
+      /*case $act['bookmeta']:
         return new ActionBookmeta();
       case $act['adminconfirm']:
         return new ActionAdminconfirm();*/
