@@ -1,12 +1,40 @@
 $Id$
 
+cookies for auth (function setcookie)
+remove all "buttons"
+use links (using PATHINFO?) for non form submit actions
+if(isset($PATH_INFO)) {
+     $viewcode = explode('/', $PATH_INFO);
+       $num = count($viewcode);
+       if($num % 2 == 0) {
+           $viewcode[] = '';
+           $num++;
+       }
+       for($i = 1; $i < $num; $i += 2) {
+
+           $$viewcode[$i] = $viewcode[$i+1];
+
+         }
+   }
+
+$arr = explode('/', $PATH_INFO);
+$_SERVER['PATH_INFO']
+list($first, $last) = explode('/', substr($PATH_INFO,1));
+
 locking on making bookings
+locking of records while editing?
 
 permit deletion of instrument classes
 
 allow user to change password
 
 escape SQL input for bad characters. esp '. (magic_quotes_gpc solves this?)
+escape HTML in output?
+  echo "<a href='" . htmlspecialchars("/nextpage.php?stage=23&data=" .
+          urlencode($data)) . "'>\n";
+      echo "<textarea name='mydata'>\n";
+      echo htmlspecialchars($data)."\n";
+      echo "</textarea>";
 
 streamline creation of project with only one group
 streamline creation of project when creating a user
@@ -17,8 +45,6 @@ work out confirmation emails and when adminconfirm is necessary
 create flag for compulsory emails for some events (e.g. booking Raman)
 
 select all/deselect all javascript buttons where applicable
-
-locking of records while editing?
 
 * unbook emails
 
