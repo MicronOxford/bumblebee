@@ -8,7 +8,7 @@ include 'config.php';
 include 'db.php'; 
 include 'inc/auth.php';
 #var $auth = new Auth();
-$auth = new Auth;
+$auth = new SystemAuth;
 
 #ALL is ready to roll now, start the output again.
 ob_end_flush();

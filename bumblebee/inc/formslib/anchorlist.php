@@ -15,18 +15,28 @@ class AnchorList extends ChoiceList {
     #ChoiceList::ChoiceList($name, $description);
   }
 
+  function format($data) {
+    $t .= "<a href='$this->hrefbase".$data[$this->formatid]."'$aclass>"
+         .$this->formatter[0]->format($data)
+         ."</a>"
+         .$this->formatter[1]->format($data);
+    return $t;
+  }
+
   function display() {
     $ulclass = (isset($this->ulclass) ? " class='$this->ulclass'" : "");
     $liclass = (isset($this->liclass) ? " class='$this->liclass'" : "");
     $aclass  = (isset($this->aclass) ? " class='$this->aclass'" : "");
     $t  = "<ul title='$this->description'$ulclass>\n";
-    if (is_array($this->choices->list)) {
-      foreach ($this->choices->list as $k => $v) {
+    if (is_array($this->list->list)) {
+      foreach ($this->list->list as $k => $v) {
         $t .= "<li$liclass>";
-        $t .= "<a href='$this->hrefbase".$v['key']."'$aclass>".$v['value']."</a>";
-        if (isset($v['longvalue']) && $v['longvalue'] != "") {
-          $t .= " (".$v['longvalue'].")";
-        }
+        #$t .= print_r($v, true);
+        $t .= $this->format($v);
+        #$t .= "<a href='$this->hrefbase".$v['key']."'$aclass>".$v['value']."</a>";
+        #if (isset($v['longvalue']) && $v['longvalue'] != "") {
+          #$t .= " (".$v['longvalue'].")";
+        #}
         $t .= "</li>\n";
       }
     }
@@ -34,7 +44,7 @@ class AnchorList extends ChoiceList {
     return $t;
   }
 
-} // class ChoiceList
+} // class AnchorList
 
 
 ?> 

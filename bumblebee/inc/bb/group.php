@@ -2,14 +2,13 @@
 # $Id$
 # Group object (extends dbo)
 
-include_once 'dbobject.php';
+include_once 'dbrow.php';
 include_once 'textfield.php';
 
-class Group extends DBO {
+class Group extends DBRow {
   
   function Group($id) {
-    $this->DBO("groups", $id);
-    #DBO::DBO("groups", $id);
+    $this->DBRow("groups", $id);
     $this->editable = 1;
     $f = new TextField("id", "Group ID");
     $f->editable = 0;

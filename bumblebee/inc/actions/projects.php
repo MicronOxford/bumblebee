@@ -3,7 +3,6 @@
 # edit the projects
 
 include_once 'inc/project.php';
-include_once 'inc/simplelist.php';
 include_once 'inc/anchorlist.php';
 
 
@@ -49,14 +48,14 @@ include_once 'inc/anchorlist.php';
   function selectProject() {
     global $BASEURL;
     #$projectlist = new SimpleList("projects", "id", "CONCAT(name, ' (', longname, ')')");
-    $projectlist = new SimpleList("projects", "id", "name", "longname");
-    $projectlist->prepend("-1","Create new project");
     #$grouplist->append("-1","Create new project");
     #echo $projectlist->display();
     $projectselect = new AnchorList("Projects", "Select which project to view");
-    $projectselect->setChoices($projectlist);
+    $projectselect->connectDB("projects", array("id", "name", "longname"));
+    $projectselect->list->prepend(array("-1","Create new project"));
     $projectselect->ulclass = "selectlist";
     $projectselect->hrefbase = "$BASEURL/projects/";
+    $projectselect->setFormat("id", "%s"," (%s)", array("name"), array("longname"));
     echo $projectselect->display();
   }
 

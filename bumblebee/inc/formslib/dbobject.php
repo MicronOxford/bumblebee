@@ -16,7 +16,7 @@ class DBO {
   var $fatal_sql = 1;
   var $namebase;
 
-  function DBO($table, $id) {
+  function DBRow($table, $id) {
     $this->table = $table;
     $this->id = $id;
     $this->fields = array();

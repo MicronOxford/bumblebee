@@ -16,7 +16,7 @@ class RadioList extends ChoiceList {
   }
 
   function selectable() {
-    foreach ($this->choices->list as $k => $v) {
+    foreach ($this->list->list as $k => $v) {
       $selected = ($v['key'] == $this->value ? " checked='1' " : "");
       #echo "$k, ".$v['key'].", $this->value, $selected <br />";
       $t .= "<input type='radio' name='$this->name' ".
@@ -24,8 +24,8 @@ class RadioList extends ChoiceList {
       if (isset($v['longvalue']) && $v['longvalue'] != "") {
         $t .= " (".$v['longvalue'].")";
       }
-      if (isset($v['field']) && $v['field']) {
-        $t .= $v['field']->selectable();
+      if (isset($v['_field']) && $v['_field']) {
+        $t .= $v['_field']->selectable();
       }
       $t .= "<br />\n";
     }

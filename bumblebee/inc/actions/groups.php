@@ -3,7 +3,6 @@
 # edit the groups
 
 include_once 'inc/group.php';
-include_once 'inc/simplelist.php';
 include_once 'inc/anchorlist.php';
 
   function actionGroup() {
@@ -52,14 +51,16 @@ include_once 'inc/anchorlist.php';
   function selectgroup() {
     global $BASEURL;
     #$grouplist = new SimpleList("groups", "id", "CONCAT(name, ' (', longname, ')')");
-    $grouplist = new SimpleList("groups", "id", "name", "longname");
-    $grouplist->prepend("-1","Create new group");
     #$grouplist->append("-1","Create new group");
     #echo $grouplist->display();
     $groupselect = new AnchorList("Group", "Select which group to view");
-    $groupselect->setChoices($grouplist);
+    $groupselect->connectDB("groups", array("id", "name", "longname"));
+    $groupselect->list->prepend(array("-1","Create new group"));
+    //$groupselect->setChoices($grouplist);
     $groupselect->ulclass = "selectlist";
     $groupselect->hrefbase = "$BASEURL/groups/";
+    $groupselect->setFormat("id", "%s"," (%s)", array("name"), array("longname"));
+    #echo $groupselect->list->text_dump();
     echo $groupselect->display();
   }
 

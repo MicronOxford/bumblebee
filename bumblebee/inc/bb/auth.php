@@ -4,7 +4,7 @@
 
 include_once ('inc/typeinfo.php');
 
-class Auth {
+class SystemAuth {
   var $uid,
       $username,
       $name,
@@ -12,8 +12,9 @@ class Auth {
       $_loggedin=0,
       $_error;
   var $table;
+  var $DEBUGMODE = 1;
 
-  function Auth($table="users") {
+  function SystemAuth($table="users") {
     session_start();
     $this->table = $table;
     if (isset($_SESSION['uid'])) {
@@ -65,9 +66,9 @@ class Auth {
     }
     #then there is data provided to us in a login form
     # need to verify if it is valid login info
-    $epass = md5($_POST['pass']);
-    #check that the pass is correct
+    $PASSWORD = $_POST['pass'];
     $USERNAME = $_POST['username'];
+    $epass = md5($PASSWORD);
     $q = "SELECT passwd,id,isadmin,suspended "
         ."FROM ".$this->table." WHERE username='$USERNAME'";
     $sql = mysql_query($q);
@@ -77,7 +78,12 @@ class Auth {
       return 0;
     }
     $row = mysql_fetch_array($sql);
-    if ($epass != $row['passwd']) {
+    if ($row['passwd'] == 'radius') {
+      if (!$this->_auth_via_radius($USERNAME, $PASSWORD)) {
+      $this->_error = "Login failed: radius auth failed";
+        return 0;
+      }
+    } elseif ($row['passwd'] != $epass) {
       $this->_error = "Login failed: bad password";
       return 0;
     }
@@ -92,5 +98,19 @@ class Auth {
     $_SESSION['isadmin'] = $this->isadmin = $row['isadmin'];
     return 1;
   }
-}
+ 
+  function _auth_via_radius($username, $password) {
+    require_once "Auth/Auth.php";
+    $params = array(
+                "servers" => array(array("localhost", 0, "secretKey", 3, 3)),
+                "authtype" => "PAP"
+                );
+    $a = new Auth("RADIUS", $params);
+    $a->username = $username;
+    $a->password = $password;
+    $a->start();
+    return ($a->getAuth());
+  }
+
+} //SystemAuth
 ?> 

@@ -2,15 +2,14 @@
 # $Id$
 # Project object (extends dbo), with extra customisations for other links
 
-include_once 'dbobject.php';
+include_once 'dbrow.php';
 include_once 'textfield.php';
-include_once 'simplelist.php';
 include_once 'radiolist.php';
 
-class Project extends DBO {
+class Project extends DBRow {
   
   function Project($id) {
-    DBO::DBO("projects", $id);
+    $this->DBRow("projects", $id);
     $this->editable = 1;
     $f = new TextField("id", "Group ID");
     $f->editable = 0;
@@ -23,12 +22,11 @@ class Project extends DBO {
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new RadioList("defaultclass", "Default charging band");
-    $bands = new SimpleList("userclass", "id", "name", "NULL");
+    $f->connectDB("userclass", array("id", "name"));
     $newchargename = new TextField("name","");
     $newchargename->namebase = "newcharge-";
     $newchargename->setAttr(array('size' => 24));
-    $bands->append("-1","Create new: ", $newchargename);
-    $f->setChoices($bands);
+    $f->list->append(array("-1","Create new: "), $newchargename);
     $f->setAttr($attrs);
     $this->addElement($f);
     $this->fill();
