@@ -23,7 +23,7 @@ class TimeField extends Field {
   var $droplist;
 
   
-  var $DEBUG = 10;
+  var $DEBUG = 0;
   
   function TimeField($name, $longname="", $description="") {
     parent::Field($name, $longname, $description);
@@ -54,7 +54,7 @@ class TimeField extends Field {
   }
 
   function selectable() {
-    echo "TIME=".$this->time->timestring."\n";
+    #echo "TIME=".$this->time->timestring."\n";
     $this->_determineRepresentation();
     $this->setTime($this->getValue());
     $t = '';
@@ -80,7 +80,7 @@ class TimeField extends Field {
   
   function hidden() {
     return "<input type='hidden' name='$this->namebase$this->name' "
-           ."value='".xssqw($this->value)."' />";
+           ."value='".xssqw($this->getValue())."' />";
   }
 
   /**
@@ -98,10 +98,9 @@ class TimeField extends Field {
    *
    */
   function _determineRepresentation() {
-    echo "manual = $this->_manualRepresentation\n";
     if ($this->_manualRepresentation != TF_AUTO) {
       $this->representation = $this->_manualRepresentation;
-    } elseif ($this->isStart || ! $this->editable || $this->slot->numslotsFollowing<2) {
+    } elseif ($this->isStart || ! $this->editable || $this->slot->numslotsFollowing < 1) {
       $this->representation = TF_FIXED;
     } elseif ($this->_fixedTimeSlots()) {
       $this->representation = TF_DROP;
@@ -120,8 +119,7 @@ class TimeField extends Field {
    */
   function _prepareDropDown() {
     $this->droplist = new DropList($this->name, $this->description);
-    $possibleTimes = $this->_obtainPossibleTimes();
-    $this->droplist->setValuesArray($possibleTimes, 'id', 'iv');
+    $this->droplist->setValuesArray($this->slot->allSlotDurations(), 'id', 'iv');
     $this->droplist->setFormat('id', '%s', array('iv'));
   }
   
@@ -131,28 +129,14 @@ class TimeField extends Field {
    * @access private
    */
   function _fixedTimeSlots() {
-    $this->log('Are time slots fixed?', 10);
-    if (! $this->isStart || $this->slotStart->ticks == 0) {
-      $this->log('No ticks for date so can\'t do fixed slots',8);
-      return false;
-    }
-//     $startslot = $this->list->findSlotStart($date);
-    $this->fixedTimeSlots = $this->slot->numSlotsFollowing;
-    $this->log('Slot starts at '.$startslot->datetimestring.': '.$this->fixedTimeSlots, 8);
-    return $this->fixedTimeSlots;
-  }
-  
-  /**
-   * what list of times should be used for the dropdown list
-   */
-  function _obtainPossibleTimes() {
-    $date = new SimpleDate($this->date);
-    $date->setTime($this->time);
-    if ($this->isStart) {
-      return $this->list->allSlotStart($date);
+    if ($this->slotStart->ticks == 0) {
+      $this->fixedTimeSlots = false;
     } else {
-      return $this->list->allSlotDurations($date);
+      $this->fixedTimeSlots = $this->slot->numslotsFollowing;
     }
+    $this->log('Slot starts at '.$this->slotStart->datetimestring
+                .', numFollowing: '.$this->fixedTimeSlots, 8);
+    return $this->fixedTimeSlots;
   }
   
   /** 
@@ -165,7 +149,6 @@ class TimeField extends Field {
     } else {
       $this->setDateTime($value);
     }
-//     $this->calcDropDown();
   }
 
   /**
@@ -177,7 +160,7 @@ class TimeField extends Field {
    */
   function update($data) {
     if (parent::update($data)) {
-      $this->calDropDown();
+//       $this->calDropDown();
     }
     return $this->changed;
   }
@@ -188,12 +171,10 @@ class TimeField extends Field {
    * @param string $time a date-time string (YYYY-MM-DD HH:MM:SS)
    */
   function setDateTime($time) {
-    echo "SETDATETIME = $time\n";
+    #echo "SETDATETIME = $time\n";
     $date = new SimpleDate($time);
     $this->date = $date;
     $this->setTime($date->timePart());
-/*    $this->time->setStr($date->timePart());
-    $this->set($this->time->timestring);*/
   }
   
   /**
@@ -202,10 +183,9 @@ class TimeField extends Field {
    * @param string $time a time string (HH:MM)
    */
   function setTime($time) {
-    echo "SETTIME = $time\n";
+    #echo "SETTIME = $time\n";
     $this->time = new SimpleTime($time);
     $this->value = $this->time->timestring;
-//     $this->set($this->time->timestring);
   }
 
   /** 
@@ -215,7 +195,6 @@ class TimeField extends Field {
    */
   function setSlotPicture($list) {
     $this->list = new TimeSlotRule($list);
-//     $this->calcDropDown();
   }
 
   /** 
@@ -226,8 +205,6 @@ class TimeField extends Field {
   function setSlotStart($date) {
     $this->slotStart = new SimpleDate($date);
     $this->slot = $this->list->findSlotByStart($this->slotStart);
-    preDump($this->slot);
-//     $this->calcDropDown();
   }
 
   function log($logstring, $prio=10) {

@@ -63,24 +63,16 @@ class DateTimeField extends Field {
    */
   function calcDateTimeParts() {
     $val = ($this->getValue() == '') ? 0 : $this->getValue();
-    echo "datetime=$val\n";
+    #echo "datetime=$val\n";
     $this->time->setDateTime($val);
-//     $this->time->calcDropDown();
     $this->date->setDate($val);
-//     } else {
-/*
-      $this->time->set('');
-      $this->date->setDate('');
-    }*/
   }
   
   /** 
    * overload the parent's value as we need to do some magic in here
    */
   function set($value) {
-    echo "V=$value\n";
-    #preDump(debug_backtrace());
-    #preDump($this);
+    #echo "V=$value\n";
     parent::set($value);
     $this->calcDateTimeParts();
   }
