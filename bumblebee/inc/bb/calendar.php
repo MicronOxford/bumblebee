@@ -8,6 +8,7 @@ include_once 'bookings/vacancy.php';
 include_once 'bookings/cell.php';
 include_once 'bookings/matrix.php';
 include_once 'bookings/bookingdata.php';
+include_once 'bookings/timeslotrule.php';
 
 class Calendar {
   var $start;
@@ -21,12 +22,15 @@ class Calendar {
   var $todayClass = '';
   var $rotateDayClass = '';
   var $rotateDayClassDatePart = '';
+  var $timeslots;
+  
+  var $DEBUG_CAL = 0;
   
   function Calendar($start, $stop, $instrument) {
     $this->start = $start;
     $this->stop  = $stop;
     $this->instrument = $instrument;
-    echo "Creating calendar from $start->datestring to $stop->datestring<br />\n";
+    $this->log("Creating calendar from $start->datestring to $stop->datestring");
     $this->_fill();
     $this->_normalise();
   }
@@ -36,6 +40,10 @@ class Calendar {
     $this->todayClass = $today;
     $this->rotateDayClass = is_array($day) ? $day : array($day);
     $this->rotateDayClassDatePart = $dayrotate;
+  }
+  
+  function setTimeSlotPicture($pic) {
+    $this->timeslots = new TimeSlotRule($pic);
   }
 
   function _fill() {
@@ -68,11 +76,10 @@ class Calendar {
    * Bookings are NOT restricted to remaining on one day (i.e. a booking from
    * 20:00:00 until 10:00:00 the next day is OK.
    *
-   * FIXME: day to day rollover not yet implemented
   **/
   function _normalise() {
     $this->numDays = $this->stop->partDaysBetween($this->start);
-    
+    $this->log("Creating calendar for $this->numDays days");
     //blat over the booking list so we can create the normalised list
     $bookings = $this->bookinglist;
     $this->bookinglist = array();
@@ -86,51 +93,45 @@ class Calendar {
     $bvlist = array();
     $booking = 0;
     $now = $this->start;
-    echo "Normalising bookings<br />\n";    
+    $this->log('Normalising bookings');    
     while ($now->ticks < $this->stop->ticks) {
       if ($now->ticks < $bookings[$booking]->start->ticks) {
         // then we should create a pseudobooking
-        echo "Found vacancy:";
-        echo "NOW=".$now->datetimestring . "<br />\n";
         $v = new Vacancy();
         $stoptime = new SimpleDate($bookings[$booking]->start->ticks);
         $v->setTimes($now, $stoptime);
         $bvlist[] = $v;
         $now = $stoptime;
-        echo "Created vacancy: ".$v->start->datetimestring." to 
-                              ".$v->stop->datetimestring.".<br />\n";
+        $this->log('Created vacancy: '.$v->start->datetimestring
+                  .' to '.$v->stop->datetimestring);
       } else {
         // then this is the current timeslot
-        echo "Found booking:";
-        echo $now->datetimestring . "<br />\n";
         $bvlist[] = $bookings[$booking];
         $now = $bookings[$booking]->stop;
-        echo "Included booking: ".
-                $bookings[$booking]->start->datetimestring ." to "
-               .$bookings[$booking]->stop->datetimestring.".<br />\n";
+        $this->log('Included booking: '.
+                $bookings[$booking]->start->datetimestring .' to '
+               .$bookings[$booking]->stop->datetimestring);
         $booking++;
       }
     }
     
-    echo "Breaking up bookings<br />\n";    
+    $this->log('Breaking up bookings');
     //Second: break bookings over day boundaries
     $booking=0;
     for ($bv=0; $bv < count($bvlist); $bv++) {
-      echo "considering booking #$bv:<br />";
+      $this->log('considering booking #'.$bv);
       $cbook = $bvlist[$bv];
       $cbook->original = $cbook;     
       $today = $bvlist[$bv]->start; $today->dayRound();
       do {  //until the current booking has been broken up across day boundaries(
-        echo "start=".$bvlist[$bv]->start->datetimestring
-              ." stop=".$bvlist[$bv]->stop->datetimestring
-              ."<br />\n";
+        $this->log('start='.$bvlist[$bv]->start->datetimestring
+              .' stop='.$bvlist[$bv]->stop->datetimestring);
         $this->bookinglist[$booking] = $cbook;
         $tomorrow = $today; $tomorrow->addDays(1); $tomorrow->dayRound();
         $this->bookinglist[$booking]->start->max($today);
         $this->bookinglist[$booking]->stop->min($tomorrow);
         $today->addDays(1); $today->dayRound();
         $booking++;
-        echo "CHECK: ".$this->bookinglist[$booking-1]->stop->datetimestring ." > " . $tomorrow->datetimestring."<br/>";
       } while ($this->bookinglist[$booking-1]->original->stop->ticks > $tomorrow->ticks);
     }
   }
@@ -305,6 +306,12 @@ class Calendar {
     }
     $t .= "</table>";
     return $t;
+  }
+  
+  function log ($string, $prio=10) {
+    if ($prio <= $this->DEBUG_CAL) {
+      echo $string."<br />\n";
+    }
   }
 
 } //class Calendar

@@ -5,12 +5,12 @@
 include_once 'booking.php';
 
 class BookingData {
-  var $start,
-      $stop,
-      $instrument,
-      $id;
-  var $bookinglist,
-      $booking;
+  var $start;
+  var $stop;
+  var $instrument;
+  var $id;
+  var $bookinglist;
+  var $booking;
   var $fatal_sql = 1;
   
   function BookingData($arr) {

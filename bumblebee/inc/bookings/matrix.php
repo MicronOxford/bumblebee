@@ -3,10 +3,10 @@
 # Booking matrix object for display in a table
 
 class BookingMatrix {
-  var $dayStart,
-      $dayStop,
-      $day, 
-      $granularity;
+  var $dayStart;
+  var $dayStop;
+  var $day; 
+  var $granularity;
   var $bookings;
   var $numRows;
   var $rows;

@@ -47,7 +47,13 @@ class SimpleDate {
   }
 
   function addTime($t) {
-    $this->addTimeParts($t->part('s'),$t->part('i'),$t->part('h'),0,0,0);
+    //echo $t->part('s').'-';
+    //echo $t->part('i').'-';
+    //echo $t->part('H')."\n";
+    //either code works fine, but doing this directly will be much faster
+    $this->ticks += $t->seconds();
+    $this->_setStr();
+    //$this->addTimeParts($t->part('s'),$t->part('i'),$t->part('H'),0,0,0);
   }
 
   function dayRound() {
@@ -58,36 +64,59 @@ class SimpleDate {
    * returns the number of days between two dates ($this - $d) 
    * note that it will return fractional days across daylight saving boundaries
   **/
-  function daysBetween($d) {
-    return $this->subtract($d) / (24 * 60 * 60);
+  function daysBetween($date) {
+    return $this->subtract($date) / (24 * 60 * 60);
   }
   
   /** 
+   * returns the number of days between two dates ($this - $date) accounting for daylight saving
+  **/
+  function dsDaysBetween($date) {
+    //Calculate the number of days as a fraction, removing fractions due to daylight saving
+    $numdays = $this->daysBetween($date);
+    
+    //We don't want to count an extra day (or part thereof) just because the day range 
+    //includes going from summertime to wintertime so the date range includes an extra hour!
+
+    $tz1 = date("Z", $this->ticks);
+    $tz2 = date("Z", $date->ticks);
+    if ($tz1 == $tz2) {
+      // same timezone, so return the computed amount 
+      #echo "Using numdays $tz1 $tz2 ";
+      return $numdays;
+    } else {
+      // subtract the difference in the timezones to fix this
+      #echo "Using tzinfo: $tz1 $tz2 ";
+      return $numdays - ($tz2-$tz1) / (24*60*60);
+    }
+  }
+
+  /** 
    * returns the number of days (or part thereof) between two dates ($this - $d) 
   **/
-  function partDaysBetween($d) {
-    //Calculate the number of days as a fraction.
-    $numdays = $this->daysBetween($d);
-    
+  function partDaysBetween($date) {
     //we want this to be an integer and since we want "part thereof" we'd normally round up
-    //but daylight saving might cause problems.... 
-    //The case we don't want to count an extra day just because the day range includes going
-    //from summertime to wintertime so the date range includes an extra hour!
-    return round($numdays);
+    //but daylight saving might cause problems....  We also have to include the part day at 
+    //the beginning and the end
     
-    //(PHP's silly banker's rounding would also make like harder for us here...)
-    //Since PHP stupidly uses bankers rounding, we subtract a fuzz factor 
-   return $this->subtract($d) / (24 * 60 * 60);
+    $startwhole = $date;
+    $startwhole->dayRound();
+    $stopwhole = $this;
+    $stopwhole->ticks += 24*60*60-1;
+    $stopwhole->_setStr();
+    $stopwhole->dayRound();
+    
+    return $stopwhole->dsDaysBetween($startwhole);
   }
- 
+   
   /** 
    * returns the number of seconds between two times
    * NB this takes into account daylight saving changes, so will not always give
    * the 24*60*60 for two datetimes that are 1 day apart...!
   **/
-  function subtract($d) {
-    #echo "$this->ticks - $d->ticks ";
-    return $this->ticks - $d->ticks;
+  function subtract($date) {
+    #echo "$this->ticks - $date->ticks ";
+    return $this->ticks - $date->ticks;
   }
 
   function timePart() {
@@ -139,8 +168,8 @@ class SimpleDate {
 
 
 class SimpleTime {
-  var $timestring = '',
-      $ticks = '';
+  var $timestring = '';
+  var $ticks = '';
 
   function SimpleTime($time, $type=0) {
     #echo "New SimpleTime: $time, $type<br />";
@@ -222,8 +251,24 @@ class SimpleTime {
     $this->setTicks(ceil(($this->ticks-1)/$gt)*$gt);
   }
   
+  // return hour, minute or seconds parts of the time, emulating the date('H', $ticks) etc
+  // functions, but not using them as they get too badly confused with timezones to be useful
+  // in many situations
   function part($s) {
-    return date($s, $this->ticks);
+    switch ($s) {
+      //we don't actually care about zero padding in this case.
+      case 'H':
+      case 'h':
+        return floor($this->ticks/(60*60));
+      //let's just allow 'm' to give minutes as well, as it's easier
+      case 'i':
+      case 'm':
+        return floor(($this->ticks/60) % 60);
+      case 's':
+        return floor($this->ticks % (60*60));
+    }
+    //we can't use this as we're not actually using the underlying date-time types here.
+    //return date($s, $this->ticks);
   }
   
 } // class SimpleTime

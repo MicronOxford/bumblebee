@@ -66,7 +66,7 @@ class ActionView extends ActionAction {
       } elseif (preg_match("/edit/", $this->PDATA[$i], $m)) {
         $this->PD['edit'] = 1;
       } else {
-        echo "I don't know what to do with that data!";
+        $this->log("I don't know what to do with that data!");
       }
     }
     echoData($this->PD);
@@ -108,8 +108,10 @@ class ActionView extends ActionAction {
     $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
     $daystart    = new SimpleTime($row['usualopen'],1);
     $daystop     = new SimpleTime($row['usualclose'],1);
+    //configure the calendar view granularity (not the same as booking granularity)
     $granularity = $CONFIG['calendar']['granularity'];
     $timelines   = $CONFIG['calendar']['timelines'];
+    $cal->setTimeSlotPicture($row['timeslotpicture']);
     #$granularity = 60*60;
     #echo $cal->display();
     $href=$BASEURL.'/view/'.$this->PD['instrid'];

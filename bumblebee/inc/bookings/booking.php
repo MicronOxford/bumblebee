@@ -6,21 +6,21 @@ include_once 'inc/dbforms/date.php';
 include_once 'timeslot.php';
 
 class Booking extends TimeSlot {
-  var $id,
+  var $id;
       /*$ishalfday,
       $isfullday,*/
-      $discount,
-      $log,
-      $comments,
-      $project,
-      $userid,
-      $username,
-      $name,
-      $useremail,
-      $masquserid,
-      $masquser,
-      $masqusername,
-      $masqemail;
+  var $discount;
+  var $log;
+  var $comments;
+  var $project;
+  var $userid;
+  var $username;
+  var $name;
+  var $useremail;
+  var $masquserid;
+  var $masquser;
+  var $masqusername;
+  var $masqemail;
   
   function Booking($arr) {
     $this->TimeSlot($arr['bookwhen'], $arr['stoptime'], $arr['duration']);

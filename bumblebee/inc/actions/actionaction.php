@@ -6,6 +6,8 @@ class ActionAction {
   var $PDATA;
   var $PD;
   
+  var $DEBUG_ACTION=0;
+  
   function ActionAction($auth,$pdata) {
     $this->auth = $auth;
     $this->PDATA = $pdata;
@@ -26,6 +28,11 @@ class ActionAction {
     echoData($this->PD);
   }
 
+  function log ($string, $prio=10) {
+    if ($prio <= $this->DEBUG_ACTION) {
+      echo $string."<br />\n";
+    }
+  }
 } //class ActionAction
  
 ?>
