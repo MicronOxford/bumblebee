@@ -7,6 +7,9 @@ include_once 'actionaction.php';
 class ActionPrintLoginForm extends ActionAction {
   
   function ActionPrintLoginForm() {
+  }
+
+  function go() {
     echo '
       <h2>Login required</h2>
       <p>Please login to view or book instrument usage</p>
@@ -31,6 +34,9 @@ class ActionPrintLoginForm extends ActionAction {
 class ActionLogout extends ActionAction {
 
   function ActionLogout() {
+  }
+
+  function go() {
     global $BASEURL;
     #logout();
     echo "

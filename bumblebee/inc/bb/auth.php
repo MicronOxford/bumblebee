@@ -155,59 +155,65 @@ class BumbleBeeAuth {
   
   function isSystemAdmin() {
     return $this->isadmin;
-   }
+  }
   
   function isInstrumentAdmin($instr) {
-     if ($instr==0) {
+    if ($instr==0) {
        return false;
-     }
-     if (! isset($this->permissions[$instr]) || $this->permissions[$instr]===NULL) {
+    }
+    if (! isset($this->permissions[$instr]) || $this->permissions[$instr]===NULL) {
        $q = 'SELECT isadmin FROM permissions WHERE userid='.qw($this->uid)
           .' AND instrid='.qw($instr);
        $row = db_get_single($q,1);
        $this->permissions[$instr] = (is_array($row) && $row['isadmin']);
-     }
-     return $this->permissions[$instr];
-   }
+    }
+    return $this->permissions[$instr];
+  }
+  
+  function getEUID() {
+    return (isset($this->euid) ? $this->euid : $this->uid);
+  }
    
-   function getEUID() {
-     return (isset($this->euid) ? $this->euid : $this->uid);
-   }
-   
-   function masqPermitted($instr=0) {
-     #FIXME: this should be rolled into a better permissions system
-     return $this->isadmin || $this->isInstrumentAdmin($instr);
-   }
+  function masqPermitted($instr=0) {
+    #FIXME: this should be rolled into a better permissions system
+    return $this->isadmin || $this->isInstrumentAdmin($instr);
+  }
 
-   /** 
-    * start masquerading as another user
-   **/
-   function assumeMasq($id) {
-     if ($this->masqPermitted()) {
-       //masquerade permitted
-       $row = $this->_retrieveUserInfo($id, 1);
-       $_SESSION['euid'] = $this->uid = $row['id'];
-       $_SESSION['eusername'] = $this->username = $row['username'];
-       $_SESSION['ename'] = $this->name = $row['name'];
-     } else {
-       // masquerade not permitted
-       return 0;
-     }
-   }
+  /** 
+   * start masquerading as another user
+  **/
+  function assumeMasq($id) {
+    if ($this->masqPermitted()) {
+      //masquerade permitted
+      $row = $this->_retrieveUserInfo($id, 1);
+      $_SESSION['euid'] = $this->uid = $row['id'];
+      $_SESSION['eusername'] = $this->username = $row['username'];
+      $_SESSION['ename'] = $this->name = $row['name'];
+    } else {
+      // masquerade not permitted
+      return 0;
+    }
+  }
    
-   /** 
-    * stop masquerading as another user
-   **/
-   function removeMasq($id) {
-     $_SESSION['euid'] = $this->euid = null;
-     $_SESSION['eusername'] = $this->eusername = null;
-     $_SESSION['ename'] = $this->ename = null;
-   }
-   
-   function isMe($id) {
-     return $id == $this->uid;
-   }
-   
+  /** 
+   * stop masquerading as another user
+  **/
+  function removeMasq($id) {
+    $_SESSION['euid'] = $this->euid = null;
+    $_SESSION['eusername'] = $this->eusername = null;
+    $_SESSION['ename'] = $this->ename = null;
+  }
+  
+  function isMe($id) {
+    return $id == $this->uid;
+  }
+
+  function getRemoteIP() {
+    return (getenv('HTTP_X_FORWARDED_FOR')
+           ?  getenv('HTTP_X_FORWARDED_FOR')
+           :  getenv('REMOTE_ADDR'));
+  }
+
 } //BumbleBeeAuth
 
 ?> 

@@ -12,7 +12,7 @@ class ActionView extends ActionAction {
 
   function ActionView($auth, $PDATA) {
     parent::ActionAction($auth, $PDATA);
-    $this->PD = $this->mungePathData();
+    $this->mungePathData();
   }
 
   function go() {
@@ -70,7 +70,6 @@ class ActionView extends ActionAction {
       }
     }
     preDump($this->PD);
-    return $this->PD;
   }
 
   function selectInstrument() {
@@ -171,7 +170,7 @@ class ActionView extends ActionAction {
 
   function editCreateBooking($bookid, $start, $duration) {
     global $BASEURL;
-    $ip = getRemoteIP();
+    $ip = $this->auth->getRemoteIP();
     echo $ip;
     $booking = new BookingEntry($bookid,$this->auth,$this->PD['instrid'],$ip, $start, $duration);
     $booking->update($this->PD);

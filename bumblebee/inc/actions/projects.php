@@ -17,9 +17,9 @@ class ActionProjects extends ActionAction {
     if (! isset($this->PD['id'])) {
       $this->selectProject();
     } elseif (isset($this->PD['delete'])) {
-      $this->deleteProject($this->PD['id']);
+      $this->deleteProject();
     } else {
-      $this->editProject($this->PD);
+      $this->editProject();
     }
     echo "<br /><br /><a href='$BASEURL/projects'>Return to group list</a>";
   }

@@ -5,32 +5,23 @@
 include_once 'inc/consumable.php';
 include_once 'inc/dbforms/anchortablelist.php';
 
+class ActionConsumables extends ActionAction {
 
-  function actionConsumables() {
-    global $BASEURL;
-    $PD = consumablesMungePathData();
-    if (! isset($PD['id'])) {
-      selectConsumables();
-    } elseif (isset($PD['delete'])) {
-      deleteConsumables($PD['id']);
-    } else {
-      editConsumables($PD);
-    }
-    echo "<br /><br /><a href='$BASEURL/consumables'>Return to consumables list</a>";
+  function ActionConsumables($auth, $PDATA) {
+    parent::ActionAction($auth, $PDATA);
+    $this->mungePathData();
   }
 
-  function consumablesMungePathData() {
-    global $PDATA;
-    $PD = array();
-    foreach ($_POST as $k => $v) {
-      $PD[$k] = $v;
+  function go() {
+    global $BASEURL;
+    if (! isset($this->PD['id'])) {
+      $this->selectConsumables();
+    } elseif (isset($this->PD['delete'])) {
+      $this->deleteConsumables($PD['id']);
+    } else {
+      $this->editConsumables();
     }
-    if (isset($PDATA[1])) {
-      $PD['id'] = $PDATA[1];
-    }
-    #$PD['defaultclass'] = 12;
-    echo "<pre>".print_r($PD,true)."</pre>";
-    return $PD;
+    echo "<br /><br /><a href='$BASEURL/consumables'>Return to consumables list</a>";
   }
 
   function selectConsumables() {
@@ -43,10 +34,10 @@ include_once 'inc/dbforms/anchortablelist.php';
     echo $projectselect->display();
   }
 
-  function editConsumables($PD) {
+  function editConsumables() {
     global $BASEURL;
-    $consumable = new Consumable($PD['id']);
-    $consumable->update($PD);
+    $consumable = new Consumable($this->PD['id']);
+    $consumable->update($this->PD);
     $consumable->checkValid();
     #$consumable->fields['defaultclass']->invalid = 1;
     $consumable->sync();
@@ -65,9 +56,10 @@ include_once 'inc/dbforms/anchortablelist.php';
         ."for this consumable</p>\n";
   }
 
-  function deleteConsumable($gpid) {
-    $q = "DELETE FROM consumables WHERE id='$gpid'";
-    db_quiet($q, 1);
+  function deleteConsumable() {
+    $consumable = new Consumable($this->PD['id']);
+    $consumable->delete();
   }
+}
 
 ?> 

@@ -17,7 +17,7 @@ class ActionGroup extends ActionAction  {
     if (! isset($this->PD['id'])) {
       $this->selectgroup();
     } elseif (isset($this->PD['delete'])) {
-      $this->deleteGroup($this->PD['id']);
+      $this->deleteGroup();
     } else {
       $this->editGroup();
     }
@@ -54,7 +54,7 @@ class ActionGroup extends ActionAction  {
     echo $groupselect->display();
   }
 
-  function deletegroup($gpid)
+  function deletegroup()
   {
     $group = new Group($this->PD['id']);
     $group->delete();

@@ -32,6 +32,7 @@ class Field {
       $errorclass = "error";
   var $namebase;
   var $isValidTest = "isset";
+  var $DEBUG = 1;
 
   function Field($name, $longname="", $description="") {
     $this->name = $name;
@@ -55,7 +56,7 @@ class Field {
   function update($data) {
     if (isset($data["$this->namebase$this->name"]) || $this->useNullValues) {
       $newval = issetSet($data, "$this->namebase$this->name");
-      echo "$this->name, $this->value, $newval<br />\n";
+      if ($this->DEBUG) echo "$this->name, $this->value, $newval ($this->useNullValues)<br />\n";
       if ($this->editable) {
         // we ignore new values if the field is not editable
         if ($this->changed = ($this->getValue() != $newval)) {
@@ -98,7 +99,7 @@ class Field {
     if ($this->isValid && $this->suppressValidation == 0) {
       $this->isValid = ValidTester($this->isValidTest, $this->value);
     }
-    echo ($this->isValid ? "VALID" : "INVALID");
+    if ($this->DEBUG) echo ($this->isValid ? "VALID" : "INVALID");
     return $this->isValid;
   }
 

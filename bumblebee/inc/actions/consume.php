@@ -5,73 +5,75 @@
 include_once 'inc/consumableuse.php';
 include_once 'inc/consumable.php';
 include_once 'inc/dbforms/date.php';
-include_once 'inc/networkfunctions.php';
 include_once 'inc/dbforms/anchortablelist.php';
 
+class ActionConsume extends ActionAction {
 
-  function actionConsume($auth) {
+  function ActionConsume($auth, $pdata) {
+    parent::ActionAction($auth, $pdata);
+    $this->mungePathData();
+  }
+
+  function go() {
     global $BASEURL;
-    $PD = consumeMungePathData();
-    if (isset($PD['list']) && isset($PD['consumableid'])) {
-      listConsumeConsumable($PD['consumableid']);
-    } elseif (isset($PD['list']) && isset($PD['user'])) {
-      listConsumeUser($PD['user']);
-    } elseif (isset($PD['delete'])) {
-      deleteConsumeRecord($PD['id']);
+    if (isset($this->PD['list']) && isset($this->PD['consumableid'])) {
+      $this->listConsumeConsumable($PD['consumableid']);
+    } elseif (isset($this->PD['list']) && isset($this->PD['user'])) {
+      $this->listConsumeUser($this->PD['user']);
+    } elseif (isset($this->PD['delete'])) {
+      $this->deleteConsumeRecord();
     } elseif (  
-                (! isset($PD['id'])) && 
+                (! isset($this->PD['id'])) && 
                 ( 
-                  (! isset($PD['user'])) || (! isset($PD['consumableid'])) 
+                  (! isset($this->PD['user'])) || (! isset($this->PD['consumableid'])) 
                 )
              ) {
-      if (! isset($PD['user'])) {
-        selectConsumeUser($PD);
+      if (! isset($this->PD['user'])) {
+        $this->selectConsumeUser();
       }
-      if (! isset($PD['consumableid'])) {
-        selectConsumeConsumable($PD);
+      if (! isset($this->PD['consumableid'])) {
+        $this->selectConsumeConsumable();
       }
     } else {
-      editConsumeRecord($PD, $auth);
+      $this->editConsumeRecord();
     }
     echo "<br /><br /><a href='$BASEURL/consume'>Return to consumable use list</a>";
   }
 
-  function consumeMungePathData() {
-    global $PDATA;
-    $PD = array();
+  function mungePathData() {
+    $this->PD = array();
     foreach ($_POST as $k => $v) {
       $PD[$k] = $v;
     }
-    $lPDATA = $PDATA;
+    $lPDATA = $this->PDATA;
     array_shift($lPDATA);
     while (count($lPDATA)) {
       if (isset($lPDATA[0]) && $lPDATA[0]=='user' && is_numeric($lPDATA[1])) {
         array_shift($lPDATA);
-        $PD['user'] = array_shift($lPDATA);
+        $this->PD['user'] = array_shift($lPDATA);
       } elseif (isset($lPDATA[0]) && $lPDATA[0]=='consumable' && is_numeric($lPDATA[1])) {
         array_shift($lPDATA);
-        $PD['consumableid'] = array_shift($lPDATA);
+        $this->PD['consumableid'] = array_shift($lPDATA);
       } elseif (isset($lPDATA[0]) && $lPDATA[0]=='list') {
-        $PD['list'] = 1;
+        $this->PD['list'] = 1;
         array_shift($lPDATA);
       } elseif (isset($lPDATA[0]) && is_numeric($lPDATA[0])) {
-        $PD['id'] = array_shift($lPDATA);
+        $this->PD['id'] = array_shift($lPDATA);
       } else {
         //this record is unwanted... drop it
         array_shift($lPDATA);
       }
     }
     #$PD['defaultclass'] = 12;
-    preDump($PD);
-    return $PD;
+    preDump($this->PD);
   }
 
-  function selectConsumeUser($PD) {
+  function selectConsumeUser() {
     global $BASEURL;
     $extrapath = '';
     $listpath = '';
-    if (isset($PD['consumableid'])) {
-      $extrapath =  "consumable/$PD[consumableid]/";
+    if (isset($this->PD['consumableid'])) {
+      $extrapath =  "consumable/$this->PD[consumableid]/";
       $listpath = "$BASEURL/consume/${extrapath}list";
     }
     #$extrapath = (isset($PD['consumableid']) ? "consumable/$PD[consumableid]/" : "");
@@ -87,36 +89,36 @@ include_once 'inc/dbforms/anchortablelist.php';
     echo $userselect->display();
   }
 
-  function selectConsumeConsumable($PD) {
+  function selectConsumeConsumable() {
     global $BASEURL;
     $extrapath = '';
     $listpath = '';
-    if (isset($PD['user'])) {
+    if (isset($this->PD['user'])) {
       $extrapath =  "user/$PD[user]/";
       $listpath = "$BASEURL/consume/${extrapath}list";
     }
-    $projectselect = new AnchorTableList('Consumables', 'Select which Consumables to use');
-    $projectselect->connectDB('consumables', array('id', 'name', 'longname'));
-    $projectselect->hrefbase = "$BASEURL/consume/${extrapath}consumable/";
-    $projectselect->setFormat('id', '%s', array('name'), ' %s', array('longname'));
+    $consumableselect = new AnchorTableList('Consumables', 'Select which Consumables to use');
+    $consumableselect->connectDB('consumables', array('id', 'name', 'longname'));
+    $consumableselect->hrefbase = "$BASEURL/consume/${extrapath}consumable/";
+    $consumableselect->setFormat('id', '%s', array('name'), ' %s', array('longname'));
     
     if ($listpath) {
       echo "<p><a href='$listpath'>View listing</a> "
           .'for selected user</p>'."\n";
     }
-    echo $projectselect->display();
+    echo $consumableselect->display();
   }
 
-  function editConsumeRecord($PD, $auth) {
-    $recordid = isset($PD['id']) ? $PD['id'] : -1;
-    $userid   = isset($PD['user']) ? $PD['user'] : -1;
-    $consumableid = isset($PD['consumableid']) ? $PD['consumableid'] : -1;
-    $uid = $auth->uid;
-    $ip = getRemoteIP();
+  function editConsumeRecord() {
+    $recordid = isset($this->PD['id']) ? $this->PD['id'] : -1;
+    $userid   = isset($this->PD['user']) ? $this->PD['user'] : -1;
+    $consumableid = isset($this->PD['consumableid']) ? $this->PD['consumableid'] : -1;
+    $uid = $this->auth->uid;
+    $ip = $this->auth->getRemoteIP();
     $today = new SimpleDate(time());
     $rec = new ConsumableUse($recordid, $userid, $consumableid,
                               $uid, $ip, $today->datestring);
-    $rec->update($PD);
+    $rec->update($this->PD);
     $rec->checkValid();
     #$project->fields['defaultclass']->invalid = 1;
     $rec->sync();
@@ -132,9 +134,9 @@ include_once 'inc/dbforms/anchortablelist.php';
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
   }
 
-  function deleteConsumeRecord($id) {
-    $q = "DELETE FROM consumables_use WHERE id='$id'";
-    db_quiet($q, 1);
+  function deleteConsumeRecord() {
+    $rec = new ConsumableUse($this->PD['id']);
+    $rec->delete();
   }
 
   function listConsumeConsumable($consumableID) {
@@ -181,5 +183,7 @@ include_once 'inc/dbforms/anchortablelist.php';
 
     echo $recselect->display();
   }
+
+}
 
 ?> 

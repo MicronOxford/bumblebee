@@ -5,35 +5,28 @@
 include_once 'inc/instrument.php';
 include_once 'inc/dbforms/anchortablelist.php';
 
-  function actionInstruments() {
+class ActionInstruments extends ActionAction {
+
+  function ActionInstruments($auth, $pdata) {
+    parent::ActionAction($auth, $pdata);
+    $this->mungePathData();
+  }
+
+  function go() {
     global $BASEURL;
-    $PD = instrumentsMungePathData();
-    if (! isset($PD['id'])) {
-      selectInstruments();
-    } elseif (isset($PD['delete'])) {
-      deleteInstruments($PD['id']);
+    if (! isset($this->PD['id'])) {
+      $this->selectInstruments();
+    } elseif (isset($this->PD['delete'])) {
+      $this->deleteInstruments($this->PD['id']);
     } else {
-      editInstruments($PD);
+      $this->editInstruments();
     }
     echo "<br /><br /><a href='$BASEURL/groups'>Return to instruments list</a>";
   }
 
-  function instrumentsMungePathData() {
-    global $PDATA;
-    $PD = array();
-    foreach ($_POST as $k => $v) {
-      $PD[$k] = $v;
-    }
-    if (isset($PDATA[1])) {
-      $PD['id'] = $PDATA[1];
-    }
-    #echo "<pre>".print_r($PD,1)."</pre>";
-    return $PD;
-  }
-
-  function editInstruments($PD) {
-    $instrument = new Instrument($PD['id']);
-    $instrument->update($PD);
+  function editInstruments() {
+    $instrument = new Instrument($this->PD['id']);
+    $instrument->update($this->PD);
     $instrument->checkValid();
     $instrument->sync();
     #echo $instrument->text_dump();
@@ -61,10 +54,9 @@ include_once 'inc/dbforms/anchortablelist.php';
     echo $groupselect->display();
   }
 
-  function deleteInstruments($gpid)
-  {
-    $q = "DELETE FROM instruments WHERE id='$gpid'";
-    db_quiet($q,1);
+  function deleteInstruments()   {
+    $instrument = new Instrument($this->PD['id']);
+    $instrument->delete();
   }
-
+}
 ?> 

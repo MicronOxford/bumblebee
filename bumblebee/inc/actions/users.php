@@ -5,51 +5,43 @@
 include_once 'inc/user.php';
 include_once 'inc/dbforms/anchortablelist.php';
 
+class ActionUsers extends ActionAction {
 
-  function actionUsers() {
+  function ActionUsers($auth, $pdata) {
+    parent::ActionAction($auth, $pdata);
+    $this->mungePathData();
+  }
+
+  function go() {
     global $BASEURL;
-    $PD = userMungePathData();
-    if (! isset($PD['id'])) {
-      selectUser();
-    } elseif (isset($PD['delete'])) {
-      deleteUser($PD['id']);
+    if (! isset($this->PD['id'])) {
+      $this->selectUser();
+    } elseif (isset($this->PD['delete'])) {
+      $this->deleteUser();
     } else {
-      editUser($PD);
+      $this->editUser();
     }
     echo "<br /><br /><a href='$BASEURL/projects'>Return to user list</a>";
   }
 
-  function userMungePathData() {
-    global $PDATA;
-    $PD = array();
-    foreach ($_POST as $k => $v) {
-      $PD[$k] = $v;
-    }
-    if (isset($PDATA[1])) {
-      $PD['id'] = $PDATA[1];
-    }
-    preDump($PD);
-    return $PD;
-  }
-
   function selectUser() {
     global $BASEURL;
-    $projectselect = new AnchorTableList("Users", "Select which user to view");
-    $projectselect->connectDB("users", array("id", "name", "username"));
-    $projectselect->list->prepend(array("-1","Create new user"));
-    $projectselect->hrefbase = "$BASEURL/users/";
-    $projectselect->setFormat("id", "%s", array("name"), " %s", array("username"));
-    echo $projectselect->display();
+    $select = new AnchorTableList("Users", "Select which user to view");
+    $select->connectDB("users", array("id", "name", "username"));
+    $select->list->prepend(array("-1","Create new user"));
+    $select->hrefbase = "$BASEURL/users/";
+    $select->setFormat("id", "%s", array("name"), " %s", array("username"));
+    echo $select->display();
   }
 
-  function editUser($PD) {
-    $project = new User($PD['id']);
-    $project->update($PD);
+  function editUser() {
+    $user = new User($this->PD['id']);
+    $user->update($this->PD);
     #$project->fields['defaultclass']->invalid = 1;
-    $project->checkValid();
-    $project->sync();
-    echo $project->display();
-    if ($project->id < 0) {
+    $user->checkValid();
+    $user->sync();
+    echo $user->display();
+    if ($user->id < 0) {
       $submit = "Create new user";
       $delete = "0";
     } else {
@@ -60,9 +52,10 @@ include_once 'inc/dbforms/anchortablelist.php';
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
   }
 
-  function deleteUser($gpid) {
-    $q = "DELETE FROM users WHERE id='$gpid'";
-    db_quiet($q, 1);
+  function deleteUser() {
+    $user = new User($this->PD['id']);
+    $user->delete();
   }
+}
 
 ?> 

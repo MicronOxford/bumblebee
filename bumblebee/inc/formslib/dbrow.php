@@ -28,7 +28,8 @@ class DBRow extends DBO {
   var $restriction = '';
   var $recStart = '',
       $recNum   = '';
-
+  var $DEBUG = 1;
+  
   function DBRow($table, $id, $idfield='id') {
     $this->DBO($table, $id, $idfield);
     #$this->fields = array();
@@ -39,29 +40,35 @@ class DBRow extends DBO {
    *  input data, and validate the data if appropriate
   **/
   function update($data) {
-    echo "<br/><br/>DBRow:$this->namebase. Looking for updates:<br />";
+    if ($this->DEBUG) echo "<br/><br/>DBRow:$this->namebase. Looking for updates:<br />";
     // First, check to see if this record is new
     if ($this->id == -1) {
       $this->insertRow = 1;
-      // We're a new object, but has the user filled the form in, or is the
-      // user about to fill the form in?
-      $this->newObject = 1;
-      foreach ($this->fields as $k => $v) {
-        if ($k != $this->idfield && isset($data[$this->namebase.$k])) {
-          echo "$k:changed<br />";
-          $this->newObject = 0;
-          break;
-        }
+    }
+    
+    // We're a new object, but has the user filled the form in, or is the
+    // user about to fill the form in?
+    $this->newObject = 1;
+    foreach ($this->fields as $k => $v) {
+      if ($k != $this->idfield && isset($data[$this->namebase.$k])) {
+        echo "I AM NOT NEW $k:changed<br />";
+        $this->newObject = 0;
+        break;
       }
     }
+  
     // check each field in turn to allow it to update its data
     foreach ($this->fields as $k => $v) {
-      echo "Check $k ";
-      echo "ov:".$this->fields[$k]->value;
-      $this->changed += $this->fields[$k]->update($data);
-      echo "nv:".$this->fields[$k]->value." ";
-      echo ($this->changed ? 'changed' : 'not changed');
-      echo "<br />";
+      if ($this->DEBUG) echo "Check $k ov:".$this->fields[$k]->value;
+      echo '('.$this->fields[$k]->useNullValues .'/'. $this->newObject.')';
+      if (!($this->fields[$k]->useNullValues && $this->newObject)) {
+        $this->changed += $this->fields[$k]->update($data);
+      }
+      if ($this->DEBUG) {
+        echo "nv:".$this->fields[$k]->value." ";
+        echo ($this->changed ? 'changed' : 'not changed');
+        echo "<br />";
+      }
     }
     #$this->checkValid();
     return $this->changed;
@@ -76,11 +83,11 @@ class DBRow extends DBO {
     // if this object has not been filled in by the user, then 
     // suppress validation
     foreach ($this->fields as $k => $v) {
-      if (! $this->newObject) {
-        #echo "Checking valid ".$this->fields[$k]->namebase."$k ";
+      if (! ($this->newObject && $this->insertRow)) {
+        if ($this->DEBUG) echo "Checking valid ".$this->fields[$k]->namebase."$k ";
         $this->isValid = $this->fields[$k]->isValid() && $this->isValid;
       }
-      #echo "<br />";
+      if ($this->DEBUG) echo "<br />";
     }
     return $this->isValid;
   }
@@ -97,10 +104,10 @@ class DBRow extends DBO {
   function sync() {
     // If the input isn't valid then bail out straight away
     if (! ($this->changed && $this->isValid) ) {
-      echo "not syncing: changed=$this->changed valid=$this->isValid<br />";
+      if ($this->DEBUG) echo "not syncing: changed=$this->changed valid=$this->isValid<br />";
       return -1;
     }
-    echo "syncing: changed=$this->changed valid=$this->isValid<br />";
+    if ($this->DEBUG) echo "syncing: changed=$this->changed valid=$this->isValid<br />";
     $sql_result = -1;
     //obtain the *clean* parameter='value' data that has been SQL-cleansed
     //this will also trip any complex fields to sync
