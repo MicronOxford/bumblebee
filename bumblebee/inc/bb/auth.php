@@ -5,20 +5,21 @@
 include_once ('dbforms/sql.php');
 include_once ('dbforms/typeinfo.php');
 
-class SystemAuth {
+class BumbleBeeAuth {
   var $uid,    //user id from table
       $username,
       $name,
       $isadmin,
       $euid,   //permit user masquerading like su. Effective UID
       $ename,  //effective name
-      $eusername,  //effective username
-      $_loggedin=0,
+      $eusername;  //effective username
+  var $permissions;
+  var $_loggedin=0,
       $_error;
   var $table;
   var $DEBUGMODE = 1;
 
-  function SystemAuth($table="users") {
+  function BumbleBeeAuth($table="users") {
     session_start();
     $this->table = $table;
     if (isset($_SESSION['uid'])) {
@@ -31,6 +32,7 @@ class SystemAuth {
     } else {
       #we're not logged in at all
     }
+    $this->permissions = array();
   }
 
   function logout() {
@@ -134,14 +136,19 @@ class SystemAuth {
   
   function _auth_via_radius($username, $password) {
     require_once "Auth/Auth.php";
-    #FIXME: need to include these data in a config file somewhere
+    $RADIUSCONFIG = parse_ini_file('radius.ini');
     $params = array(
-                "servers" => array(array("localhost", 0, "secretKey", 3, 3)),
-                "authtype" => "PAP"
+                "servers" => array(array($RADIUSCONFIG['host'], 
+                                         0, 
+                                         $RADIUSCONFIG['key'],
+                                         3, 3)
+                                  ),
+                "authtype" => $RADIUSCONFIG['authtype']
                 );
     $a = new Auth("RADIUS", $params);
     $a->username = $username;
     $a->password = $password;
+    # FIXME: this will throw up a "login" dialogue that we don't want
     $a->start();
     return ($a->getAuth());
   }
@@ -151,17 +158,25 @@ class SystemAuth {
    }
   
   function isInstrumentAdmin($instr) {
-     #FIXME: this should be rolled into a better permissions system
-     return $this->isadmin;
+     if ($instr==0) {
+       return false;
+     }
+     if (! isset($this->permissions[$instr]) || $this->permissions[$instr]===NULL) {
+       $q = 'SELECT isadmin FROM permissions WHERE userid='.qw($this->uid)
+          .' AND instrid='.qw($instr);
+       $row = db_get_single($q,1);
+       $this->permissions[$instr] = (is_array($row) && $row['isadmin']);
+     }
+     return $this->permissions[$instr];
    }
    
    function getEUID() {
      return (isset($this->euid) ? $this->euid : $this->uid);
    }
    
-   function masqPermitted() {
+   function masqPermitted($instr=0) {
      #FIXME: this should be rolled into a better permissions system
-     return $this->isadmin;
+     return $this->isadmin || $this->isInstrumentAdmin($instr);
    }
 
    /** 
@@ -193,5 +208,6 @@ class SystemAuth {
      return $id == $this->uid;
    }
    
-} //SystemAuth
+} //BumbleBeeAuth
+
 ?> 

@@ -110,21 +110,27 @@ include_once 'inc/dbforms/date.php';
     $cal->href=$href;
     $cal->setOutputStyles('', $CONFIG['calendar']['todaystyle'], 
                 preg_split('/\//',$CONFIG['calendar']['monthstyle']), 'm');
-    #FIXME need links to browse forwards and backwards
-    echo '<div style="text-align:center">'
-        .'<a href="'.$href.'/o='.($offset-28).'">&laquo; earlier</a> | '
-        .'<a href="'.$href.'">today</a> | '
-        .'<a href="'.$href.'/o='.($offset+28).'">later &raquo;</a>'
-        .'</div>';
+    echo viewLinksForwardBack($href,"/o=".$offset-28,"","/o=".$offset+28);
     echo $cal->displayMonthAsTable($daystart,$daystop,$granularity,$timelines);
+  }
+
+  function viewLinksForwardBack($href, $back, $today, $forward) {
+    return '<div style="text-align:center">'
+        .'<a href="'.$href.$back.'">&laquo; earlier</a> | '
+        .'<a href="'.$href.$today.'">today</a> | '
+        .'<a href="'.$href.$forward.'">later &raquo;</a>'
+        .'</div>';
   }
 
   function viewInstrumentDay($PD) {
     global $BASEURL;
     $start = new SimpleDate($PD['isodate'],1);
     $start->dayRound();
+    $offset = issetSet($PD, 'caloffset');
+    $start->addDays($offset);
     $stop = $start;
     $stop->addDays(1);
+    $today = new SimpleDate(time());
     $cal = new Calendar($start, $stop, $PD['instrid']);
 
     # FIXME: get this from the instrument table?
@@ -132,9 +138,10 @@ include_once 'inc/dbforms/date.php';
     $daystop     = new SimpleTime('23:59:59',1);
     $granularity = 15*60;
     #echo $cal->display();
-    $cal->href=$BASEURL.'/view/'.$PD['instrid'];
+    $href=$BASEURL.'/view/'.$PD['instrid'];
+    $cal->href=$href;
     $cal->setOutputStyles('', 'caltoday', array('monodd', 'moneven'), 'm');
-    #FIXME need links to browse forwards and backwards
+    echo viewLinksForwardBack($href.'/', $start->datestring.'/o=-1', $today->datestring, $start->datestring.'/o=1');
     echo $cal->displayDayAsTable($daystart,$daystop,$granularity,4);
   }
 

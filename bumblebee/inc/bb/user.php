@@ -66,6 +66,8 @@ class User extends DBRow {
     $f->addElement($subscribeAnnounce);
     $unbookAnnounce = new CheckBox('unbook', 'Subscribe: unbook');
     $f->addElement($unbookAnnounce);
+    $instradmin = new CheckBox('isadmin', 'Instrument admin');
+    $f->addElement($instradmin);
     /*  
     //Add these fields in once we need this functinality
     $hasPriority = new CheckBox('haspriority', 'Booking priority');

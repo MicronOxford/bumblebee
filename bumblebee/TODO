@@ -1,13 +1,10 @@
 $Id$
 
-view -> base href
-last day in month calendar missing
-next/prev
+locking of records when editing?
 
-zoom
-view/edit
+zoom out link
 
-css today, monthodd/even booking/vacant
+css today, monthodd/even booking/vacant configurable?
 
 joindata::_countNumRows counts the rows too early (can we force a recount?)
 
@@ -21,7 +18,13 @@ should groups, projects, users actions etc be invocations of the *same* obj?
 
 XSS checks
 
-inc/* isinvalidtest isvalidtest fubar => USE THE POSITIVE: isValid
+SQL bad character checking -- qw, unqw?
+
+OOify the action construction to provide namespaces
+
+billing analysis, incl consumables
+
+finish ooifying the admin functions
 
 separate generic field, form, sql classes from user project etc classes
 
@@ -33,9 +36,6 @@ make sure large data structures are being passed by reference not value
 (speed up)
 
 reflect postdata in case of re-login
-
-user auth => sessions
-masquerade => sessions
 
 $string = strip_tags($string, '<a><b><i><u>')
 also do this in qw? $string = strip_tags($string, '')
