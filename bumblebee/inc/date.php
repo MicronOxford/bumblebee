@@ -164,6 +164,15 @@ class SimpleDate {
                         );
     $this->_setStr();
   }
+  
+  /**
+   * return the day of week of the current date. 
+   * 0 == Sunday, 6 == Saturday
+  **/
+  function dow() {
+    return date('w', $date->ticks);
+  }
+  
 } // class SimpleDate
 
 
@@ -269,6 +278,11 @@ class SimpleTime {
     }
     //we can't use this as we're not actually using the underlying date-time types here.
     //return date($s, $this->ticks);
+  }
+  
+  function addTime($t) {
+    $this->ticks += $t->ticks;
+    $this->_setStr();
   }
   
 } // class SimpleTime
