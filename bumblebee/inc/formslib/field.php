@@ -13,6 +13,7 @@ class Field {
   var $editable = -1, 
       $changed = 0;
   var $attr;
+  var $namebase;
 
   function Field($name, $longname="", $description="") {
     $this->name = $name;
@@ -20,8 +21,9 @@ class Field {
     $this->description = $description;
   }
 
-  function update($data, $base="") {
-    $newval = $data["$base$this->name"];
+  function update($data) {
+    $newval = $data["$this->namebase$this->name"];
+    #echo "$this->name, $this->value, $newval<br />\n";
     if (isset($newval)) {
       $this->changed = ($this->value != $newval);
       if ($this->changed) {

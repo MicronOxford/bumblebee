@@ -39,12 +39,16 @@ class SimpleList {
     }
   }
   
-  function prepend($k, $v) {
-    array_unshift($this->list, array('key'=>$k,'value'=>$v));
+  function prepend($key, $value, $field='') {
+    array_unshift($this->list, array('key'=>$key,
+                                     'value'=>$value, 
+                                     'field'=>$field));
   }
 
-  function append($k, $v) {
-    array_push($this->list, array('key'=>$k,'value'=>$v));
+  function append($key, $value, $field='') {
+    array_push($this->list, array('key'=>$key,
+                                     'value'=>$value, 
+                                     'field'=>$field));
   }
 
   function display() {

@@ -14,6 +14,7 @@ class DBO {
       $changed = 0;
   var $dumpheader = "DBO object";
   var $fatal_sql = 1;
+  var $namebase;
 
   function DBO($table, $id) {
     $this->table = $table;
@@ -21,16 +22,16 @@ class DBO {
     $this->fields = array();
   }
 
-  function update($data, $base="") {
-    #echo "Looking for updates: ";
+  function update($data) {
+    echo "Looking for updates: ";
+    print_r($data);
     foreach ($this->fields as $k => $v) {
-      #echo "Check $k";
-      if (isset($data["$base$k"])) {
-        #echo ",set '".$data["$base$k"]."'";
-        $this->changed += $this->fields[$k]->update($data, $base);
-        #$this->changed += $v->update($data, $base);
+      echo "Check $k";
+      if (isset($data["$this->namebase$k"])) {
+        echo ",set '".$data["$this->namebase$k"]."'";
+        $this->changed += $this->fields[$k]->update($data);
       }
-      #echo "<br />";
+      echo "<br />";
     }
   }
 
@@ -72,6 +73,10 @@ class DBO {
     if ($this->fields[$el->name]->editable == -1) {
       $this->fields[$el->name]->editable = $this->editable;
     }
+    if (! isset($this->fields[$el->name]->namebase)) {
+      $this->fields[$el->name]->namebase = $this->namebase;
+      echo "Altered field $el->name to $this->namebase\n";
+    }
     #echo $el->name;
     #echo "foo:".$this->fields[$el->name]->name.":bar";
   }
@@ -88,12 +93,13 @@ class DBO {
     $g = db_get_single($q);
     #echo "<pre>";print_r($g);echo "</pre>";
     foreach ($this->fields as $k => $v) {
-      #echo "Filling $k = ".$g[$k];
+      echo "Filling $k = ".$g[$k];
       $this->fields[$k]->set($g[$k]);
-      #echo $this->fields[$k]->text_dump();
+      echo $this->fields[$k]->text_dump();
     }
     #in case we get no rows back from the database, we have to have an id
     #present otherwise we're in trouble next time
+    echo "Completed fill, id=$this->id\n";
     $this->fields['id']->set($this->id);
   }
 

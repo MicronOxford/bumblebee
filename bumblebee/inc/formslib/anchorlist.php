@@ -20,13 +20,15 @@ class AnchorList extends ChoiceList {
     $liclass = (isset($this->liclass) ? " class='$this->liclass'" : "");
     $aclass  = (isset($this->aclass) ? " class='$this->aclass'" : "");
     $t  = "<ul title='$this->description'$ulclass>\n";
-    foreach ($this->choices->list as $k => $v) {
-      $t .= "<li$liclass>";
-      $t .= "<a href='$this->hrefbase".$v['key']."'$aclass>".$v['value']."</a>";
-      if (isset($v['longvalue'])) {
-        $t .= " (".$v['longvalue'].")";
+    if (is_array($this->choices->list)) {
+      foreach ($this->choices->list as $k => $v) {
+        $t .= "<li$liclass>";
+        $t .= "<a href='$this->hrefbase".$v['key']."'$aclass>".$v['value']."</a>";
+        if (isset($v['longvalue']) && $v['longvalue'] != "") {
+          $t .= " (".$v['longvalue'].")";
+        }
+        $t .= "</li>\n";
       }
-      $t .= "</li>\n";
     }
     $t .= "</ul>\n";
     return $t;

@@ -8,7 +8,8 @@ include_once 'textfield.php';
 class Group extends DBO {
   
   function Group($id) {
-    DBO::DBO("groups", $id);
+    $this->DBO("groups", $id);
+    #DBO::DBO("groups", $id);
     $this->editable = 1;
     $f = new TextField("id", "Group ID");
     $f->editable = 0;
