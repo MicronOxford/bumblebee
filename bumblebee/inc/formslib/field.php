@@ -11,9 +11,12 @@ class Field {
       $value,
       $ovalue;
   var $editable = -1, 
-      $changed = 0;
-  var $attr;
+      $changed = 0,
+      $invalid = 0;
+  var $attr,
+      $errorclass = "error";
   var $namebase;
+  var $isInvalidTest = "isset";
 
   function Field($name, $longname="", $description="") {
     $this->name = $name;
@@ -23,20 +26,39 @@ class Field {
 
   function update($data) {
     $newval = $data["$this->namebase$this->name"];
-    #echo "$this->name, $this->value, $newval<br />\n";
-    if (isset($newval)) {
-      $this->changed = ($this->value != $newval);
-      if ($this->changed) {
-        if ($this->editable) {
+    echo "$this->name, $this->value, $newval<br />\n";
+    #if (isset($newval) && $this->editable) {
+    if ($this->editable) {
+      # we ignore new values if the field is not editable
+      if ($this->changed = ($this->value != $newval) || $newval == NULL) {
+      /*
+        //check the validity of the input 
+        if (isset($this->validator) && is_callable($this->validator)) {
+          echo $this->name .":". $this->validator."<br />" ;
+          echo is_empty_string($newval);
+          $validator = $this->validator;
+          $this->invalid = $validator($newval);
+        }
+        if (! $this->isvalid) {*/
           $this->ovalue = $this->value;
           $this->value = $newval;
-        } else {
-          $this->changed = 0;
-          #FIXME this is an error condition... flag it?
-        }
+        #}
       }
     }
     return $this->changed;
+  }
+
+  function isinvalid() {
+    echo $this->name .":". $this->isInvalidTest.":";
+    echo is_callable($this->isInvalidTest);
+    if (isset($this->isInvalidTest) && is_callable($this->isInvalidTest)) {
+      echo "checking ";
+      $validator = $this->isInvalidTest;
+      #$this->invalid = $this->id == -1 && $validator($this->value);
+      $this->invalid = $validator($this->value);
+      echo $this->invalid;
+    }
+    return $this->invalid;
   }
 
   function set($value) {
@@ -53,6 +75,7 @@ class Field {
   function text_dump() {
     $t  = "$this->name =&gt; $this->value ";
     $t .= ($this->editable ? "(editable)" : "(read-only)");
+    $t .= ($this->invalid ? "(invalid)" : "");
     $t .= "\n";
     return $t;
   }

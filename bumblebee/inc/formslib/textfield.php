@@ -11,7 +11,8 @@ class TextField extends Field {
   }
 
   function displayInTable($cols) {
-    $t = "<tr><td>$this->longname</td>\n"
+    $errorclass = ($this->invalid ? "class='inputerror'" : "");
+    $t = "<tr $errorclass><td>$this->longname</td>\n"
         ."<td title='$this->description'>";
     if ($this->editable) {
       $t .= $this->selectable();

@@ -11,17 +11,19 @@ class DBO {
       $id=-1;
   var $fields;
   var $editable = 0, 
-      $changed = 0;
+      $changed = 0,
+      $invalid = 0;
   var $dumpheader = "DBO object";
   var $fatal_sql = 1;
   var $namebase;
 
-  function DBRow($table, $id) {
+  function DBO($table, $id) {
     $this->table = $table;
     $this->id = $id;
     $this->fields = array();
   }
 
+/*
   function update($data) {
     echo "Looking for updates: ";
     print_r($data);
@@ -67,7 +69,8 @@ class DBO {
     #echo "<pre>"; print_r($vals); echo "</pre>";
     return join(",",$vals);
   }
-
+  */
+/*
   function addElement($el) {
     $this->fields[$el->name] = $el;
     if ($this->fields[$el->name]->editable == -1) {
@@ -75,7 +78,7 @@ class DBO {
     }
     if (! isset($this->fields[$el->name]->namebase)) {
       $this->fields[$el->name]->namebase = $this->namebase;
-      echo "Altered field $el->name to $this->namebase\n";
+      #echo "Altered field $el->name to $this->namebase\n";
     }
     #echo $el->name;
     #echo "foo:".$this->fields[$el->name]->name.":bar";
@@ -87,7 +90,8 @@ class DBO {
       $this->addElement($e);
     }
   }
-
+*/
+/*
   function fill() {
     $q = "SELECT * FROM $this->table WHERE id=".qw($this->id);
     $g = db_get_single($q);
@@ -102,7 +106,7 @@ class DBO {
     echo "Completed fill, id=$this->id\n";
     $this->fields['id']->set($this->id);
   }
-
+*/
   function text_dump() {
     $t  = "<pre>$this->dumpheader $this->table (id=$this->id)\n{\n";
     foreach ($this->fields as $k => $v) {

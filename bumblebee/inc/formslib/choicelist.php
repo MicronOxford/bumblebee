@@ -42,7 +42,8 @@ class ChoiceList extends Field {
   }
 
   function displayInTable($cols) {
-    $t = "<tr><td>$this->description</td>\n"
+    $errorclass = ($this->invalid ? "class='inputerror'" : "");
+    $t = "<tr $errorclass><td>$this->description</td>\n"
         ."<td title='$this->description'>";
     if ($this->editable) {
       $t .= $this->selectable();
@@ -59,25 +60,12 @@ class ChoiceList extends Field {
   }
   
   function update($data) {
-    echo "updating $this->name (ov: $this->value)";
+    #echo "updating $this->name (ov: $this->value)";
     Field::update($data);
-    echo " (nv: $this->value)";
-    if ($this->value == -1) {
-      #FIXME... this needs to be cleaned up and put elsewhere... where?
-      /*
-      $newchoice = new DBO("userclass",-1);
-      $newchoice->editable=1;
-      $newchoice->namebase = "newcharge-";
-      $newchoice->addElement(new Field("id"));
-      $newchoice->addElement(new Field("name"));
-      $newchoice->fill();
-      echo $newchoice->text_dump();
-      $newchoice->update($data, "newcharge-");
-      echo $newchoice->text_dump();
-      $newchoice->sync();
-      $this->value = $newchoice->fields['id']->value;
-      */
-    }
+    $this->list->update($this->value, $data);
+    $this->value = $this->list->id;
+    $this->changed += $this->list->changed;
+    #echo " (nv: $this->value)";
     return $this->changed;
   }
 

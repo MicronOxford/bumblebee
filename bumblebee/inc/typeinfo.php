@@ -14,6 +14,22 @@ function qw($v) {
   # return the string in single quotes
   return "'$v'";
 }
+
+function is_empty_string($v) {
+  echo "'val=$v' ";
+  return (strlen($v) == 0);
+}
+
+function is_no_choice_set($v) {
+  echo "'val=$v' ";
+  return ($v == NULL || $v == "");
+}
+
+function is_invalid_radiochoice($v) {
+  echo "'val=$v' ";
+  return (is_no_choice_set($v) || $v <= 0);
+}
+
 /*
 echo "<pre>qw test\n";
 $test = array();

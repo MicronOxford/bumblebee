@@ -1,5 +1,11 @@
 $Id$
 
+create new doesn't validate properly in dblist
+
+create new marks all fields as being invalid -> suppress this?
+
+
+
 user auth => sessions
 masquerade => sessions
 

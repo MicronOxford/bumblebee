@@ -9,27 +9,28 @@ class DBRow extends DBO {
   var $namebase;
 
   function DBRow($table, $id) {
-    $this->table = $table;
-    $this->id = $id;
+    $this->DBO($table, $id);
     $this->fields = array();
   }
 
   function update($data) {
-    echo "Looking for updates: ";
-    print_r($data);
+    #echo "Looking for updates: ";
+    #print_r($data);
     foreach ($this->fields as $k => $v) {
-      echo "Check $k";
+      #echo "Check $k";
       if (isset($data["$this->namebase$k"])) {
-        echo ",set '".$data["$this->namebase$k"]."'";
+        #echo ",set '".$data["$this->namebase$k"]."'";
+        //FIXME check the validity of the input somehow
         $this->changed += $this->fields[$k]->update($data);
       }
-      echo "<br />";
+      $this->invalid += $this->fields[$k]->isinvalid();
+      #echo "<br />";
     }
   }
 
   function sync() {
     #returns false on success
-    if ($this->changed) {
+    if ($this->changed && ! $this->invalid) {
       $vals = $this->_sqlvals();
       if ($this->id != -1) {
         #it's an existing record, so update
@@ -67,7 +68,7 @@ class DBRow extends DBO {
     }
     if (! isset($this->fields[$el->name]->namebase)) {
       $this->fields[$el->name]->namebase = $this->namebase;
-      echo "Altered field $el->name to $this->namebase\n";
+      #echo "Altered field $el->name to $this->namebase\n";
     }
     #echo $el->name;
     #echo "foo:".$this->fields[$el->name]->name.":bar";
@@ -85,13 +86,13 @@ class DBRow extends DBO {
     $g = db_get_single($q);
     #echo "<pre>";print_r($g);echo "</pre>";
     foreach ($this->fields as $k => $v) {
-      echo "Filling $k = ".$g[$k];
+      #echo "Filling $k = ".$g[$k];
       $this->fields[$k]->set($g[$k]);
-      echo $this->fields[$k]->text_dump();
+      #echo $this->fields[$k]->text_dump();
     }
     #in case we get no rows back from the database, we have to have an id
     #present otherwise we're in trouble next time
-    echo "Completed fill, id=$this->id\n";
+    #echo "Completed fill, id=$this->id\n";
     $this->fields['id']->set($this->id);
   }
 
