@@ -16,13 +16,12 @@ class DateTimeField extends Field {
   var $list;
 
   var $representation;
-  var $manualRepresentation = TF_AUTO;
+  var $_manualRepresentation = TF_AUTO;
   
   function DateTimeField($name, $longname="", $description="") {
     parent::Field($name, $longname, $description);
     $this->time = new TimeField($name.'-time', $longname, $description);
     $this->time->isStart = true;
-    $this->time->manualRepresentation &= $this->manualRepresentation;
     $this->date = new DateField($name.'-date', $longname, $description);
   }
 
@@ -111,6 +110,16 @@ class DateTimeField extends Field {
     $this->list = new TimeSlotRule($list);
     $this->time->setSlotPicture($list);
     $this->calcDateTimeParts();
+  }
+  
+  /**
+   * pass on any flags about the representation that we should use to our members
+   *
+   * @param integer $flag (TF_* types from class TimeField constants)
+   */
+  function setManualRepresentation($flag) {
+    $this->_manualRepresentation = $flag;
+    $this->time->setManualRepresentation($flag);
   }
 
 } // class DateTimeField

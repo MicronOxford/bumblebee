@@ -17,7 +17,7 @@ class TimeField extends Field {
   
   var $date;
   var $representation;
-  var $manualRepresentation = TF_AUTO;
+  var $_manualRepresentation = TF_AUTO;
   var $droplist;
 
   
@@ -80,15 +80,27 @@ class TimeField extends Field {
            ."value='".xssqw($this->value)."' />";
   }
 
+  /**
+   * set the representation of this field
+   *
+   * @param integer $flag (TF_* types from class TimeField constants)
+   */
+  function setManualRepresentation($flag) {
+    $this->log("Manual representation set to $flag",10);
+    $this->_manualRepresentation = $flag;
+  }
   
   /**
    * Determine what sort of representation is appropriate
    *
    */
   function _determineRepresentation() {
-    if ($this->manualRepresentation != TF_AUTO) {
-      $this->representation = $this->manualRepresentation;
-    } elseif (! $this->editable) {
+    echo "manual = $this->_manualRepresentation\n";
+    $date = new SimpleDate($this->date);
+    $date->setTime($this->time);
+    if ($this->_manualRepresentation != TF_AUTO) {
+      $this->representation = $this->_manualRepresentation;
+    } elseif ($this->isStart || ! $this->editable || $this->list->numSlotsFollowing($date)<2) {
       $this->representation = TF_FIXED;
     } elseif ($this->_fixedTimeSlots()) {
       $this->representation = TF_DROP;

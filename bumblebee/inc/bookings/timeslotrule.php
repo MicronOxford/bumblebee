@@ -52,7 +52,7 @@ class TimeSlotRule {
    *    Not available Sunday and Saturday. Available weekdays 9am till 5pm with 1hr booking
    *    granularity, before 9am and after 5pm with no granularity
    *
-  **/
+   */
   function _interpret() {
     $this->slots = array();
     for ($dow=0; $dow<=6; $dow++) {
@@ -111,21 +111,27 @@ class TimeSlotRule {
           #echo "Trying to interpolate timeslots\n";
           $tgran = new SimpleTime($tstop->subtract($tstart)/$numslots);
           $this->slots[$dow][$i]['granularity'] = $tgran;
+          $siblingSlot=1;
           for ($time = $tstart; $time->ticks < $tstop->ticks; $time->addTime($tgran)) {
             #echo $time->timestring.' '. $tstop->timestring.' '.$tgran->timestring."\n";
             $this->slots[$dow][$i][TSSTART] = $time;
             $this->slots[$dow][$i][TSSTOP]  = $time;
             $this->slots[$dow][$i][TSSTOP]->addTime($tgran);
-            $this->slots[$dow][$i]['unrestricted'] = 0;
+            $this->slots[$dow][$i]['unrestricted']   = 0;
+            $this->slots[$dow][$i]['numslots']       = 1;
+            $this->slots[$dow][$i]['numslotsfollow'] = $numslots - $siblingSlot;
             $i++;
+            $siblingSlot++;
           }
         } else {
           #echo "No need to interpolate\n";
           $this->slots[$dow][$i][TSSTART] = new SimpleTime($tmp[1], 1);
           $this->slots[$dow][$i][TSSTOP] = new SimpleTime($tmp[2], 1);
+          $this->slots[$dow][$i]['numslots']     = 1;
+          $this->slots[$dow][$i]['numslotsfollow'] = 0;
           $this->slots[$dow][$i]['unrestricted'] = $numslots == '*';
           $this->slots[$dow][$i]['notavailable'] = $numslots == '0';
-          $this->slots[$dow][$i]['granularity'] = 0;
+          $this->slots[$dow][$i]['granularity']  = 0;
           $i++;
         }
       }
@@ -134,19 +140,19 @@ class TimeSlotRule {
   }
   
   function allSlotStart() {
-    echo "STUB timeslotrule 137";
+    echo "STUB: ". __FILE__ .' '. __LINE__;
     return array('09:00','10:00','15:00');
   }
   
   function allSlotDurations() {
-    echo "STUB timeslotrule 141";
+    echo "STUB: ". __FILE__ .' '. __LINE__;
     return array('01:00');
   }
   
   /**
    * return true if the specified date & time correspond to a valid starting time according
    * to this object's slot rules.
-  **/
+   */
   function isValidStart($date) {
     return $this->_isValidStartStop($date, TSSTART);
   }
@@ -154,14 +160,14 @@ class TimeSlotRule {
   /**
    * return true if the specified date & time correspond to a valid stopping time according
    * to this object's slot rules.
-  **/
+   */
   function isValidStop($date) {
     return $this->_isValidStartStop($date, TSSTOP);
   }
   
   /**
    * perform the above operations with no code duplication
-  **/
+   */
   function _isValidStartStop($date, $type) {
     return $this->_findSlot($date, $type, TSSTART) != -1;
   }
@@ -169,14 +175,14 @@ class TimeSlotRule {
   /**
    * return true if the specified dates & times are valid start/stop times
    * to this object's slot rules.
-  **/
+   */
   function isValidSlot($startdate, $stopdate) {
     return $this->isValidStart($startdate) && $this->isValidStop($stopdate);
   }
   
   /**
    * return true if the specified dates & times are valid as above, but only occupy one slot
-  **/
+   */
   function isValidSingleSlot($startdate, $stopdate) {
     $slot = $this->_findSlot($startdate, TSSTART, TSSLOT);
     return $slot->stop->ticks == $stopdate->ticks;
@@ -184,7 +190,7 @@ class TimeSlotRule {
   
   /**
    * return true if the specified dates & times are valid as above, but only occupy one slot
-  **/
+   */
   function slotDisabled($startdate) {
     $slot = $this->_findSlot($startdate, TSSTART, TSSLOT);
 //     echo "Disabled: $startdate->datetimestring\n";
@@ -194,16 +200,24 @@ class TimeSlotRule {
 
   /**
    * return true if the specified dates & times are valid as above, but only occupy one slot
-  **/
+   */
   function slotGranular($startdate) {
     $slot = $this->_findSlot($startdate, TSSTART, TSSLOT);
     return $slot->isGranular;
+  }
+
+  /**
+   * return true if the specified dates & times are valid as above, but only occupy one slot
+   */
+  function numSlotsFollowing($startdate) {
+    $slot = $this->_findSlot($startdate, TSSTART, TSSLOT);
+    return $slot->numFollowing;
   }
     
   /**
    * return the corresponding stopdate/time to the specified start date.
    * ASSUMES that the specified date is a valid start, else behaviour is undefined.
-  **/
+   */
   function findStop($date, $datetime=0) {
     return $this->_findSlot($date, TSSTART, TSSTOP, $datetime);
 //     return ($slot >= 0) ? $this->slots[$date->dow()][$slot][TSSTOP] : 0;
@@ -211,7 +225,7 @@ class TimeSlotRule {
   
   /**
    * return the corresponding startdate/time to a time that is possibly within a slot
-  **/
+   */
   function findSlotStart($date, $datetime=0) {
     return $this->_findSlot($date, TSWITHIN, TSSTART, $datetime);
 //     echo "given slot=$slot\n";
@@ -220,7 +234,7 @@ class TimeSlotRule {
 
   /**
    * return the corresponding stopdate/time to a time that is possibly within a slot
-  **/
+   */
   function findSlotStop($date, $datetime=0) {
     return $this->_findSlot($date, TSWITHIN, TSSTOP, $datetime);
 //     return ($slot >= 0) ? $this->slots[$date->dow()][$slot][TSSTOP] : 0;
@@ -228,7 +242,7 @@ class TimeSlotRule {
   
   /**
    * returns the startdate/time that is >= to the date passed.
-  **/
+   */
   function findNextSlot($date, $datetime=0) {
     return $this->_findSlot($date, TSNEXT, TSSTART, $datetime);
 //     return ($slot >= 0) ? $this->slots[$date->dow()][$slot][TSSTOP] : 0;
@@ -240,7 +254,7 @@ class TimeSlotRule {
    * returns -1 if no matching slot found.
    * $match is TSSTART, TSSTOP, TSWITHIN, TSNEXT depending on what matching is queried.
    * $return is TSSTART or TSSTOP depending on the required return value
-  **/
+   */
   function _findSlot($date, $match, $return, $datetime=0) {
 //     preDump(debug_backtrace());
     if ($datetime == 0) {
@@ -314,6 +328,7 @@ class TimeSlotRule {
                          $day->setTime($this->slots[$dow][$finalslot][TSSTOP])  );
       $ts->isDisabled =   issetSet($this->slots[$dow][$finalslot], 'notavailable');
       $ts->isGranular = ! issetSet($this->slots[$dow][$finalslot], 'unrestricted');
+      $ts->numFollowing = issetSet($this->slots[$dow][$finalslot], 'numslotsfollow');
       return $ts;
     } else {
 //     echo "making foo";
