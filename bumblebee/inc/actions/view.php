@@ -94,13 +94,15 @@ class ActionView extends ActionAction {
     #echo "o=$offset,d=$day\n";
     $now->dayRound();
     $day = date("w", $now->ticks); #the day of the week, 0=Sun, 6=Sat
-    #echo "o=$offset,d=$day\n";
+    echo "o=$offset,d=$day\n";
     $start = $now;
     //add one day to the offset so that the weekly display begins on a Monday
     //subtract seven days to start in the previous week
     $start->addDays($offset+1-7-$day);
+    echo $start->datetimestring;
     $stop = $start;
-    $stop->addDays(7*6);
+    $stop->addDays(7*5);
+    echo $stop->datetimestring;
     $cal = new Calendar($start, $stop, $this->PD['instrid']);
 
     $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);

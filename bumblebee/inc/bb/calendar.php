@@ -64,11 +64,14 @@ class Calendar {
    *
    * Actually, 24:00 will be used rather than 23:59 as it makes more
    * sense within the scope of non-overlapping bookings.
+   *
+   * Bookings are NOT restricted to remaining on one day (i.e. a booking from
+   * 20:00:00 until 10:00:00 the next day is OK.
+   *
+   * FIXME: day to day rollover not yet implemented
   **/
   function _normalise() {
-    //Calculate the number of days, this should be an integer, but make sure.
-    //Since PHP stupidly uses bankers rounding, we subtract a fuzz factor 
-    $this->numDays = round($this->stop->daysBetween($this->start)-0.1);
+    $this->numDays = $this->stop->partDaysBetween($this->start);
     $booking = 0;
     //blat over the booking list so we can create the normalised list
     $bookings = $this->bookinglist;
