@@ -15,7 +15,9 @@ class TimeField extends Field {
   var $list;
   var $isStart=0;
   
-  var $date;
+  var $slotStart;
+  var $slot;
+  
   var $representation;
   var $_manualRepresentation = TF_AUTO;
   var $droplist;
@@ -26,7 +28,7 @@ class TimeField extends Field {
   function TimeField($name, $longname="", $description="") {
     parent::Field($name, $longname, $description);
     $this->time = new SimpleTime(0);
-    $this->date = new SimpleDate(0);
+    $this->slotStart = new SimpleDate(0);
   }
 
   function displayInTable($cols) {
@@ -54,6 +56,7 @@ class TimeField extends Field {
   function selectable() {
     echo "TIME=".$this->time->timestring."\n";
     $this->_determineRepresentation();
+    $this->setTime($this->getValue());
     $t = '';
     switch ($this->representation) {
       case TF_DROP:
@@ -96,11 +99,9 @@ class TimeField extends Field {
    */
   function _determineRepresentation() {
     echo "manual = $this->_manualRepresentation\n";
-    $date = new SimpleDate($this->date);
-    $date->setTime($this->time);
     if ($this->_manualRepresentation != TF_AUTO) {
       $this->representation = $this->_manualRepresentation;
-    } elseif ($this->isStart || ! $this->editable || $this->list->numSlotsFollowing($date)<2) {
+    } elseif ($this->isStart || ! $this->editable || $this->slot->numslotsFollowing<2) {
       $this->representation = TF_FIXED;
     } elseif ($this->_fixedTimeSlots()) {
       $this->representation = TF_DROP;
@@ -131,14 +132,12 @@ class TimeField extends Field {
    */
   function _fixedTimeSlots() {
     $this->log('Are time slots fixed?', 10);
-    if (! $this->isStart || $this->date->ticks == 0) {
+    if (! $this->isStart || $this->slotStart->ticks == 0) {
       $this->log('No ticks for date so can\'t do fixed slots',8);
       return false;
     }
-    $date = new SimpleDate($this->date);
-    $date->setTime($this->time);
-    $startslot = $this->list->findSlotStart($date);
-    $this->fixedTimeSlots = $this->list->slotGranular($startslot);
+//     $startslot = $this->list->findSlotStart($date);
+    $this->fixedTimeSlots = $this->slot->numSlotsFollowing;
     $this->log('Slot starts at '.$startslot->datetimestring.': '.$this->fixedTimeSlots, 8);
     return $this->fixedTimeSlots;
   }
@@ -192,7 +191,7 @@ class TimeField extends Field {
     echo "SETDATETIME = $time\n";
     $date = new SimpleDate($time);
     $this->date = $date;
-    $this->time = $date->timePart();
+    $this->setTime($date->timePart());
 /*    $this->time->setStr($date->timePart());
     $this->set($this->time->timestring);*/
   }
@@ -204,7 +203,8 @@ class TimeField extends Field {
    */
   function setTime($time) {
     echo "SETTIME = $time\n";
-    $this->time->setStr($time);
+    $this->time = new SimpleTime($time);
+    $this->value = $this->time->timestring;
 //     $this->set($this->time->timestring);
   }
 
@@ -215,6 +215,18 @@ class TimeField extends Field {
    */
   function setSlotPicture($list) {
     $this->list = new TimeSlotRule($list);
+//     $this->calcDropDown();
+  }
+
+  /** 
+   * create a TimeSlotRule for validation of the times that we are using
+   *
+   * @param string $list initialisation string for a TimeSlotRule
+   */
+  function setSlotStart($date) {
+    $this->slotStart = new SimpleDate($date);
+    $this->slot = $this->list->findSlotByStart($this->slotStart);
+    preDump($this->slot);
 //     $this->calcDropDown();
   }
 

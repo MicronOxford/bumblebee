@@ -156,7 +156,7 @@ class Field {
   }
 
   function getValue() {
-    #echo "FIELD: ".$this->value.":".$this->defaultValue."<br />";
+    echo "FIELD $this->name: ".$this->value.":".$this->defaultValue."<br />";
     return (isset($this->value) ? $this->value : $this->defaultValue);
   }
 

@@ -6,6 +6,8 @@ allow set timeslots for instruments
 
 
 
+gracefully handle lack of mysql db
+
 feedback when entry updated!
 
 permit user change passwd

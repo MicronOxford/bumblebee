@@ -238,7 +238,7 @@ class SimpleTime {
   }
 
   function _setTicks($s) {
-    #echo "SimpleDate::Ticks $this->string<br />";
+//     echo "SimpleDate::Ticks $s<br />";
     //$this->ticks = strtotime($s);
     #echo "matching $s for time HH:MM or HH:MM:SS\n";
     if (preg_match('/^(\d\d):(\d\d):(\d\d)$/', $s, $t)) {

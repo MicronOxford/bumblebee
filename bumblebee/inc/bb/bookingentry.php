@@ -49,8 +49,8 @@ class BookingEntry extends DBRow {
     $f->defaultValue = $duration;
     $f->setManualRepresentation($isadmin ? TF_FREE : TF_AUTO);
 //     echo $f->manualRepresentation .'-'.$f->time->manualRepresentation."\n";
+    $f->setSlotPicture($granlist);
     $f->setSlotStart($start);
-    $f->setSlotPicture($granlist, $start);
     $this->addElement($f);
     $f = new DropList('projectid', 'Project');
     $f->connectDB('projects', 

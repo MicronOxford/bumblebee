@@ -177,29 +177,33 @@ class Calendar {
       $this->log('considering timeslot #'.$bv.': '
                       .$bl[$bv]->start->datetimestring.' - '.$bl[$bv]->stop->datetimestring, 8);
       $cbook = $bl[$bv];
-      $cbook->original = $cbook;  
-      $start = $list->findSlotStart($bl[$bv]->start);
-      if ($start == 0) {
+      $cbook->original = $cbook;
+//       $slot = $list->findSlotByStart($bl[$bv]->start);  
+      $slot = $list->findSlotFromWithin($bl[$bv]->start);  
+      #$start = $list->findSlotStart($bl[$bv]->start);
+      if ($slot == 0) {
         // then the original start time must be outside the proper limits
-        $start = $list->findNextSlot($bl[$bv]->start);
+        $slot = $list->findNextSlot($bl[$bv]->start);
+//         $slot = $list->findSlotByStart($start);
       }
       do {  //until the current booking has been broken up across list boundaries
+//         preDump($slot->dump());
         $this->log('ostart='.$bl[$bv]->start->datetimestring 
               .' ostop='.$bl[$bv]->stop->datetimestring, 10);
-        $stop  = $list->findSlotStop($start);
-        $this->log('cstart='.$start->datetimestring
-              .' cstop='.$stop->datetimestring, 10);
+        $stop  = $slot->stop;
+        $this->log('cstart='.$slot->start->datetimestring
+              .' cstop='.$slot->stop->datetimestring, 10);
 //         $this->log('cstart='.$start->datetimestring);
 //         $this->log(' cstop='.$stop->datetimestring, 10);
         $this->bookinglist[$booking] = $cbook;
         
         // while PHP's handling of methods is broken, we have to this as a two-step operation:
         // all we want to do is:
-        //    $this->bookinglist[$booking]->start->max($start);
+        //    $this->bookinglist[$booking]->start->max($slot->start);
         // but that causes the start property to change from and Object to an &Object (see a var_dump)
         // see http://bugs.php.net/bug.php?id=24485 and http://bugs.php.net/bug.php?id=30787
         $newstart = $this->bookinglist[$booking]->start;
-        $newstart->max($start);
+        $newstart->max($slot->start);
         $this->bookinglist[$booking]->start = $newstart;
 
         //...and again:          
@@ -208,17 +212,17 @@ class Calendar {
         $newstop->min($stop);
         $this->bookinglist[$booking]->stop = $newstop;
         
-        $this->bookinglist[$booking]->isDisabled = $list->slotDisabled($start);
+        $this->bookinglist[$booking]->isDisabled = ! $slot->isAvailable;
         
         $this->log('sstart='.$this->bookinglist[$booking]->start->datetimestring
               .' sstop='.$this->bookinglist[$booking]->stop->datetimestring, 10);
-        $start = $list->findNextSlot($start);
+        $slot = $list->findNextSlot($slot->start);
         $booking++;
         $this->log('oticks='.$this->bookinglist[$booking-1]->original->stop->ticks
-                   .'nticks='.$start->ticks,10);
-        $this->log('nextstart='.$start->datetimestring,10);
+                   .'nticks='.$slot->start->ticks,10);
+        $this->log('nextstart='.$slot->start->datetimestring,10);
         $this->log('');
-      } while ($this->bookinglist[$booking-1]->original->stop->ticks > $start->ticks);
+      } while ($this->bookinglist[$booking-1]->original->stop->ticks > $slot->start->ticks);
     }
 //     echo "<pre>";
 //     var_dump($this->bookinglist);
