@@ -159,7 +159,7 @@ END;
   function deletespecialsinglerate($proj,$i) {
     $q = "DELETE FROM stdrates WHERE category='$gpid'";
     if (!mysql_query($q)) die(mysql_error());
-    echo "action: '$q' successful";
+    echo "<div class='sql'>action: '$q' successful</div>";
   }
 
 ?> 

@@ -76,7 +76,7 @@
         echo "Booking reference $book rejected<br />";
         $q = "DELETE FROM bookings WHERE id='$book'";
         if (!mysql_query($q)) die(mysql_error());
-        echo "delete booking: '$q' successful<br />";
+        echo "<div class='sql'>delete booking: '$q' successful</div>";
       } else {
         echo "Booking reference $book deferred for later confirmation<br />";
       }
@@ -87,7 +87,7 @@
         # delete the request for confirmation
         $del = "DELETE FROM adminconfirm WHERE booking='$book'";
         if (!mysql_query($del)) die(mysql_error());
-        echo "delete adminconfirm entry: '$del' successful<br />";
+        echo "<div class='sql'>delete adminconfirm entry: '$del' successful</div>";
       }
     }
   }

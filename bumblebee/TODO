@@ -1,12 +1,12 @@
 $Id$
 
+locking on making bookings
+
 permit deletion of instrument classes
 
 allow user to change password
 
-default projects for users?
-
-escape SQL input for bad characters. esp '.
+escape SQL input for bad characters. esp '. (magic_quotes_gpc solves this?)
 
 streamline creation of project with only one group
 streamline creation of project when creating a user
@@ -20,15 +20,11 @@ select all/deselect all javascript buttons where applicable
 
 locking of records while editing?
 
-calendar view
-
-booking view
-
-edit/delete booking 
 * unbook emails
 
 *** decide on precision with which times can be entered, change time format?
 *** handle halfday (allow_halfday field??)
+*** half/full day calculation.
 
 include consumables and output templating in reporting
 

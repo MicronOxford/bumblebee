@@ -13,19 +13,6 @@
     } else {
       showCalendar($_POST['instrument']);
     }
-    /*
-    if (! isset($_POST['user'])) {
-      selectuser('users', 'Create new user', 'Edit/create user');
-    } elseif (! isset($_POST['updateuser'])) {
-      edituser($_POST['user']);
-    } elseif ($_POST['delete'] == 1) {
-      deleteuser($_POST['user']);
-    } elseif ($_POST['user'] == -1) {
-      insertuser();
-    } else {
-      updateuser($_POST['updateuser']);
-    }
-    */
   }
 
   function keyExist ($keypattern) {
@@ -113,9 +100,10 @@
     $q = "SELECT bookings.id AS bookid,bookwhen,duration,"
         ."DATE_ADD(bookwhen, INTERVAL duration HOUR_SECOND) AS stoptime,"
         ."ishalfday,isfullday,"
-        ."discount,log,comments,"
+        ."discount,log,comments,projectid,"
         ."users.name AS name, "
         ."users.username AS username, "
+        ."users.email AS email, "
         ."masq.name AS masquser, "
         ."masq.username AS masqusername, "
         ."projects.name AS project "
@@ -158,9 +146,14 @@
     #foreach ($dates as $d) {
       #echo isodate($d) ."<br />\n";
     #}
+    echo "<input type='hidden' name='caloffset' value='".$_POST['caloffset']."' />";
     echo "\n<table class='centrein'><tr><td>";
     echo "<button name='caloffset' type='submit' value='".($offset-27)."'>"
         ."&laquo; Earlier"
+        ."</button>";
+    echo "</td><td style='text-align: center;'>";
+    echo "<button name='caloffset' type='submit' value='0'>"
+        ."Today"
         ."</button>";
     echo "</td><td style='text-align: right;'>";
     echo "<button name='caloffset' type='submit' value='".($offset+27)."'>"
@@ -177,6 +170,7 @@
       echo "</th>";
     }
     #echo "</tr>"; #printed by first echo statement later
+    $today = isodate(time());
     foreach ($dates as $d) {
       $isodate = isodate($d);
       $day = date("w", $d);
@@ -191,7 +185,8 @@
         echo "</ul></td>";
       }
       $month = date("m", $d);
-      echo "<td class='calday " . ($month%2 ? "moneven" : "monodd") . "'>";
+      echo "<td class='calday " . ($month%2 ? "moneven" : "monodd") 
+                  . ($today==$isodate ? " caltoday" : "") . "'>";
       echo "<ul class='booktime'><li>";
       #echo "<div style='float:right;'><button name='zoom' type='submit' value='$isodate'>zoom</button></div>";
       echo "<div style='float:right;'><button name='zoom' type='submit' value='$isodate' title='Zoom in on date: $isodate'><img src='images/zoom.png' alt='Zoom in on $isodate' class='calicon' /></button></div>";
@@ -213,7 +208,9 @@
         # height of the cell is the duration in hours * 1.2em,
         #  less 0.2em for the borders top and bottom.
         $height = $t['truncdurmin']/60*1.2 - 0.2;
-        $entry = "<div class='calbookperson' title='$start - $stop'>".$t['rec']['name']."</div>";
+        $entry = "<div class='calbookperson'>"
+                ."<a href='mailto:".$t['rec']['email']."'>"
+                .$t['rec']['name']."</a></div>";
         showBookingsGraphical($t, $height, $entry);
         #showBookingsListing($t['rec']);
       }
@@ -312,6 +309,8 @@
     $alltimes = timeSchedule($bookings, $schedstart, $schedfinish);
 
     print "<p>Calendar for $startdate</p>";
+    echo "<div class='centrein'><button name='zoomout' value='1'>Back to month view</button></div>";
+    echo "<input type='hidden' name='caloffset' value='".$_POST['caloffset']."' />";
     echo "<table class='calendarzoom centrein'>";
     echo "<tr><td class='timecolzoom'><ul class='booktimezoom'>";
     for ($hour=0; $hour<24; $hour++) {
@@ -325,7 +324,10 @@
       # height of the cell is the duration in hours * 4.8em,
       #  less 0.2em for the borders top and bottom.
       $height = $t['truncdurmin']/60*4.8 - 0.2;
-      $entry = "<div class='calbookperson''>".$t['rec']['name']
+      $entry = "<div class='calbookperson''>"
+              ."<a href='mailto:".$t['rec']['email']."'>"
+              .$t['rec']['name']
+              ."</a>"
               ." (username: ". $t['rec']['username'] .") "
               ."from ". isotime($t['start']) .' until '. isotime($t['stop'])
               .".</div>";
@@ -343,12 +345,12 @@
                  ."Discount: " . $t['rec']['discount'] . "%"
                  ."</div>";
       }
-      if (isset($t['rec']['comments'])) {
+      if (isset($t['rec']['comments']) && $t['rec']['comments'] != '') {
         $entry .= "<div class='comments'>"
                  ."Comments: " . $t['rec']['comments']
                  ."</div>";
       }
-      if (isset($t['rec']['log'])) {
+      if (isset($t['rec']['log']) && $t['rec']['log'] != '') {
         $entry .= "<div class='log'>"
                  ."Log entry: " . $t['rec']['log']
                  ."</div>";
@@ -367,15 +369,16 @@
 
   function showBooking() {
     global $UID, $MASQUID, $MASQUSER, $ISADMIN;
-    displayPost();
+    #displayPost();
     $bookid = $_POST['booking'];
     $q = "SELECT bookings.id AS bookid,bookwhen,duration,"
         ."DATE_ADD(bookwhen, INTERVAL duration HOUR_SECOND) AS stoptime,"
         ."ishalfday,isfullday,"
-        ."discount,log,comments,instrument,"
+        ."discount,log,comments,ip,instrument,projectid,"
         ."users.id AS userid, "
         ."users.name AS name, "
         ."users.username AS username, "
+        ."users.email, "
         ."masq.name AS masquser, "
         ."masq.username AS masqusername, "
         ."projects.name AS project "
@@ -394,9 +397,10 @@
     $g['stopticks'] = $g['stoptime'];
     $g['stoptime']  = isotime(strtotime($g['stoptime']));
     $g['date']      = isodate($ticks);
-    echo "<pre>";
-    print_r($g);
-    echo "</pre>";
+    $g['bookid']    = $bookid;
+    #echo "<pre>";
+    #print_r($g);
+    #echo "</pre>";
     if ($ISADMIN || $g['userid']==$UID) {
       editBooking($g);
     } else {
@@ -405,7 +409,8 @@
   }
 
   function makeBooking() {
-    displayPost();
+    global $UID, $MASQUID, $MASQUSER;
+    #displayPost();
     $g = array();
     preg_match("/(.+)-(.+)/", $_POST['makebooking'], $times);
     #$ticks = $_POST['makebooking'];
@@ -415,19 +420,57 @@
     $g['date']      = isodate($times[1]);
     $g['instrument']= $_POST['instrument'];
     $g['bookid']    = -1;
+    if (isset($MASQUID)) {
+      $g['userid']  = $MASQUID;
+      $g['bookedby']= $UID;
+    } else {
+      $g['userid']  = $UID;
+    }
     editBooking($g);
   }
 
+  function displayBooking($g) {
+    global $UID, $MASQUID, $MASQUSER, $ISADMIN;
+    echo "<input type='hidden' name='caloffset' value='".$_POST['caloffset']."' />";
+    echo "<h2>Booking details</h2>";
+    displayInstrument($g['instrument']);
+    echo "<table>";
+    echo "<tr><td>Date</td>"
+        ."<td>".$g['date']."</td></tr>";
+    echo "<tr><td>Start time</td>"
+        ."<td>".$g['starttime']."</td></tr>";
+    echo "<tr><td>Finish time</td>"
+        ."<td>".$g['stoptime']."</td></tr>";
+    echo "<tr><td>Duration</td>"
+        ."<td>".$g['duration']."</td></tr>";
+    echo "<tr><td>Booking for </td>"
+        ."<td>".$g['name']." (".$g['username'].")</td></tr>";
+    if (isset($g['bookedby'])) {
+      echo "<tr><td>Booking made by </td>"
+        ."<td>".$g['masqname']." (".$g['masqusername'].")</td></tr>";
+    }
+    echo "<tr><td>Project</td>"
+        ."<td>".$g['project']."</td></tr>";
+    echo "<tr><td>Comments</td>"
+        ."<td>".$g['comments']."</td></tr>";
+    echo "<tr><td>Log entry</td>"
+        ."<td>".$g['log']."</td></tr>";
+    echo "</table>";
+  }
+
   function editBooking($g) {
-    global $UID, $MASQUID, $MASQUSER;
-    echo "<pre>";
-    print_r($g);
-    echo "</pre>";
-    if ($g['ticks'] < time()) {
+    global $UID, $MASQUID, $MASQUSER, $ISADMIN;
+    $past = ($g['ticks'] < time());
+    $edit = ($ISADMIN || ! $past) || ($g['bookid'] < 0);
+    #echo "<pre>";
+    #print_r($g);
+    #echo "</pre>";
+    if ($past) {
       echo "<p>Log entry for past instrument use:</p>";
     } else {
       echo "<p>Booking for instrument use:</p>";
     }
+    echo "<input type='hidden' name='caloffset' value='".$_POST['caloffset']."' />";
     echo "<input type='hidden' name='action' value='book' />";
     echo "<input type='hidden' name='booking' value='".$g['bookid']."' />";
     echo "<input type='hidden' name='instrument' value='".$g['instrument']."' />";
@@ -438,22 +481,33 @@
         ."<input type='hidden' name='date' value='".$g['date']."' />"
         ."</td></tr>";
     echo "<tr><td>Start time</td>"
-        ."<td><input type='text' name='starttime' value='".$g['starttime']."' size='8' maxlength='5'></td></tr>";
+        ."<td>"
+        .($edit ? "<input type='text' name='starttime' value='".$g['starttime']."' size='8' maxlength='5'>"
+                : $g['starttime'])
+        ."</td></tr>";
     echo "<tr><td>Finish time</td>"
-        ."<td><input type='text' name='stoptime' value='".$g['stoptime']."' size='8' maxlength='5'></td></tr>";
+        ."<td>"
+        .($edit ? "<input type='text' name='stoptime' value='".$g['stoptime']."' size='8' maxlength='5'>"
+               : $g['stoptime'])
+        ."</td></tr>";
     if (isset($MASQUID) && $MASQUID) {
       echo "<tr><td>Booking for </td>"
-          ."<td>".$MASQUSER[1]." (".$MASQUSER[0].")"
-          ."<input type='hidden' name='userid' value='$MASQUID' />"
-          ."<input type='hidden' name='bookedby' value='$UID' />"
+          #."<td>".$MASQUSER[1]." (".$MASQUSER[0].")"
+          #."<input type='hidden' name='userid' value='$MASQUID' />"
+          ."<td>";
+      userselectbox("userid","",$g['userid']);
+      echo "<input type='hidden' name='bookedby' value='$UID' />"
           ."</td></tr>";
       $userid = $MASQUID;
+    } elseif (isset($g['userid'])) {
+      $userid = $g['userid'];
+      echo "<input type='hidden' name='userid' value='$userid' />";
     } else {
-      echo "<input type='hidden' name='userid' value='$MASQUID' />";
       $userid = $UID;
+      echo "<input type='hidden' name='userid' value='$UID' />";
     }
 
-    $q = "SELECT projectid,name,longname "
+    $q = "SELECT projectid,isdefault,name,longname "
         ."FROM userprojects "
         ."LEFT JOIN projects ON projectid=id "
         ."WHERE userid='$userid'";
@@ -461,15 +515,36 @@
     if (! $sql) die (mysql_error());
     echo "<tr><td>Project</td><td><select name='project'>";
     while ($p = mysql_fetch_array($sql)) {
-      echo "<option value='".$p['projectid']."'>".$p['name']."</option>";
+      if ((! isset($g['projectid'])) && $p['isdefault']) {
+        $g['projectid'] = $p['projectid'];
+      }
+      #echo "(".$p['projectid'] .",". $g['projectid'].")";
+      $s = ($p['projectid']==$g['projectid']) ? " selected='1'" : "";
+      echo "<option value='".$p['projectid']."'$s>".$p['name']."</option>";
     }
     echo "</select></td></tr>";
     echo "<tr><td>Comments</td>"
-        ."<td><input type='text' name='comments' value='".$g['comments']."' size='24' maxlength='31'></td></tr>";
+        ."<td>"
+        .($edit ? "<input type='text' name='comments' value='".$g['comments']."' size='24' maxlength='31'>"
+                : $g['comments'])
+        ."</td></tr>";
     echo "<tr><td>Log entry</td>"
         ."<td><textarea name='log' rows='5' cols='40'>".$g['log']."</textarea></td></tr>";
     
-    echo "<tr><td></td>"
+    if ($ISADMIN) {
+      echo "<tr><td>Booking IP address</td>"
+          ."<td>".$g['ip']."</td></tr>";
+      echo "<tr><td>Discount</td>"
+          ."<td><input type='text' name='discount' value='".$g['discount']."' /></td></tr>";
+      echo "<tr><td>Is half-day</td>"
+          ."<td><input type='checkbox' name='ishalfday' value='1'"
+          .($g['ishalfday']?"checked='1'":"")."' /></td></tr>";
+      echo "<tr><td>Is full-day</td>"
+          ."<td><input type='checkbox' name='isfullday' value='1'"
+          .($g['isfullday']?"checked='1'":"")."' /></td></tr>";
+    }
+    echo "<tr>"
+        ."<td><input type='submit' name='deletebooking' value='Delete booking'></td>"
         ."<td><input type='submit' name='change' value='Edit/create booking'></td></tr>";
     echo "</table>";
   }

@@ -290,7 +290,7 @@
     ### Now construct the entire query out of the different parts
     $q = implode("AND ", $restrictions);
 
-    echo "<br /><br />Get booking details: '$q' <br />";
+    echo "<div class='sql'>Get booking details: '$q' </div>";
 
     echo "<table border='1'>";
     if (!$sql = mysql_query($q)) die(mysql_error());
@@ -318,7 +318,7 @@
       echo "<br />";*/
     }
     echo "</table>";
-    echo "<br /><br />Get booking details: '$q' successful<br />";
+    echo "<div class='sql'>Get booking details: '$q' successful</div>";
     /*
     # appears to be a MySQL > 4.1 thing again. :(
     $newq = "SELECT * FROM ($q) AS billing WHERE groups.id='5'";

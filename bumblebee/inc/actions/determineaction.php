@@ -40,6 +40,9 @@ function performAction($action) {
     case $act['view']:
       actionView();
       break;
+    case $act['book']:
+      actionBook();
+      break;
     case $act['groups']:
       actionGroup();
       break;

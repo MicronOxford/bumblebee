@@ -144,7 +144,7 @@ END;
   function deleteproject($gpid) {
     $q = "DELETE FROM projects WHERE id='$gpid'";
     if (!mysql_query($q)) die(mysql_error());
-    echo "action: '$q' successful";
+    echo "<div class='sql'>action: '$q' successful</div>";
   }
 
   function insertproject() {
@@ -171,9 +171,9 @@ END;
     }
     $insert = substr($insert,0,-1);  #cut off the final comma!
     if (!mysql_query($delete)) die(mysql_error());
-    echo "action: '$delete' successful<br />";
+    echo "<div class='sql'>action: '$delete' successful</div>";
     if (!mysql_query($insert)) die(mysql_error());
-    echo "action: '$insert' successful<br />";
+    echo "<div class='sql'>action: '$insert' successful</div>";
   }
 
   function updateproject($prid) {

@@ -4,7 +4,7 @@
 
 function actionUnknown($action)
 {
-  global $act;
+  global $act, $ADMINEMAIL;
   $verb=$_POST['action'];
   $code=$act[$action];
   echo "<h2>Error</h2>"

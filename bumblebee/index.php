@@ -20,6 +20,7 @@ $action = checkActions();
 
 include 'main.php';
 include 'view.php';
+include 'book.php';
 
 #admin functions
 include 'adminmenu.php';

@@ -111,7 +111,7 @@ END;
   {
     $q = "DELETE FROM groups WHERE id='$gpid'";
     if (!mysql_query($q)) die(mysql_error());
-    echo "action: '$q' successful";
+    echo "<div class='sql'>action: '$q' successful</div>";
   }
 
   function insertgroup()
@@ -123,7 +123,7 @@ END;
         ."'".$_POST['name']."','".$_POST['longname']."','".$_POST['addr1']."','".$_POST['addr2']."','".$_POST['suburb']."','".$_POST['code']."','".$_POST['country']."','".$_POST['email']."','".$_POST['fax']."','".$_POST['account']."'"
         .")";
     if (!mysql_query($q)) die(mysql_error());
-    echo "action: '$q' successful";
+    echo "<div class='sql'>action: '$q' successful</div>";
   }
 
   function updategroup($gpid)
@@ -144,7 +144,7 @@ END;
     #echo "SQL='$q'";
     #echo "<br />now run the query<br />";
     if (!mysql_query($q)) die(mysql_error());
-    echo "action: '$q' successful";
+    echo "<div class='sql'>action: '$q' successful</div>";
   }
 
 ?> 

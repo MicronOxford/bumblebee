@@ -186,12 +186,12 @@ END;
     if (isset($_POST["userclassid"]) && $_POST["userclassid"] != -1) {
       $q="UPDATE userclass SET name='".$_POST['userclassname']."' WHERE id='".$_POST['userclassid']."'";
       if (!mysql_query($q)) die(mysql_error());
-      echo "$q\n";
+      echo "<div class='sql'>$q</div>";
     } else {
       $q="INSERT INTO userclass (name) VALUES ('".$_POST['userclassname']."')";
       if (!mysql_query($q)) die(mysql_error());
       $_POST["userclassid"]=mysql_insert_id();
-      echo "$q\n";
+      echo "<div class='sql'>$q</div>";
       echo "id=".$_POST["userclassid"]."\n";
     }
     for ($i=1; isset($_POST["class$i-classid"]); $i++) {
@@ -219,7 +219,7 @@ END;
         ."cost_fullday='".$_POST["class$i-fullday"]."' "
         ."WHERE id='".$_POST["class$i-costid"]."'";
     if (!mysql_query($q)) die(mysql_error());
-    echo "action: '$q' successful";
+    echo "<div class='sql'>action: '$q' successful</div>";
   }
 
   function insertsinglerate($i)
@@ -232,54 +232,7 @@ END;
         .")";
     #echo "action: '$q' attempting";
     if (!mysql_query($q)) die(mysql_error());
-    echo "action: '$q' successful";
+    echo "<div class='sql'>action: '$q' successful</div>";
   }
 
-/*
-  function updatecost($gpid)
-  {
-    for ($i=1; isset($_POST["instr$i-instrid"]); $i++) {
-      if ($_POST["instr$i-delete"]) {
-        deletesinglerate($i);
-      } elseif (isset($_POST["instr$i-id"])) {
-        #then it's an update not an insert
-        updatesinglerate($i);
-      } elseif ($_POST["instr$i-instrid"] != -1) {
-        #then it's an insert
-        insertsinglerate($i);
-      } else {
-        #then it was an empty insert (instrid = -1)
-      }
-    }
-  }
-
-  function deletesinglerate($i) {
-    $q = "DELETE FROM stdrates WHERE id='".$_POST["instr$i-id"]."'";
-    if (!mysql_query($q)) die(mysql_error());
-    echo "action: '$q' successful";
-  }
-  
-  function updatesinglerate($i) {
-    $q = "UPDATE stdrates SET "
-        ."cost_hour='".$_POST["instr$i-hour"]."',"
-        ."cost_halfday='".$_POST["instr$i-halfday"]."',"
-        ."cost_fullday='".$_POST["instr$i-fullday"]."' "
-        ."WHERE id='".$_POST["instr$i-id"]."'";
-    if (!mysql_query($q)) die(mysql_error());
-    echo "action: '$q' successful";
-  }
-
-  function insertsinglerate($i)
-  {
-    $q = "INSERT INTO stdrates "
-        ."(category,instrid,cost_hour,cost_halfday,cost_fullday) "
-        ."VALUES "
-        ."("
-        ."'".$_POST['category']."','".$_POST["instr$i-instrid"]."','".$_POST["instr$i-hour"]."','".$_POST["instr$i-halfday"]."','".$_POST["instr$i-fullday"]."'"
-        .")";
-    #echo "action: '$q' attempting";
-    if (!mysql_query($q)) die(mysql_error());
-    echo "action: '$q' successful";
-  }
-*/
 ?> 

@@ -24,11 +24,6 @@
     $sql = mysql_query($q);
     if (! $sql) die (mysql_error());
     $g = mysql_fetch_row($sql);
-    #$user[] = $g['username'];
-    #$user[] = $g['name'];
-    #echo "$q=>name=".$user[0];
-    #echo "name=".$user[1];
-    #return $user;
     return $g;
   }
 
@@ -93,7 +88,7 @@
     ";
   }
 
-  function userselectbox($name, $firstoption)
+  function userselectbox($name, $firstoption, $selected=0)
   {
     echo "<select name='$name'>";
     if ($firstoption != "") {
@@ -104,9 +99,9 @@
         ."ORDER BY username";
     $sql = mysql_query($q);
     if (! $sql) die (mysql_error());
-    while ($row = mysql_fetch_row($sql))
-    {
-      echo "<option value='$row[0]'>$row[1] ($row[2])</option>";
+    while ($row = mysql_fetch_row($sql)) {
+      $s = ($row[0] == $selected) ? " selected='1'" : "";
+      echo "<option value='$row[0]'$s>$row[1] ($row[2])</option>";
     }                                    
     echo "</select>";
   }
@@ -144,24 +139,28 @@
 
     #USER-PROJECT ASSOCIATIONS
     echo "<tr><th colspan='2'>User's projects</th></tr>";
-    $q = "SELECT projectid "
+    echo "<tr><td>Projects</td><td>Default</td></tr>";
+    $q = "SELECT projectid,isdefault "
         ."FROM userprojects "
-        ."WHERE userid='$gpid'";
+        ."LEFT JOIN projects on projects.id=userprojects.projectid "
+        ."WHERE userid='$gpid' "
+        ."ORDER BY projects.name";
     $sql = mysql_query($q);
     if (! $sql) die (mysql_error());
     $i=0;
-    while ($project = mysql_fetch_array($sql)) {
-      $i++;
-      echo "<tr><td></td><td>"
+    for ($i=0; $i<mysql_num_rows($sql)+2; $i++) {
+      if ($i < mysql_num_rows($sql)) {
+        $project = mysql_fetch_array($sql);
+      } else {
+        $project = array();
+      }
+      echo "<tr><td>"
           ."<select name='project$i'>".getUserOptions ("projects", $project['projectid'])
-          ."</select></td></tr>";
-    }
-    for ($j=0; $j<2; $j++)
-    {
-      $i++;
-      echo "<tr><td></td><td>"
-          ."<select name='project$i'>".getUserOptions ("projects", -1)
-          ."</select></td></tr>";
+          ."</select></td>";
+      echo "<td>"
+          ."<input type='radio' name='defaultproject' value='$i'".($project['isdefault'] ? " checked='1'" : "")." />"
+          ."</td>";
+      echo "</tr>";
     }
 
     # USER-PERMISSION ASSOCIATIONS
@@ -202,13 +201,13 @@
     echo "deleting user data<br />";
     $q = "DELETE FROM users WHERE id='$gpid'";
     if (!mysql_query($q)) die(mysql_error());
-    echo "action: '$q' successful";
+    echo "<div class='sql'>action: '$q' successful</div>";
     $q = "DELETE FROM userprojects WHERE userid='$gpid'";
     if (!mysql_query($q)) die(mysql_error());
-    echo "action: '$q' successful";
+    echo "<div class='sql'>action: '$q' successful</div>";
     $q = "DELETE FROM permissions WHERE userid='$gpid'";
     if (!mysql_query($q)) die(mysql_error());
-    echo "action: '$q' successful";
+    echo "<div class='sql'>action: '$q' successful</div>";
   }
 
   function insertuser()
@@ -221,11 +220,7 @@
         ."'".$_POST['editusername']."','".$_POST['name']."','".md5($_POST['passwd'])."','".$_POST['email']."','".$_POST['phone']."','".$_POST['suspended']."','".$_POST['isadmin']."'"
         .")";
     if (!mysql_query($q)) die(mysql_error());
-    echo "action: '$q' successful";
-    #$q = "SELECT id FROM users "
-        #."WHERE username='".$_POST['editusername']."'";
-    #if (!$sql=mysql_query($q)) die(mysql_error());
-    #$row = mysql_fetch_row($sql);
+    echo "<div class='sql'>action: '$q' successful</div>";
     $newuserid = mysql_insert_id();
     updateuserprojects($newuserid);
     updateuserpermissions($newuserid);
@@ -247,7 +242,7 @@
     #echo "SQL='$q'";
     #echo "<br />now run the query<br />";
     if (!mysql_query($q)) die(mysql_error());
-    echo "action: '$q' successful";
+    echo "<div class='sql'>action: '$q' successful</div>";
     updateuserprojects($gpid);
     updateuserpermissions($gpid);
   }
@@ -255,9 +250,10 @@
   function updateuserprojects($id) {
     $existing=array();
     #echo "<br />Looking for projects<br />";
-    for ($j=1; isset($_POST['project'.$j]); $j++) {
+    for ($j=0; isset($_POST['project'.$j]); $j++) {
       $existing['p'.$_POST['project'.$j]] = "insert";
-      #echo "$j=".$existing['p'.$_POST['project'.$j]]. "<br />";
+      #echo "$j=".$existing['p'.$_POST['project'.$j]]. 
+                 #" ". $_POST['project'.$j]. "<br />";
     }
     $q = "SELECT projectid "
         ."FROM userprojects "
@@ -280,12 +276,20 @@
         if ($action == "insert") {
           $q="INSERT IGNORE INTO userprojects (userid,projectid) VALUES ('$id','$proj')";
         } elseif ($action == "remove") {
-          $q="DELETE FROM userprojects where userid='$id' AND projectid='$proj'";
+          $q="DELETE FROM userprojects WHERE userid='$id' AND projectid='$proj'";
         }
         echo "Projects: $q<br />";
         if (!mysql_query($q)) die(mysql_error());
       }
     }
+    #finally, look for the 'default' project
+    $default = $_POST['defaultproject'];
+    $default = $_POST["project$default"];
+    $q="UPDATE userprojects SET isdefault='0' WHERE userid='$id'";
+    if (!mysql_query($q)) die(mysql_error());
+    $q="UPDATE userprojects SET isdefault='1' WHERE userid='$id' AND projectid='$default'";
+    echo "Default projects $q<br />";
+    if (!mysql_query($q)) die(mysql_error());
   }
 
   function updateuserpermissions($id) {
@@ -339,10 +343,10 @@
         } elseif ($action == "remove") {
           $q="DELETE FROM permissions where userid='$id' AND instrid='$instrid'";
         }
-        echo "Permissions: $q<br />";
+        echo "<div class='sql'>Permissions: '$q' successful</div>";
         if (!mysql_query($q)) die(mysql_error());
       }
     }
-    echo "Note that the UPDATE queries may not have been necessary.";
+    echo "<div class='sql'>Note that the UPDATE queries may not have been necessary</div>";
   }
 ?> 
