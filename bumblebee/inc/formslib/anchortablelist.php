@@ -35,8 +35,8 @@ class AnchorTableList extends AnchorList {
   function display() {
     $tableclass = (isset($this->tableclass) ? " class='$this->tableclass'" : "");
     $t  = "<table title='$this->description' $tableclass>\n";
-    if (is_array($this->list->list)) {
-      foreach ($this->list->list as $k => $v) {
+    if (is_array($this->list->choicelist)) {
+      foreach ($this->list->choicelist as $k => $v) {
         $t .= $this->format($v);
       }
     }

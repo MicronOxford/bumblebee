@@ -21,7 +21,10 @@ include_once('dbobject.php');
 class DBRow extends DBO {
   var $fatal_sql = 1;
   var $namebase;
-  var $newObject = 0;
+  var $newObject = 0,
+      $insertRow = 0,
+      $autonumbering = 1;
+  var $restriction = '';
   var $recStart = '',
       $recNum   = '';
 
@@ -38,6 +41,7 @@ class DBRow extends DBO {
     echo "<br/><br/>DBRow:$this->namebase.Looking for updates:<br />";
     // First, check to see if this record is new
     if ($this->id == -1) {
+      $this->insertRow = 1;
       // We're a new object, but has the user filled the form in, or is the
       // user about to fill the form in?
       $this->newObject = 1;
@@ -100,21 +104,50 @@ class DBRow extends DBO {
     //this will also trip any complex fields to sync
     $vals = $this->_sqlvals();
     if ($vals != "") {
-      if ($this->id != -1) {
+      if (! $this->insertRow) {
         //it's an existing record, so update
         $q = "UPDATE $this->table "
             ."SET $vals "
-            ."WHERE $this->idfield=".qw($this->id);
+            ."WHERE $this->idfield=".qw($this->id)
+            .(($this->restriction !== '') ? ' AND '.$this->restriction : '');
         $sql_result = db_quiet($q, $this->fatal_sql);
       } else {
         //it's a new record, insert it
         $q = "INSERT $this->table SET $vals";
         $sql_result = db_quiet($q, $this->fatal_sql);
         # FIXME: do we need to check that this was successful in here?
-        //the record number can now be copied into the object's data.
-        $this->id = db_new_id();
-        $this->fields[$this->idfield]->set($this->id);
+        if ($this->autonumbering) {
+          //the record number can now be copied into the object's data.
+          $this->id = db_new_id();
+          $this->fields[$this->idfield]->set($this->id);
+        }
       }
+    }
+    return $sql_result;
+  }
+
+  /**
+   * delete this object's row from the database.
+   *
+   * Note, this function returns false on success
+  **/
+  function delete() {
+    // If the input isn't valid then bail out straight away
+    if (! ($this->changed && $this->isValid) ) {
+      echo "not deleting: changed=$this->changed valid=$this->isValid<br />";
+      return -1;
+    }
+    echo "deleting: changed=$this->changed valid=$this->isValid<br />";
+    $sql_result = -1;
+    //obtain the *clean* parameter='value' data that has been SQL-cleansed
+    //this will also trip any complex fields to sync
+    $vals = $this->_sqlvals();
+    if ($vals != "") {
+      $q = "DELETE FROM $this->table "
+          ."WHERE $this->idfield=".qw($this->id)
+          .(($this->restriction !== '') ? ' AND '.$this->restriction : '')
+          ." LIMIT 1";
+      $sql_result = db_quiet($q, $this->fatal_sql);
     }
     return $sql_result;
   }
@@ -179,14 +212,17 @@ class DBRow extends DBO {
     $q = "SELECT * FROM "
         ."$this->table "
         ."WHERE $this->idfield=".qw($this->id).' '
+        .(($this->restriction !== '') ? 'AND '.$this->restriction.' ' : '')
         .(($this->recStart !== '') && ($this->recNum !== '') ? "LIMIT $this->recStart,$this->recNum" : '');
     $g = db_get_single($q);
     #echo "<pre>";print_r($g);echo "</pre>";
-    foreach ($this->fields as $k => $v) {
-      echo "Filling $k ";
-      $val = issetSet($g,$k);
-      $this->fields[$k]->set($val);
-      #echo $this->fields[$k]->text_dump();
+    if (is_array($g)) { 
+      foreach ($this->fields as $k => $v) {
+        echo "Filling $k ";
+        $val = issetSet($g,$k);
+        $this->fields[$k]->set($val);
+        #echo $this->fields[$k]->text_dump();
+      }
     }
     //in case we get no rows back from the database, we have to have an id
     //present otherwise we're in trouble next time

@@ -3,6 +3,7 @@
 # database objects (self-initialising and self-updating object)
 
 include_once("typeinfo.php");
+include_once("validtester.php");
 
 /**
   * Field object that corresponds to one field in a SQL table row.
@@ -81,12 +82,8 @@ class Field {
     if ($this->required) {
       $this->isValid = (isset($this->value) && $this->value != "");
     }
-    if ($this->isValid && 
-        isset($this->isValidTest) && is_callable($this->isValidTest) 
-        && $this->suppressValidation == 0) {
-      $validator = $this->isValidTest;
-      $this->isValid = $validator($this->value);
-      echo "[$this->value, $validator, $this->isValid]";
+    if ($this->isValid && $this->suppressValidation == 0) {
+      $this->isValid = ValidTester($this->isValidTest, $this->value);
     }
     echo ($this->isValid ? "VALID" : "INVALID");
     return $this->isValid;

@@ -34,7 +34,7 @@ class RadioList extends ChoiceList {
 
   function selectable() {
     $t = "";
-    foreach ($this->list->list as $k => $v) {
+    foreach ($this->list->choicelist as $k => $v) {
       $t .= $this->format($v);
       $t .= "<br />\n";
     }

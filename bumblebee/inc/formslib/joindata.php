@@ -5,6 +5,7 @@
 
 include_once('field.php');
 include_once('dbrow.php');
+include_once('db.php');
 
 /**
   * If the element in the table is a selection list then the setup will be
@@ -12,8 +13,9 @@ include_once('dbrow.php');
   *
   * We respect the 'field' interface while overriding pretty much all of it.
   *
-  * Primitive class on which selection lists can be built from the
-  * results of an SQL query. This may be used to determine the choices
+  * Primitive class for managing join data. Can be used on its own to just
+  * join data or with a selection lists class to make a join table.
+  * This may be used to determine the choices
   * that a user is permitted to select (e.g. dropdown list or radio buttons)
   *
   * Used in a many:many or many:1 relationships (i.e. a field in a 
@@ -34,86 +36,70 @@ include_once('dbrow.php');
  **/
 class JoinData extends Field {
   var $joinTable,
-      $jtOuterColumn,
-      $jtoVal;
+      $jtLeftIDCol,
+      $jtLeftID,
+      $jtRightIDCol;
   var $protoRow,
       $rows;
-  var $values;
   var $format,
       $number;
   var $radioclass = "item";
   var $groupValidTest;
 
-  function JoinData($joinTable, $jtOuterColumn, $jtoVal,
+  function JoinData($joinTable, $jtLeftIDCol, $jtLeftID,
                      $name, $description="") {
     $this->Field($name, "", $description);
     $this->joinTable = $joinTable;
-    $this->jtOuterColumn = $jtOuterColumn;
-    $this->jtoVal = $jtoVal;
-    $this->protoRow = new DBRow($joinTable, $jtoVal, $jtOuterColumn);
-    $field = new Field($jtOuterColumn);
+    $this->jtLeftIDCol = $jtLeftIDCol;
+    $this->jtLeftID = $jtLeftID;
+    $this->protoRow = new DBRow($joinTable, $jtLeftID, $jtLeftIDCol);
+    $field = new Field($jtLeftIDCol);
     $this->protoRow->addElement($field);
     $this->protoRow->editable = 1;
+    $this->protoRow->autonumbering = 0;
     $this->rows = array();
     $this->groupValidTest = array();
   }
 
-  function joinSetup($matchfield, $format="") {
-    $this->matchfield = $matchfield;
+  function joinSetup($jtRightIDCol, $format="") {
+    $this->jtRightIDCol = $jtRightIDCol;
     $this->format = (is_array($format) ? $format : array($format));
     $this->_fill();
-    preDump($this);
   }
 
-  function _calcMaxNumber($numrows) {
+  function _calcMaxNumber() {
     if (isset($this->format['total'])) {
       $this->number = $this->format['total'];
-    } else {
-      $this->number = $this->$numrows;
+      return;
+    }
+    $this->number = _countRowsInJoin();
+    if (isset($this->format['minspare'])) {
+      $this->number += $this->format['minspare'];
+      return;
     }
   }
 
   function addElement($field, $groupValidTest=NULL) {
     $this->protoRow->addElement($field);
-    $this->groupValidTest[] = $groupValidTest;
+    $this->groupValidTest[$field->name] = $groupValidTest;
   }
 
   function _createRow($rowNum) {
-    #$this->rows[] = $this->protoRow;
-    $newrow = $this->protoRow;
-    #foreach ($this->protoRow->fields as $k => $f) {
-      #$newrow->fields[$k] = $f;
-      #$newrow->fields[$k]->list = $f->list;
-    #}
-    #$newrow = new DBRow($this->joinTable, $this->jtoVal, $this->jtOuterColumn);
-    #$field = new Field($this->jtOuterColumn);
-    #$newrow->addElement($field);
-    #$newrow->editable = 1;
-    $this->rows[$rowNum] = $newrow;
+    $this->rows[$rowNum] = $this->protoRow;
     $this->rows[$rowNum]->changeNamebase($this->name.'-'.$rowNum.'-');
   }
 
   function _fill() {
-    $sjtoVal = qw($this->jtoVal);
-    $this->_calcMaxNumber($this->values->length);
+    $sjtLeftID = qw($this->jtLeftID);
+    $this->_calcMaxNumber();
     for ($i=0; $i < $this->number; $i++) {
       $this->_createRow($i);
-      //$this->rows[$i]->recNum = 1;
-      //$this->rows[$i]->recStart = $i;
-      //$this->rows[$i]->fill();
-      if ($i==0) {
-        $this->rows[$i]->fields['groupid']->value = $i+1;
-        $this->rows[$i]->fields['groupid']->list->id = $i+5;
-        $this->rows[$i]->fields['groupid']->list->idfield = $i+9;
-        $this->rows[$i]->fields['groupid']->formatter[]=$i;
-      }
-      ## FIXME: changing rows[$i]->list somehow changes rows[0]->list
-      echo "$i:";
-      preDump($this->rows[$i]);
-      preDump($this->rows[0]);
+      $this->rows[$i]->recNum = 1;
+      $this->rows[$i]->recStart = $i;
+      $this->rows[$i]->fill();
+      $this->rows[$i]->restriction = $this->jtRightIDCol .'='. qw($this->rows[$i]->fields[$this->jtRightIDCol]->value); 
+      $this->rows[$i]->insertRow = ! ($this->rows[$i]->fields[$this->jtRightIDCol]->value > 0);
     }
-    echo "FOOOOOOO";
-    preDump($this);
     return;
   }
 
@@ -152,9 +138,28 @@ class JoinData extends Field {
 
   function update($data) {
     for ($i=0; $i < $this->number; $i++) {
-      $this->changed += $this->rows[$i]->update($data);
+      $rowchanged = $this->rows[$i]->update($data);
+      if ($rowchanged) {
+        foreach ($this->rows[$i]->fields as $k => $v) {
+          #$this->rows[$i]->fields[$this->jtRightIDCol]->changed = $rowchanged;
+          #if ($v->name != $this->jtRightIDCol && $v->name != $this->jtLeftIDCol) {
+            $this->rows[$i]->fields[$k]->changed = $rowchanged;
+          #}
+        }
+      }
+      $this->changed += $rowchanged;
     }
     return $this->changed;
+  }
+
+  /**
+   *  Count the number of rows in the join table so we know how many
+   *  to retrieve
+  **/ 
+  function _countRowsInJoin() {
+    #FIXME: stub function
+    trigger_error("Stub function", E_USER_WARNING);
+    return 5;
   }
 
   /**
@@ -174,7 +179,13 @@ class JoinData extends Field {
    **/
   function _joinSync() {
     for ($i=0; $i < $this->number; $i++) {
-      $this->changed += ! $this->rows[$i]->sync();
+      if ($this->rows[$i]->fields[$this->jtRightIDCol]->value == 0
+       && $this->rows[$i]->fields[$this->jtRightIDCol]->changed) {
+        //then this row is to be deleted...
+        $this->changed += ! $this->rows[$i]->delete();
+      } else {
+        $this->changed += ! $this->rows[$i]->sync();
+      }
     }
   }
 
@@ -186,11 +197,35 @@ class JoinData extends Field {
   function isValid() {
     $this->isValid = 1;
     for ($i=0; $i < $this->number; $i++) {
-      echo "val". $this->rows[$i]->fields[$this->matchfield]->value.";";
-      if ($this->rows[$i]->fields[$this->matchfield]->value > 0) {
+      echo "val". $this->rows[$i]->fields[$this->jtRightIDCol]->value.";";
+      if ($this->rows[$i]->fields[$this->jtRightIDCol]->value == 0
+         && $this->rows[$i]->changed) {
+        $this->rows[$i]->isValid = 1;
+      }
+      if ($this->rows[$i]->fields[$this->jtRightIDCol]->value > 0) {
+      #if ($this->rows[$i]->changed) {
         $this->isValid = $this->rows[$i]->checkValid() && $this->isValid;
       }
       echo "JoinData::isValid = '$this->isValid'";
+    }
+    //now we need to check the validity of sets of data (e.g. sum of the same
+    //field across the different rows.
+    foreach ($this->rows[0]->fields as $k => $f) {
+      if (isset($this->groupValidTest[$f->name])) {
+        $allvals = array();
+        for ($i=0; $i < $this->number; $i++) {
+          if ($this->rows[$i]->fields[$this->jtRightIDCol]->value > 0) {
+            $allvals[] = $this->rows[$i]->fields[$k]->value;
+          }
+        }
+        $fieldvalid = ValidTester($this->groupValidTest[$f->name], $allvals);
+        if (! $fieldvalid) {
+          for ($i=0; $i < $this->number; $i++) {
+            $this->rows[$i]->fields[$k]->isValid = 0;
+          }
+        }
+        $this->isValid = $fieldvalid && $this->isValid;
+      }
     }
     return $this->isValid;
   }

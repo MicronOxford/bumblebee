@@ -3,7 +3,7 @@
 # provide some example entries for existing values next to the choices in a
 # radiolist
 
-include_once('dblist.php');
+include_once('dbchoicelist.php');
 include_once('sql.php');
 
 class ExampleEntries {
@@ -29,7 +29,7 @@ class ExampleEntries {
   function fill($id) {
     #echo "Filling for $id";
     $safeid = qw($id);
-    $this->list = new DBList($this->table, $this->columnreturn,
+    $this->list = new DBChoiceList($this->table, $this->columnreturn,
                              "$this->columnmatch=$safeid",
                              $this->order,
                              $this->columnmatch, $this->limit);

@@ -25,14 +25,14 @@ include_once("dbobject.php");
   *   $newentryfield->suppressValidation = 0;
   *   $f->list->append(array("-1","Create new: "), $newentryfield);
  **/
-class DBList extends DBO {
+class DBChoiceList extends DBO {
   var $restriction,
       $order,
       $limit;
   var $editable = 0,
       $extendable = 0,
       $changed = 0;
-  var $list;
+  var $choicelist;
   var $length;
   var $appendedfields,
       $prependedfields;
@@ -47,14 +47,14 @@ class DBList extends DBO {
     *       (i.e. the value='' in a radio list etc)
     *     * with an SQL LIMIT statement of $limit
    **/
-  function DBList($table, $fields='', $restriction='',
+  function DBChoiceList($table, $fields='', $restriction='',
                   $order='', $idfield='id', $limit='') {
     $this->DBO($table, "", $idfield);
     $this->fields = (is_array($fields) ? $fields : array($fields));
     $this->restriction = $restriction;
     $this->order = $order;
     $this->limit = $limit;
-    $this->list = array();
+    $this->choicelist = array();
     $this->appendedfields = array();
     $this->prependedfields = array();
     $this->fill();
@@ -80,9 +80,9 @@ class DBList extends DBO {
     } else {
       //FIXME mysql specific array
       while ($g = mysql_fetch_array($sql)) {
-        $this->list[] = $g; #['key']] = $g['value'];
+        $this->choicelist[] = $g; #['key']] = $g['value'];
       }
-      $this->length = count($this->list);
+      $this->length = count($this->choicelist);
       //if this fill() has been called after extra fields have been prepended
       //or appended to the field list, then we need to re-add them as they
       //will be lost by this process
@@ -102,7 +102,7 @@ class DBList extends DBO {
 
   /**
     * append or prepend a special field (such as "Create new:") to the 
-    * list. Keep a copy of the field so it can be added again later if
+    * choicelist. Keep a copy of the field so it can be added again later if
     * necessary, and then use a private function to actually do the adding
    **/
   function append($values, $field='') {
@@ -125,16 +125,16 @@ class DBList extends DBO {
     * future reference
    **/
   function _append($fa) {
-    array_push($this->list, $fa);
+    array_push($this->choicelist, $fa);
   }
 
   function _prepend($fa) {
-    array_unshift($this->list, $fa);
+    array_unshift($this->choicelist, $fa);
   }
 
   /**
     * add back in the extra fields that were appended/prepended to the
-    * list. Use this if they fields are lost due to a fill()
+    * choicelist. Use this if they fields are lost due to a fill()
    **/
   function _reAddExtraFields() {
     foreach ($this->appendedfields as $k => $v) {
@@ -150,7 +150,7 @@ class DBList extends DBO {
   }
 
   function text_dump() {
-    return "<pre>SimpleList:\n".print_r($this->list, true)."</pre>";
+    return "<pre>SimpleList:\n".print_r($this->choicelist, true)."</pre>";
   }
 
   /** 
@@ -166,16 +166,16 @@ class DBList extends DBO {
    * $data, which is passed on to any appended or prepended fields.
    **/
   function update($newval, $data) {
-    echo "DBList update: ";
+    echo "DBChoiceList update: ";
     echo "(changed=$this->changed)";
     echo "(id=$this->id)";
     echo "(newval=$newval)";
     if (isset($newval)) {
       //check to see if the newval is legal (does it exist on our choice list?)
       $isExisting = 0;
-      foreach ($this->list as $k => $v) {
+      foreach ($this->choicelist as $k => $v) {
         echo "($isExisting:".$v['id'].":$newval)";
-        if ($v['id'] == $newval && $v['id'] > 0) {
+        if ($v['id'] == $newval && $v['id'] >= 0) {
           $isExisting = 1;
           break;
         }
@@ -197,11 +197,11 @@ class DBList extends DBO {
         //entry later on in sync()
         //FIXME is this right? 
         $this->id = -1;
-        foreach ($this->list as $k => $v) {
+        foreach ($this->choicelist as $k => $v) {
           preDump($v);
           if (isset($v['_field']) && $v['_field'] != "") {
-            $this->list[$k]['_field']->update($data);
-            $this->isValid += $this->list[$k]['_field']->isValid();
+            $this->choicelist[$k]['_field']->update($data);
+            $this->isValid += $this->choicelist[$k]['_field']->isValid();
           }
         }
       } else {
@@ -210,12 +210,12 @@ class DBList extends DBO {
         $this->isValid = 0;
       }
     }
-    echo " DBList::changed=$this->changed<br />";
+    echo " DBchoiceList::changed=$this->changed<br />";
     return $this->isValid;
   }
 
   function set($value) {
-    echo "DBList::set = $value<br/>";
+    echo "DBchoiceList::set = $value<br/>";
     $this->id = $value;
   }
 
@@ -225,7 +225,7 @@ class DBList extends DBO {
     * returns false on success
    **/
   function sync() {
-    preDump($this);
+    #preDump($this);
     if ($this->changed && $this->isValid) {
       echo "Syncing...<br />";
       if ($this->id == -1) {
@@ -244,13 +244,13 @@ class DBList extends DBO {
     $vals = array();
     if ($this->changed) {
       #echo "This has changed";
-      foreach ($this->list as $k => $v) {
+      foreach ($this->choicelist as $k => $v) {
         if (isset($v['_field'])) {
           $vals[] = $v['_field']->name ."=". qw($v['_field']->value);
         }
       }
     }
-    #echo "<pre>"; print_r($this->list); echo "</pre>";
+    #echo "<pre>"; print_r($this->choicelist); echo "</pre>";
     #echo "<pre>"; print_r($this->fields); echo "</pre>";
     #echo "<pre>"; print_r($vals); echo "</pre>";
     return join(",",$vals);
@@ -258,7 +258,7 @@ class DBList extends DBO {
 
   function selectedvalue() {
     $val = array();
-    foreach ($this->list as $k => $v) {
+    foreach ($this->choicelist as $k => $v) {
       echo "H:$this->idfield, $k, $v, $this->id";
       if ($v[$this->idfield] == $this->id) {
         foreach ($this->fields as $f) {
@@ -270,6 +270,14 @@ class DBList extends DBO {
     return implode(' ', $val);
   }
 
-} // class DBList
+  function setDefault($val) {
+    echo "DBChoiceList::setDefault: $val";
+    if (isset($this->id) || $this->id < 0) {
+      $this->id = $val;
+    }
+    echo $this->id;
+  }
+
+} // class DBChoiceList
 
 ?> 

@@ -49,7 +49,8 @@ class Project extends DBRow {
                        "groups", "Group membership (%)");
     $groupfield = new DropList("groupid", "Group");
     $groupfield->connectDB("groups", array("id", "name"));
-    $groupfield->list->prepend(array("-1","(none)"));
+    $groupfield->prepend(array("0","(none)"));
+    $groupfield->setDefault(0);
     $groupfield->setFormat("id", "%s", array("name"), " (%s)", array("longname"));
     $f->addElement($groupfield);
     $percentfield = new TextField("grouppc", "");

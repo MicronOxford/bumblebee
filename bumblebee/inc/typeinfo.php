@@ -7,7 +7,11 @@ function issetSet(&$a, $k) {
 }
 
 function preDump($v) {
-  echo "<pre>".print_r($v,1)."</pre>\n";
+  #echo "<pre>".print_r($v,1)."</pre>\n";
+  echo "<pre>";
+  #var_dump($v);
+  print_r($v);
+  echo "</pre>\n";
 }
 
 
@@ -70,8 +74,10 @@ function is_number($v) {
 }
 
 function sum_is_100($vs) {
+  #echo "<br/>Checking sum<br/>";
   $sum=0;
   foreach ($vs as $k => $v) {
+    #echo "'$v', ";
     $sum += $v;
   }
   return ($sum == 100);

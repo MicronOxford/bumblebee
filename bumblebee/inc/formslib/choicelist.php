@@ -4,7 +4,7 @@
 
 include_once "field.php";
 include_once "outputformatter.php";
-include_once "dblist.php";
+include_once "dbchoicelist.php";
 
 /** 
   * ChoiceList extends Field
@@ -18,6 +18,7 @@ include_once "dblist.php";
 class ChoiceList extends Field {
   var $list; //contains the DBList object which has the restricted choices
   var $formatter, $formatid;
+  var $defaultValue = '';
 
   function ChoiceList($name, $description='') {
     //inherited members from Field
@@ -35,7 +36,7 @@ class ChoiceList extends Field {
     * with Field.
    **/
   function connectDB($table, $fields='', $restriction='', $order='name') {
-    $this->list = new DBList($table, $fields, $restriction, $order);
+    $this->list = new DBChoiceList($table, $fields, $restriction, $order);
   }
 
   function text_dump() {
@@ -111,10 +112,13 @@ class ChoiceList extends Field {
     $this->list->editable = $this->editable;
     $this->list->extendable = $this->extendable;
     echo "ID=".$this->list->id;
-    $this->list->update($this->value, $data);
+    if ($this->changed) {
+      // only update the list if things have changed
+      $this->list->update($this->value, $data);
+      $this->changed = $this->list->changed;
+      $this->isValid = $this->list->isValid;
+    }
     #Field::set($this->list->id);
-    $this->changed = $this->list->changed;
-    $this->isValid = $this->list->isValid;
     #echo $this->list->id;
     #echo " (nv: $this->value)";
     return $this->changed;
@@ -148,8 +152,43 @@ class ChoiceList extends Field {
     echo "Choicelist::sqlSetStr";
     $this->list->sync();
     $this->value = $this->list->id;
-    preDump($this);
+    #preDump($this);
     return Field::sqlSetStr();
+  }
+
+  function prepend($a) {
+    // FIXME: templist is a horrible hack around a PHP 4.3.9 bug
+    // This is all we want to do:
+    //    $this->list->prepend($a);
+    // but that causes $this->list to suddenly become a reference!
+    $templist = $this->list;
+    $templist->prepend($a);
+    $this->list = $templist;
+  }
+
+  function append($a) {
+    // FIXME: templist is a horrible hack around a PHP 4.3.9 bug
+    // This is all we want to do:
+    //    $this->list->append($a);
+    // but that causes $this->list to suddenly become a reference!
+    $templist = $this->list;
+    $templist->append($a);
+    $this->list = $templist;
+  }
+
+  function setDefault($val) {
+    // FIXME: templist is a horrible hack around a PHP 4.3.9 bug
+    // This is all we want to do:
+    //    $this->list->append($a);
+    // but that causes $this->list to suddenly become a reference!
+    $this->defaultValue = $val;
+    $templist = $this->list;
+    $templist->setDefault($val);
+    $this->list = $templist;
+  }
+
+  function getValue() {
+    return (isset($this->value) ? $this->value : $this->defaultValue);
   }
 
 } // class ChoiceList
