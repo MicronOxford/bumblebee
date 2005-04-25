@@ -6,16 +6,16 @@ include_once ('dbforms/sql.php');
 include_once ('dbforms/typeinfo.php');
 
 class BumbleBeeAuth {
-  var $uid,    //user id from table
-      $username,
-      $name,
-      $isadmin,
-      $euid,   //permit user masquerading like su. Effective UID
-      $ename,  //effective name
-      $eusername;  //effective username
+  var $uid;    //user id from table
+  var $username;
+  var $name;
+  var $isadmin;
+  var $euid;   //permit user masquerading like su. Effective UID
+  var $ename;  //effective name
+  var $eusername;  //effective username
   var $permissions;
-  var $_loggedin=0,
-      $_error;
+  var $_loggedin=0;
+  var $_error;
   var $table;
   var $DEBUGMODE = 1;
 
@@ -23,14 +23,14 @@ class BumbleBeeAuth {
     session_start();
     $this->table = $table;
     if (isset($_SESSION['uid'])) {
-      #the we have a session login already done, check it
+      // the we have a session login already done, check it
       $this->_loggedin = $this->_verifyLogin();
       $this->_checkMasq();
     } elseif (isset($_POST['username'])) {
-      #then some login info has been provided, so we need to check it
+      // then some login info has been provided, so we need to check it
       $this->_loggedin = $this->_login();
     } else {
-      #we're not logged in at all
+      // we're not logged in at all
     }
     $this->permissions = array();
   }
@@ -54,15 +54,22 @@ class BumbleBeeAuth {
   }
 
   function _verifyLogin() {
-    #check that the credentials contained in the session are OK
-    ## Actually, we just assume that the credentials are OK and load them
-    ## into this object
-    $this->uid = $_SESSION['uid'];
-    $this->username = $_SESSION['username'];
-    $this->name = $_SESSION['name'];
-    ## FIXME Should we double check this?
-    $this->isadmin = $_SESSION['isadmin'];
-    return 1;
+    // check that the credentials contained in the session are OK
+    $uid = $_SESSION['uid'];
+    $row = $this->_retrieveUserInfo($uid, 0);
+    //preDump($row);
+    if ($row['username'] == $_SESSION['username'] && 
+        $row['name'] == $_SESSION['name'] && 
+        $row['isadmin'] == $_SESSION['isadmin']) {
+      $this->uid = $uid;
+      $this->username = $_SESSION['username'];
+      $this->name = $_SESSION['name'];
+      $this->isadmin = $_SESSION['isadmin'];
+      return 1;
+    } else {
+      echo "SESSION INVALID";
+      return 0;
+    }
   }
 
   /**
@@ -106,7 +113,7 @@ class BumbleBeeAuth {
       $this->_error = "Login failed: this account is suspended, please contact us about this.";
       return 0;
     }
-    # if we got to here, then we're logged in!
+    // if we got to here, then we're logged in!
     $_SESSION['uid'] = $this->uid = $row['id'];
     $_SESSION['username'] = $this->username = $row['username'];
     $_SESSION['name'] = $this->name = $row['name'];
@@ -175,7 +182,6 @@ class BumbleBeeAuth {
   }
    
   function masqPermitted($instr=0) {
-    #FIXME: this should be rolled into a better permissions system
     return $this->isadmin || $this->isInstrumentAdmin($instr);
   }
 

@@ -164,7 +164,6 @@ class SimpleDate {
   
   /**
    * round time down to the nearest $g time-granularity measure
-   * FIXME: does this lose the date part of the time??
   **/
   function floorTime($g) {
     $tp = $this->timePart();

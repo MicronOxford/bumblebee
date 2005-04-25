@@ -34,7 +34,7 @@ class ActionEmailList extends ActionAction {
     $select->addCheckBox($unbook);
     $select->numSpareCols = 1;
     $select->connectDB('instruments', array('id', 'name', 'longname'));
-    $select->setFormat('id', '%s', array('name'), " %s", array('longname'));
+    $select->setFormat('id', '%s', array('name'), " %50.50s", array('longname'));
     $select->addFooter("(<a href='#' onclick='return deselectsome(%d,2);'>deselect all</a>)<br />".
                        "(<a href='#' onclick='return selectsome(%d,2);'>select all</a>)");
     #echo $groupselect->list->text_dump();

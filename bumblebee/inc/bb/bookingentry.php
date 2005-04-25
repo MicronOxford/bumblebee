@@ -3,6 +3,7 @@
 # Booking object
 
 include_once 'dbforms/dbrow.php';
+include_once 'dbforms/idfield.php';
 include_once 'dbforms/textfield.php';
 include_once 'dbforms/datetimefield.php';
 include_once 'dbforms/timefield.php';
@@ -17,10 +18,12 @@ class BookingEntry extends DBRow {
   var $slotrules;
   var $starttime;
   var $duration;
+  var $_isadmin = 0;
   
   function BookingEntry($id, $auth, $instrumentid, $ip, $start, $duration, $granlist) {
     $this->slotrules = new TimeSlotRule($granlist);
     $isadmin = $auth->isSystemAdmin() || $auth->isInstrumentAdmin($instrumentid);
+    $this->_isadmin = $isadmin;
     if ($id > 0 && $isadmin) {
       $row = quickSQLSelect('bookings', 'id', $id);
       $euid = $row['userid'];
@@ -29,7 +32,7 @@ class BookingEntry extends DBRow {
     }
     $this->DBRow('bookings', $id);
     $this->editable = 1;
-    $f = new TextField('id', 'Booking ID');
+    $f = new IdField('id', 'Booking ID');
     $f->editable = 0;
     $f->duplicateName = 'bookid';
     $this->addElement($f);
@@ -67,8 +70,7 @@ class BookingEntry extends DBRow {
                   'id', 
                   NULL, 
                   array('userprojects'=>'projectid=id'));
-    # FIXME can we truncate longname in some way? %15.15s?
-    $f->setFormat('id', '%s', array('name'), ' (%s)', array('longname'));
+    $f->setFormat('id', '%s', array('name'), ' (%15.15s)', array('longname'));
     $this->addElement($f);
     $attrs = array('size' => '48');
     $f = new TextField('comments', 'Comments');
@@ -87,14 +89,6 @@ class BookingEntry extends DBRow {
     $f->editable = $isadmin;
     $f->hidden = !$isadmin;
     $this->addElement($f);
-    /*$f = new CheckBox('ishalfday', 'Half-day booking');
-    $f->editable = $isadmin;
-    $f->hidden = !$isadmin;
-    $this->addElement($f);
-    $f = new CheckBox('isfullday', 'Full-day booking');
-    $f->editable = $isadmin;
-    $f->hidden = !$isadmin;
-    $this->addElement($f);*/
     $f = new TextField('discount', 'Discount (%)');
     $f->isInvalidTest = 'is_number';
     $f->defaultValue = '0';
@@ -116,14 +110,12 @@ class BookingEntry extends DBRow {
   /** 
    * override the default update() method with a custom one that allows us to
    * munge the start and finish times to fit in with the permitted granularity
+   * 
+   * * actually... do we really want to do that? let's just pass this through
+   * * for the time being.
   **/
   function update($data) {
-    parent::update($data);
-    if ($this->changed) {
-      //FIXME
-//       $this->_checkGranularity();
-    }
-    return $this->changed;
+    return parent::update($data);
   }
 
   /** 
@@ -133,7 +125,7 @@ class BookingEntry extends DBRow {
   function checkValid() {
     parent::checkValid();
     $this->isValid = $this->isValid && $this->_checkIsFree();
-    $this->isValid = $this->isValid && $this->_legalSlot();
+    $this->isValid = $this->_isadmin || ($this->isValid && $this->_legalSlot());
     return $this->isValid;
   }
 
@@ -152,31 +144,56 @@ class BookingEntry extends DBRow {
   
   /**
    * check that the booking slot is indeed free before booking it
-   * FIXME: this is still a race condition!
+   *
+   * Here, we make a temporary booking and make sure that it is unique for that timeslot 
+   * This is to prevent a race condition for checking and then making the new booking.
   **/
   function _checkIsFree() {
+    if (! $this->changed) return 1;
     #preDump($this);
     $doubleBook = 0;
     $instrument = $this->fields['instrument']->getValue();
     $start = $this->fields['bookwhen']->getValue();
     $d = new SimpleDate($start,1);
-    $d->addTime(new SimpleTime($this->fields['duration']->getValue(),1));
+    $duration = $this->fields['duration']->getValue();
+    $d->addTime(new SimpleTime($duration));
     $stop = $d->datetimestring;
-    $q = 'SELECT id, bookwhen, duration, '
-        .'DATE_ADD( bookwhen, INTERVAL duration HOUR_SECOND ) AS stoptime '
+    
+    $tmpid = $this->_makeTempBooking($instrument, $start, $duration);
+        
+    $q = 'SELECT bookings.id AS bookid, bookwhen, duration, '
+        .'DATE_ADD( bookwhen, INTERVAL duration HOUR_SECOND ) AS stoptime, '
+        .'name AS username '
         .'FROM bookings '
+        .'LEFT JOIN users on bookings.userid = users.id '
         .'WHERE instrument='.qw($instrument).' '
-        .'AND id<>'.qw($this->id).' '
+        .'AND bookings.id<>'.qw($this->id).' '
+        .'AND bookings.id<>'.qw($tmpid).' '
+        .'AND userid<>0 '
         .'HAVING (bookwhen <= '.qw($start).' AND stoptime > '.qw($start).') '
         .'OR (bookwhen < '.qw($stop).' AND stoptime >= '.qw($stop).') '
         .'OR (bookwhen >= '.qw($start).' AND stoptime <= '.qw($stop).')';
     $row = db_get_single($q, $this->fatal_sql);
     if (is_array($row)) {
       // then the booking actually overlaps another!
+      $this->_removeTempBooking($tmpid);
       $doubleBook = 1;
-      $this->errorMessage = "Sorry, the instrument is not free at this time";
+      $this->errorMessage = '<div class="error">'
+                          .'Sorry, the instrument is not free at this time.<br /><br />'
+                          .'Instrument booked by ' .$row['username']
+                          .' (booking #' .$row['bookid']. ')<br />'
+                          .'from '.$row['bookwhen'].' until ' .$row['stoptime']
+                          .'</div>';
       echo $this->errorMessage;
-      preDump($row);
+      #preDump($row);
+    } else {
+      // then the new booking should take over this one, and we delete the old one.
+      $oldid = $this->id;
+      $this->id = $tmpid;
+      $this->fields[$this->idfield]->set($this->id);
+      $this->insertRow = 0;
+      $this->includeAllFields = 1;
+      $this->_removeTempBooking($oldid);
     }
     return ! $doubleBook;
   }
@@ -190,18 +207,38 @@ class BookingEntry extends DBRow {
     $stoptime = $starttime;
     $stoptime->addTime($this->duration->getValue());
     return $this->slotrules->isValidSlot($starttime, $stoptime);
-    
-/*
-    $row = quickSQLSelect('instruments', 'id', $this->fields['instrument']->getValue());
-    $g = new SimpleTime($row['granularity'],1);
-    $start = new SimpleDate($this->fields['bookwhen']->getValue(),1);
-    $start->floorTime($g);
-    $this->fields['bookwhen']->set($start->datetimestring);
-    $duration = new SimpleTime($this->fields['duration']->getValue(),1);
-    $duration->ceilTime($g);
-    $this->fields['duration']->set($duration->timestring);
-    */
   }
 
+  /** 
+   * make a temporary booking for this slot to eliminate race conditions for this booking
+   */
+  function _makeTempBooking($instrument, $start, $duration) {
+    $row = new DBRow('bookings', -1, 'id');
+    $f = new Field('id');
+    $f->value = -1;
+    $row->addElement($f);
+    $f = new Field('instrument');
+    $f->value = $instrument;
+    $row->addElement($f);
+    $f = new Field('bookwhen');
+    $f->value = $start;
+    $row->addElement($f);
+    $f = new Field('duration');
+    $f->value = $duration;
+    $row->addElement($f);
+    $row->isValid = 1;
+    $row->changed = 1;
+    $row->insertRow = 1;
+    $row->sync();
+    return $row->id;
+  }
+
+  /** 
+   * make a temporary booking for this slot to eliminate race conditions for this booking
+   */
+  function _removeTempBooking($tmpid) {
+    $row = new DBRow('bookings', $tmpid, 'id');
+    $row->delete();
+  }
   
 } //class BookingEntry

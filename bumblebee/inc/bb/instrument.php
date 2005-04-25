@@ -13,7 +13,7 @@ class Instrument extends DBRow {
     global $CONFIG;
     $this->DBRow("instruments", $id);
     $this->editable = 1;
-    $f = new TextField("id", "Instrument ID");
+    $f = new IdField("id", "Instrument ID");
     $f->editable = 0;
     $this->addElement($f);
     $f = new TextField("name", "Name");
@@ -54,7 +54,7 @@ class Instrument extends DBRow {
     $f->connectDB("instrumentclass", array("id", "name"));
     $classexample = new ExampleEntries("id","instruments","class","name",3);
     $classexample->separator = '; ';
-    $f->setFormat("id", "%s", array("name"), " (%s)", $classexample);
+    $f->setFormat("id", "%s", array("name"), " (%40.40s)", $classexample);
     $newclassname = new TextField("name","");
     $newclassname->namebase = "newclass-";
     $newclassname->setAttr(array('size' => 24));

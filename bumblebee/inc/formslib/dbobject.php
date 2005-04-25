@@ -7,15 +7,15 @@ include_once("db.php");
 include_once("sql.php");
 
 class DBO {
-  var $table,
-      $idfield,
-      $idfieldreal,
-      $id=-1;
+  var $table;
+  var $idfield;
+  var $idfieldreal;
+  var $id=-1;
   var $fields;
-  var $editable = 0, 
-      $changed = 0,
-      $isValid = 0,
-      $suppressValidation = 0;
+  var $editable = 0;
+  var $changed = 0;
+  var $isValid = 0;
+  var $suppressValidation = 0;
   var $dumpheader = "DBO object";
   var $fatal_sql = 1;
   var $namebase;

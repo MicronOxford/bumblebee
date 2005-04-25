@@ -42,7 +42,7 @@ class BookingData {
     if ($this->id) {
       $q .= 'WHERE bookings.id='.qw($this->id);
     } else {
-      $q .= 'WHERE bookings.instrument='.qw($this->instrument).' '
+      $q .= 'WHERE bookings.userid<>0 AND bookings.instrument='.qw($this->instrument).' '
            .'AND bookwhen BETWEEN '.qw($this->start)
                             .' AND '.qw($this->stop).' '
            .'ORDER BY bookwhen';

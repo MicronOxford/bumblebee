@@ -12,24 +12,28 @@ class TextField extends Field {
   }
 
   function displayInTable($cols) {
-    $errorclass = ($this->isValid ? "" : "class='inputerror'");
-    $t = "<tr $errorclass><td>$this->longname</td>\n"
-        ."<td title='$this->description'>";
-    if ($this->editable && ! $this->hidden) {
-      $t .= $this->selectable();
+    $t = '';
+    if (! $this->hidden) {
+      $errorclass = ($this->isValid ? "" : "class='inputerror'");
+      $t .= "<tr $errorclass><td>$this->longname</td>\n"
+          ."<td title='$this->description'>";
+      if ($this->editable) {
+        $t .= $this->selectable();
+        } else {
+        $t .= xssqw($this->value);
+      }
+      if ($this->duplicateName) {
+        $t .= '<input type="hidden" name="'.$this->duplicateName.'" '
+              .'value="'.xssqw($this->value).'" />';
+      }
+      $t .= "</td>\n";
+      for ($i=0; $i<$cols-2; $i++) {
+        $t .= "<td></td>";
+      }
+      $t .= "</tr>";
     } else {
-      if (!$this->hidden) $t .= xssqw($this->value);
       $t .= $this->hidden();
     }
-    if ($this->duplicateName) {
-      $t .= "<input type='hidden' name='$this->duplicateName' "
-             ."value='".xssqw($this->value)."' />";
-    }
-    $t .= "</td>\n";
-    for ($i=0; $i<$cols-2; $i++) {
-      $t .= "<td></td>";
-    }
-    $t .= "</tr>";
     return $t;
   }
 

@@ -22,12 +22,13 @@ include_once('dbobject.php');
 class DBRow extends DBO {
   var $fatal_sql = 1;
   var $namebase;
-  var $newObject = 0,
-      $insertRow = 0,
-      $autonumbering = 1;
+  var $newObject = 0;
+  var $insertRow = 0;
+  var $includeAllFields = 0;
+  var $autonumbering = 1;
   var $restriction = '';
-  var $recStart = '',
-      $recNum   = '';
+  var $recStart = '';
+  var $recNum   = '';
   var $DEBUG = 0;
   
   function DBRow($table, $id, $idfield='id') {
@@ -111,7 +112,7 @@ class DBRow extends DBO {
     $sql_result = -1;
     //obtain the *clean* parameter='value' data that has been SQL-cleansed
     //this will also trip any complex fields to sync
-    $vals = $this->_sqlvals($this->insertRow);
+    $vals = $this->_sqlvals($this->insertRow || $this->includeAllFields);
     if ($vals != "") {
       if (! $this->insertRow) {
         //it's an existing record, so update
@@ -141,23 +142,12 @@ class DBRow extends DBO {
    * Note, this function returns false on success
   **/
   function delete() {
-    // If the input isn't valid then bail out straight away
-    //if (! ($this->changed && $this->isValid) ) {
-      #echo "not deleting: changed=$this->changed valid=$this->isValid<br />";
-      //return -1;
-    //}
-    #echo "deleting: changed=$this->changed valid=$this->isValid<br />";
     $sql_result = -1;
-    //obtain the *clean* parameter='value' data that has been SQL-cleansed
-    //this will also trip any complex fields to sync
-    //$vals = $this->_sqlvals();
-    //if ($vals != "") {
-      $q = "DELETE FROM $this->table "
-          ."WHERE $this->idfield=".qw($this->id)
-          .(($this->restriction !== '') ? ' AND '.$this->restriction : '')
-          ." LIMIT 1";
-      $sql_result = db_quiet($q, $this->fatal_sql);
-    //}
+    $q = "DELETE FROM $this->table "
+        ."WHERE $this->idfield=".qw($this->id)
+        .(($this->restriction !== '') ? ' AND '.$this->restriction : '')
+        ." LIMIT 1";
+    $sql_result = db_quiet($q, $this->fatal_sql);
     return $sql_result;
   }
 

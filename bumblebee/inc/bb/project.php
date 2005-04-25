@@ -13,7 +13,7 @@ class Project extends DBRow {
   function Project($id) {
     $this->DBRow('projects', $id);
     $this->editable = 1;
-    $f = new TextField('id', 'Project ID');
+    $f = new IdField('id', 'Project ID');
     $f->editable = 0;
     $this->addElement($f);
     $f = new TextField('name', 'Name');
@@ -49,7 +49,7 @@ class Project extends DBRow {
     $groupfield->connectDB('groups', array('id', 'name'));
     $groupfield->prepend(array('0','(none)'));
     $groupfield->setDefault(0);
-    $groupfield->setFormat('id', '%s', array('name'), ' (%s)', array('longname'));
+    $groupfield->setFormat('id', '%s', array('name'), ' (%30.30s)', array('longname'));
     $f->addElement($groupfield);
     $percentfield = new TextField('grouppc', '');
     $percentfield->isValidTest = 'is_number';

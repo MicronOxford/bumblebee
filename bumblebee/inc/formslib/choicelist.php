@@ -206,7 +206,7 @@ class ChoiceList extends Field {
    * @param array $a see DBChoiceList for details
    */
   function prepend($a) {
-    // FIXME: templist is a horrible hack around a PHP 4.3.9 bug
+    // templist is a horrible hack around a PHP 4.3 bug
     // This is all we want to do:
     //    $this->list->prepend($a);
     // but that causes $this->list to suddenly become a reference!
@@ -221,7 +221,7 @@ class ChoiceList extends Field {
    * @param array $a see DBChoiceList for details
    */
   function append($a) {
-    // FIXME: templist is a horrible hack around a PHP 4.3.9 bug
+    // templist is a horrible hack around a PHP 4.3 bug
     // This is all we want to do:
     //    $this->list->append($a);
     // but that causes $this->list to suddenly become a reference!
@@ -231,7 +231,7 @@ class ChoiceList extends Field {
   }
 
   function setDefault($val) {
-    // FIXME: templist is a horrible hack around a PHP 4.3.9 bug
+    // templist is a horrible hack around a PHP 4.3 bug
     // This is all we want to do:
     //    $this->list->append($a);
     // but that causes $this->list to suddenly become a reference!

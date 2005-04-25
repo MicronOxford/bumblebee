@@ -30,7 +30,7 @@ class ActionConsumables extends ActionAction {
     $projectselect->connectDB("consumables", array("id", "name", "longname"));
     $projectselect->list->prepend(array("-1","Create new consumable"));
     $projectselect->hrefbase = "$BASEURL/consumables/";
-    $projectselect->setFormat("id", "%s", array("name"), " %s", array("longname"));
+    $projectselect->setFormat("id", "%s", array("name"), " %50.50s", array("longname"));
     echo $projectselect->display();
   }
 

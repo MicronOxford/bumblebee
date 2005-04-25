@@ -159,13 +159,10 @@ class JoinData extends Field {
    *  to retrieve
   **/ 
   function _countRowsInJoin() {
-    #FIXME: stub function
     $q = "SELECT COUNT(*) "
         ."FROM $this->joinTable "
         ."WHERE $this->jtLeftIDCol=".qw($this->jtLeftID);
-    #trigger_error("Stub function", E_USER_WARNING);
     $g = db_get_single($q);
-    //preDump($g);
     return $g[0];
   }
 

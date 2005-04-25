@@ -78,8 +78,9 @@ class Booking extends TimeSlot {
 
   function displayCellDetails() {
     global $BASEPATH;
+    $isodate = $this->start->datestring;
     $t = '';
-    $t .= "<div style='float:right;'><a href='$this->href/$this->id' title='View or edit booking' class='but'><img src='$BASEPATH/theme/images/editbooking.png' alt='View/edit booking' class='calicon' /></a></div>";
+    $t .= "<div style='float:right;'><a href='$this->href/$isodate/$this->id' title='View or edit booking' class='but'><img src='$BASEPATH/theme/images/editbooking.png' alt='View/edit booking' class='calicon' /></a></div>";
     $t .= '<div class="calbookperson">'
          .'<a href="mailto:'.$this->useremail.'">'
          .$this->name.'</a></div>';

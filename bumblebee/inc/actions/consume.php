@@ -100,7 +100,7 @@ class ActionConsume extends ActionAction {
     $consumableselect = new AnchorTableList('Consumables', 'Select which Consumables to use');
     $consumableselect->connectDB('consumables', array('id', 'name', 'longname'));
     $consumableselect->hrefbase = "$BASEURL/consume/${extrapath}consumable/";
-    $consumableselect->setFormat('id', '%s', array('name'), ' %s', array('longname'));
+    $consumableselect->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'));
     
     if ($listpath) {
       echo "<p><a href='$listpath'>View listing</a> "
@@ -179,7 +179,7 @@ class ActionConsume extends ActionAction {
                           NULL,
                           array('consumables'=>'consumable=consumables.id'));
     $recselect->hrefbase = "$BASEURL/consume/";
-    $recselect->setFormat('conid', '%s', array('usewhen'), ' %s (%s)', array('name', 'longname'), '%s', array('quantity'));
+    $recselect->setFormat('conid', '%s', array('usewhen'), ' %s (%30.30s)', array('name', 'longname'), '%s', array('quantity'));
 
     echo $recselect->display();
   }

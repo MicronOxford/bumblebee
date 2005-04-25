@@ -161,29 +161,6 @@ class Calendar {
     $this->_breakAccordingToList($daylist);
   }    
     
-/*  OLD VERSION OF DAY BREAK CODE
-    $bl = $this->bookinglist;
-    $this->bookinglist = array();
-    $this->log('Breaking up bookings according to list');
-    $booking=0;
-    for ($bv=0; $bv < count($bl); $bv++) {
-      $this->log('considering booking #'.$bv);
-      $cbook = $bl[$bv];
-      $cbook->original = $cbook;     
-      $today = $bl[$bv]->start; $today->dayRound();
-      do {  //until the current booking has been broken up across day boundaries(
-        $this->log('start='.$bl[$bv]->start->datetimestring
-              .' stop='.$bl[$bv]->stop->datetimestring);
-        $this->bookinglist[$booking] = $cbook;
-        $tomorrow = $today; $tomorrow->addDays(1); $tomorrow->dayRound();
-        $this->bookinglist[$booking]->start->max($today);
-        $this->bookinglist[$booking]->stop->min($tomorrow);
-        $today->addDays(1); $today->dayRound();
-        $booking++;
-      } while ($this->bookinglist[$booking-1]->original->stop->ticks > $tomorrow->ticks);
-    }
- */
- 
   /**
    * Break up bookings that span elements of a defined list (e.g. allowable times or 
    * days). A TimeSlotRule ($list) is used to define how the times should be broken up

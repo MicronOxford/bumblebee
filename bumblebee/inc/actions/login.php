@@ -31,20 +31,4 @@ class ActionPrintLoginForm extends ActionAction {
   }
 }
 
-class ActionLogout extends ActionAction {
-
-  function ActionLogout() {
-  }
-
-  function go() {
-    global $BASEURL;
-    #logout();
-    echo "
-      <h2>Successfully logged out</h2>
-      <p>Thank you for using BABS!</p>
-      <p>(<a href='$BASEURL/'>login</a>)</p>
-    ";
-  }
-}
-
 ?> 

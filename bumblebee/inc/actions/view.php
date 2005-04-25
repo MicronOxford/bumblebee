@@ -21,25 +21,27 @@ class ActionView extends ActionAction {
           || $this->PD['instrid'] < 1
           || $this->PD['instrid'] == '') {
       $this->selectInstrument();
-    } elseif (isset($this->PD['isodate'])) {
+      return;
+    }
+    $instrument = $this->PD['instrid'];
+    if (isset($this->PD['isodate']) && 
+                    ! isset($this->PD['bookid']) && ! isset($this->PD['startticks']) ) {
       $this->instrumentDay();
-      #FIXME need to make a proper return link
-      echo "<br /><br /><a href='$BASEURL/'>Return to instrument list</a>";
-    } elseif (isset($this->PD['startticks']) && isset($this->PD['stopticks'])) {
-      $this->createBooking();
-      #FIXME need to make a proper return link
-      echo "<br /><br /><a href='$BASEURL/'>Return to instrument list</a>";
+      echo "<br /><br /><a href='$BASEURL/view/$instrument/"
+                      .$this->_offset()."'>Return to calendar list</a>";
     } elseif (isset($this->PD['bookid']) && isset($this->PD['edit'])) {
       $this->editBooking();
-      #FIXME need to make a proper return link
-      echo "<br /><br /><a href='$BASEURL/'>Return to instrument list</a>";
+      echo "<br /><br /><a href='$BASEURL/view/$instrument/"
+                      .$this->_offset()."'>Return to calendar view</a>";
     } elseif (isset($this->PD['bookid'])) {
       $this->booking();
-      #FIXME need to make a proper return link
-      echo "<br /><br /><a href='$BASEURL/'>Return to instrument list</a>";
+      echo "<br /><br /><a href='$BASEURL/view/$instrument/".$this->_offset()."'>Return to calendar view</a>";
+    } elseif (isset($this->PD['startticks']) && isset($this->PD['stopticks'])) {
+      $this->createBooking();
+      echo "<br /><br /><a href='$BASEURL/view/$instrument/".$this->_offset()."'>Return to calendar view</a>";
     } elseif (isset($this->PD['instrid'])) {
       $this->instrumentMonth();
-      echo "<br /><br /><a href='$BASEURL/'>Return to instrument list</a>";
+      echo "<br /><br /><a href='$BASEURL/view/'>Return to instrument list</a>";
     } else {
       # shouldn't get here
       $err = 'I shouldn\'t be able to to get here: action/view.php::go()';
@@ -74,7 +76,22 @@ class ActionView extends ActionAction {
     }
     echoData($this->PD);
   }
-
+  
+  /**
+   * calculates the number of days between the current date and the last date that was selected
+   * by the user (in making a booking etc)
+   */
+  function _offset() {
+    if (isset($this->PD['isodate'])) {
+      $now = new SimpleDate(time());
+      $then = new SimpleDate($this->PD['isodate']);
+      return 'o='.floor($then->dsDaysBetween($now));
+    } else {
+      $then = new SimpleDate($this->PD['startticks']);
+      return $then->datestring;
+    }
+  }
+    
   function selectInstrument() {
     global $BASEURL;
     $instrselect = new AnchorTableList("Instrument", "Select which instrument to view");
@@ -92,7 +109,7 @@ class ActionView extends ActionAction {
                             array('permissions'=>'instrid=id'));
     }
     $instrselect->hrefbase = "$BASEURL/view/";
-    $instrselect->setFormat("id", "%s", array("name"), " %s", array("longname"));
+    $instrselect->setFormat("id", "%s", array("name"), " %50.50s", array("longname"));
     echo $instrselect->display();
   }
 
@@ -108,12 +125,13 @@ class ActionView extends ActionAction {
     #$day = date("w Z", $now);
     #echo "o=$offset,d=$day\n";
     $now->dayRound();
-    $day = date("w", $now->ticks); #the day of the week, 0=Sun, 6=Sat
-//     echo "o=$offset,d=$day\n";
     $start = $now;
+    $start->addDays($offset);
+    $day = date("w", $start->ticks); #the day of the week, 0=Sun, 6=Sat
+//     echo "o=$offset,d=$day\n";
     //add one day to the offset so that the weekly display begins on a Monday
     //subtract seven days to start in the previous week
-    $start->addDays($offset+1-7-$day);
+    $start->addDays(1-7-$day);
 //     echo $start->datetimestring;
     $stop = $start;
     $stop->addDays(7*6);
@@ -227,6 +245,7 @@ class ActionView extends ActionAction {
     echo $booking->display($isAdminView, $isOwnBooking);
     if ($isOwnBooking || $isAdminView) {
       echo "<p><a href='$BASEURL/view/".$this->PD['instrid']
+            .'/'.$this->PD['isodate']
             .'/'.$this->PD['bookid']."/edit'>Edit booking</a></p>\n";
     }
   }

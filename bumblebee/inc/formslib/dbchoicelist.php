@@ -232,11 +232,9 @@ class DBChoiceList extends DBO {
         // then it is a new value and we should accept it
         if ($this->DEBUG) echo "isExtending";
         $this->changed += 1;
-        //$this->id = $newval;
-        //If we are extending the list, then we should have a negative
-        //number as the current value to trip the creation of the new
-        //entry later on in sync()
-        //FIXME is this right? 
+        // If we are extending the list, then we should have a negative
+        // number as the current value to trip the creation of the new
+        // entry later on in sync()
         $this->id = -1;
         foreach ($this->choicelist as $k => $v) {
           //preDump($v);

@@ -10,7 +10,7 @@ class Costs extends DBRow {
   function Costs($id) {
     $this->DBRow('userclass', $id);
     $this->editable = 1;
-    $f = new TextField('id', 'UserClass ID');
+    $f = new IdField('id', 'UserClass ID');
     $f->editable = 0;
     $this->addElement($f);
     $f = new TextField('name', 'Name');
@@ -26,7 +26,7 @@ class Costs extends DBRow {
     $projectfield->connectDB('projects', array('id', 'name', 'longname'));
     $projectfield->prepend(array('0','(none)'));
     $projectfield->setDefault(0);
-    $projectfield->setFormat('id', '%s', array('name'), ' (%s)', array('longname'));
+    $projectfield->setFormat('id', '%s', array('name'), ' (%15.15s)', array('longname'));
     $f->addElement($projectfield);
     $f->joinSetup('projectid', array('minspare' => 2));
     $f->colspan = 2;

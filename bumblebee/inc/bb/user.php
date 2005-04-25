@@ -12,7 +12,7 @@ class User extends DBRow {
   function User($id) {
     $this->DBRow('users', $id);
     $this->editable = 1;
-    $f = new TextField('id', 'UserID');
+    $f = new IdField('id', 'UserID');
     $f->editable = 0;
     $this->addElement($f);
     $f = new TextField('username', 'Username');
@@ -46,7 +46,7 @@ class User extends DBRow {
     $projectfield->connectDB('projects', array('id', 'name', 'longname'));
     $projectfield->prepend(array('0','(none)'));
     $projectfield->setDefault(0);
-    $projectfield->setFormat('id', '%s', array('name'), ' (%s)', array('longname'));
+    $projectfield->setFormat('id', '%s', array('name'), ' (%25.25s)', array('longname'));
     $f->addElement($projectfield);
     $f->joinSetup('projectid', array('minspare' => 2));
     $f->colspan = 2;
@@ -60,7 +60,7 @@ class User extends DBRow {
     $instrfield->connectDB('instruments', array('id', 'name'));
     $instrfield->prepend(array('0','(none)'));
     $instrfield->setDefault(0);
-    $instrfield->setFormat('id', '%s', array('name'), ' (%s)', array('longname')
+    $instrfield->setFormat('id', '%s', array('name'), ' (%25.25s)', array('longname')
 );
     $f->addElement($instrfield);
     $subscribeAnnounce = new CheckBox('announce', 'Subscribe: announce');

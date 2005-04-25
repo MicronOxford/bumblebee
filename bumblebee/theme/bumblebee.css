@@ -417,6 +417,8 @@ a.but {
 .error {
   border: 1px solid red;
   background-color: #ffcccc;
+  margin: 1em;
+  padding: 1em;
 }
 
 .sql, .error {

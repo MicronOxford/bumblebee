@@ -14,9 +14,9 @@ function preDump($v) {
   echo "</pre>\n";
 }
 
-function echoData($v) {
+function echoData($v, $DEBUG=0) {
   global $VERBOSEDATA;
-  if ($VERBOSEDATA) {
+  if ($VERBOSEDATA || $DEBUG) {
     preDump($v);
   }
 }
@@ -27,7 +27,7 @@ function is_alphabetic($var) {
 }
 
 function qw($v) {
-  ///FIXME check magic_quotes-Gpc in here somewhere?
+  ///FIXME check magic_quotes-gpc in here somewhere?
   // http://www.sitepoint.com/article/php-anthology-3-php-mysql/7
   # remove \ from strings
   $v = preg_replace('/\\\\/', '', $v);

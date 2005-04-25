@@ -56,13 +56,8 @@ class BookingMatrix {
         }
         $rowspan = $rowstop - $rowstart;
 
-        #FIXME configurable styles here
         $cell = new BookingCell($this->bookings[$k],1,$rowspan);
-        #$cell->addRotateClass(array('monodd','moneven'),'m');
-        #$cell->addTodayClass('caltoday');
         $this->rows[$rowstart] = new BookingCell($this->bookings[$k],1,$rowspan);
-        #$this->rows[$rowstart] = new BookingCell($this->bookings[$k],1,$rowspan,
-                                              #'calday');
         #echo "Allocated $rowstart-$rowstop = $rowstart, $rowspan to booking starting on "
             #." (".$b->start->datetimestring.")<br/>\n";
       }

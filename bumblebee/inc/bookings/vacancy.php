@@ -40,7 +40,8 @@ class Vacancy extends TimeSlot {
     if ($isadmin || ! $this->isDisabled) {
       $startticks = $this->start->ticks;
       $stopticks = $this->stop->ticks;
-      $t .= "<div style='float:right;'><a href='$this->href/$startticks-$stopticks' class='but' title='Make booking'><img src='$BASEPATH/theme/images/book.png' alt='Make booking' class='calicon' /></a></div>&nbsp;";
+      $isodate = $this->start->datestring;
+      $t .= "<div style='float:right;'><a href='$this->href/$isodate/$startticks-$stopticks' class='but' title='Make booking'><img src='$BASEPATH/theme/images/book.png' alt='Make booking' class='calicon' /></a></div>&nbsp;";
     }
     return $t;
   }

@@ -11,7 +11,7 @@ class ConsumableUse extends DBRow {
   function ConsumableUse($id, $userid, $consumableid, $uid, $ip, $today) {
     $this->DBRow("consumables_use", $id);
     $this->editable = 1;
-    $f = new TextField("id", "Record ID");
+    $f = new IdField("id", "Record ID");
     $f->editable = 0;
     $this->addElement($f);
     $f = new ReferenceField("userid", "User");

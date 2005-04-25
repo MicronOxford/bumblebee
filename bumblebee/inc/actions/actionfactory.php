@@ -5,6 +5,7 @@
 # this is then acted upon later in the page
 
 include_once 'login.php';
+include_once 'logout.php';
 include_once 'view.php';
 #include_once 'book.php';
 
@@ -114,18 +115,6 @@ class ActionFactory {
       }
     }
     return $pd;
-    /*
-    echo "<pre>";
-    print_r($pd);
-    echo "</pre>";
-    echo "<pre>";
-    echo $pathinfo;
-    #print_r($_SERVER);
-    echo "</pre>";
-    echo "<pre>";
-    print_r($path);
-    echo "</pre>";
-    */
   }
 
   function _makeaction() {
@@ -134,6 +123,7 @@ class ActionFactory {
       case $act['login']:
         return new ActionPrintLoginForm($this->_auth, $this->PDATA);
       case $act['logout']:
+        $this->_auth->logout();
         return new ActionLogout($this->_auth, $this->PDATA);
       case $act['view']:
         return new ActionView($this->_auth, $this->PDATA);
@@ -174,10 +164,4 @@ class ActionFactory {
 }
  //class ActionFactory
  
- #FIXME??
-function checkLogout(&$auth, $action) {
-  if ($action == 'logout') {
-    $auth->logout(); 
-  }
-}
 ?>

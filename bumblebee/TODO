@@ -1,5 +1,11 @@
 $Id$
 
+masquerade broken: adminmenu.php, masquerade.php
+
+
+include BOOKING algorithm
+
+
 allow bookings to cross from one day to the next
 
 allow set timeslots for instruments

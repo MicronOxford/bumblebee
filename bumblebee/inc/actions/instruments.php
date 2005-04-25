@@ -49,7 +49,7 @@ class ActionInstruments extends ActionAction {
     $select->connectDB("instruments", array("id", "name", "longname"));
     $select->list->prepend(array("-1","Create new instrument"));
     $select->hrefbase = "$BASEURL/instruments/";
-    $select->setFormat("id", "%s", array("name"), " %s", array("longname"));
+    $select->setFormat("id", "%s", array("name"), " %30.30s", array("longname"));
     #echo $groupselect->list->text_dump();
     echo $select->display();
   }

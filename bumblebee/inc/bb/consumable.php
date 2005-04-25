@@ -10,7 +10,7 @@ class Consumable extends DBRow {
   function Consumable($id) {
     $this->DBRow("consumables", $id);
     $this->editable = 1;
-    $f = new TextField("id", "Consumable ID");
+    $f = new IdField("id", "Consumable ID");
     $f->editable = 0;
     $this->addElement($f);
     $f = new TextField("name", "Name");

@@ -10,7 +10,7 @@ class Group extends DBRow {
   function Group($id) {
     $this->DBRow('groups', $id);
     $this->editable = 1;
-    $f = new TextField('id', 'Group ID');
+    $f = new IdField('id', 'Group ID');
     $f->editable = 0;
     $this->addElement($f);
     $f = new TextField('name', 'Name');
