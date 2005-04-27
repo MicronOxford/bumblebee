@@ -41,15 +41,15 @@ class TimeSlotRule {
    * 
    * EXAMPLES:
    *
-   * [0-6]<00:00-08:00/*,08:00-13:00/05:00,13:00-18:00/05:00,18:00-24:00/*>
+   * [0-6]<00:00-08:00/*,08:00-13:00/1,13:00-18:00/1,18:00-24:00/*>
    *    Available all days, free booking until 8am and after 6pm, other slots as defined
-   * [0]<>[1-5]<09:00-17:00/01:00>[6]<>
+   * [0]<00:00-24:00/0>[1-5]<09:00-17:00/01:00>[6]<00:00-24:00/0>
    *    Not available Sunday and Saturday. Only available weekdays 9am till 5pm with 1hr booking
    *    granularity.
-   * [0]<>[1-5]<00:00-09:00/*,09:00-17:00/01:00,17:00-24:00/*>[6]<>
+   * [0]<>[1-5]<00:00-09:00/*,09:00-17:00/8,17:00-24:00/*>[6]<>
    *    Not available Sunday and Saturday. Available weekdays 9am till 5pm with 1hr booking
    *    granularity, before 9am and after 5pm with no granularity
-   * [0]<>[1-5]<09:00-13:00/01:00,13:00-17:00/02:00,17:00-33:00/16:00>[6]<>
+   * [0]<>[1-5]<09:00-13:00/4,13:00-17:00/2,17:00-33:00/1>[6]<>
    *    Not available Sunday and Saturday. Available weekdays 9am till 5pm with 1hr booking
    *    granularity, before 9am and after 5pm with no granularity
    *
@@ -236,17 +236,17 @@ class TimeSlotRule {
     if ($match == TSNEXT)   $timecmp = TSSTART;
 //     echo "($time->timestring, $dow)";
 //     preDump($this->slots[$dow]);
-//     echo "Asking for ($dow, $slot, $timecmp, $match)<br />";
+    echo "Asking for ($dow, $slot, $timecmp, $match)<br />";
     while(
-//             print_r("Asking for ($dow, $slot, $match)<br />") && 
+            print_r("Asking for ($dow, $slot, $match)<br />") && 
             $slot < count($this->slots[$dow])-TSARRAYMIN 
             && $time->ticks >= $this->slots[$dow][$slot]->$timecmp->ticks) {
-//       echo $time->ticks .'#'. $this->slots[$dow][$slot]->$timecmp->ticks."\n";
-//       echo $slot .'#'.(count($this->slots[$dow])-TSARRAYMIN)."\n";
+      echo $time->ticks .'#'. $this->slots[$dow][$slot]->$timecmp->ticks."\n";
+      echo $slot .'#'.(count($this->slots[$dow])-TSARRAYMIN)."\n";
       $slot++;
     }
     #$slot--;
-//     echo "Final ($dow, $slot, $match)<br />";
+    echo "Final ($dow, $slot, $match)<br />";
     if ($match == TSSTART || $match == TSSTOP) {
       $slot--;
       $finalslot = ($slot < count($this->slots[$dow])-TSARRAYMIN
@@ -298,8 +298,9 @@ class TimeSlotRule {
       //for ($j=0; $j<count($this->slots[$day]) && isset($this->slots[$day][$j]); $j++) {
       foreach ($this->slots[$day] as $k => $v) {
         if (is_numeric($k)) {
-          $s .= "\t" . $v[TSSTART]->timestring 
-                ." - ". $v[TSSTOP]->timestring .$eol;
+          $s .= $v->dump($html);
+//           $s .= "\t" . $v->tstart->timestring 
+//                 ." - ". $v->tstop->timestring .$eol;
         }
       }
     }
@@ -341,14 +342,15 @@ class RuleSlot {
     $this->start->setTime($this->tstart);
     $this->stop = $date;
     $this->stop->setTime($this->tstop);
-}
+  }
   
   function dump($html=1) {
     $eol = $html ? "<br />\n" : "\n";
-    return 'Slot:'.$eol
-          .'start = '.$this->start->datetimestring.$eol
-          .'stop = '.$this->stop->datetimestring.$eol
-          .'granularity = '.$this->tgran->timestring.$eol
+    return 'Slot:'."\t"
+          .$this->tstart->timestring.' - '
+          .$this->tstop->timestring.' : '
+          .($this->isAvailable? 'Available' : 'Not available')
+          .($this->isFreeForm ? ' Freeform' : '').$eol
     ;
   }
 

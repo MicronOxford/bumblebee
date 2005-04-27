@@ -23,7 +23,7 @@ class TimeField extends Field {
   var $droplist;
 
   
-  var $DEBUG = 0;
+  var $DEBUG = 10;
   
   function TimeField($name, $longname="", $description="") {
     parent::Field($name, $longname, $description);
@@ -122,9 +122,17 @@ class TimeField extends Field {
    *
    */
   function _determineRepresentation() {
+  # FIXME this code might be called when $this->slot is not set -- protect that.
+//     preDump($this->slot);
+//     preDump(debug_backtrace());
+//     $this->log($this->slot->dump(1), 10);
     if ($this->_manualRepresentation != TF_AUTO) {
       $this->representation = $this->_manualRepresentation;
-    } elseif ($this->isStart || ! $this->editable || $this->slot->numslotsFollowing < 1) {
+    } elseif (! $this->editable) {
+      $this->representation = TF_FIXED;
+    } elseif ($this->slot->isFreeForm) {
+      $this->representation = TF_FREE;
+    } elseif ($this->isStart || $this->slot->numslotsFollowing < 1) {
       $this->representation = TF_FIXED;
     } elseif ($this->_fixedTimeSlots()) {
       $this->representation = TF_DROP;
