@@ -20,6 +20,8 @@ class TimeSlotRule {
   var $picture = '';
   var $slots;
   
+  var $DEBUG = 0;
+  
   function TimeSlotRule($pic) {
     $this->picture = $pic;
     $this->_interpret();
@@ -161,7 +163,7 @@ class TimeSlotRule {
    * perform the above operations with no code duplication
    */
   function _isValidStartStop($date, $type) {
-    return $this->_findSlot($date, $type, TSSTART) != -1;
+    return $this->_findSlot($date, $type) != 0;
   }
   
   /**
@@ -219,8 +221,13 @@ class TimeSlotRule {
    * returns -1 if no matching slot found.
    * $match is TSSTART, TSSTOP, TSWITHIN, TSNEXT depending on what matching is queried.
    * $return is TSSTART or TSSTOP depending on the required return value
+   *
+   * this function will return a slot from the previous day if the slot spans days and
+   * that is the appropriate slot.
    */
   function _findSlot($date, $match, $datetime=0) {
+    $this->log("TimeSlotRule::_findSlot:($date->datetimestring, $match, $datetime)", 10);
+    //preDump(debug_backtrace());
     if ($datetime == 0) {
       $time = $date->timePart();
       $dow = $date->dow();
@@ -234,19 +241,26 @@ class TimeSlotRule {
     $timecmp = $match;
     if ($match == TSWITHIN) $timecmp = TSSTOP;
     if ($match == TSNEXT)   $timecmp = TSSTART;
-//     echo "($time->timestring, $dow)";
-//     preDump($this->slots[$dow]);
-    echo "Asking for ($dow, $slot, $timecmp, $match)<br />";
+    $this->log("TimeSlotRule::_findSlot:($time->timestring, $time->ticks, $dow)", 10);
+    $startvar = TSSTART;
+    if ($time->ticks < $this->slots[$dow][0]->$startvar->ticks) {
+      //$dow = ($dow+6)%7;
+      $day->addDays(-1);
+      $time->addSecs(24*60*60);
+      //echo "Stepped back a day ";
+    }
+    $this->log("Asking for ($dow, $slot, $timecmp, $match)", 10);
     while(
-            print_r("Asking for ($dow, $slot, $match)<br />") && 
+            //print_r("Asking for ($dow, $slot, $match)<br />") && 
             $slot < count($this->slots[$dow])-TSARRAYMIN 
             && $time->ticks >= $this->slots[$dow][$slot]->$timecmp->ticks) {
-      echo $time->ticks .'#'. $this->slots[$dow][$slot]->$timecmp->ticks."\n";
-      echo $slot .'#'.(count($this->slots[$dow])-TSARRAYMIN)."\n";
+      //echo $time->ticks .'#'. $this->slots[$dow][$slot]->$timecmp->ticks."\n";
+      //echo $slot .'#'.(count($this->slots[$dow])-TSARRAYMIN)."\n";
       $slot++;
     }
-    #$slot--;
-    echo "Final ($dow, $slot, $match)<br />";
+    //echo count($this->slots[$dow])-TSARRAYMIN."/";
+    //echo $time->ticks .', '. $this->slots[$dow][$slot]->$timecmp->ticks."\n";
+    $this->log("Final ($dow, $slot, $match)",10);
     if ($match == TSSTART || $match == TSSTOP) {
       $slot--;
       $finalslot = ($slot < count($this->slots[$dow])-TSARRAYMIN
@@ -259,24 +273,24 @@ class TimeSlotRule {
                       && $time->ticks >= $this->slots[$dow][$slot]->$a->ticks
                       && $time->ticks <  $this->slots[$dow][$slot]->$b->ticks) 
                       ? $slot : TS_SLOT_NOT_FOUND ;
+      //echo "Found containing slot: $finalslot\n";
     } else { //TSNEXT
-      //$slot++;
       if ($slot >= count($this->slots[$dow])-TSARRAYMIN) {
-//         echo "Looking for next slot in overflow:\n";
+        //echo "Looking for next slot in overflow:\n";
         do {
-//           echo "($dow, $day->datetimestring,".count($this->slots[$dow]).")\n";
+          //echo "($dow, $day->datetimestring,".count($this->slots[$dow]).")\n";
           $dow = ($dow+1) % 7;
           $day->addDays(1);
           $finalslot=0;
         } while (count($this->slots[$dow]) <= TSARRAYMIN);
-//         echo "($dow, $day->datetimestring,".TSARRAYMIN.")\n".count($this->slots[$dow]);
+        //echo "($dow, $day->datetimestring,".TSARRAYMIN.")\n".count($this->slots[$dow]);
       } else {
         $finalslot = $slot;
       }
     }
-//     echo "ReallyFinal ($dow, $finalslot, $match)<br />";
+    $this->log("ReallyFinal ($dow, $finalslot, $match)",10);
     if ($finalslot == TS_SLOT_NOT_FOUND) {
-      #trigger_error('Could not find a match to this time slot.', E_USER_NOTICE);
+      //trigger_error('Could not find a match to this time slot.', E_USER_NOTICE);
       return 0;
       $finalslot==0;
     }
@@ -307,6 +321,11 @@ class TimeSlotRule {
     return $s;
   }
 
+  function log($logstring, $prio=10) {
+    if ($prio <= $this->DEBUG) {
+      echo $logstring."<br />\n";
+    }
+  }
   
 
 } //class TimeSlotRule

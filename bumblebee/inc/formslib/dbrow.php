@@ -142,6 +142,10 @@ class DBRow extends DBO {
    * Note, this function returns false on success
   **/
   function delete() {
+    if ($id = -1) {
+     // nothing to do
+     return 0;
+    }
     $sql_result = -1;
     $q = "DELETE FROM $this->table "
         ."WHERE $this->idfield=".qw($this->id)

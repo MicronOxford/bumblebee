@@ -2,6 +2,8 @@ $Id$
 
 masquerade broken: adminmenu.php, masquerade.php
 
+making a booking doesn't work!
+
 timslot algorithm:
 /* doesn't work properly (bumps to next slot)
 /0 works

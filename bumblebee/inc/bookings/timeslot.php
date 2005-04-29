@@ -11,6 +11,10 @@ class TimeSlot {
   var $href = '';
   var $baseclass;
   var $isDisabled=0;
+  var $isVacant = 0;
+  var $displayStart;
+  var $displayStop;
+  var $slotRule;
   
   function TimeSlot($start, $stop, $duration=0) {
     $this->start = new SimpleDate($start);

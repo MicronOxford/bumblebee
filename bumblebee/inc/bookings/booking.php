@@ -24,6 +24,7 @@ class Booking extends TimeSlot {
   
   function Booking($arr) {
     $this->TimeSlot($arr['bookwhen'], $arr['stoptime'], $arr['duration']);
+    $isVacant = false;
     $this->id = $arr['bookid'];
     /*$this->ishalfday = $arr['ishalfday'];
     $this->isfullday = $arr['isfullday'];*/
@@ -77,10 +78,15 @@ class Booking extends TimeSlot {
   }
 
   function displayCellDetails() {
+//     preDump($this);
     global $BASEPATH;
-    $isodate = $this->start->datestring;
+    $start = isset($this->displayStart) ? $this->displayStart : $this->start;
+    $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
+    $timedescription = $start->datetimestring.' - '.$stop->datetimestring;
+    //$timedescription = $this->start->timestring.' - '.$this->stop->timestring;
+    $isodate = $start->datestring;
     $t = '';
-    $t .= "<div style='float:right;'><a href='$this->href/$isodate/$this->id' title='View or edit booking' class='but'><img src='$BASEPATH/theme/images/editbooking.png' alt='View/edit booking' class='calicon' /></a></div>";
+    $t .= "<div style='float:right;'><a href='$this->href/$isodate/$this->id' title='View or edit booking $timedescription' class='but'><img src='$BASEPATH/theme/images/editbooking.png' alt='View/edit booking $timedescription' class='calicon' /></a></div>";
     $t .= '<div class="calbookperson">'
          .'<a href="mailto:'.$this->useremail.'">'
          .$this->name.'</a></div>';

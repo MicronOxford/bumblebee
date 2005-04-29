@@ -122,7 +122,10 @@ class TimeField extends Field {
    *
    */
   function _determineRepresentation() {
-  # FIXME this code might be called when $this->slot is not set -- protect that.
+    if (! isset($this->slot) && $this->slot != 0) {
+      //$this->log('That is funny, the slot is not set __FILE__ __LINE__', 10);
+      return;
+    }
 //     preDump($this->slot);
 //     preDump(debug_backtrace());
 //     $this->log($this->slot->dump(1), 10);
@@ -227,15 +230,17 @@ class TimeField extends Field {
    */
   function setSlots($list) {
     $this->list = $list;
+    //preDump($list);
   }
 
   /** 
-   * create a TimeSlotRule for validation of the times that we are using
+   * set the appropriate date that we are refering to for the timeslot rule validation
    *
-   * @param string $list initialisation string for a TimeSlotRule
+   * @param string $date passed to the TimeSlotRule
    */
   function setSlotStart($date) {
     $this->slotStart = new SimpleDate($date);
+    $this->log('Looking for slot starting at '.$this->slotStart->datetimestring, 10);
     $this->slot = $this->list->findSlotByStart($this->slotStart);
   }
 

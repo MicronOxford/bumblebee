@@ -194,14 +194,16 @@ class ActionView extends ActionAction {
     $start = new SimpleDate($this->PD['startticks']);
     $stop  = new SimpleDate($this->PD['stopticks']);
     $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
-    $day = $start;
+/*    $day = $start;
     $daystart = $day;
     $daystop = $day;
     $daystart->setTime($row['usualopen']);
     $daystop->setTime($row['usualclose']);
     $start->max($daystart);
-    $stop->min($daystop);
+    $stop->min($daystop);*/
     $duration = new SimpleTime($stop->subtract($start));
+    echo "$start->datetimestring, $duration->timestring\n";
+    echo $start->dow();
     $this->editCreateBooking(-1, $start->datetimestring, $duration->timestring);
   }
 

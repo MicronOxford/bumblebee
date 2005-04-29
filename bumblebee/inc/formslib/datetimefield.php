@@ -48,7 +48,10 @@ class DateTimeField extends Field {
   }
 
   function selectable() {
+    //preDump($this->time);
+    //echo "Assembling date-time field\ndate";
     $t  = $this->date->selectable();
+    //echo "Assembling date-time field\ntime";
     $t .= $this->time->selectable();
     return $t;
   }
@@ -103,6 +106,15 @@ class DateTimeField extends Field {
     $this->list = $list;
     $this->time->setSlots($list);
     $this->calcDateTimeParts();
+  }
+  
+  /** 
+   * set the appropriate date that we are refering to for the timeslot rule validation
+   *
+   * @param string $date passed to the TimeSlotRule
+   */
+  function setSlotStart($date) {
+    $this->time->setSlotStart($date);
   }
   
   /**

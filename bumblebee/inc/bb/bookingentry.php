@@ -51,6 +51,7 @@ class BookingEntry extends DBRow {
     $f->setManualRepresentation($isadmin ? TF_FREE : TF_AUTO);
 //     echo $f->manualRepresentation .'-'.$f->time->manualRepresentation."\n";
     $f->setSlots($this->slotrules);
+    $f->setSlotStart($start);
     $this->addElement($f);
     $this->duration = &$f;
     $f = new TimeField('duration', 'Duration');
@@ -170,7 +171,7 @@ class BookingEntry extends DBRow {
         .'AND bookings.id<>'.qw($this->id).' '
         .'AND bookings.id<>'.qw($tmpid).' '
         .'AND userid<>0 '
-        .'AND deleted<>TRUE '
+        .'AND deleted<>\'TRUE\' '
         .'HAVING (bookwhen <= '.qw($start).' AND stoptime > '.qw($start).') '
         .'OR (bookwhen < '.qw($stop).' AND stoptime >= '.qw($stop).') '
         .'OR (bookwhen >= '.qw($start).' AND stoptime <= '.qw($stop).')';
@@ -243,17 +244,12 @@ class BookingEntry extends DBRow {
   }
   
   /**
-   *  delete the entry         .(($this->restriction !== '') ? ' AND '.$this->restriction : '')
-by marking it as deleted, don't actually delete the 
+   *  delete the entry by marking it as deleted, don't actually delete the 
    *
    *  Note, this function returns false on success
    */
   function delete() {
     $sql_result = -1;
-        $q = "UPDATE $this->table "
-            ."SET $vals "
-            ."WHERE $this->idfield=".qw($this->id)
-            .(($this->restriction !== '') ? ' AND '.$this->restriction : '');
     $q = "UPDATE $this->table "
         ."SET deleted='TRUE' "
         ."WHERE $this->idfield=".qw($this->id)

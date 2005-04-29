@@ -83,6 +83,7 @@ class Calendar {
                )
                                );
     $this->bookinglist = $bookdata->dataArray();
+    //preDump($this->bookinglist);
   }
 
   /**
@@ -158,14 +159,14 @@ class Calendar {
     $this->log('Breaking up bookings across days');
     //break bookings over day boundaries
     $daylist = new TimeSlotRule('[0-6]<00:00-24:00/*>');
-    $this->_breakAccordingToList($daylist);
+    $this->_breakAccordingToList($daylist, false);
   }    
     
   /**
    * Break up bookings that span elements of a defined list (e.g. allowable times or 
    * days). A TimeSlotRule ($list) is used to define how the times should be broken up
    */
-  function _breakAccordingToList($list) {
+  function _breakAccordingToList($list, $keepTimes=true) {
     $bl = $this->bookinglist;
     $this->bookinglist = array();
     $this->log('Breaking up bookings according to list');
@@ -205,6 +206,19 @@ class Calendar {
         $newstop->min($stop);
         $this->bookinglist[$booking]->stop = $newstop;
         
+        $this->bookinglist[$booking]->slotRule = $slot;
+        
+        if ($keepTimes && $booking<=0) {
+          $this->bookinglist[$booking]->displayStart = $slot->start;
+        }
+        if (! $this->bookinglist[$booking]->isVacant) {
+          if (isset($this->bookinglist[$booking]->displayStop)) {
+            $this->bookinglist[$booking]->displayStop = $this->bookinglist[$booking]->displayStop;
+          } else {
+            $this->bookinglist[$booking]->displayStop = $this->bookinglist[$booking]->original->stop;
+          }
+        }
+        
         $this->bookinglist[$booking]->isDisabled = ! $slot->isAvailable;
         
         $this->log('sstart='.$this->bookinglist[$booking]->start->datetimestring
@@ -216,6 +230,9 @@ class Calendar {
         $this->log('nextstart='.$slot->start->datetimestring,10);
         $this->log('');
       } while ($this->bookinglist[$booking-1]->original->stop->ticks > $slot->start->ticks);
+    }
+    if ($keepTimes && $this->bookinglist[$booking-1]->isVacant) {
+      $this->bookinglist[$booking-1]->displayStop = $this->bookinglist[$booking-1]->slotRule->stop;
     }
   }
 

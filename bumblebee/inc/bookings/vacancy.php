@@ -6,13 +6,13 @@ include_once 'inc/dbforms/date.php';
 include_once 'timeslot.php';
 
 class Vacancy extends TimeSlot {
-  var $isVacant = true;
   
   function Vacancy($arr='') {
     if (is_array($arr)) {
       $this->TimeSlot($arr['bookwhen'], $arr['stoptime'], $arr['duration']);
       #echo "Vacancy from ".$this->start->datetimestring." to ".$this->stop->datetimestring."<br />\n";
     }
+    $this->isVacant = true;
     $this->baseclass='vacancy';
   }
 
@@ -35,13 +35,18 @@ class Vacancy extends TimeSlot {
 
   function displayCellDetails($isadmin=0) {
 //     preDump(debug_backtrace());
+//     preDump($this);
     global $BASEPATH;
     $t = '';
     if ($isadmin || ! $this->isDisabled) {
-      $startticks = $this->start->ticks;
-      $stopticks = $this->stop->ticks;
-      $isodate = $this->start->datestring;
-      $t .= "<div style='float:right;'><a href='$this->href/$isodate/$startticks-$stopticks' class='but' title='Make booking'><img src='$BASEPATH/theme/images/book.png' alt='Make booking' class='calicon' /></a></div>&nbsp;";
+      $start = isset($this->displayStart) ? $this->displayStart : $this->start;
+      $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
+      $startticks = $start->ticks;
+      $stopticks = $stop->ticks;
+      $timedescription = $start->datetimestring.' - '.$stop->datetimestring;
+      //$timedescription = $this->start->timestring.' - '.$this->stop->timestring;
+      $isodate = $start->datestring;
+      $t .= "<div style='float:right;'><a href='$this->href/$isodate/$startticks-$stopticks' class='but' title='Make booking $timedescription'><img src='$BASEPATH/theme/images/book.png' alt='Make booking $timedescription' class='calicon' /></a></div>&nbsp;";
     }
     return $t;
   }
