@@ -16,21 +16,15 @@ include_once 'calendar.php';
 
 class BookingEntry extends DBRow {
   var $slotrules;
-  var $starttime;
-  var $duration;
+//   var $starttime;
+//   var $duration;
   var $_isadmin = 0;
+  var $euid;
   
   function BookingEntry($id, $auth, $instrumentid, $ip, $start, $duration, $granlist) {
-    $this->slotrules = new TimeSlotRule($granlist);
-    $isadmin = $auth->isSystemAdmin() || $auth->isInstrumentAdmin($instrumentid);
-    $this->_isadmin = $isadmin;
-    if ($id > 0 && $isadmin) {
-      $row = quickSQLSelect('bookings', 'id', $id);
-      $euid = $row['userid'];
-    } else {
-      $euid = $auth->getEUID();
-    }
     $this->DBRow('bookings', $id);
+    $this->_checkAuth($auth, $instrumentid);
+    $this->slotrules = new TimeSlotRule($granlist);
     $this->editable = 1;
     $f = new IdField('id', 'Booking ID');
     $f->editable = 0;
@@ -41,32 +35,32 @@ class BookingEntry extends DBRow {
     $f->duplicateName = 'instrid';
     $f->defaultValue = $instrumentid;
     $this->addElement($f);
-    $this->starttime = &$f;
-    $f = new DateTimeField('bookwhen', 'Start');
-    $f->required = 1;
-    $f->defaultValue = $start;
-    $f->isInvalidTest = 'is_valid_datetime';
+    $startf = new DateTimeField('bookwhen', 'Start');
+//     $this->starttime = &$startf;
+    $startf->required = 1;
+    $startf->defaultValue = $start;
+    $startf->isInvalidTest = 'is_valid_datetime';
     $attrs = array('size' => '24');
-    $f->setAttr($attrs);
-    $f->setManualRepresentation($isadmin ? TF_FREE : TF_AUTO);
+    $startf->setAttr($attrs);
+    $startf->setManualRepresentation($this->_isadmin ? TF_FREE : TF_AUTO);
 //     echo $f->manualRepresentation .'-'.$f->time->manualRepresentation."\n";
-    $f->setSlots($this->slotrules);
-    $f->setSlotStart($start);
-    $this->addElement($f);
-    $this->duration = &$f;
-    $f = new TimeField('duration', 'Duration');
-    $f->required = 1;
-    $f->isInvalidTest = 'is_valid_time';
-    $f->defaultValue = $duration;
-    $f->setManualRepresentation($isadmin ? TF_FREE : TF_AUTO);
+    $startf->setSlots($this->slotrules);
+    $startf->setSlotStart($start);
+    $this->addElement($startf);
+    $durationf = new TimeField('duration', 'Duration');
+//     $this->duration = &$durationf;
+    $durationf->required = 1;
+    $durationf->isInvalidTest = 'is_valid_time';
+    $durationf->defaultValue = $duration;
+    $durationf->setManualRepresentation($this->_isadmin ? TF_FREE : TF_AUTO);
 //     echo $f->manualRepresentation .'-'.$f->time->manualRepresentation."\n";
-    $f->setSlots($this->slotrules);
-    $f->setSlotStart($start);
-    $this->addElement($f);
+    $durationf->setSlots($this->slotrules);
+    $durationf->setSlotStart($start);
+    $this->addElement($durationf);
     $f = new DropList('projectid', 'Project');
     $f->connectDB('projects', 
                   array('id', 'name', 'longname'), 
-                  'userid='.qw($euid),
+                  'userid='.qw($this->euid),
                   'name', 
                   'id', 
                   NULL, 
@@ -82,19 +76,19 @@ class BookingEntry extends DBRow {
     $this->addElement($f);
     $f = new ReferenceField('userid', 'User');
     $f->extraInfo('users', 'id', 'name');
-    $f->value = $euid;
+    $f->value = $this->euid;
     $this->addElement($f);
     $f = new ReferenceField('bookedby', 'Recorded by');
     $f->extraInfo('users', 'id', 'name');
     $f->value = $auth->uid;
-    $f->editable = $isadmin;
-    $f->hidden = !$isadmin;
+    $f->editable = $this->_isadmin;
+    $f->hidden = !$this->_isadmin;
     $this->addElement($f);
     $f = new TextField('discount', 'Discount (%)');
     $f->isInvalidTest = 'is_number';
     $f->defaultValue = '0';
-    $f->editable = $isadmin;
-    $f->hidden = !$isadmin;
+    $f->editable = $this->_isadmin;
+    $f->hidden = !$this->_isadmin;
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new TextField('ip', 'Computer IP');
@@ -107,14 +101,42 @@ class BookingEntry extends DBRow {
     $f->value = '1';
     $this->addElement($f);
   }
-  
+
+  /**
+   *  secondary constructor that we can use just for deleting
+   *
+   */
+  function BookingEntryShort($id, $auth, $instrumentid) {
+    $this->DBRow('bookings', -1, 'id');
+    $this->_checkAuth($auth);
+    $f = new Field('id');
+    $f->value = $id;
+    $row->addElement($f);
+    $f = new Field('instrument');
+    $f->value = $instrumentid;
+    $row->addElement($f);
+  }
+
+  /**
+   *  check our admin status
+   */
+  function _checkAuth($auth, $instrumentid) {
+    $this->_isadmin = $auth->isSystemAdmin() || $auth->isInstrumentAdmin($instrumentid);
+    if ($this->id > 0 && $this->_isadmin) {
+      $row = quickSQLSelect('bookings', 'id', $this->id);
+      $this->euid = $row['userid'];
+    } else {
+      $this->euid = $auth->getEUID();
+    }
+  }
+    
   /** 
    * override the default update() method with a custom one that allows us to
    * munge the start and finish times to fit in with the permitted granularity
    * 
    * * actually... do we really want to do that? let's just pass this through
    * * for the time being.
-  **/
+   */
   function update($data) {
     return parent::update($data);
   }
@@ -122,11 +144,17 @@ class BookingEntry extends DBRow {
   /** 
    * override the default checkValid() method with a custom one that also checks that the
    * booking is permissible (i.e. the instrument is indeed free)
-  **/
+   *
+   * A temp booking is made by _checkIsFree if all tests are OK. This temporary booking
+   * secures the slot (no race conditions) and is then updated by the sync() method.
+   */
   function checkValid() {
     parent::checkValid();
-    $this->isValid = $this->isValid && $this->_checkIsFree();
+    $this->log('Individual fields are '.($this->isValid ? 'VALID' : 'INVALID'));
     $this->isValid = $this->_isadmin || ($this->isValid && $this->_legalSlot());
+    $this->log('After checking for legality of timeslot: '.($this->isValid ? 'VALID' : 'INVALID'));
+    $this->isValid = $this->isValid && $this->_checkIsFree();
+    $this->log('After checking for double bookings: '.($this->isValid ? 'VALID' : 'INVALID'));
     return $this->isValid;
   }
 
@@ -161,7 +189,8 @@ class BookingEntry extends DBRow {
     $stop = $d->datetimestring;
     
     $tmpid = $this->_makeTempBooking($instrument, $start, $duration);
-        
+    $this->log('Created temp row for locking, id='.$tmpid.'(origid='.$this->id.')');
+    
     $q = 'SELECT bookings.id AS bookid, bookwhen, duration, '
         .'DATE_ADD( bookwhen, INTERVAL duration HOUR_SECOND ) AS stoptime, '
         .'name AS username '
@@ -171,25 +200,26 @@ class BookingEntry extends DBRow {
         .'AND bookings.id<>'.qw($this->id).' '
         .'AND bookings.id<>'.qw($tmpid).' '
         .'AND userid<>0 '
-        .'AND deleted<>\'TRUE\' '
+        .'AND deleted<>1 '        // old version of MySQL cannot handle true, use 1 instead
         .'HAVING (bookwhen <= '.qw($start).' AND stoptime > '.qw($start).') '
         .'OR (bookwhen < '.qw($stop).' AND stoptime >= '.qw($stop).') '
         .'OR (bookwhen >= '.qw($start).' AND stoptime <= '.qw($stop).')';
     $row = db_get_single($q, $this->fatal_sql);
     if (is_array($row)) {
       // then the booking actually overlaps another!
+      $this->log('Overlapping bookings, error');
       $this->_removeTempBooking($tmpid);
       $doubleBook = 1;
-      $this->errorMessage = '<div class="error">'
-                          .'Sorry, the instrument is not free at this time.<br /><br />'
+      $this->errorMessage .= 'Sorry, the instrument is not free at this time.<br /><br />'
                           .'Instrument booked by ' .$row['username']
-                          .' (booking #' .$row['bookid']. ')<br />'
-                          .'from '.$row['bookwhen'].' until ' .$row['stoptime']
-                          .'</div>';
-      echo $this->errorMessage;
+                          .' (<a href="'.$row['bookid'].'">booking #'.$row['bookid'].'</a>)<br />'
+                          .'from '.$row['bookwhen'].' until ' .$row['stoptime'];
+      // The error should be displayed by the driver class, not us. We *never* echo.
+      //echo $this->errorMessage;
       #preDump($row);
     } else {
       // then the new booking should take over this one, and we delete the old one.
+      $this->log('Booking slot OK, taking over tmp slot');
       $oldid = $this->id;
       $this->id = $tmpid;
       $this->fields[$this->idfield]->set($this->id);
@@ -204,11 +234,17 @@ class BookingEntry extends DBRow {
    * Ensure that the entered data fits the granularity criteria specified for this instrument
    */
   function _legalSlot() {
-    #echo "BookingEntry::_checkGranularity\n";
-    $starttime = new SimpleDate($this->starttime->getValue());
+    $starttime = new SimpleDate($this->fields['bookwhen']->getValue());
     $stoptime = $starttime;
-    $stoptime->addTime($this->duration->getValue());
-    return $this->slotrules->isValidSlot($starttime, $stoptime);
+    $stoptime->addTime(new SimpleTime($this->fields['duration']->getValue()));
+    $this->log('BookingEntry::_legalSlot '.$starttime->datetimestring
+                  .' '.$stoptime->datetimestring);
+    $validslot = $this->slotrules->isValidSlot($starttime, $stoptime);
+    if (! $validslot) {
+      $this->errorMessage .= 'Sorry, the timeslot you have selected is not valid, '
+                            .'due to restrictions imposed by the instrument administrator.';
+    }
+    return $validslot;
   }
 
   /** 
@@ -239,6 +275,7 @@ class BookingEntry extends DBRow {
    * make a temporary booking for this slot to eliminate race conditions for this booking
    */
   function _removeTempBooking($tmpid) {
+    $this->log('Removing row, id='. $tmpid);
     $row = new DBRow('bookings', $tmpid, 'id');
     $row->delete();
   }
@@ -251,12 +288,13 @@ class BookingEntry extends DBRow {
   function delete() {
     $sql_result = -1;
     $q = "UPDATE $this->table "
-        ."SET deleted='TRUE' "
+        ."SET deleted=1 "       // old MySQL cannot handle true, use 1 instead
         ."WHERE $this->idfield=".qw($this->id)
         ." LIMIT 1";
     $sql_result = db_quiet($q, $this->fatal_sql);
     return $sql_result;
   }
+  
   
      
 } //class BookingEntry

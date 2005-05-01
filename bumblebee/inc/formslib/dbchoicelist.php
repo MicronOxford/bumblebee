@@ -205,17 +205,12 @@ class DBChoiceList extends DBO {
    * $data, which is passed on to any appended or prepended fields.
    */
   function update($newval, $data) {
-    if ($this->DEBUG) {
-      echo "DBChoiceList update: ";
-      echo "(changed=$this->changed)";
-      echo "(id=$this->id)";
-      echo "(newval=$newval)";
-    }
+    $this->log('DBChoiceList update: (changed='.$this->changed.', id='.$this->id.', newval='.$newval.')');
     if (isset($newval)) {
       //check to see if the newval is legal (does it exist on our choice list?)
       $isExisting = 0;
       foreach ($this->choicelist as $k => $v) {
-        if ($this->DEBUG) echo "($isExisting:".$v[$this->idfield].":$newval)";
+        $this->log('('.$isExisting.':'.$v[$this->idfield].':'.$newval.')');
         if ($v[$this->idfield] == $newval && $v[$this->idfield] >= 0) {
           $isExisting = 1;
           break;
@@ -223,14 +218,14 @@ class DBChoiceList extends DBO {
       }
       if ($isExisting) {
         // it is a legal, existing value, so we adopt it 
-        if ($this->DEBUG) echo "isExisting";
+        $this->log('isExisting');
         $this->changed += ($newval != $this->id);
         $this->id = $newval;
         $this->isValid = 1;
         //isValid handling done by the Field that inherits it
       } elseif ($this->extendable) {
         // then it is a new value and we should accept it
-        if ($this->DEBUG) echo "isExtending";
+        $this->log('isExtending');
         $this->changed += 1;
         // If we are extending the list, then we should have a negative
         // number as the current value to trip the creation of the new
@@ -244,7 +239,7 @@ class DBChoiceList extends DBO {
           }
         }
       } else {
-        if ($this->DEBUG) echo "isInvalid";
+        $this->log('isInvalid');
         // else, it's a new value and we should not accept it
         $this->isValid = 0;
       }

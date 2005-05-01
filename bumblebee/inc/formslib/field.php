@@ -174,6 +174,11 @@ class Field {
     return $this->text_dump();
   }
 
+  function hidden() {
+    return "<input type='hidden' name='$this->namebase$this->name' "
+           ."value='".xssqw($this->getValue())."' />";
+  }
+
   function displayInTable() {
   }
 
@@ -182,6 +187,14 @@ class Field {
     return (isset($this->value) ? $this->value : $this->defaultValue);
   }
 
+  function log($logstring, $prio=10) {
+    if ($prio <= $this->DEBUG) {
+      echo $logstring."<br />\n";
+    }
+  }
+  
+
+  
 } // class Field
 
 ?> 

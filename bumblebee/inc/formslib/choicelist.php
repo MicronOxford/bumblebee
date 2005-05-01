@@ -148,13 +148,13 @@ class ChoiceList extends Field {
     $this->list->extendable = $this->extendable;
     #echo "ID=".$this->list->id;
     if ($this->changed) {
-      echo "haschanged";
+      $this->log('haschanged');
       // only update the list if things have changed
       $this->list->update($this->value, $data);
       $this->changed = $this->list->changed;
       $this->isValid = $this->list->isValid;
     }
-    if ($this->DEBUG) echo "ChoiceList::Update->isValid= $this->isValid";
+    $this->log('ChoiceList::Update->isValid= '.$this->isValid);
     #Field::set($this->list->id);
     #echo $this->list->id;
     #echo " (nv: $this->value)";
@@ -178,7 +178,7 @@ class ChoiceList extends Field {
    * @return boolean the field's current value is valid?
    */
   function isValid() {
-    if ($this->DEBUG) echo "ChoiceList::isValid=$this->isValid";
+    $this->log('ChoiceList::isValid='.$this->isValid);
     return $this->isValid && Field::isValid();
   }
 

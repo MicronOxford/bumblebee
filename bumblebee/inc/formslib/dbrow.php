@@ -3,6 +3,8 @@
 # database objects (self-initialising and self-updating object)
 
 include_once('dbobject.php');
+include_once('inc/statuscodes.php');
+
 
 /**
  * Object representing a database row (and extensible to represent joined rows)
@@ -19,6 +21,7 @@ include_once('dbobject.php');
  *   #synchronise with database
  *   $obj->sync();
  */
+ 
 class DBRow extends DBO {
   var $fatal_sql = 1;
   var $namebase;
@@ -29,7 +32,7 @@ class DBRow extends DBO {
   var $restriction = '';
   var $recStart = '';
   var $recNum   = '';
-  var $DEBUG = 0;
+  var $errorMessage = '';
   
   function DBRow($table, $id, $idfield='id') {
     $this->DBO($table, $id, $idfield);
@@ -41,7 +44,7 @@ class DBRow extends DBO {
    *  input data, and validate the data if appropriate
    */
   function update($data) {
-    if ($this->DEBUG) echo "<br/><br/>DBRow:$this->namebase. Looking for updates:<br />";
+    $this->log('DBRow:'.$this->namebase.' Looking for updates:');
     // First, check to see if this record is new
     if ($this->id == -1) {
       $this->insertRow = 1;
@@ -52,7 +55,7 @@ class DBRow extends DBO {
     $this->newObject = 1;
     foreach ($this->fields as $k => $v) {
       if ($k != $this->idfield && isset($data[$this->namebase.$k])) {
-        if ($this->DEBUG) echo "I AM NOT NEW $k:changed<br />";
+        $this->log('I AM NOT NEW '.$k.':changed');
         $this->newObject = 0;
         break;
       }
@@ -60,16 +63,12 @@ class DBRow extends DBO {
   
     // check each field in turn to allow it to update its data
     foreach ($this->fields as $k => $v) {
-      if ($this->DEBUG) echo "Check $k ov:".$this->fields[$k]->value
-                            .'('.$this->fields[$k]->useNullValues .'/'. $this->newObject.')';
+      $this->log("Check $k ov:".$this->fields[$k]->value
+                            .'('.$this->fields[$k]->useNullValues .'/'. $this->newObject.')');
       if (!($this->fields[$k]->useNullValues && $this->newObject)) {
         $this->changed += $this->fields[$k]->update($data);
       }
-      if ($this->DEBUG) {
-        echo "nv:".$this->fields[$k]->value." ";
-        echo ($this->changed ? 'changed' : 'not changed');
-        echo "<br />";
-      }
+      $this->log('nv:'.$this->fields[$k]->value.' '.($this->changed ? 'changed' : 'not changed'));
     }
     #$this->checkValid();
     return $this->changed;
@@ -85,10 +84,14 @@ class DBRow extends DBO {
     // suppress validation
     foreach ($this->fields as $k => $v) {
       if (! ($this->newObject && $this->insertRow)) {
-        if ($this->DEBUG) echo "Checking valid ".$this->fields[$k]->namebase."$k ";
+        $this->log('Checking valid '.$this->fields[$k]->namebase . $k);
         $this->isValid = $this->fields[$k]->isValid() && $this->isValid;
       }
-      if ($this->DEBUG) echo "<br />";
+    }
+    if (! $this->isValid) {
+      $this->errorMessage .= 'Some values entered into the form are not valid '
+                  .'and should be highlighted in the form below. '
+                  .'Please check your data entry and try again.';
     }
     return $this->isValid;
   }
@@ -104,11 +107,14 @@ class DBRow extends DBO {
   **/
   function sync() {
     // If the input isn't valid then bail out straight away
-    if (! ($this->changed && $this->isValid) ) {
-      if ($this->DEBUG) echo "not syncing: changed=$this->changed valid=$this->isValid<br />";
-      return -1;
+    if (! $this->changed) {
+      $this->log('not syncing: changed='.$this->changed);
+      return STATUS_NOOP;
+    } elseif (! $this->isValid) {
+      $this->log('not syncing: valid='.$this->isValid);
+      return STATUS_ERR;
     }
-    if ($this->DEBUG) echo "syncing: changed=$this->changed valid=$this->isValid<br />";
+    $this->log('syncing: changed='.$this->changed.' valid='.$this->isValid);
     $sql_result = -1;
     //obtain the *clean* parameter='value' data that has been SQL-cleansed
     //this will also trip any complex fields to sync
@@ -142,15 +148,17 @@ class DBRow extends DBO {
    * Note, this function returns false on success
   **/
   function delete() {
-    if ($id = -1) {
+    if ($this->id == -1) {
      // nothing to do
-     return 0;
+     $this->log('$id == -1, so nothing to do');
+     return STATUS_NOOP;
     }
     $sql_result = -1;
     $q = "DELETE FROM $this->table "
         ."WHERE $this->idfield=".qw($this->id)
         .(($this->restriction !== '') ? ' AND '.$this->restriction : '')
         ." LIMIT 1";
+    #$this->log($q);
     $sql_result = db_quiet($q, $this->fatal_sql);
     return $sql_result;
   }
@@ -265,6 +273,7 @@ class DBRow extends DBO {
       $this->fields[$k]->namebase = $newname;
     }
   }
+
 
 } // class dbrow
 

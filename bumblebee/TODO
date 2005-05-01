@@ -2,13 +2,7 @@ $Id$
 
 masquerade broken: adminmenu.php, masquerade.php
 
-making a booking doesn't work!
-
-timslot algorithm:
-/* doesn't work properly (bumps to next slot)
-/0 works
-/2 works
-18:00-32:00/1 doesn't work
+can change another's bookings: edit, delete etc
 
 
 include BILLING algorithm
@@ -57,6 +51,8 @@ should groups, projects, users actions etc be invocations of the *same* obj?
 XSS checks
 
 SQL bad character checking -- qw, unqw?
+
+' => \' => \\\' etc. bad.
 
 OOify the action construction to provide namespaces
 

@@ -7,7 +7,7 @@ body {
   font-family: "Bitstream Vera Sans", Verdana, Helvetica, Arial, sans-serif; 
 }
 
-#header {
+#header {Success
   position: relative;
   border-bottom: 3px solid #0000cc;
   margin-bottom: 1em;
@@ -414,9 +414,16 @@ a.but {
   background-color: #ccccff;
 }
 
-.error {
+.error, .msgerror {
   border: 1px solid red;
   background-color: #ffcccc;
+  margin: 1em;
+  padding: 1em;
+}
+
+.msgsuccess {
+  border: 1px solid green;
+  background-color: #ccffcc;
   margin: 1em;
   padding: 1em;
 }

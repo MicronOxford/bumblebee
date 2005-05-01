@@ -20,6 +20,8 @@ class DBO {
   var $fatal_sql = 1;
   var $namebase;
 
+  var $DEBUG = 0;
+  
   function DBO($table, $id, $idfield = 'id') {
     $this->table = $table;
     $this->id = $id;
@@ -43,6 +45,12 @@ class DBO {
 
   function display() {
     return $this->text_dump();
+  }
+  
+  function log($logstring, $prio=10) {
+    if ($prio <= $this->DEBUG) {
+      echo $logstring."<br />\n";
+    }
   }
 
 } // class dbo

@@ -57,8 +57,8 @@ class DateTimeField extends Field {
   }
   
   function hidden() {
-    return "<input type='hidden' name='$this->namebase$this->name' "
-           ."value='".xssqw($this->value)."' />";
+    $t  = $this->date->hidden();
+    $t .= $this->time->hidden();
   }
   
   /**
@@ -89,7 +89,7 @@ class DateTimeField extends Field {
    */
   function update($data) {
     if ($this->date->update($data) || $this->time->update($data)) {
-      echo "<b>DateTimeField::update<b><br/>\n";
+      $this->log('DateTimeField::update');
       $data[$this->namebase.$this->name] = $this->date->value .' '. $this->time->value;
       parent::update($data);
 //       $this->calcDateTimeParts();

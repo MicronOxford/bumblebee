@@ -23,7 +23,7 @@ class TimeField extends Field {
   var $droplist;
 
   
-  var $DEBUG = 10;
+  var $DEBUG = 0;
   
   function TimeField($name, $longname="", $description="") {
     parent::Field($name, $longname, $description);
@@ -72,7 +72,7 @@ class TimeField extends Field {
         break;
       case TF_FIXED:
         $t .= $this->time->timestring;
-        $t .= $this->hidden;
+        $t .= $this->hidden();
         break;
     }
     return $t;
@@ -102,11 +102,6 @@ class TimeField extends Field {
     return $t;
   }*/
   
-  function hidden() {
-    return "<input type='hidden' name='$this->namebase$this->name' "
-           ."value='".xssqw($this->getValue())."' />";
-  }
-
   /**
    * set the representation of this field
    *
@@ -244,12 +239,6 @@ class TimeField extends Field {
     $this->slot = $this->list->findSlotByStart($this->slotStart);
   }
 
-  function log($logstring, $prio=10) {
-    if ($prio <= $this->DEBUG) {
-      echo $logstring."<br />\n";
-    }
-  }
-  
     
 } // class TimeField
 

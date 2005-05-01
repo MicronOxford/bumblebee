@@ -24,29 +24,31 @@ class ActionView extends ActionAction {
       return;
     }
     $instrument = $this->PD['instrid'];
-    if (isset($this->PD['isodate']) && 
+    if (isset($this->PD['delete']) && isset($this->PD['bookid'])) {
+      $this->deleteBooking();
+      echo $this->_calendarViewLink($instrument);
+    } elseif (isset($this->PD['isodate']) && 
                     ! isset($this->PD['bookid']) && ! isset($this->PD['startticks']) ) {
       $this->instrumentDay();
-      echo "<br /><br /><a href='$BASEURL/view/$instrument/"
-                      .$this->_offset()."'>Return to calendar list</a>";
+      echo $this->_calendarViewLink($instrument);
     } elseif (isset($this->PD['bookid']) && isset($this->PD['edit'])) {
       $this->editBooking();
-      echo "<br /><br /><a href='$BASEURL/view/$instrument/"
-                      .$this->_offset()."'>Return to calendar view</a>";
+      echo $this->_calendarViewLink($instrument);
     } elseif (isset($this->PD['bookid'])) {
       $this->booking();
-      echo "<br /><br /><a href='$BASEURL/view/$instrument/".$this->_offset()."'>Return to calendar view</a>";
+      echo $this->_calendarViewLink($instrument);
     } elseif (isset($this->PD['startticks']) && isset($this->PD['stopticks'])) {
       $this->createBooking();
-      echo "<br /><br /><a href='$BASEURL/view/$instrument/".$this->_offset()."'>Return to calendar view</a>";
+      echo $this->_calendarViewLink($instrument);
     } elseif (isset($this->PD['instrid'])) {
       $this->instrumentMonth();
       echo "<br /><br /><a href='$BASEURL/view/'>Return to instrument list</a>";
     } else {
       # shouldn't get here
-      $err = 'I shouldn\'t be able to to get here: action/view.php::go()';
+      $err = 'Invalid action specification in action/view.php::go()';
       $this->log($err);
       trigger_error($err, E_USER_WARNING);
+      $this->selectInstrument();
     }
   }
 
@@ -67,14 +69,16 @@ class ActionView extends ActionAction {
         $this->PD['startticks'] = $m[1];
         $this->PD['stopticks'] = $m[2];
       } elseif (preg_match("/(\d+)/", $this->PDATA[$i], $m)) {
-        $this->PD['bookid'] = $m[1];
+        if (! isset($this->PD['bookid'])) {
+          $this->PD['bookid'] = $m[1];
+        }
       } elseif (preg_match("/edit/", $this->PDATA[$i], $m)) {
         $this->PD['edit'] = 1;
       } else {
         $this->log("I don't know what to do with that data!");
       }
     }
-    echoData($this->PD);
+    echoData($this->PD, 0);
   }
   
   /**
@@ -92,6 +96,12 @@ class ActionView extends ActionAction {
     }
   }
     
+  function _calendarViewLink($instrument) {
+    global $BASEURL;
+    return '<br /><br /><a href="'."$BASEURL/view/$instrument/"
+                      .$this->_offset().'">Return to calendar view</a>';
+  }
+                      
   function selectInstrument() {
     global $BASEURL;
     $instrselect = new AnchorTableList("Instrument", "Select which instrument to view");
@@ -202,8 +212,7 @@ class ActionView extends ActionAction {
     $start->max($daystart);
     $stop->min($daystop);*/
     $duration = new SimpleTime($stop->subtract($start));
-    echo "$start->datetimestring, $duration->timestring\n";
-    echo $start->dow();
+    $this->log($start->datetimestring.', '.$duration->timestring.', '.$start->dow());
     $this->editCreateBooking(-1, $start->datetimestring, $duration->timestring);
   }
 
@@ -221,7 +230,12 @@ class ActionView extends ActionAction {
     #echo "CHECKVALID\n";
     $booking->checkValid();
     #echo "VALID=$booking->isValid\n";
-    $booking->sync();
+    echo $this->reportAction($booking->sync(), 
+              array(
+                  STATUS_OK =>   ($bookid < 0 ? 'Booking made' : 'Booking updated'),
+                  STATUS_ERR =>  'Booking could not be made:<br/><br/>'.$booking->errorMessage
+              )
+            );
     #echo "FINISH SYNC\n";
     #preDump($booking);
     #echo $group->text_dump();
@@ -250,6 +264,18 @@ class ActionView extends ActionAction {
             .'/'.$this->PD['isodate']
             .'/'.$this->PD['bookid']."/edit'>Edit booking</a></p>\n";
     }
+  }
+  
+  function deleteBooking() {
+    global $BASEURL;
+    $booking = new BookingEntry($this->PD['bookid'], $this->auth, $this->PD['instrid']);
+    echo $this->reportAction($booking->delete(), 
+              array(
+                  STATUS_OK =>   ($bookid < 0 ? 'Booking made' : 'Booking updated'),
+                  STATUS_FORBIDDEN => 'Sorry, you do not have permission to do this',
+                  STATUS_ERR =>  'Booking could not be made:<br/><br/>'.$booking->errorMessage
+              )
+            );  
   }
 
 } // class ActionView

@@ -2,6 +2,8 @@
 # $Id$
 # simplifying sql functions
 
+include_once('inc/statuscodes.php');
+
 function db_quiet($q, $fatal_sql=0) {
   #returns false on success, true (error) on failure
   $sql = mysql_query($q);
@@ -9,7 +11,7 @@ function db_quiet($q, $fatal_sql=0) {
   if (! $sql) {
     return echoSQLerror(mysql_error(), $fatal_sql);
   } else {
-    return 0;
+    return STATUS_OK; // should this return the $sql handle?
   }
 }
 
@@ -54,7 +56,7 @@ function echoSQLerror($echo, $fatal=0) {
       die("<b>Fatal SQL error. Aborting.</b>");
     }
   }
-  return $echo;
+  return STATUS_ERR;
 }
   
 function quickSQLSelect($table, $key, $value, $fatal=1) {
