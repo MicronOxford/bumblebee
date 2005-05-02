@@ -5,9 +5,9 @@
 include_once 'dbforms/dbrow.php';
 include_once 'dbforms/textfield.php';
 
-class Costs extends DBRow {
+class ClassCost extends DBRow {
   
-  function Costs($id) {
+  function ClassCost($id) {
     $this->DBRow('userclass', $id);
     $this->editable = 1;
     $f = new IdField('id', 'UserClass ID');
@@ -19,21 +19,50 @@ class Costs extends DBRow {
     $f->required = 1;
     $f->isValidTest = 'is_nonempty_string';
     $this->addElement($f);
-    $f = new JoinData('userprojects',
-                       'userid', $this->id,
-                       'projects', 'Project membership');
-    $projectfield = new DropList('projectid', 'Project');
-    $projectfield->connectDB('projects', array('id', 'name', 'longname'));
-    $projectfield->prepend(array('0','(none)'));
-    $projectfield->setDefault(0);
-    $projectfield->setFormat('id', '%s', array('name'), ' (%15.15s)', array('longname'));
-    $f->addElement($projectfield);
-    $f->joinSetup('projectid', array('minspare' => 2));
+    #$f = new RadioList("class", "Charging class");
+    //$f->connectDB("instrumentclass", array("id", "name"));
+    //$classexample = new ExampleEntries("id","instruments","class","name",3);
+    //$classexample->separator = '; ';
+    //$f->setFormat("id", "%s", array("name"), " (%40.40s)", $classexample);
+    #$label = new ExampleEntries('id','instruments','class','name',3);
+    #$label->separator = '; ';
+    #$f->setFormat("id", "%s", array("name"), " (%40.40s)", $classexample);
+
+    $f = new JoinData('costs',
+                       'userclass', $this->id,
+                       'classlabel', 'Cost settings');
+    $instrfield = new DropList('instrumentclass', 'Instrument Class');
+    $instrfield->connectDB('instrumentclass', array('id', 'name'));
+    //$instrfield->prepend(array('0','(none)'));
+    //$instrfield->setDefault(0);
+    $classexample = new ExampleEntries('id','instruments','class','name',3);
+    $classexample->separator = '; ';
+    $instrfield->setFormat('id', '%s', array('name'), ' (%40.40s)', $classexample);
+    $instrfield->editable=0;
+    $f->addElement($instrfield);
+
+    //$label = new TextField('', 'User class');
+    //$label->editable = 0;
+    //$instrex = new ExampleEntries('id','instruments','class','name',3);
+    //$instrex->separator = '; ';
+    //$label->setFormat("id", "%40.40s", $instrex);
+    //$f->addElement($label);
+    $f->addElement($instrfield);
+    $cost = new TextField('costfullday', 'Full day cost');
+    $f->addElement($cost);
+    $halfs= new TextField('hourfactor', 'Hourly rate multiplier');
+    $f->addElement($halfs);
+    $hours= new TextField('halfdayfactor', 'Half-day rate multiplier');
+    $f->addElement($hours);
+    $f->joinSetup('instrumentclass', array('minspare' => 0));
     $f->colspan = 2;
+    //preDump($f);
     $this->addElement($f);
+
     $this->fill($id);
     $this->dumpheader = 'Cost object';
-    
+  }
+/*    
           $q = "SELECT costs.id AS costid,instrumentclass.id AS instrclassid,"
               ."instrumentclass.name AS instrclassname, "
               ."cost_hour, cost_halfday,cost_fullday,"
@@ -46,8 +75,7 @@ class Costs extends DBRow {
           #."LEFT JOIN instruments on stdrates.instrid=instruments.id "
           ."WHERE costs.userclass='$userclass' "
           ."ORDER BY instrumentclass.name";
-          #."ORDER BY instruments.name";
-  }
+          #."ORDER BY instruments.name";*/
 
   function display() {
     return $this->displayAsTable();
@@ -62,4 +90,4 @@ class Costs extends DBRow {
     return $t;
   }
 
-} //class Group
+} //class ClassCost

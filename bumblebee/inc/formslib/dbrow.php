@@ -85,7 +85,11 @@ class DBRow extends DBO {
     foreach ($this->fields as $k => $v) {
       if (! ($this->newObject && $this->insertRow)) {
         $this->log('Checking valid '.$this->fields[$k]->namebase . $k);
-        $this->isValid = $this->fields[$k]->isValid() && $this->isValid;
+        if (! $this->fields[$k]->isValid()) {
+          $this->errorMessage .= 'Invalid data: '.$this->fields[$k]->longname
+                                  .' = '. $this->fields[$k]->getValue() .'<br />';
+          $this->isValid = false;
+        }
       }
     }
     if (! $this->isValid) {

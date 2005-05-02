@@ -55,6 +55,7 @@ class Project extends DBRow {
     $percentfield->isValidTest = 'is_number';
     $f->addElement($percentfield, 'sum_is_100');
     $f->joinSetup('groupid', array('total' => 3));
+    $f->colspan = 2;
     $this->addElement($f);
     $this->fill();
     $this->dumpheader = 'Project object';

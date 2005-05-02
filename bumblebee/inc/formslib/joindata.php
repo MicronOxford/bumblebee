@@ -62,10 +62,11 @@ class JoinData extends Field {
     $this->groupValidTest = array();
   }
 
-  function joinSetup($jtRightIDCol, $format="") {
+  function joinSetup($jtRightIDCol, $format='') {
     $this->jtRightIDCol = $jtRightIDCol;
     $this->format = (is_array($format) ? $format : array($format));
     $this->_fill();
+    //preDump($this);
   }
 
   function _calcMaxNumber() {

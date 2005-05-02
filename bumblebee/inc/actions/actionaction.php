@@ -45,12 +45,11 @@ class ActionAction {
    *   $status codes as per statuscodes.php
    */
   function reportAction($status, $messages='') {
-//     $this->DEBUG=10;
-    $this->log('ActionStatus: '.$status.'=> '.$this->stdmessages[$status]);
+    //$this->log('ActionStatus: '.$status);
     if ($status == STATUS_NOOP) return '';
     $message = '';
     if (isset($messages[$status])) {
-      $message = $messages[$status];
+      $message .= $messages[$status];
     } else {
       foreach ($messages as $code => $msg) {
         if ($status & $code) {

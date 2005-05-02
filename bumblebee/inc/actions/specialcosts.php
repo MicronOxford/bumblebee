@@ -1,36 +1,67 @@
 <?php
 # $Id$
-# edit the groups
+  
+include_once 'inc/specialcosts.php';
+include_once 'inc/dbforms/anchortablelist.php';
 
-  function actionSpecialCosts() {
-    if (! isset($_POST['project'])) {
-      selectProjectSC();
-    } elseif (! isset($_POST['updatespecialcost'])) {
-      editSpecialCost($_POST['project']);
+class ActionSpecialCosts extends ActionAction {
+
+  function ActionSpecialCosts($auth, $pdata) {
+    parent::ActionAction($auth, $pdata);
+    $this->mungePathData();
+  }
+
+  function go() {
+    global $BASEURL;
+    if (! isset($this->PD['project'])) {
+      $this->selectProject();
+    } elseif (isset($this->PD['delete']) && $this->PD['delete'] == 1) {
+      $this->deleteCost();
     } else {
-      updateSpecialCost($_POST['project']);
+      $this->editCost();
     }
+    echo "<br /><br /><a href='$BASEURL/specialcosts'>Return to special costs list</a>";
+  }
+  
+  function mungePathData() {
+    $this->PD = array();
+    foreach ($_POST as $k => $v) {
+      $this->PD[$k] = $v;
+    }
+    if (isset($this->PDATA[1])) {
+      $this->PD['project'] = $this->PDATA[1];
+    }
+    echoData($this->PD, 0);
   }
 
-  function selectProjectSC() {
-    echo "
-    <table>
-    <tr><th>Select project's cost to view/edit</th></tr>
-    <tr><td>
-    ";
-    projectselectbox("project","");
-    echo "
-    </td></tr>
-    <tr><td>
-      <button name='action' type='submit' value='specialcosts'>
-        Edit costs
-      </button>
-    </td></tr>
-    </table>
-    ";
+  function selectProject() {
+    global $BASEURL;
+    $projectselect = new AnchorTableList("Projects", "Select which project to view");
+    $projectselect->connectDB("projects", array("id", "name", "longname"));
+    $projectselect->hrefbase = "$BASEURL/specialcosts/";
+    $projectselect->setFormat("id", "%s", array("name"), " %50.50s", array("longname"));
+    echo $projectselect->display();
   }
 
-  function editSpecialCost($proj) {
+  function editCost() {
+    $classCost = new SpecialCost($this->PD['project']);
+    $classCost->update($this->PD);
+    $classCost->checkValid();
+    $classCost->sync();
+    #echo $group->text_dump();
+    echo $classCost->display();
+    if ($classCost->id < 0) {
+      $submit = "Create new user class";
+      $delete = "0";
+    } else {
+      $submit = "Update entry";
+      $delete = "Delete entry";
+    }
+    echo "<input type='submit' name='submit' value='$submit' />";
+    if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
+  }
+    
+  function oldeditCost($proj) {
     $q = "SELECT projects.name AS projname,longname,"
                ."userclass.id AS class,userclass.name AS classname "
                ."FROM projects "
@@ -163,5 +194,7 @@ END;
     if (!mysql_query($q)) die(mysql_error());
     echoSQL($q, 1);
   }
+}
+
 
 ?> 

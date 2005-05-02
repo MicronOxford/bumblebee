@@ -1,40 +1,34 @@
-$Id$
+$Id$can change another's bookings: edit, delete etc
+
 
 masquerade broken: adminmenu.php, masquerade.php
 
-can change another's bookings: edit, delete etc
-
+dropdown for duration time doesn't sync against value
 
 include BILLING algorithm
 
 backups of database
 
 
-allow bookings to cross from one day to the next
-
-allow set timeslots for instruments
-
-test free allocation and overnight slots
-
-
 pass/log book vs future/bookings setup for instruments
 
+edit timeslotrules; not silly granularity stuff in instruments
 
+FIXME:
+cost editing class listing
 
 
 gracefully handle lack of mysql db
 
-feedback when entry updated!
+feedback when epostfix (2.2.2-2) unstable; urgency=ntry updated! (done for bookings)
 
-permit user change passwd, 
+permit user change passwd, also admin change user passwd (not radius)
 
 fix up radius handling
 
 
 
 locking of records when editing?
-
-zoom out link
 
 css today, monthodd/even booking/vacant configurable?
 
@@ -159,3 +153,11 @@ CEIL(x) or CEILING(x) can be used to round up to nearest integer for num hours
 
 Can existing (huge!) expression be used with just variable SELECT (or just select everything?) ORDER BY and GROUP BY clauses.
 
+
+
+
+
+
+LIMITATIONS
+===========
+no GUI to delete a userclass or instrumentclass 

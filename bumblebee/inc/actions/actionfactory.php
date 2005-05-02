@@ -18,8 +18,8 @@ include_once 'instruments.php';
 include_once 'consumables.php';
 include_once 'consume.php';
 //include_once 'masquerade.php';
-//include_once 'costs.php';
-//include_once 'specialcosts.php';
+include_once 'costs.php';
+include_once 'specialcosts.php';
 //include_once 'adminconfirm.php';
 include_once 'emaillist.php';
 //include_once 'billing.php';
@@ -145,9 +145,9 @@ class ActionFactory {
         return new ActionMasquerade($auth);
         */
       case $act['costs']:
-        return new ActionCosts();
+        return new ActionCosts($this->_auth, $this->PDATA);
       case $act['specialcosts']:
-        return new ActionSpecialCosts();
+        return new ActionSpecialCosts($this->_auth, $this->PDATA);
       /*case $act['bookmeta']:
         return new ActionBookmeta();
       case $act['adminconfirm']:

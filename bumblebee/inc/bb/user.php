@@ -60,8 +60,7 @@ class User extends DBRow {
     $instrfield->connectDB('instruments', array('id', 'name'));
     $instrfield->prepend(array('0','(none)'));
     $instrfield->setDefault(0);
-    $instrfield->setFormat('id', '%s', array('name'), ' (%25.25s)', array('longname')
-);
+    $instrfield->setFormat('id', '%s', array('name'), ' (%25.25s)', array('longname'));
     $f->addElement($instrfield);
     $subscribeAnnounce = new CheckBox('announce', 'Subscribe: announce');
     $f->addElement($subscribeAnnounce);

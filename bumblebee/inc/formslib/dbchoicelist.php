@@ -295,7 +295,7 @@ class DBChoiceList extends DBO {
     return join(",",$vals);
   }
 
-  function selectedvalue() {
+  function selectedvalue($returnArray=0) {
     $val = array();
     foreach ($this->choicelist as $k => $v) {
       //echo "H:$this->idfield, $k, $v, $this->id";
@@ -306,7 +306,7 @@ class DBChoiceList extends DBO {
         }
       }
     }
-    return implode(' ', $val);
+    return ($returnArray ? $val : implode(' ', $val));
   }
 
   function setDefault($val) {

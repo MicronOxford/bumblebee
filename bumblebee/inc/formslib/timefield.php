@@ -14,16 +14,11 @@ class TimeField extends Field {
   var $time;
   var $list;
   var $isStart=0;
-  
   var $slotStart;
   var $slot;
-  
   var $representation;
   var $_manualRepresentation = TF_AUTO;
   var $droplist;
-
-  
-  var $DEBUG = 0;
   
   function TimeField($name, $longname="", $description="") {
     parent::Field($name, $longname, $description);
@@ -78,30 +73,6 @@ class TimeField extends Field {
     return $t;
   }
   
-/*  function getValue() {
-    #echo "TIME=".$this->time->timestring."\n";
-    $this->_determineRepresentation();
-    switch ($this->representation) {
-      case TF_DROP:
-        $val = parent::getValue();
-        $this->_prepareDropDown();
-        $t .= $this->droplist->selectable();
-        break;
-      case TF_FREE:
-        $t .= "<input type='text' name='$this->namebase$this->name' "
-            ."value='".xssqw($this->time->timestring)."' ";
-        $t .= (isset($this->attr['size']) ? "size='".$this->attr['size']."' " : "");
-        $t .= (isset($this->attr['maxlength']) ? "maxlength='".$this->attr['maxlength']."' " : "");
-        $t .= "/>";
-        break;
-      case TF_FIXED:
-        $t .= $this->time->timestring;
-        $t .= $this->hidden;
-        break;
-    }
-    return $t;
-  }*/
-  
   /**
    * set the representation of this field
    *
@@ -118,12 +89,8 @@ class TimeField extends Field {
    */
   function _determineRepresentation() {
     if (! isset($this->slot) && $this->slot != 0) {
-      //$this->log('That is funny, the slot is not set __FILE__ __LINE__', 10);
       return;
     }
-//     preDump($this->slot);
-//     preDump(debug_backtrace());
-//     $this->log($this->slot->dump(1), 10);
     if ($this->_manualRepresentation != TF_AUTO) {
       $this->representation = $this->_manualRepresentation;
     } elseif (! $this->editable) {

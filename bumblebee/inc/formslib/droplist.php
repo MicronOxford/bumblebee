@@ -16,23 +16,19 @@ class DropList extends ChoiceList {
   }
 
   function format($data) {
-//     $data['_field'] = '0';
-    //$aclass  = (isset($this->aclass) ? " class='$this->aclass'" : "");
-//     preDump(debug_backtrace());
-//     echo "<pre>".print_r($data,1)."</pre>";
-    #echo $this->value;
+    //preDump($this->formatid);
+    //preDump($data);
+    $data['_field'] = '0';
     $selected = ($data[$this->formatid] == $this->getValue() ? " selected='1' " : '');
     $t  = '<option '
-         ."value='".$data[$this->formatid]."' $selected /> ";
+         ."value='".$data[$this->formatid]."' $selected> ";
     foreach ($this->formatter as $k => $v) {
       $t .= $this->formatter[$k]->format($data);
     }
-//     preDump($this->formatid);
-//     preDump($data);
-    if (isset($data['_field']) && $data['_field']) {
-      echo 'foo'.$data['_field'].'bar';
-      $t .= $data['_field']->selectable();
-    }
+    //if (isset($data['_field']) && $data['_field']) {
+    //  echo 'foo'.$data['_field'].'bar';
+    //  $t .= $data['_field']->selectable();
+    //}
     $t .= "</option>\n";
     return $t;
   }
@@ -42,12 +38,30 @@ class DropList extends ChoiceList {
     $t = "<select name='$this->namebase$this->name'>";
     foreach ($this->list->choicelist as $k => $v) {
 //       echo "droplist: $k => $v<br />\n";
+      //preDump($v);
       $t .= $this->format($v);
     }
     $t .= "</select>";
     return $t;
   }
 
+  function selectedvalue() {
+    $value = $this->getValue();
+    foreach ($this->list->choicelist as $k => $data) {
+      if ($data[$this->formatid] == $value) {
+        break;
+      }
+    }
+    //preDump($data);
+    $t  = '<input type="hidden" '
+          .'value="'.$data[$this->formatid].'" /> ';
+    foreach ($this->formatter as $k => $v) {
+      $t .= $this->formatter[$k]->format($data);
+    }
+    $t .= "\n";
+    return $t;
+  }
+  
 } // class DropList
 
 

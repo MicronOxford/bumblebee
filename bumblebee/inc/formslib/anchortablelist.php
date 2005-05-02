@@ -23,6 +23,7 @@ class AnchorTableList extends AnchorList {
   }
 
   function format($data) {
+    //preDump($this);
     $aclass  = (isset($this->aclass) ? " class='$this->aclass'" : '');
     $trclass  = (isset($this->trclass) ? " class='$this->trclass'" : '');
     $tdlclass  = (isset($this->tdlclass) ? " class='$this->tdlclass'" : '');

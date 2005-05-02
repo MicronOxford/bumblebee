@@ -9,6 +9,11 @@ include_once 'inc/dbforms/anchortablelist.php';
 include_once 'inc/dbforms/date.php';
 
 class ActionView extends ActionAction {
+    
+  var $_isOwnBooking    = false;
+  var $_isAdminView     = false;
+  var $_haveWriteAccess = false;
+
 
   function ActionView($auth, $PDATA) {
     parent::ActionAction($auth, $PDATA);
@@ -225,20 +230,20 @@ class ActionView extends ActionAction {
     $ip = $this->auth->getRemoteIP();
     //echo $ip;
     $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
-    $booking = new BookingEntry($bookid,$this->auth,$this->PD['instrid'],$ip, $start, $duration, $row['timeslotpicture']);
+    $booking = new BookingEntry($bookid,$this->auth,$this->PD['instrid'],$ip, 
+                                      $start, $duration, $row['timeslotpicture']);
+    $this->_checkBookingAuth($booking->fields['userid']->getValue());
+    if (! $this->_haveWriteAccess) {
+      return $this->_forbiddenError('Edit booking');
+    }
     $booking->update($this->PD);
-    #echo "CHECKVALID\n";
     $booking->checkValid();
-    #echo "VALID=$booking->isValid\n";
     echo $this->reportAction($booking->sync(), 
               array(
                   STATUS_OK =>   ($bookid < 0 ? 'Booking made' : 'Booking updated'),
                   STATUS_ERR =>  'Booking could not be made:<br/><br/>'.$booking->errorMessage
               )
             );
-    #echo "FINISH SYNC\n";
-    #preDump($booking);
-    #echo $group->text_dump();
     echo $booking->display();
     if ($booking->id < 0) {
       $submit = "Make booking";
@@ -255,11 +260,9 @@ class ActionView extends ActionAction {
   function booking() {
     global $BASEURL;
     $booking = new BookingEntryRO($this->PD['bookid']);
-    $isOwnBooking = $this->auth->isMe($booking->data->userid);
-    $isAdminView = $this->auth->isSystemAdmin() 
-                  || $this->auth->isInstrumentAdmin($this->PD['instrid']);
-    echo $booking->display($isAdminView, $isOwnBooking);
-    if ($isOwnBooking || $isAdminView) {
+    $this->_checkBookingAuth($booking->data->userid);
+    echo $booking->display($this->_isAdminView, $this->_isOwnBooking);
+    if ($this->_isOwnBooking || $this->_isAdminView) {
       echo "<p><a href='$BASEURL/view/".$this->PD['instrid']
             .'/'.$this->PD['isodate']
             .'/'.$this->PD['bookid']."/edit'>Edit booking</a></p>\n";
@@ -269,14 +272,34 @@ class ActionView extends ActionAction {
   function deleteBooking() {
     global $BASEURL;
     $booking = new BookingEntry($this->PD['bookid'], $this->auth, $this->PD['instrid']);
+    $this->_checkBookingAuth($booking->fields['userid']->getValue());
+    if (! $this->_haveWriteAccess) {
+      return $this->_forbiddenError('Delete booking');
+    }
     echo $this->reportAction($booking->delete(), 
               array(
                   STATUS_OK =>   ($bookid < 0 ? 'Booking made' : 'Booking updated'),
-                  STATUS_FORBIDDEN => 'Sorry, you do not have permission to do this',
                   STATUS_ERR =>  'Booking could not be made:<br/><br/>'.$booking->errorMessage
               )
             );  
   }
 
+  function _checkBookingAuth($userid) {
+    $this->_isOwnBooking = $this->auth->isMe($userid);
+    $this->_isAdminView = $this->auth->isSystemAdmin() 
+                  || $this->auth->isInstrumentAdmin($this->PD['instrid']);
+    $this->_haveWriteAccess = $this->_isOwnBooking || $this->_isAdminView;
+  }
+
+  function _forbiddenError($msg) {
+    $this->log('Action forbidden: '.$msg);
+    echo $this->reportAction(STATUS_FORBIDDEN, 
+              array(
+                  STATUS_FORBIDDEN => $msg.': <br/>Sorry, you do not have permission to do this.',
+              )
+            );
+    return STATUS_FORBIDDEN;
+  }
+    
 } // class ActionView
 ?> 
