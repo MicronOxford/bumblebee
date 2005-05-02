@@ -33,6 +33,20 @@ class DBO {
     }
     $this->fields = array();
   }
+  
+  function setNamebase($newname='') {
+    $this->namebase = $newname;
+    foreach ($this->fields as $k => $v) {
+      $this->fields[$k]->setNamebase($newname);
+    }
+  }
+
+  function setEditable($editable=1) {
+    $this->editable = $editable;
+    foreach ($this->fields as $k => $v) {
+      $this->fields[$k]->setEditable($editable);
+    }
+  }
 
   function text_dump() {
     $t  = "<pre>$this->dumpheader $this->table (id=$this->id)\n{\n";

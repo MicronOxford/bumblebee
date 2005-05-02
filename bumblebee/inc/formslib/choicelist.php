@@ -115,7 +115,7 @@ class ChoiceList extends Field {
     if ($this->editable) {
       $t .= $this->selectable();
     } else {
-      $t .= $this->selectedvalue();
+      $t .= $this->selectedValue();
       $t .= "<input type='hidden' name='$this->name' value='$this->value' />";
     }
     $t .= "</td>\n";
@@ -126,8 +126,8 @@ class ChoiceList extends Field {
     return $t;
   }
 
-  function selectedvalue() {
-    return $this->list->selectedvalue();
+  function selectedValue() {
+    return $this->list->selectedValue();
   }
 
   /**

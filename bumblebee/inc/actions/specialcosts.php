@@ -44,6 +44,13 @@ class ActionSpecialCosts extends ActionAction {
   }
 
   function editCost() {
+    $row = quickSQLSelect('projects', 'id', $this->PD['project']);
+    $stdclass = new ClassCost($row['defaultclass']);
+    $stdclass->setNamebase('ro-hidden');
+    $stdclass->setEditable(false);
+    //preDump($stdclass);
+    echo '<h2>Default cost settings</h2>';
+    echo $stdclass->display();
     $classCost = new SpecialCost($this->PD['project']);
     $classCost->update($this->PD);
     $classCost->checkValid();

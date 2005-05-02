@@ -33,7 +33,7 @@ include_once('db.php');
   *   $f3 = new TextField("field3", "");
   *   $f->addElement($f3, "sum_is_100");
   *   $f->joinSetup("id2", array('total' => 3));
- **/
+  */
 class JoinData extends Field {
   var $joinTable,
       $jtLeftIDCol,
@@ -88,7 +88,7 @@ class JoinData extends Field {
 
   function _createRow($rowNum) {
     $this->rows[$rowNum] = $this->protoRow;
-    $this->rows[$rowNum]->changeNamebase($this->name.'-'.$rowNum.'-');
+    $this->rows[$rowNum]->setNamebase($this->name.'-'.$rowNum.'-');
   }
 
   function _fill() {
@@ -110,7 +110,7 @@ class JoinData extends Field {
   }
 
   function selectable() {
-    $t = "";
+    $t = '';
     #$errorclass = ($this->isValid ? "" : "class='inputerror'");
     $errorclass = '';
     for ($i=0; $i<$this->number; $i++) { 
@@ -121,6 +121,10 @@ class JoinData extends Field {
     }
     return $t;
   }
+  
+  function selectedValue() {
+    return $this->selectable();
+  }
 
   function displayInTable($cols) {
     //$cols += $this->colspan;
@@ -128,7 +132,9 @@ class JoinData extends Field {
     if ($this->editable) {
       $t .= $this->selectable();
     } else {
-      $t .= $this->selectedvalue();
+      //preDump($this);
+      //preDump(debug_backtrace());
+      $t .= $this->selectedValue();
       $t .= "<input type='hidden' name='$this->name' value='$this->value' />";
     }
     $t .= "</td>\n";
@@ -233,6 +239,20 @@ class JoinData extends Field {
       }
     }
     return $this->isValid;
+  }
+  
+  function setNamebase($namebase='') {
+    for ($i=0; $i < $this->number; $i++) {
+      $this->rows[$i]->setNamebase($namebase);
+    }
+    $this->protoRow->setNamebase($namebase);
+  }
+
+  function setEditable($editable=false) {
+    for ($i=0; $i < $this->number; $i++) {
+      $this->rows[$i]->setEditable($editable);
+    }
+    $this->protoRow->setEditable($editable);
   }
   
 } // class JoinData

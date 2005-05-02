@@ -24,7 +24,6 @@ include_once('inc/statuscodes.php');
  
 class DBRow extends DBO {
   var $fatal_sql = 1;
-  var $namebase;
   var $newObject = 0;
   var $insertRow = 0;
   var $includeAllFields = 0;
@@ -270,14 +269,6 @@ class DBRow extends DBO {
     $t .= "</table>";
     return $t;
   }
-
-  function changeNamebase($newname) {
-    $this->namebase = $newname;
-    foreach ($this->fields as $k => $v) {
-      $this->fields[$k]->namebase = $newname;
-    }
-  }
-
 
 } // class dbrow
 

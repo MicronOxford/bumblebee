@@ -51,15 +51,8 @@ class ActionCosts extends ActionAction {
     $classCost->sync();
     #echo $group->text_dump();
     echo $classCost->display();
-    if ($classCost->id < 0) {
-      $submit = "Create new user class";
-      $delete = "0";
-    } else {
-      $submit = "Update entry";
-      $delete = "Delete entry";
-    }
+    $submit = "Update entry";
     echo "<input type='submit' name='submit' value='$submit' />";
-    if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
   }
   
 }

@@ -193,7 +193,13 @@ class Field {
     }
   }
   
-
+  function setEditable($editable=1) {
+    $this->editable = $editable;
+  }
+  
+  function setNamebase($namebase='') {
+    $this->namebase = $namebase;
+  }
   
 } // class Field
 

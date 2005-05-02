@@ -295,7 +295,7 @@ class DBChoiceList extends DBO {
     return join(",",$vals);
   }
 
-  function selectedvalue($returnArray=0) {
+  function selectedValue($returnArray=0) {
     $val = array();
     foreach ($this->choicelist as $k => $v) {
       //echo "H:$this->idfield, $k, $v, $this->id";

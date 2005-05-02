@@ -45,7 +45,7 @@ class DropList extends ChoiceList {
     return $t;
   }
 
-  function selectedvalue() {
+  function selectedValue() {
     $value = $this->getValue();
     foreach ($this->list->choicelist as $k => $data) {
       if ($data[$this->formatid] == $value) {
