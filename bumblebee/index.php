@@ -26,7 +26,7 @@ include_once 'adminmenu.php';
 include 'theme/pageheader.php';
 include 'theme/contentheader.php';
 
-if ($auth->isLoggedIn()) {
+if ($auth->isLoggedIn() && $action->_verb != 'logout') {
   ?>
     <div class='fmenu'>
       <h3>Menu</h3>
@@ -35,7 +35,7 @@ if ($auth->isLoggedIn()) {
         <li><a href='<?=$BASEURL?>/logout'>Logout</a></li>
       </ul>
     <?
-      if ($auth->isadmin) printAdminMenu();
+      if ($auth->isadmin) printAdminMenu();  //FIXME: oo-ify this?
       #if (($act[$action] != $act['masquerade']) && $ISADMIN) checkMasquerade();
     ?>
     </div>

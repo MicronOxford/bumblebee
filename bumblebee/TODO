@@ -1,5 +1,9 @@
 $Id$can change another's bookings: edit, delete etc
 
+delete booking returns errors:
+Warning: Missing argument 4 for bookingentry() in /home/stuart/documents/CFCF/bumblebee/inc/bookingentry.php on line 24
+-> this uses the funny delete constructor?
+
 
 masquerade broken: adminmenu.php, masquerade.php
 
@@ -16,6 +20,7 @@ edit timeslotrules; not silly granularity stuff in instruments
 
 FIXME:
 cost editing class listing
+
 
 
 gracefully handle lack of mysql db

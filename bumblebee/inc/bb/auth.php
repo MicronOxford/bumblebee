@@ -19,7 +19,7 @@ class BumbleBeeAuth {
   var $table;
   var $DEBUGMODE = 1;
 
-  function BumbleBeeAuth($table="users") {
+  function BumbleBeeAuth($table='users') {
     session_start();
     $this->table = $table;
     if (isset($_SESSION['uid'])) {
@@ -53,6 +53,13 @@ class BumbleBeeAuth {
     }
   }
 
+  function _createSession($row) {
+    $_SESSION['uid'] = $this->uid = $row['id'];
+    $_SESSION['username'] = $this->username = $row['username'];
+    $_SESSION['name'] = $this->name = $row['name'];
+    $_SESSION['isadmin'] = $this->isadmin = $row['isadmin'];
+  }
+  
   function _verifyLogin() {
     // check that the credentials contained in the session are OK
     $uid = $_SESSION['uid'];
@@ -67,7 +74,7 @@ class BumbleBeeAuth {
       $this->isadmin = $_SESSION['isadmin'];
       return 1;
     } else {
-      echo "SESSION INVALID";
+      $this->_error = 'SESSION INVALID: Login failed.';
       return 0;
     }
   }
@@ -85,40 +92,49 @@ class BumbleBeeAuth {
     return 1;
   }
   
+  /** 
+   * check login details, if OK, set up a PHP SESSION to manage the login
+   *
+   * @returns boolean credentialsOK
+   */
   function _login() {
-    #FIXME is it fair to assume alphabetic? how will we do non-radius users?
+    global $CONFIG;
+    //FIXME is it fair to assume alphabetic? 
     if (! is_alphabetic($_POST['username']) || ! isset($_POST['pass']) ) {
-      preDump($_POST);
-      $this->_error = "Login failed: unknown username";
+      //preDump($_POST);
+      $this->_error = 'Login failed: bad username';
       return 0;
     }
-    #then there is data provided to us in a login form
-    # need to verify if it is valid login info
+    // then there is data provided to us in a login form
+    // need to verify if it is valid login info
     $PASSWORD = $_POST['pass'];
     $USERNAME = $_POST['username'];
     $row = $this->_retrieveUserInfo($USERNAME);
     if ($row == '0') { 
-      return 0;
+      $this->_error = 'Login failed: username doesn\'t exist in table';
+      return false;
     }
-    if ($row['passwd'] == 'radius') {
-      if (!$this->_auth_via_radius($USERNAME, $PASSWORD)) {
-      $this->_error = "Login failed: radius auth failed";
-        return 0;
-      }
-    } elseif ($row['passwd'] != md5($PASSWORD)) {
-      $this->_error = "Login failed: bad password";
-      return 0;
+    
+    $authOK = 0;
+    if ($CONFIG['auth']['useRadius'] && $CONFIG['auth']['radiusPassToken'] == $row['passwd']) {
+      $authOK = $this->_auth_via_radius($USERNAME, $PASSWORD);
+    } elseif ($CONFIG['auth']['useLDAP'] && $CONFIG['auth']['ldapPassToken'] == $row['passwd']) {
+      $authOK = $this->_auth_via_ldap($USERNAME, $PASSWORD);
+    } elseif ($CONFIG['auth']['useLocal']) {
+      $authOK = $this->_auth_local($USERNAME, $PASSWORD, $row);
+    } else {   //system is misconfigured
+      $this->_error = 'System has no login method enabled';
+    }
+    if (! $authOK) {
+      return false;
     }
     if ($row['suspended']) {
-      $this->_error = "Login failed: this account is suspended, please contact us about this.";
-      return 0;
+      $this->_error = 'Login failed: this account is suspended, please contact us about this.';
+      return false;
     }
     // if we got to here, then we're logged in!
-    $_SESSION['uid'] = $this->uid = $row['id'];
-    $_SESSION['username'] = $this->username = $row['username'];
-    $_SESSION['name'] = $this->name = $row['name'];
-    $_SESSION['isadmin'] = $this->isadmin = $row['isadmin'];
-    return 1;
+    $this->_createSession($row);
+    return true;
   }
  
   function _retrieveUserInfo($identifier, $type=1) {
@@ -142,7 +158,7 @@ class BumbleBeeAuth {
   }
   
   function _auth_via_radius($username, $password) {
-    require_once "Auth/Auth.php";
+    require_once 'Auth/Auth.php';
     $RADIUSCONFIG = parse_ini_file('radius.ini');
     $params = array(
                 "servers" => array(array($RADIUSCONFIG['host'], 
@@ -155,11 +171,31 @@ class BumbleBeeAuth {
     $a = new Auth("RADIUS", $params);
     $a->username = $username;
     $a->password = $password;
-    # FIXME: this will throw up a "login" dialogue that we don't want
+    // the PEAR::Auth classes throw up a "login" dialogue automatically, and we don't want it
+    // discard it using output buffering.
+    ob_start();
     $a->start();
-    return ($a->getAuth());
+    ob_end_clean();
+    $auth = $a->getAuth();
+    if (! $auth) {
+      $this->_error = 'Login failed: radius auth failed';
+    }
+    return $auth;
   }
-  
+
+  function _auth_via_ldap($username, $password) {
+    $this->_error = 'Login failed: LDAP authentication unimplemented';
+    return false;
+  }
+
+  function _auth_local($username, $password, $row) {
+    $auth = ($row['passwd'] == md5($password));
+    if (! $auth) {
+      $this->_error = 'Login failed: bad password';
+    }
+    return $auth;
+  }
+        
   function isSystemAdmin() {
     return $this->isadmin;
   }
