@@ -4,6 +4,17 @@ delete booking returns errors:
 Warning: Missing argument 4 for bookingentry() in /home/stuart/documents/CFCF/bumblebee/inc/bookingentry.php on line 24
 -> this uses the funny delete constructor?
 
+after booking made, date shown in epoch
+
+reorganise source code into clean include regions. 
+use .inc?
+use a config/ dir
+protect these with .htaccess files.
+
+look at other PHP methods for getting things out of hash arrays (array_walk, array_keys, in_array)
+
+
+M$IE testing etc
 
 masquerade broken: adminmenu.php, masquerade.php
 

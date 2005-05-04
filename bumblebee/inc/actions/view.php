@@ -42,7 +42,8 @@ class ActionView extends ActionAction {
     } elseif (isset($this->PD['bookid'])) {
       $this->booking();
       echo $this->_calendarViewLink($instrument);
-    } elseif (isset($this->PD['startticks']) && isset($this->PD['stopticks'])) {
+    } elseif ( (isset($this->PD['startticks']) && isset($this->PD['stopticks']))
+               || (isset($this->PD['bookwhen-time']) && isset($this->PD['bookwhen-date']) && isset($this->PD['duration']) ) ) {
       $this->createBooking();
       echo $this->_calendarViewLink($instrument);
     } elseif (isset($this->PD['instrid'])) {
@@ -91,13 +92,15 @@ class ActionView extends ActionAction {
    * by the user (in making a booking etc)
    */
   function _offset() {
+    $now = new SimpleDate(time());
     if (isset($this->PD['isodate'])) {
-      $now = new SimpleDate(time());
       $then = new SimpleDate($this->PD['isodate']);
-      return 'o='.floor($then->dsDaysBetween($now));
-    } else {
+    } elseif (isset($this->PD['startticks'])) {
       $then = new SimpleDate($this->PD['startticks']);
       return $then->datestring;
+    } elseif (isset($this->PD['bookwhen-date'])) {
+      $then = new SimpleDate($this->PD['bookwhen-date']);
+      return 'o='.floor($then->dsDaysBetween($now));
     }
   }
     
@@ -206,8 +209,8 @@ class ActionView extends ActionAction {
   }
 
   function createBooking() {
-    $start = new SimpleDate($this->PD['startticks']);
-    $stop  = new SimpleDate($this->PD['stopticks']);
+    $start = new SimpleDate(issetSet($this->PD, 'startticks'));
+    $stop  = new SimpleDate(issetSet($this->PD, 'startticks'));
     $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
 /*    $day = $start;
     $daystart = $day;

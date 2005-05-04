@@ -20,6 +20,7 @@ class DateTimeField extends Field {
   
   function DateTimeField($name, $longname="", $description="") {
     parent::Field($name, $longname, $description);
+    //$this->DEBUG=10;
     $this->time = new TimeField($name.'-time', $longname, $description);
     $this->time->isStart = true;
     $this->date = new DateField($name.'-date', $longname, $description);
@@ -88,7 +89,9 @@ class DateTimeField extends Field {
    * @return boolean the value was updated
    */
   function update($data) {
-    if ($this->date->update($data) || $this->time->update($data)) {
+    $datechanged = $this->date->update($data);
+    $timechanged = $this->time->update($data);
+    if ($datechanged || $timechanged) {
       $this->log('DateTimeField::update');
       $data[$this->namebase.$this->name] = $this->date->value .' '. $this->time->value;
       parent::update($data);

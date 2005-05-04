@@ -24,6 +24,7 @@ class TimeField extends Field {
     parent::Field($name, $longname, $description);
     $this->time = new SimpleTime(0);
     $this->slotStart = new SimpleDate(0);
+    //$this->DEBUG=10;
   }
 
   function displayInTable($cols) {
@@ -155,13 +156,13 @@ class TimeField extends Field {
    *
    * @return boolean the value was updated
    */
-  function update($data) {
+/*  function update($data) {
     if (parent::update($data)) {
 //       $this->calDropDown();
     }
     return $this->changed;
   }
-  
+  */
   /**
    * Set the time (and value) from a Date-Time string
    *

@@ -22,6 +22,7 @@ class BookingEntry extends DBRow {
   var $euid;
   
   function BookingEntry($id, $auth, $instrumentid, $ip, $start, $duration, $granlist) {
+    //$this->DEBUG = 10;
     $this->DBRow('bookings', $id);
     $this->_checkAuth($auth, $instrumentid);
     $this->slotrules = new TimeSlotRule($granlist);

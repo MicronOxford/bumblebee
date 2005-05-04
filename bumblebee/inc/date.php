@@ -11,17 +11,9 @@ class SimpleDate {
   var $ticks  = '';
   var $datetimestring = '';
 
-
-/*  function SimpleDate($time, $type=0) {
-    #echo "New SimpleDate: $time, $type<br />";
-    if ($type) {
-      $this->setStr($time);
-    } else {
-      $this->setTicks($time);
-    }
-  }*/
   function SimpleDate($time) {
     #echo "New SimpleDate: $time, $type<br />";
+    ($time == NULL) && $time = 0;
     if (is_numeric($time)) {
       $this->setTicks($time);
     } elseif (is_a($time, 'SimpleDate')) {

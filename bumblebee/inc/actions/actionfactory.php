@@ -29,21 +29,24 @@ include_once('inc/dbforms/typeinfo.php');
 include_once('actions.php');
 
 class ActionFactory {
-  var $_verb, $title;
+  var $_verb;
+  var $title;
   var $_action;
   var $_auth;
   var $PDATA;
-  var $nexthref;
-  var $actionListing,
-      $actionTitles;
+  var $nextaction;
+  var $actionListing;
+  var $actionTitles;
   
   function ActionFactory($auth) {
+    global $BASEURL;
     $this->_auth = $auth;
     $this->PDATA = $this->_eatPathInfo();
     $list = new ActionListing();
     $this->actionListing = $list->listing;
     $this->actionTitles = $list->titles;
     $this->_verb = $this->_checkActions();
+    $this->nextaction = $BASEURL.'/'.$this->_verb;  // override this in _makeAction if needed.
     $this->title = $this->actionTitles[$this->_verb];
     $this->_action = $this->_makeAction();
   }
@@ -53,7 +56,6 @@ class ActionFactory {
   }
 
   function _checkActions() {
-    global $BASEURL;
     $action = '';
   
     # first, we need to determine if we are actually logged in or not
@@ -81,9 +83,7 @@ class ActionFactory {
   
     # We also need to check to see if we are trying to change privileges
     #if (isset($_POST['changemasq']) && $_POST['changemasq']) return 'masquerade';
-  
-    $this->nextaction = "$BASEURL/$action";
-  
+    
     return $action;
   }
 
@@ -118,9 +118,11 @@ class ActionFactory {
   }
 
   function _makeaction() {
+    global $BASEURL;
     $act = $this->actionListing;
     switch ($act[$this->_verb]) {
       case $act['login']:
+        $this->nextaction = $BASEURL.'/view';
         return new ActionPrintLoginForm($this->_auth, $this->PDATA);
       case $act['logout']:
         $this->_auth->logout();

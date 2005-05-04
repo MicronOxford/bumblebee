@@ -43,7 +43,7 @@ if ($auth->isLoggedIn() && $action->_verb != 'logout') {
 }
 ?>
   <div class="content">
-    <form method="post" action="<?=$action->nexthref?>" >
+    <form method="post" action="<?=$action->nextaction?>" >
     <?
       #echo "decide what happens here: $action (". $act[$action] .")<br />";
       if (! $auth->isLoggedIn()) {
