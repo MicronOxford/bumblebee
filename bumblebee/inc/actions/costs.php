@@ -48,8 +48,12 @@ class ActionCosts extends ActionAction {
     $classCost = new ClassCost($this->PD['userclass']);
     $classCost->update($this->PD);
     $classCost->checkValid();
-    $classCost->sync();
-    #echo $group->text_dump();
+    echo $this->reportAction($classCost->sync(), 
+          array(
+              STATUS_OK =>   ($this->PD['id'] < 0 ? 'Cost schedule created' : 'Cost schedule updated'),
+              STATUS_ERR =>  'Cost schedule could not be changed: '.$classCost->errorMessage
+          )
+        );
     echo $classCost->display();
     $submit = "Update entry";
     echo "<input type='submit' name='submit' value='$submit' />";

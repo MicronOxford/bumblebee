@@ -102,21 +102,14 @@ class Field {
    *     is there a validity test && is the data valid?
    */
   function isValid() {
-    /*    
-    echo "<br />";
-    echo $this->name .":". $this->isValidTest.":";
-    echo is_callable($this->isValidTest);
-    echo "$this->suppressValidation";
-    echo "req=$this->required";*/
-    
-    $this->isValid = 1;
+     $this->isValid = 1;
     if ($this->required) {
       #$this->isValid = (isset($this->value) && $this->value != "");
       $this->isValid = ($this->getValue() != '');
       $this->log($this->name . ' Required: '.($this->isValid ? ' VALID' : ' INVALID'));
     }
     if ($this->isValid && $this->suppressValidation == 0) {
-      $this->isValid = ValidTester($this->isValidTest, $this->getValue());
+      $this->isValid = ValidTester($this->isValidTest, $this->getValue(), $this->DEBUG);
     }
     $this->log($this->name . ($this->isValid ? ' VALID' : ' INVALID'));
     return $this->isValid;

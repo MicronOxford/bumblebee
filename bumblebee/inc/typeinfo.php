@@ -63,7 +63,7 @@ function choice_set($v) {
 
 function is_valid_radiochoice($v) {
   #echo "'val=$v' ";
-  return (choice_set($v) && $v > 0);
+  return (choice_set($v) && is_numeric($v) && $v >= -1);
 }
 
 function is_email_format($v) {

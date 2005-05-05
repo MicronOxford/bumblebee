@@ -28,8 +28,12 @@ class ActionGroup extends ActionAction  {
     $group = new Group($this->PD['id']);
     $group->update($this->PD);
     $group->checkValid();
-    $group->sync();
-    #echo $group->text_dump();
+    echo $this->reportAction($group->sync(), 
+          array(
+              STATUS_OK =>   ($this->PD['id'] < 0 ? 'Group created' : 'Group updated'),
+              STATUS_ERR =>  'Group could not be changed: '.$group->errorMessage
+          )
+        );
     echo $group->display();
     if ($group->id < 0) {
       $submit = "Create new group";
@@ -57,10 +61,12 @@ class ActionGroup extends ActionAction  {
   function deletegroup()
   {
     $group = new Group($this->PD['id']);
-    $group->delete();
-
-    #$q = "DELETE FROM groups WHERE id='$gpid'";
-    #db_quiet($q,1);
+    echo $this->reportAction($group->delete(), 
+              array(
+                  STATUS_OK =>   'Group deleted',
+                  STATUS_ERR =>  'Group could not be deleted:<br/><br/>'.$group->errorMessage
+              )
+            );  
   }
 }
 ?> 

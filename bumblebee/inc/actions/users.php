@@ -21,7 +21,7 @@ class ActionUsers extends ActionAction {
     } else {
       $this->editUser();
     }
-    echo "<br /><br /><a href='$BASEURL/projects'>Return to user list</a>";
+    echo "<br /><br /><a href='$BASEURL/users'>Return to user list</a>";
   }
 
   function selectUser() {
@@ -62,7 +62,7 @@ class ActionUsers extends ActionAction {
     echo $this->reportAction($user->delete(), 
               array(
                   STATUS_OK =>   'User deleted',
-                  STATUS_ERR =>  'User could not be deleted:<br/><br/>'.$booking->errorMessage
+                  STATUS_ERR =>  'User could not be deleted:<br/><br/>'.$user->errorMessage
               )
             );  
   }

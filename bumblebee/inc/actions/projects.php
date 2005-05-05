@@ -21,7 +21,7 @@ class ActionProjects extends ActionAction {
     } else {
       $this->editProject();
     }
-    echo "<br /><br /><a href='$BASEURL/projects'>Return to group list</a>";
+    echo "<br /><br /><a href='$BASEURL/projects'>Return to project list</a>";
   }
 
   function selectProject() {
@@ -38,8 +38,12 @@ class ActionProjects extends ActionAction {
     $project = new Project($this->PD['id']);
     $project->update($this->PD);
     $project->checkValid();
-    #$project->fields['defaultclass']->invalid = 1;
-    $project->sync();
+    echo $this->reportAction($project->sync(), 
+          array(
+              STATUS_OK =>   ($this->PD['id'] < 0 ? 'Project created' : 'Project updated'),
+              STATUS_ERR =>  'Project could not be changed: '.$project->errorMessage
+          )
+        );
     echo $project->display();
     if ($project->id < 0) {
       $submit = "Create new project";
@@ -54,7 +58,12 @@ class ActionProjects extends ActionAction {
 
   function deleteProject() {
     $project = new Project($this->PD['id']);
-    $project->delete();
+    echo $this->reportAction($user->delete(), 
+              array(
+                  STATUS_OK =>   'Project deleted',
+                  STATUS_ERR =>  'Project could not be deleted:<br/><br/>'.$project->errorMessage
+              )
+            );  
   }
 }
 ?> 

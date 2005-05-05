@@ -77,6 +77,7 @@ class BumbleBeeAuth {
       $this->localLogin = $_SESSION['localLogin'];
       return 1;
     } else {
+      $this->logout();
       $this->_error = 'SESSION INVALID: Login failed.';
       return 0;
     }

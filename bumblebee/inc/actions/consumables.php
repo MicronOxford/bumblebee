@@ -39,8 +39,12 @@ class ActionConsumables extends ActionAction {
     $consumable = new Consumable($this->PD['id']);
     $consumable->update($this->PD);
     $consumable->checkValid();
-    #$consumable->fields['defaultclass']->invalid = 1;
-    $consumable->sync();
+    echo $this->reportAction($consumable->sync(), 
+          array(
+              STATUS_OK =>   ($this->PD['id'] < 0 ? 'Consumable created' : 'Consumable updated'),
+              STATUS_ERR =>  'Consumable could not be changed: '.$consumable->errorMessage
+          )
+        );
     echo $consumable->display();
     if ($consumable->id < 0) {
       $submit = "Create new consumable";
@@ -58,7 +62,12 @@ class ActionConsumables extends ActionAction {
 
   function deleteConsumable() {
     $consumable = new Consumable($this->PD['id']);
-    $consumable->delete();
+    echo $this->reportAction($consumable->delete(), 
+              array(
+                  STATUS_OK =>   'Consumable deleted',
+                  STATUS_ERR =>  'Consumable could not be deleted:<br/><br/>'.$consumable->errorMessage
+              )
+            );  
   }
 }
 

@@ -11,7 +11,7 @@ class OutputFormatter {
   }
 
   function format($data) {
-    $t = "";
+    $t = '';
     #preDump($this);
     #preDump($data);
     if (is_array($this->formatfields)) {
@@ -26,7 +26,7 @@ class OutputFormatter {
       $t .= vsprintf($this->format, $s);
     } else {
      $s = $this->formatfields->format($data);
-      if ($s != "") {
+      if ($s != '') {
         $t .= sprintf($this->format, $s);
       }
     }

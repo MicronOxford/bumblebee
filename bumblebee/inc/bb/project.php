@@ -22,7 +22,7 @@ class Project extends DBRow {
     $f->isValidTest = 'is_nonempty_string';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField('longname', '');
+    $f = new TextField('longname', 'Description');
     $f->required = 1;
     $f->isValidTest = 'is_nonempty_string';
     $f->setAttr($attrs);
@@ -46,8 +46,8 @@ class Project extends DBRow {
                        'projectid', $this->id, 
                        'groups', 'Group membership (%)');
     $groupfield = new DropList('groupid', 'Group');
-    $groupfield->connectDB('groups', array('id', 'name'));
-    $groupfield->prepend(array('0','(none)'));
+    $groupfield->connectDB('groups', array('id', 'name', 'longname'));
+    $groupfield->prepend(array('0','(none)', 'no selection'));
     $groupfield->setDefault(0);
     $groupfield->setFormat('id', '%s', array('name'), ' (%30.30s)', array('longname'));
     $f->addElement($groupfield);

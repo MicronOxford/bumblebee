@@ -21,15 +21,19 @@ class ActionInstruments extends ActionAction {
     } else {
       $this->editInstruments();
     }
-    echo "<br /><br /><a href='$BASEURL/groups'>Return to instruments list</a>";
+    echo "<br /><br /><a href='$BASEURL/instruments'>Return to instruments list</a>";
   }
 
   function editInstruments() {
     $instrument = new Instrument($this->PD['id']);
     $instrument->update($this->PD);
     $instrument->checkValid();
-    $instrument->sync();
-    #echo $instrument->text_dump();
+    echo $this->reportAction($instrument->sync(), 
+          array(
+              STATUS_OK =>   ($this->PD['id'] < 0 ? 'Instrument created' : 'Instrument updated'),
+              STATUS_ERR =>  'Instrument could not be changed: '.$instrument->errorMessage
+          )
+        );
     echo $instrument->display();
     if ($instrument->id < 0) {
       $submit = "Create new instrument";
@@ -56,7 +60,12 @@ class ActionInstruments extends ActionAction {
 
   function deleteInstruments()   {
     $instrument = new Instrument($this->PD['id']);
-    $instrument->delete();
+    echo $this->reportAction($instrument->delete(), 
+              array(
+                  STATUS_OK =>   'Instrument deleted',
+                  STATUS_ERR =>  'Instrument could not be deleted:<br/><br/>'.$instrument->errorMessage
+              )
+            );  
   }
 }
 ?> 

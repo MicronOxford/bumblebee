@@ -1,7 +1,17 @@
 $Id$can change another's bookings: edit, delete etc
 
 
-booking dropdown doesn't show correct value.
+pass/log book vs future/bookings setup for instruments
+
+* instrument
+  - edit timeslotrules; not silly granularity stuff in instruments
+
+* costs
+  - join table not working
+  - define what half-day etc is to make billing calcs.
+
+* special costs 
+  - todo
 
 reorganise source code into clean include regions. 
 use .inc?
@@ -21,18 +31,19 @@ include BILLING algorithm
 backups of database
 
 
-pass/log book vs future/bookings setup for instruments
+* email lists
+  - ooify?
+* masq
+  - ooify, make sensible
+* billing
+  - todo
 
-edit timeslotrules; not silly granularity stuff in instruments
-
-FIXME:
-cost editing class listing
 
 
+prefix to all table names?
+install.php?
 
 gracefully handle lack of mysql db
-
-feedback when entry updated! (done for bookings)
 
 document radius install and config
 
@@ -43,6 +54,7 @@ locking of records when editing?
 css today, monthodd/even booking/vacant configurable?
 
 joindata::_countNumRows counts the rows too early (can we force a recount?)
+  => when adding permissions to a user, the number of permissions doesn't increase
 
 DBRow now has delete method too (and deleteProject($id) is not qw safe!!!)
 
@@ -94,17 +106,9 @@ divs => table cells for calendar
 
 hour => halfday => fullday from costs table
 
-15minute granularity on time objects.
-
 log book reporting
 
-locking on making bookings
-locking of records while editing?
-
 permit deletion of instrument classes
-
-allow user to change password
-radius authentication (encapsulate user stuff better)
 
 
 escape SQL input for bad characters. esp '. (magic_quotes_gpc solves this?)
@@ -119,17 +123,13 @@ streamline creation of project with only one group
 streamline creation of project when creating a user
 (projects: create new as option and if set to create new then make one and send the projectid to "edit project")
 
-work out confirmation emails and when adminconfirm is necessary
+??  work out confirmation emails and when adminconfirm is necessary
 
-create flag for compulsory emails for some events (e.g. booking Raman)
+?? create flag for compulsory emails for some events (e.g. booking Raman)
 
 select all/deselect all javascript buttons where applicable
 
 * unbook emails
-
-*** decide on precision with which times can be entered, change time format?
-*** handle halfday (allow_halfday field??)
-*** half/full day calculation.
 
 include consumables and output templating in reporting
 

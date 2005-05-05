@@ -86,13 +86,14 @@ class DBRow extends DBO {
         $this->log('Checking valid '.$this->fields[$k]->namebase . $k);
         if (! $this->fields[$k]->isValid()) {
           $this->errorMessage .= 'Invalid data: '.$this->fields[$k]->longname
-                                  .' = '. $this->fields[$k]->getValue() .'<br />';
+                                    .'('.$this->fields[$k]->name.')'
+                                  .' = "'. $this->fields[$k]->getValue() .'"<br />';
           $this->isValid = false;
         }
       }
     }
     if (! $this->isValid) {
-      $this->errorMessage .= 'Some values entered into the form are not valid '
+      $this->errorMessage .= '<br />Some values entered into the form are not valid '
                   .'and should be highlighted in the form below. '
                   .'Please check your data entry and try again.';
     }

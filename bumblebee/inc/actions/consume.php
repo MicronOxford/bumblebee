@@ -87,6 +87,7 @@ class ActionConsume extends ActionAction {
           ."for selected consumable</p>\n";
     }
     echo $userselect->display();
+    echo '<br />';
   }
 
   function selectConsumeConsumable() {
@@ -120,8 +121,12 @@ class ActionConsume extends ActionAction {
                               $uid, $ip, $today->datestring);
     $rec->update($this->PD);
     $rec->checkValid();
-    #$project->fields['defaultclass']->invalid = 1;
-    $rec->sync();
+    echo $this->reportAction($rec->sync(), 
+          array(
+              STATUS_OK =>   ($this->PD['id'] < 0 ? 'Consumption recorded' : 'Consumption record updated'),
+              STATUS_ERR =>  'Consumption record could not be changed: '.$rec->errorMessage
+          )
+        );
     echo $rec->display();
     if ($rec->id < 0) {
       $submit = 'Record consumable use';
@@ -136,7 +141,12 @@ class ActionConsume extends ActionAction {
 
   function deleteConsumeRecord() {
     $rec = new ConsumableUse($this->PD['id']);
-    $rec->delete();
+    echo $this->reportAction($rec->delete(), 
+              array(
+                  STATUS_OK =>   'Consumption record deleted',
+                  STATUS_ERR =>  'Consumption record could not be deleted:<br/><br/>'.$rec->errorMessage
+              )
+            );  
   }
 
   function listConsumeConsumable($consumableID) {

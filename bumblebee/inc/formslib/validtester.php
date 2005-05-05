@@ -4,13 +4,13 @@
 
 include_once 'typeinfo.php';
 
-function ValidTester($validator, $data) {
-  global $VERBOSEDATA;
+function ValidTester($validator, $data, $DEBUG=0) {
+  //global $VERBOSEDATA;
   $isValid = 1;
   if (isset($validator) && is_callable($validator)) {
     $isValid = $validator($data);
   } 
-  if ($VERBOSEDATA > 9) echo "[$data, $validator, $isValid]";
+  if ($DEBUG > 9) echo "[$data, $validator, $isValid]";
   return $isValid;
 }
 

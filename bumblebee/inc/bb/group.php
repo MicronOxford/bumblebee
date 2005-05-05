@@ -8,18 +8,19 @@ include_once 'dbforms/textfield.php';
 class Group extends DBRow {
   
   function Group($id) {
+    //$this->DEBUG=10;
     $this->DBRow('groups', $id);
     $this->editable = 1;
     $f = new IdField('id', 'Group ID');
     $f->editable = 0;
     $this->addElement($f);
-    $f = new TextField('name', 'Name');
+    $f = new TextField('name', 'Addressee name');
     $attrs = array('size' => '48');
     $f->setAttr($attrs);
     $f->required = 1;
     $f->isValidTest = 'is_nonempty_string';
     $this->addElement($f);
-    $f = new TextField('longname', '');
+    $f = new TextField('longname', 'Group name');
     $f->setAttr($attrs);
     $f->required = 1;
     $f->isValidTest = 'is_nonempty_string';

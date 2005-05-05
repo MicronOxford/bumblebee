@@ -22,7 +22,7 @@ class Instrument extends DBRow {
     $f->isInvalidTest = "is_nonempty_string";
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField("longname", "");
+    $f = new TextField("longname", "Description");
     $f->required = 1;
     $f->isInvalidTest = "is_nonempty_string";
     $f->setAttr($attrs);
@@ -44,12 +44,12 @@ class Instrument extends DBRow {
     $f->isInvalidTest = "is_valid_time";
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField("granularity", "Booking size (HH:MM)");
+/*    $f = new TextField("granularity", "Booking size (HH:MM)");
     $f->required = 1;
     $f->defaultValue = $CONFIG['instruments']['granularity'];
     $f->isInvalidTest = "is_valid_time";
     $f->setAttr($attrs);
-    $this->addElement($f);
+    $this->addElement($f);*/
     $f = new RadioList("class", "Charging class");
     $f->connectDB("instrumentclass", array("id", "name"));
     $classexample = new ExampleEntries("id","instruments","class","name",3);
