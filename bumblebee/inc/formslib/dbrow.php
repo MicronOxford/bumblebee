@@ -122,7 +122,7 @@ class DBRow extends DBO {
     //obtain the *clean* parameter='value' data that has been SQL-cleansed
     //this will also trip any complex fields to sync
     $vals = $this->_sqlvals($this->insertRow || $this->includeAllFields);
-    if ($vals != "") {
+    if ($vals != '') {
       if (! $this->insertRow) {
         //it's an existing record, so update
         $q = "UPDATE $this->table "

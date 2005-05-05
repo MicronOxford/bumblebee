@@ -2,7 +2,7 @@
 # $Id$
 # test the validity of data according to a set of rules
 
-include_once("typeinfo.php");
+include_once 'typeinfo.php';
 
 function ValidTester($validator, $data) {
   global $VERBOSEDATA;
@@ -10,7 +10,7 @@ function ValidTester($validator, $data) {
   if (isset($validator) && is_callable($validator)) {
     $isValid = $validator($data);
   } 
-  if ($VERBOSEDATA) echo "[$data, $validator, $isValid]";
+  if ($VERBOSEDATA > 9) echo "[$data, $validator, $isValid]";
   return $isValid;
 }
 

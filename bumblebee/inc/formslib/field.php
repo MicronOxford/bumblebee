@@ -2,8 +2,8 @@
 # $Id$
 # database objects (self-initialising and self-updating object)
 
-include_once("typeinfo.php");
-include_once("validtester.php");
+include_once 'typeinfo.php';
+include_once 'validtester.php';
 
 /**
  * Field object that corresponds to one field in a SQL table row.
@@ -29,9 +29,10 @@ class Field {
   var $suppressValidation = -1;
   var $useNullValues = 0;
   var $attr;
-  var $errorclass = "error";
+  var $errorclass = 'error';
   var $namebase;
-  var $isValidTest = "isset";
+  var $isValidTest = 'isset';
+  var $sqlHidden = 0;
   var $DEBUG = 0;
 
   /**
@@ -41,7 +42,7 @@ class Field {
    * @param string $longname  long name to be used in the label of the field in display
    * @param string $description  used in the html title or longdesc for the field
    */
-  function Field($name, $longname="", $description="") {
+  function Field($name, $longname='', $description='') {
     $this->name = $name;
     $this->longname = $longname;
     $this->description = $description;
@@ -68,7 +69,7 @@ class Field {
   function update($data) {
     if (isset($data["$this->namebase$this->name"]) || $this->useNullValues) {
       $newval = issetSet($data, "$this->namebase$this->name");
-      if ($this->DEBUG) echo "$this->name, $this->value, $newval ($this->useNullValues)<br />\n";
+      $this->log("$this->name, $this->value, $newval ($this->useNullValues)");
       if ($this->editable) {
         // we ignore new values if the field is not editable
         if ($this->changed = ($this->getValue() != $newval)) {
@@ -86,7 +87,7 @@ class Field {
         $this->value = $this->getValue();
       }
     }
-    if ($this->DEBUG) echo "$this->name ". ($this->changed ? "CHANGED" : "SAME");
+    $this->log($this->name . ($this->changed ? ' CHANGED' : ' SAME'));
     return $this->changed;
   }
 
@@ -112,11 +113,12 @@ class Field {
     if ($this->required) {
       #$this->isValid = (isset($this->value) && $this->value != "");
       $this->isValid = ($this->getValue() != '');
+      $this->log($this->name . ' Required: '.($this->isValid ? ' VALID' : ' INVALID'));
     }
     if ($this->isValid && $this->suppressValidation == 0) {
       $this->isValid = ValidTester($this->isValidTest, $this->getValue());
     }
-    if ($this->DEBUG) echo ($this->isValid ? "VALID" : "INVALID");
+    $this->log($this->name . ($this->isValid ? ' VALID' : ' INVALID'));
     return $this->isValid;
   }
 
@@ -139,7 +141,11 @@ class Field {
    * @return string  in SQL assignable form
    */
   function sqlSetStr() {
-    return $this->name .'='. qw($this->getValue());
+    if (! $this->sqlHidden) {
+      return $this->name .'='. qw($this->getValue());
+    } else {
+      return '';
+    }
   }
 
   /**

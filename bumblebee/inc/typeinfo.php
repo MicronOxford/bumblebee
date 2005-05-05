@@ -8,10 +8,10 @@ function issetSet(&$a, $k) {
 
 function preDump($v) {
   #echo "<pre>".print_r($v,1)."</pre>\n";
-  echo "<pre>";
+  echo '<pre>';
   #var_dump($v);
   print_r($v);
-  echo "</pre>\n";
+  echo '</pre>'."\n";
 }
 
 function echoData($v, $DEBUG=0) {
@@ -23,7 +23,7 @@ function echoData($v, $DEBUG=0) {
 
 
 function is_alphabetic($var) {
-  return preg_match("/^\w+$/", $var);
+  return preg_match('/^\w+$/', $var);
 }
 
 function qw($v) {
@@ -58,7 +58,7 @@ function is_nonempty_string($v) {
 
 function choice_set($v) {
   #echo "'val=$v' ";
-  return !($v == NULL || $v == "");
+  return !($v == NULL || $v == '');
 }
 
 function is_valid_radiochoice($v) {
@@ -68,7 +68,7 @@ function is_valid_radiochoice($v) {
 
 function is_email_format($v) {
   #echo "'val=$v' ";
-  $pattern = "/^\w.+\@[A-Z_\-]+\.[A-Z_\-]/i";
+  $pattern = '/^\w.+\@[A-Z_\-]+\.[A-Z_\-]/i';
   return (preg_match($pattern, $v));
 }
 
@@ -85,11 +85,11 @@ function is_cost_amount($v) {
 }
 
 function is_valid_datetime($v) {
-  return (preg_match("^\d\d\d\d-\d\d-\d\d \d\d:\d\d",$v));
+  return (preg_match('^\d\d\d\d-\d\d-\d\d \d\d:\d\d',$v));
 }
 
 function is_valid_time($v) {
-  return (preg_match("^\d\d:\d\d",$v) || preg_match("^\d\d:\d\d:\d\d",$v));
+  return (preg_match('^\d\d:\d\d',$v) || preg_match('^\d\d:\d\d:\d\d',$v));
 }
 
 function sum_is_100($vs) {

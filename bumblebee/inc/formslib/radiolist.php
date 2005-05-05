@@ -2,12 +2,13 @@
 # $Id$
 # radio list (<input type='radio' ...> $description<br />) for a ChoiceList
 
-include_once("choicelist.php");
+include_once 'choicelist.php';
 
 class RadioList extends ChoiceList {
-  var $radioclass = "item";
+  var $radioclass = 'item';
 
-  function RadioList($name, $description="") {
+  function RadioList($name, $description='') {
+    //$this->DEBUG = 10;
     $this->ChoiceList($name, $description);
   }
 
@@ -19,7 +20,7 @@ class RadioList extends ChoiceList {
     //$aclass  = (isset($this->aclass) ? " class='$this->aclass'" : "");
     #echo "<pre>".print_r($data,1)."</pre>";
     #echo $this->value;
-    $selected = ($data[$this->formatid] == $this->value ? " checked='1' " : "");
+    $selected = ($data[$this->formatid] == $this->value ? ' checked="1" ' : '');
     $t  = "<input type='radio' name='$this->name' "
          ."value='".$data[$this->formatid]."' $selected /> ";
     foreach ($this->formatter as $k => $v) {

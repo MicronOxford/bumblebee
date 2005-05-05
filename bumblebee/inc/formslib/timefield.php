@@ -89,7 +89,10 @@ class TimeField extends Field {
    *
    */
   function _determineRepresentation() {
+    //preDump($this);
+    $this->_findExactSlot();
     if (! isset($this->slot) && $this->slot != 0) {
+      $this->representation = TF_FIXED;
       return;
     }
     if ($this->_manualRepresentation != TF_AUTO) {
@@ -116,9 +119,15 @@ class TimeField extends Field {
    *    2. 
    */
   function _prepareDropDown() {
+    $durations = $this->slot->allSlotDurations();
     $this->droplist = new DropList($this->name, $this->description);
-    $this->droplist->setValuesArray($this->slot->allSlotDurations(), 'id', 'iv');
+    $this->droplist->setValuesArray($durations, 'id', 'iv');
     $this->droplist->setFormat('id', '%s', array('iv'));
+    //preDump($durations);
+    //for ($j = count($durations)-1; $j >=0 && $durations[$j] != $this->value; $j--) {
+    //}
+    //$this->droplist->setDefault($j);
+    $this->droplist->setDefault($this->value);
   }
   
   /**
@@ -156,13 +165,13 @@ class TimeField extends Field {
    *
    * @return boolean the value was updated
    */
-/*  function update($data) {
+  function update($data) {
     if (parent::update($data)) {
-//       $this->calDropDown();
+      $this->setTime($this->value);
     }
     return $this->changed;
   }
-  */
+
   /**
    * Set the time (and value) from a Date-Time string
    *
@@ -203,11 +212,13 @@ class TimeField extends Field {
    */
   function setSlotStart($date) {
     $this->slotStart = new SimpleDate($date);
+  }
+
+  function _findExactSlot() {
     $this->log('Looking for slot starting at '.$this->slotStart->datetimestring, 10);
     $this->slot = $this->list->findSlotByStart($this->slotStart);
   }
-
-    
+  
 } // class TimeField
 
 

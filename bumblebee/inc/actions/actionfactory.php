@@ -7,6 +7,7 @@
 include_once 'login.php';
 include_once 'logout.php';
 include_once 'view.php';
+include_once 'password.php';
 #include_once 'book.php';
 
 #admin functions
@@ -129,6 +130,8 @@ class ActionFactory {
         return new ActionLogout($this->_auth, $this->PDATA);
       case $act['view']:
         return new ActionView($this->_auth, $this->PDATA);
+      case $act['passwd']:
+        return new ActionPassword($this->_auth, $this->PDATA);
       /*case $act['book']:
         return new ActionBook($auth);*/
       case $act['groups']:

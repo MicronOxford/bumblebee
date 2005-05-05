@@ -17,6 +17,7 @@ class BumbleBeeAuth {
   var $_loggedin=0;
   var $_error;
   var $table;
+  var $localLogin = 0;
   var $DEBUGMODE = 1;
 
   function BumbleBeeAuth($table='users') {
@@ -58,6 +59,7 @@ class BumbleBeeAuth {
     $_SESSION['username'] = $this->username = $row['username'];
     $_SESSION['name'] = $this->name = $row['name'];
     $_SESSION['isadmin'] = $this->isadmin = $row['isadmin'];
+    $_SESSION['localLogin'] = $this->localLogin = $this->localLogin;
   }
   
   function _verifyLogin() {
@@ -72,6 +74,7 @@ class BumbleBeeAuth {
       $this->username = $_SESSION['username'];
       $this->name = $_SESSION['name'];
       $this->isadmin = $_SESSION['isadmin'];
+      $this->localLogin = $_SESSION['localLogin'];
       return 1;
     } else {
       $this->_error = 'SESSION INVALID: Login failed.';
@@ -116,11 +119,12 @@ class BumbleBeeAuth {
     }
     
     $authOK = 0;
-    if ($CONFIG['auth']['useRadius'] && $CONFIG['auth']['radiusPassToken'] == $row['passwd']) {
+    if ($CONFIG['auth']['useRadius'] && $CONFIG['auth']['RadiusPassToken'] == $row['passwd']) {
       $authOK = $this->_auth_via_radius($USERNAME, $PASSWORD);
-    } elseif ($CONFIG['auth']['useLDAP'] && $CONFIG['auth']['ldapPassToken'] == $row['passwd']) {
+    } elseif ($CONFIG['auth']['useLDAP'] && $CONFIG['auth']['LDAPPassToken'] == $row['passwd']) {
       $authOK = $this->_auth_via_ldap($USERNAME, $PASSWORD);
     } elseif ($CONFIG['auth']['useLocal']) {
+      $this->localLogin = 1;
       $authOK = $this->_auth_local($USERNAME, $PASSWORD, $row);
     } else {   //system is misconfigured
       $this->_error = 'System has no login method enabled';

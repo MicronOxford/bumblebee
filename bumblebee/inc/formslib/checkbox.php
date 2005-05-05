@@ -14,10 +14,10 @@ class CheckBox extends Field {
 
   function update($data) {
     if (parent::update($data)) {
-      echo "CHECKBOX $this->name: $this->value, $this->ovalue<br/>\n";
+      $this->log("CHECKBOX $this->name: $this->value, $this->ovalue");
       $this->value = ($this->value ? 1 : 0);
       $this->ovalue = ($this->ovalue ? 1 : 0);
-      echo "CHECKBOX $this->name: $this->value, $this->ovalue<br/>\n";
+      $this->log("CHECKBOX $this->name: $this->value, $this->ovalue");
       $this->changed = ($this->value != $this->ovalue);
     }
     return $this->changed;

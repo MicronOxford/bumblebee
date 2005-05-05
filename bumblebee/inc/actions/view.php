@@ -210,15 +210,8 @@ class ActionView extends ActionAction {
 
   function createBooking() {
     $start = new SimpleDate(issetSet($this->PD, 'startticks'));
-    $stop  = new SimpleDate(issetSet($this->PD, 'startticks'));
+    $stop  = new SimpleDate(issetSet($this->PD, 'stopticks'));
     $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
-/*    $day = $start;
-    $daystart = $day;
-    $daystop = $day;
-    $daystart->setTime($row['usualopen']);
-    $daystop->setTime($row['usualclose']);
-    $start->max($daystart);
-    $stop->min($daystop);*/
     $duration = new SimpleTime($stop->subtract($start));
     $this->log($start->datetimestring.', '.$duration->timestring.', '.$start->dow());
     $this->editCreateBooking(-1, $start->datetimestring, $duration->timestring);
@@ -281,8 +274,8 @@ class ActionView extends ActionAction {
     }
     echo $this->reportAction($booking->delete(), 
               array(
-                  STATUS_OK =>   ($bookid < 0 ? 'Booking made' : 'Booking updated'),
-                  STATUS_ERR =>  'Booking could not be made:<br/><br/>'.$booking->errorMessage
+                  STATUS_OK =>   'Booking deleted',
+                  STATUS_ERR =>  'Booking could not be deleted:<br/><br/>'.$booking->errorMessage
               )
             );  
   }

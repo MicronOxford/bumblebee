@@ -18,29 +18,30 @@ class ActionListing {
 
   function _createUserFunctions() {
     $this->userfunctions = array(
-      "view=View instrument bookings",
-      "book=Create or edit instrument bookings",
-      "login=Login",
-      "logout=Logout"
+      'view=View instrument bookings',
+      //'book=Create or edit instrument bookings',
+      'passwd=Change password',
+      'login=Login',
+      'logout=Logout'
     );
   }
 
   function _createAdminFunctions() {
     #admin only functions
     $this->adminfunctions = array(
-      "groups=Manage groups",
-      "projects=Manage projects",
-      "users=Manage users and permissions",
-      "instruments=Manage instruments",
-      "consumables=Manage consumables",
-      "consume=Record consumable usage",
-      "masquerade=Masquerade as another user",
-      "costs=Edit standard costs",
-      "specialcosts=Edit or create special charges",
-      #"bookmeta=Points system and booking controls",
-      #"adminconfirm=Booking confirmation",
-      "emaillist=Email lists",
-      "billing=Prepare billing summaries"
+      'groups=Manage groups',
+      'projects=Manage projects',
+      'users=Manage users and permissions',
+      'instruments=Manage instruments',
+      'consumables=Manage consumables',
+      'consume=Record consumable usage',
+      'masquerade=Masquerade as another user',
+      'costs=Edit standard costs',
+      'specialcosts=Edit or create special charges',
+      #'bookmeta=Points system and booking controls',
+      #'adminconfirm=Booking confirmation',
+      'emaillist=Email lists',
+      'billing=Prepare billing summaries'
     );
   }
 

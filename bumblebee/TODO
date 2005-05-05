@@ -1,10 +1,7 @@
 $Id$can change another's bookings: edit, delete etc
 
-delete booking returns errors:
-Warning: Missing argument 4 for bookingentry() in /home/stuart/documents/CFCF/bumblebee/inc/bookingentry.php on line 24
--> this uses the funny delete constructor?
 
-after booking made, date shown in epoch
+booking dropdown doesn't show correct value.
 
 reorganise source code into clean include regions. 
 use .inc?
@@ -13,12 +10,11 @@ protect these with .htaccess files.
 
 look at other PHP methods for getting things out of hash arrays (array_walk, array_keys, in_array)
 
+create a real db with no bogus booking data and no dodgy invalid users etc
 
 M$IE testing etc
 
 masquerade broken: adminmenu.php, masquerade.php
-
-dropdown for duration time doesn't sync against value
 
 include BILLING algorithm
 
@@ -36,11 +32,9 @@ cost editing class listing
 
 gracefully handle lack of mysql db
 
-feedback when epostfix (2.2.2-2) unstable; urgency=ntry updated! (done for bookings)
+feedback when entry updated! (done for bookings)
 
-permit user change passwd, also admin change user passwd (not radius)
-
-fix up radius handling
+document radius install and config
 
 
 

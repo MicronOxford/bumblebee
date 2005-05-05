@@ -32,6 +32,11 @@ if ($auth->isLoggedIn() && $action->_verb != 'logout') {
       <h3>Menu</h3>
       <ul>
         <li><a href='<?=$BASEURL?>/'>Main</a></li>
+        <?
+           if ($auth->localLogin) {
+             echo "<a href='$BASEURL/passwd'>Change Password</a></li>\n";
+           }
+        ?>
         <li><a href='<?=$BASEURL?>/logout'>Logout</a></li>
       </ul>
     <?

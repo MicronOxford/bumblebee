@@ -16,15 +16,16 @@ include_once 'calendar.php';
 
 class BookingEntry extends DBRow {
   var $slotrules;
-//   var $starttime;
-//   var $duration;
   var $_isadmin = 0;
   var $euid;
   
-  function BookingEntry($id, $auth, $instrumentid, $ip, $start, $duration, $granlist) {
+  function BookingEntry($id, $auth, $instrumentid, $ip='', $start='', $duration='', $granlist='') {
     //$this->DEBUG = 10;
     $this->DBRow('bookings', $id);
     $this->_checkAuth($auth, $instrumentid);
+    if ($ip=='' && $start=='' && $duration=='' && $granlist=='') {
+      return $this->_bookingEntryShort($id, $instrumentid);
+    }
     $this->slotrules = new TimeSlotRule($granlist);
     $this->editable = 1;
     $f = new IdField('id', 'Booking ID');
@@ -107,15 +108,17 @@ class BookingEntry extends DBRow {
    *  secondary constructor that we can use just for deleting
    *
    */
-  function BookingEntryShort($id, $auth, $instrumentid) {
-    $this->DBRow('bookings', -1, 'id');
-    $this->_checkAuth($auth);
+  function _bookingEntryShort($id, $instrumentid) {
     $f = new Field('id');
     $f->value = $id;
-    $row->addElement($f);
-    $f = new Field('instrument');
+    $this->addElement($f);
+    $f = new Field('instrument');   //not necessary, but for peace-of-mind.
     $f->value = $instrumentid;
-    $row->addElement($f);
+    $this->addElement($f);
+    $f = new Field('userid', 'User');
+    $f->value = $this->euid;
+    $this->addElement($f);
+    $this->fill();
   }
 
   /**
@@ -139,7 +142,10 @@ class BookingEntry extends DBRow {
    * * for the time being.
    */
   function update($data) {
-    return parent::update($data);
+    parent::update($data);
+    $this->fields['bookwhen']->setSlotStart($this->fields['bookwhen']->getValue());
+    $this->fields['duration']->setSlotStart($this->fields['bookwhen']->getValue());
+    return $this->changed;
   }
 
   /** 

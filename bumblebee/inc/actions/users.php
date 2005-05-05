@@ -39,7 +39,12 @@ class ActionUsers extends ActionAction {
     $user->update($this->PD);
     #$project->fields['defaultclass']->invalid = 1;
     $user->checkValid();
-    $user->sync();
+    echo $this->reportAction($user->sync(), 
+          array(
+              STATUS_OK =>   ($this->PD['id'] < 0 ? 'User created' : 'User updated'),
+              STATUS_ERR =>  'User could not be changed: '.$user->errorMessage
+          )
+        );
     echo $user->display();
     if ($user->id < 0) {
       $submit = "Create new user";
@@ -54,7 +59,12 @@ class ActionUsers extends ActionAction {
 
   function deleteUser() {
     $user = new User($this->PD['id']);
-    $user->delete();
+    echo $this->reportAction($user->delete(), 
+              array(
+                  STATUS_OK =>   'User deleted',
+                  STATUS_ERR =>  'User could not be deleted:<br/><br/>'.$booking->errorMessage
+              )
+            );  
   }
 }
 

@@ -23,9 +23,8 @@ class ChoiceList extends Field {
   var $extendable = 0;
 
   function ChoiceList($name, $description='') {
-    //inherited members from Field
-    $this->name = $name;
-    $this->description = $description;
+    parent::Field($name, '', $description);
+    //$this->DEBUG=10;
   }
 
   /**
@@ -109,21 +108,23 @@ class ChoiceList extends Field {
    * @return string a single row HTML representation of the field
    */
   function displayInTable($cols) {
-    $errorclass = ($this->isValid ? "" : "class='inputerror'");
-    $t = "<tr $errorclass><td>$this->description</td>\n"
-        ."<td title='$this->description'>";
-    if ($this->editable) {
-      $t .= $this->selectable();
-    } else {
-      $t .= $this->selectedValue();
-      $t .= "<input type='hidden' name='$this->name' value='$this->value' />";
+    if (! $this->hidden) {
+      $errorclass = ($this->isValid ? "" : "class='inputerror'");
+      $t = "<tr $errorclass><td>$this->description</td>\n"
+          ."<td title='$this->description'>";
+      if ($this->editable) {
+        $t .= $this->selectable();
+      } else {
+        $t .= $this->selectedValue();
+        $t .= "<input type='hidden' name='$this->name' value='$this->value' />";
+      }
+      $t .= "</td>\n";
+      for ($i=0; $i<$cols-2; $i++) {
+        $t .= "<td></td>";
+      }
+      $t .= "</tr>";
+      return $t;
     }
-    $t .= "</td>\n";
-    for ($i=0; $i<$cols-2; $i++) {
-      $t .= "<td></td>";
-    }
-    $t .= "</tr>";
-    return $t;
   }
 
   function selectedValue() {

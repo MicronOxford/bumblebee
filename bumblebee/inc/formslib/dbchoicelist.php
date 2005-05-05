@@ -37,7 +37,6 @@ class DBChoiceList extends DBO {
   var $length;
   var $appendedfields;
   var $prependedfields;
-  var $DEBUG = 1;
 
   /** 
    * Construct a new DBList object based on:
