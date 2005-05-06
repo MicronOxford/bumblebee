@@ -38,13 +38,13 @@ class ConsumableUse extends DBRow {
     $f = new TextField("usewhen", "Date");
     $f->value = $today;
     $f->required = 1;
-    $f->isInvalidTest = "is_valid_date";
+    $f->isValidTest = "is_valid_date";
     $attrs = array('size' => "48");
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new TextField("quantity", "Quantity");
     $f->required = 1;
-    $f->isInvalidTest = "is_number";
+    $f->isValidTest = "is_number";
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new TextField("comments", "Comments");

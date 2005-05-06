@@ -1,6 +1,8 @@
 $Id$can change another's bookings: edit, delete etc
 
 
+use consumable loses 2-step info
+
 pass/log book vs future/bookings setup for instruments
 
 * instrument
@@ -48,8 +50,13 @@ gracefully handle lack of mysql db
 document radius install and config
 
 
+* massive CSS cleanup
+  - ununsed classes
+  - absolute paths
+* theme into CVS?
+  - css?
+  - pix?
 
-locking of records when editing?
 
 css today, monthodd/even booking/vacant configurable?
 
@@ -171,3 +178,4 @@ Can existing (huge!) expression be used with just variable SELECT (or just selec
 LIMITATIONS
 ===========
 no GUI to delete a userclass or instrumentclass 
+records are not locked while edited (update is atomic, but last-submitted changes win)

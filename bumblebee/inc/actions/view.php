@@ -157,11 +157,11 @@ class ActionView extends ActionAction {
     $cal = new Calendar($start, $stop, $this->PD['instrid']);
 
     $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
-    $daystart    = new SimpleTime($row['usualopen'],1);
-    $daystop     = new SimpleTime($row['usualclose'],1);
+    $daystart    = new SimpleTime($row['usualopen']);
+    $daystop     = new SimpleTime($row['usualclose']);
     //configure the calendar view granularity (not the same as booking granularity)
-    $granularity = $CONFIG['calendar']['granularity'];
-    $timelines   = $CONFIG['calendar']['timelines'];
+    $granularity = $row['usualprecision'];
+    $timelines   = $row['usualopen'];
     $cal->setTimeSlotPicture($row['timeslotpicture']);
     #$granularity = 60*60;
 //     echo $cal->display();

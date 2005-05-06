@@ -41,7 +41,7 @@ class BookingEntry extends DBRow {
 //     $this->starttime = &$startf;
     $startf->required = 1;
     $startf->defaultValue = $start;
-    $startf->isInvalidTest = 'is_valid_datetime';
+    $startf->isValidTest = 'is_valid_datetime';
     $attrs = array('size' => '24');
     $startf->setAttr($attrs);
     $startf->setManualRepresentation($this->_isadmin ? TF_FREE : TF_AUTO);
@@ -52,7 +52,7 @@ class BookingEntry extends DBRow {
     $durationf = new TimeField('duration', 'Duration');
 //     $this->duration = &$durationf;
     $durationf->required = 1;
-    $durationf->isInvalidTest = 'is_valid_time';
+    $durationf->isValidTest = 'is_valid_time';
     $durationf->defaultValue = $duration;
     $durationf->setManualRepresentation($this->_isadmin ? TF_FREE : TF_AUTO);
 //     echo $f->manualRepresentation .'-'.$f->time->manualRepresentation."\n";
@@ -87,7 +87,7 @@ class BookingEntry extends DBRow {
     $f->hidden = !$this->_isadmin;
     $this->addElement($f);
     $f = new TextField('discount', 'Discount (%)');
-    $f->isInvalidTest = 'is_number';
+    $f->isValidTest = 'is_number';
     $f->defaultValue = '0';
     $f->editable = $this->_isadmin;
     $f->hidden = !$this->_isadmin;
