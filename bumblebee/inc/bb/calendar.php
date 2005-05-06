@@ -26,7 +26,7 @@ class Calendar {
   var $timeslots;
   var $isAdminView=0;
   
-  var $DEBUG_CAL = 0;    // 0 to turn off debug logging, 10 to turn on all debug logging
+  var $DEBUG = 0;    // 0 to turn off debug logging, 10 to turn on all debug logging
   
   /**
    * Create a calendar object, can display bookings in calendar format
@@ -39,7 +39,7 @@ class Calendar {
     $this->start = $start;
     $this->stop  = $stop;
     $this->instrument = $instrument;
-    $this->log("Creating calendar from $start->datestring to $stop->datestring", 5);
+    $this->log('Creating calendar from '.$start->datestring.' to '.$stop->datestring, 5);
     $this->_fill();
     $this->_insertVacancies();
     $this->_breakAcrossDays();
@@ -105,7 +105,7 @@ class Calendar {
    */
   function _insertVacancies() {
     $this->numDays = $this->stop->partDaysBetween($this->start);
-    $this->log("Creating calendar for $this->numDays days", 5);
+    $this->log('Creating calendar for '.$this->numDays.' days', 5);
     //blat over the booking list so we can create the normalised list
     $bookings = $this->bookinglist;
     $this->bookinglist = array();
@@ -223,12 +223,20 @@ class Calendar {
         
         $this->log('sstart='.$this->bookinglist[$booking]->start->datetimestring
               .' sstop='.$this->bookinglist[$booking]->stop->datetimestring, 10);
-        $slot = $list->findNextSlot($slot->start);
+        $nextstart = $slot->start;
+        //$nextstart->addSecs(1);
+        $slot = $list->findNextSlot($nextstart);
         $booking++;
         $this->log('oticks='.$this->bookinglist[$booking-1]->original->stop->ticks
                    .'nticks='.$slot->start->ticks,10);
         $this->log('nextstart='.$slot->start->datetimestring,10);
         $this->log('');
+/*        if ($slot->start->datetimestring == '2005-04-29 00:00:00') {
+          $next++;
+          if ($next > 10) {
+            exit;
+          }
+        }*/
       } while ($this->bookinglist[$booking-1]->original->stop->ticks > $slot->start->ticks);
     }
     if ($keepTimes && $this->bookinglist[$booking-1]->isVacant) {
@@ -298,38 +306,38 @@ class Calendar {
 
     $today = new SimpleDate(time());
     
-    $t = "<table class='tabularobject calendar'>";
+    $t = '<table class="tabularobject calendar">';
     $weekstart = $this->start;
     $weekstart->addDays(-7);
     $t .= '<tr><th></th>';
     for ($day=0; $day<7; $day++) {
       $current = $weekstart;
       $current->addDays($day);
-      $t .= "<th class='caldow'>".date('D', $current->ticks).'</th>';
+      $t .= '<th class="caldow">'.date('D', $current->ticks).'</th>';
     }
     $t .= '</tr>';
     for ($row = 0; $row < $numRows; $row++) {
       $dayRow = $row % $numRowsPerDay;
       if ($dayRow == 0) {
         $weekstart->addDays(7);
-        $t .= "<tr><td></td>";
+        $t .= '<tr><td></td>';
         for ($day=0; $day<7; $day++) {
           $current = $weekstart;
           $current->addDays($day);
           $isodate = $current->datestring;
           $class = $this->_getDayClass($today, $current);
-          $t .= "<td class='caldate $class'>";
-          $t .= "<div style='float:right;'><a href='$this->href/$isodate' class='but' title='Zoom in on date: $isodate'><img src='$BASEPATH/theme/images/zoom.png' alt='Zoom in on $isodate' class='calicon' /></a></div>\n";
-          $t .= "<div class='caldate'>" . strftime("%e", $current->ticks);
-          $t .= "<span class='calmonth "
+          $t .= '<td class="caldate '.$class.'">';
+          $t .= '<div style="float:right;"><a href="'.$this->href.'/'.$isodate.'" class="but" title="Zoom in on date: '.$isodate.'"><img src="'.$BASEPATH.'/theme/images/zoom.png" alt="Zoom in on '.$isodate.'" class="calicon" /></a></div>'."\n";
+          $t .= '<div class="caldate">' . strftime("%e", $current->ticks);
+          $t .= '<span class="calmonth '
           #.($month == $lastmonth ? "contmonth" : "startmonth") . "'> "
-            ."startmonth" . "'> "
+            .'startmonth' . '"> '
             . strftime("%B", $current->ticks)
-          ."</span>";
-          $t .= "</div>";
-          $t .= "</td>";
+          .'</span>';
+          $t .= '</div>';
+          $t .= '</td>';
         }
-        $t .= "</tr>";
+        $t .= '</tr>';
       }
       $t .= '<tr>';
       if ($dayRow % $reportPeriod == 0) {
@@ -354,7 +362,7 @@ class Calendar {
       }
       $t .= '</tr>';
     }
-    $t .= "</table>";
+    $t .= '</table>';
     return $t;
   }
 
@@ -384,20 +392,20 @@ class Calendar {
 
     $today = new SimpleDate(time());
     
-    $t = "<table class='tabularobject calendar'>";
+    $t = '<table class="tabularobject calendar">';
     $t .= '<tr><th></th>';
-    $t .= "<td class='caldayzoom'>";
-    $t .= "<div class='caldate'>" . strftime("%e", $this->start->ticks);
-    $t .= "<span class='calmonth "
+    $t .= '<td class="caldayzoom">';
+    $t .= '<div class="caldate">' . strftime('%e', $this->start->ticks);
+    $t .= '<span class="calmonth '
     #.($month == $lastmonth ? "contmonth" : "startmonth") . "'> "
-      ."startmonth" . "'> "
-      . strftime("%B", $this->start->ticks)
-    ."</span>";
-    $t .= "</div>";
-    $t .= "</td>";
-    $t .= "</tr>";
+      .'startmonth' . '"> '
+      . strftime('%B', $this->start->ticks)
+    .'</span>';
+    $t .= '</div>';
+    $t .= '</td>';
+    $t .= '</tr>';
     for ($row = 0; $row < $numRows; $row++) {
-      $t .= "<tr>";
+      $t .= '<tr>';
       if ($row % $reportPeriod == 0) {
         $t .= '<td rowspan="'.$reportPeriod.'">';
         $t .= $timecolumn[$row]->timestring;
@@ -413,7 +421,7 @@ class Calendar {
       }
       $t .= '</tr>';
     }
-    $t .= "</table>";
+    $t .= '</table>';
     return $t;
   }
   
@@ -426,8 +434,8 @@ class Calendar {
    * The higher $prio, the more verbose (in the debugging sense) the output.
    */
   function log ($string, $prio=10) {
-    if ($prio <= $this->DEBUG_CAL) {
-      echo $string."<br />\n";
+    if ($prio <= $this->DEBUG) {
+      echo $string.'<br />'."\n";
     }
   }
 

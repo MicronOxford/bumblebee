@@ -57,13 +57,11 @@ class SimpleDate {
       $this->ticks += $t;
       $this->_setStr();
     }
-    //echo $t->part('s').'-';
-    //echo $t->part('i').'-';
-    //echo $t->part('H')."\n";
-    //either code works fine, but doing this directly will be much faster
-/*    $this->ticks += $t->seconds();
-    $this->_setStr();*/
-    //$this->addTimeParts($t->part('s'),$t->part('i'),$t->part('H'),0,0,0);
+  }
+  
+  function addSecs($s) {
+    $this->ticks+=$s;
+    $this->_setStr();
   }
 
   function dayRound() {

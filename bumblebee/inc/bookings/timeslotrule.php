@@ -226,6 +226,7 @@ class TimeSlotRule {
    * that is the appropriate slot.
    */
   function _findSlot($date, $match, $datetime=0) {
+    $this->DEBUG=10;
     $this->log("TimeSlotRule::_findSlot:($date->datetimestring, $match, $datetime)", 10);
     //preDump(debug_backtrace());
     if ($datetime == 0) {
@@ -241,10 +242,11 @@ class TimeSlotRule {
     $timecmp = $match;
     if ($match == TSWITHIN) $timecmp = TSSTOP;
     if ($match == TSNEXT)   $timecmp = TSSTART;
-    $this->log("TimeSlotRule::_findSlot:($time->timestring, $time->ticks, $dow)", 10);
     $startvar = TSSTART;
+    //preDump($this->slots[$dow][0]);
+    $this->log("TimeSlotRule::_findSlot:($time->timestring, ".$this->slots[$dow][0]->$startvar->ticks.", $time->ticks, $dow)", 10);
     if ($time->ticks < $this->slots[$dow][0]->$startvar->ticks) {
-      //$dow = ($dow+6)%7;
+      $dow = ($dow+6)%7;
       $day->addDays(-1);
       $time->addSecs(24*60*60);
       //echo "Stepped back a day ";
@@ -259,7 +261,7 @@ class TimeSlotRule {
       $slot++;
     }
     //echo count($this->slots[$dow])-TSARRAYMIN."/";
-    //echo $time->ticks .', '. $this->slots[$dow][$slot]->$timecmp->ticks."\n";
+    //echo $time->ticks .', '. $this->slots[$dow][$slot-1]->$timecmp->ticks."\n";
     $this->log("Final ($dow, $slot, $match)",10);
     if ($match == TSSTART || $match == TSSTOP) {
       $slot--;

@@ -21,4 +21,5 @@ foreach ($p as $pic) {
   echo $at->dump(0);
 }
 
-$findtest = new TimeSlotRule($p[4]);
+#$findtest = new TimeSlotRule($p[3]);
+#$findtest->findNextSlot(new SimpleDate(

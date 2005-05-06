@@ -476,6 +476,12 @@ td.itemR {
 tr.itemrow {
 }
 
+tr.itemrow:hover {
+  text-decoration: none;
+  color: #000000;
+  background-color: #FFFF99;
+}
+
 td.itemL a {
   display: block;
 }

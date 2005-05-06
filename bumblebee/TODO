@@ -1,13 +1,13 @@
 $Id$can change another's bookings: edit, delete etc
 
+* db structure:
+  - SMALLINT is max 32767. Is this a limitation (e.g. number bookings!)?
+
 
 * bookings
   - pass/log book vs future/bookings setup for instruments
   - TSR * blows up on 00:00-24:00
   - TSR * does not validate against non-full time
-
-* use consumable
-  - doens't list by consumable,  only by user
 
 * projects
   - Create project doesn't seem to actually sync projectgroups table on allocation.
@@ -57,10 +57,14 @@ gracefully handle lack of mysql db
 
 document radius install and config
 
+* theme
+  - design new theme, bg etc
+  - icon location
 
 * massive CSS cleanup
   - ununsed classes
   - absolute paths
+  - 
 * theme into CVS?
   - css?
   - pix?

@@ -85,7 +85,7 @@ function is_cost_amount($v) {
 }
 
 function is_valid_datetime($v) {
-  return (preg_match('^/\d\d\d\d-\d\d-\d\d \d\d:\d\d/',$v));
+  return (preg_match('/^\d\d\d\d-\d\d-\d\d \d\d:\d\d/',$v));
 }
 
 function is_valid_time($v) {

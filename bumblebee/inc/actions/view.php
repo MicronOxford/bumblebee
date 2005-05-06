@@ -157,11 +157,12 @@ class ActionView extends ActionAction {
     $cal = new Calendar($start, $stop, $this->PD['instrid']);
 
     $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
+    //preDump($row);
     $daystart    = new SimpleTime($row['usualopen']);
     $daystop     = new SimpleTime($row['usualclose']);
     //configure the calendar view granularity (not the same as booking granularity)
-    $granularity = $row['usualprecision'];
-    $timelines   = $row['usualopen'];
+    $granularity = $row['calprecision'];
+    $timelines   = $row['caltimemarks'];
     $cal->setTimeSlotPicture($row['timeslotpicture']);
     #$granularity = 60*60;
 //     echo $cal->display();
@@ -198,8 +199,8 @@ class ActionView extends ActionAction {
     $daystop     = new SimpleTime('23:59:59',1);
     $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
     $cal->setTimeSlotPicture($row['timeslotpicture']);
-    $granularity = $row['usualprecision'];
-    $timelines   = $row['usualopen'];
+    $granularity = $row['calprecision'];
+    $timelines   = $row['caltimemarks'];
     #echo $cal->display();
     $href=$BASEURL.'/view/'.$this->PD['instrid'];
     $cal->href=$href;

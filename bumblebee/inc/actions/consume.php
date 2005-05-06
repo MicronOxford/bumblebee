@@ -123,7 +123,7 @@ class ActionConsume extends ActionAction {
     $rec->checkValid();
     echo $this->reportAction($rec->sync(), 
           array(
-              STATUS_OK =>   ($this->PD['id'] < 0 ? 'Consumption recorded' : 'Consumption record updated'),
+              STATUS_OK =>   ($recordid < 0 ? 'Consumption recorded' : 'Consumption record updated'),
               STATUS_ERR =>  'Consumption record could not be changed: '.$rec->errorMessage
           )
         );
@@ -175,7 +175,7 @@ class ActionConsume extends ActionAction {
     global $BASEURL;
     $extrapath = '';
     $listpath = '';
-    $user = new User($userID);
+    $user = new User($userID, true);
     echo '<p>Consumption records for '
         .$user->fields['username']->value
         .' ('.$user->fields['name']->value.")</p>\n";
