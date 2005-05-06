@@ -1,5 +1,4 @@
 <?php
-# $Id$
 # return a list of the email addresses depending on what we've been asked
 # for... e.g. per instrument for the "announce" list.
 
@@ -72,6 +71,6 @@
     while ($g = mysql_fetch_array($sql)) {
       echo $g['email'] ."<br />";
     }
-    echoSQL($q, 1);
+    echo "<br /><br />Get email addrs: '$q' successful<br />";
   }
 ?> 

@@ -1,82 +1,136 @@
 <?php
-# $Id$
-
-ob_start();
-
 include 'config.php'; 
 #start the database session
 include 'db.php'; 
-include 'inc/auth.php';
-#var $auth = new Auth();
-$auth = new SystemAuth;
 
-#ALL is ready to roll now, start the output again.
-ob_end_flush();
+$actiontitle;
+$ERRORMSG;
+$UID;
+$EPASS;
+$ISADMIN;
+$USERNAME;
 
-$VERBOSESQL;
-$nextaction="";
-$PDATA = array();
+include 'actions.php';
+include 'determineaction.php';
+include 'login.php';
+$action = checkActions();
 
-include_once 'actions.php';
-include_once 'determineaction.php';
-
-$action = checkActions($auth);
-checkLogout($auth, $action);
-
-include_once 'login.php';
-include_once 'view.php';
-include_once 'book.php';
+include 'main.php';
+include 'view.php';
 
 #admin functions
-include_once 'adminmenu.php';
-include_once 'groups.php';
-include_once 'projects.php';
-include_once 'users.php';
-include_once 'instruments.php';
-include_once 'consumables.php';
-include_once 'consume.php';
-include_once 'masquerade.php';
-include_once 'costs.php';
-include_once 'specialcosts.php';
-include_once 'adminconfirm.php';
-include_once 'emaillist.php';
-include_once 'billing.php';
-include_once 'unknownaction.php';
+include 'adminmenu.php';
+include 'groups.php';
+include 'projects.php';
+include 'users.php';
+include 'instruments.php';
+include 'consumables.php';
+include 'consume.php';
+include 'masquerade.php';
+include 'costs.php';
+include 'specialcosts.php';
+include 'adminconfirm.php';
+include 'emaillist.php';
+include 'billing.php';
+include 'unknownaction.php';
+include 'savelogin.php';
 
 $pagetitle = $actiontitles[$action] . ' - ' . $sitetitle;
 
 
-include 'theme/pageheader.php';
-include 'theme/contentheader.php';
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-  if ($auth->isLoggedIn()) {
-    ?>
-      <div class='fmenu'>
-        <h3>Menu</h3>
-        <ul>
-          <li><a href='<?=$BASEURL?>/'>Main</a></li>
-          <li><a href='<?=$BASEURL?>/logout'>Logout</a></li>
-        </ul>
-      <?
-        if ($auth->isadmin) printAdminMenu();
-        #if (($act[$action] != $act['masquerade']) && $ISADMIN) checkMasquerade();
-      ?>
-      </div>
-    <?
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title><?=$pagetitle; ?></title>
+  <link rel="stylesheet" href="babs.css" type="text/css" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="shortcut icon" href="favicon.ico" />
+<?php
+include 'jsfunctions.php'
+?>
+</head>
+
+<body>
+  <form method="post">
+<?php
+  echo "decide what happens here: $action (". $act[$action] .")<br />";
+  if (isset($ERRORMSG)) echo $ERRORMSG;
+
+  if ($ISADMIN) checkMasquerade();
+
+  if ($act[$action] > 999 && ! $ISADMIN) $action="forbidden!";
+  switch ($act[$action]) {
+    case $act['login']:
+      printLoginForm();
+      break;
+    case $act['main']:
+      if ($ISADMIN) printAdminMenu();
+      actionMain();
+      break;
+    case $act['view']:
+      actionView();
+      break;
+    case $act['groups']:
+      actionGroup();
+      break;
+    case $act['projects']:
+      actionProjects();
+      break;
+    case $act['users']:
+      actionUsers();
+      break;
+    case $act['instruments']:
+      actionInstruments();
+      break;
+    case $act['consumables']:
+      actionConsumables();
+      break;
+    case $act['consume']:
+      actionConsume();
+      break;
+    case $act['masquerade']:
+      actionMasquerade();
+      break;
+    case $act['costs']:
+      actionCosts();
+      break;
+    case $act['specialcosts']:
+      actionSpecialCosts();
+      break;
+    case $act['bookmeta']:
+      actionBookmeta();
+      break;
+    case $act['adminconfirm']:
+      actionAdminconfirm();
+      break;
+    case $act['emaillist']:
+      actionEmaillist();
+      break;
+    case $act['billing']:
+      actionBilling();
+      break;
+    default:
+      actionUnknown($action);
   }
-  ?>
-    <div class="content">
-      <form method="post" action="<?=$nextaction?>" >
-      <?
-        #echo "decide what happens here: $action (". $act[$action] .")<br />";
-        if (! $auth->isLoggedIn()) {
-          echo $auth->loginError();
-        }
-        performAction($auth, $action);
-      ?>
-      </form>
-    </div>
-  <?
-    include 'theme/contentfooter.php';
-    include 'theme/pagefooter.php';
-  ?>
+  
+  $query="SELECT * FROM users";
+  if(!$sql = mysql_query($query)) die(sql_error());
+  echo "<p>".mysql_num_rows($sql)." users registered.</p>";
+  while ($row=mysql_fetch_row($sql)) {
+    echo "$row[0] $row[1] $row[2]<br />";
+  }
+  if(!$sql = mysql_query($query)) die(sql_error());
+  while ($row=mysql_fetch_array($sql)) {
+    echo $row['id']. $row['name']. $row['email']."<br />";
+  }
+  if ($action != 'login')
+  {
+    printSaveLogin();
+  }
+?>
+  </form>
+</body>
+</html>

@@ -1,34 +1,16 @@
 <?php
-# edit the groups
+# $Id$
+# Group object (extends dbo)
 
-  function actionSpecialCosts() {
-    if (! isset($_POST['project'])) {
-      selectProjectSC();
-    } elseif (! isset($_POST['updatespecialcost'])) {
-      editSpecialCost($_POST['project']);
-    } else {
-      updateSpecialCost($_POST['project']);
-    }
+include_once 'dbforms/dbrow.php';
+include_once 'dbforms/textfield.php';
+
+class SpecialCost extends DBRow {
+  
+  function SpecialCost($id) {
   }
 
-  function selectProjectSC() {
-    echo "
-    <table>
-    <tr><th>Select project's cost to view/edit</th></tr>
-    <tr><td>
-    ";
-    projectselectbox("project","");
-    echo "
-    </td></tr>
-    <tr><td>
-      <button name='action' type='submit' value='specialcosts'>
-        Edit costs
-      </button>
-    </td></tr>
-    </table>
-    ";
-  }
-
+  
   function editSpecialCost($proj) {
     $q = "SELECT projects.name AS projname,longname,"
                ."userclass.id AS class,userclass.name AS classname "
@@ -93,8 +75,10 @@
       <input type='hidden' name='project' value='$proj' />
     </td></tr>
     </table>
-    <div class='sql'>Looked up existing data using:<br /> $q<br />$qc<br />$qs</div>
 END;
+    echoSQL($q);
+    echoSQL($qc);
+    echoSQL($qs);
   }
 
   function specialCostListing($i, $gs) {
@@ -132,9 +116,9 @@ END;
         ."instrid='".$_POST["cost$i-iid"]."'";
         #."WHERE projectid='$proj' AND instrid='".$_POST["cost$i-iid"]."'";
     if (!mysql_query($qc)) die(mysql_error());
-    echo "<div class='sql'>action: '$qc' successful</div>";
+    echoSQL($qc, 1);
     if (!mysql_query($qpr)) die(mysql_error());
-    echo "<div class='sql'>action: '$qpr' successful</div>";
+    echoSQL($qpr, 1);
   }
 
   function insertspecialsinglerate($proj,$i) {
@@ -145,20 +129,38 @@ END;
         ."'".$_POST["cost$i-ch"]."','".$_POST["cost$i-chd"]."','".$_POST["cost$i-cfd"]."'"
         .")";
     if (!mysql_query($qc)) die(mysql_error());
-    echo "<div class='sql'>action: '$qc' successful</div>";
+    echoSQL($qc, 1);
     $cost=mysql_insert_id();
     $qpr = "INSERT INTO projectrates SET "
         ."rate='$cost', "
         ."projectid='$proj', "
         ."instrid='".$_POST["cost$i-iid"]."'";
     if (!mysql_query($qpr)) die(mysql_error());
-    echo "<div class='sql'>action: '$qpr' successful</div>";
+    echoSQL($qpr, 1);
   }
 
   function deletespecialsinglerate($proj,$i) {
     $q = "DELETE FROM stdrates WHERE category='$gpid'";
     if (!mysql_query($q)) die(mysql_error());
-    echo "action: '$q' successful";
+    echoSQL($q, 1);
   }
 
-?> 
+
+  
+  
+  
+  
+  function display() {
+    return $this->displayAsTable();
+  }
+
+  function displayAsTable() {
+    $t = '<table class="tabularobject">';
+    foreach ($this->fields as $k => $v) {
+      $t .= $v->displayInTable(2);
+    }
+    $t .= '</table>';
+    return $t;
+  }
+
+} //class Group

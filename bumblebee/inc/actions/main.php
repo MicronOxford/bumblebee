@@ -1,5 +1,4 @@
 <?php
-# $Id$
 # the main menu for a user
 
 function actionMain()

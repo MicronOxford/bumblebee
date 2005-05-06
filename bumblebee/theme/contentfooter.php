@@ -9,11 +9,11 @@
 <div class='footer'>
   <p>
     System managed by 
-    <a href="http://www.nanonanonano.net/projects/bumblebee/">BumbleBee</a>,
+    <a href="http://www.nanonanonano.net/projects/babs/">BABS</a>,
     released under the 
     <a href="http://www.gnu.org/licenses/gpl.html">GNU GPL</a>.
   <br />
-    This installation of BumbleBee currently manages
+    This installation of BABS currently manages
     <?
       echo $stat->get('users') . " users, ";
       echo $stat->get('projects') . " projects, ";
@@ -29,4 +29,3 @@
   </div>
 </div>
 
-</body>

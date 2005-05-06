@@ -1,5 +1,4 @@
 <?php
-# $Id$
 # Some javascript functions for use in the pages
 ?>
 <script type='text/javascript'>

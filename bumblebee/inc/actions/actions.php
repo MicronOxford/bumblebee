@@ -1,13 +1,12 @@
 <?
-# $Id$
 # Create data structures that can describe both the action-word to be acted
 # on, as well as the title to be reflected in the HTML title tag.
 
 $userfunctions = array(
-  "view=View instrument bookings",
-  "book=Create or edit instrument bookings",
   "login=Login",
-  "logout=Logout"
+  "main=Main menu",
+  "view=View instrument bookings",
+  "book=Create or edit instrument bookings"
 );
 #admin only functions
 $adminfunctions = array(
@@ -29,7 +28,6 @@ $adminfunctions = array(
 $act=array();
 $actiontitles=array();
 $i=1;
-createDefaultAction ($userfunctions);
 createActionTranslate ($userfunctions, $i);
 $i=1000;
 createActionTranslate ($adminfunctions, $i);
@@ -44,22 +42,24 @@ function createActionTranslate($fns, $i) {
   }
 }
 
-function createDefaultAction ($fns) {
-  global $act, $actiontitles;
-  $fn=$fns[0];
-  preg_match("/(.+?)=(.+)/", $fn, $m);
-  #echo "<!-- $m[1], $m[2] -->\n";
-  $act[""]=1;
-  $actiontitles[""]=$m[2];
-  #echo $fn;
-}
-
 /*
-echo "<pre>";
-print_r($act);
-echo "</pre>";
-echo "<pre>";
-print_r($actiontitles);
-echo "</pre>";
-*/
+$act=array();
+$act['login']=1;
+$act['main']=2;
+$act['view']=3;
+$act['book']=3;
+#admin only functions
+$act['groups']=1000;
+$act['projects']=1001;
+$act['users']=1002;
+$act['instruments']=1003;
+$act['consumables']=1004;
+$act['consume']=1005;
+$act['masquerade']=1006;
+$act['costs']=1007;
+$act['specialcosts']=1008;
+$act['bookmeta']=1009;
+$act['adminconfirm']=1010;
+$act['emaillist']=1011;
+$act['billing']=1012;*/
 ?> 

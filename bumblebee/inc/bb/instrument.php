@@ -2,10 +2,10 @@
 # $Id$
 # Instrument object (extends dbo), with extra customisations for other links
 
-include_once 'dbforms/dbrow.php';
-include_once 'dbforms/textfield.php';
-include_once 'dbforms/radiolist.php';
-include_once 'dbforms/exampleentries.php';
+include_once 'dbrow.php';
+include_once 'textfield.php';
+include_once 'radiolist.php';
+include_once 'exampleentries.php';
 
 class Instrument extends DBRow {
   
@@ -18,17 +18,17 @@ class Instrument extends DBRow {
     $f = new TextField("name", "Name");
     $attrs = array('size' => "48");
     $f->required = 1;
-    $f->isInvalidTest = "is_nonempty_string";
+    $f->isInvalidTest = "is_empty_string";
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new TextField("longname", "");
     $f->required = 1;
-    $f->isInvalidTest = "is_nonempty_string";
+    $f->isInvalidTest = "is_empty_string";
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new TextField("location", "Location");
     $f->required = 1;
-    $f->isInvalidTest = "is_nonempty_string";
+    $f->isInvalidTest = "is_empty_string";
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new RadioList("class", "Charging class");
@@ -39,13 +39,12 @@ class Instrument extends DBRow {
     $newclassname = new TextField("name","");
     $newclassname->namebase = "newclass-";
     $newclassname->setAttr(array('size' => 24));
-    $newclassname->isInvalidTest = "is_nonempty_string";
+    $newclassname->isInvalidTest = "is_empty_string";
     $newclassname->suppressValidation = 0;
     $f->list->append(array("-1","Create new: "), $newclassname);
     $f->setAttr($attrs);
-    $f->extendable = 1;
     $f->required = 1;
-    $f->isInvalidTest = "is_valid_radiochoice";
+    $f->isInvalidTest = "is_invalid_radiochoice";
     $this->addElement($f);
     $this->fill();
     $this->dumpheader = "Instrument object";

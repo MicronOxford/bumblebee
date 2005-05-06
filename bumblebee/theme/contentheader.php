@@ -2,8 +2,6 @@
   # $Id$
   # Header HTML for the page
 ?>
-<body>
-
 <div id="header">
   <div id="headerLeft">
     <a href='http://www.pfpc.unimelb.edu.au/' title="PFPC">
@@ -14,4 +12,3 @@
     <h1>PFPC Instrument Bookings</h1>
   </div>
 </div>
-

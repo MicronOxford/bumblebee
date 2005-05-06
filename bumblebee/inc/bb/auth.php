@@ -2,9 +2,9 @@
 # $Id$
 # Authorisation object
 
-include_once ('dbforms/typeinfo.php');
+include_once ('inc/typeinfo.php');
 
-class SystemAuth {
+class Auth {
   var $uid,
       $username,
       $name,
@@ -12,9 +12,8 @@ class SystemAuth {
       $_loggedin=0,
       $_error;
   var $table;
-  var $DEBUGMODE = 1;
 
-  function SystemAuth($table="users") {
+  function Auth($table="users") {
     session_start();
     $this->table = $table;
     if (isset($_SESSION['uid'])) {
@@ -53,7 +52,6 @@ class SystemAuth {
     $this->uid = $_SESSION['uid'];
     $this->username = $_SESSION['username'];
     $this->name = $_SESSION['name'];
-    ## FIXME Should we double check this?
     $this->isadmin = $_SESSION['isadmin'];
     return 1;
   }
@@ -66,10 +64,10 @@ class SystemAuth {
     }
     #then there is data provided to us in a login form
     # need to verify if it is valid login info
-    $PASSWORD = $_POST['pass'];
+    $epass = md5($_POST['pass']);
+    #check that the pass is correct
     $USERNAME = $_POST['username'];
-    $epass = md5($PASSWORD);
-    $q = "SELECT username,name,passwd,id,isadmin,suspended "
+    $q = "SELECT passwd,id,isadmin,suspended "
         ."FROM ".$this->table." WHERE username='$USERNAME'";
     $sql = mysql_query($q);
     if (! $sql) die (mysql_error());
@@ -78,12 +76,7 @@ class SystemAuth {
       return 0;
     }
     $row = mysql_fetch_array($sql);
-    if ($row['passwd'] == 'radius') {
-      if (!$this->_auth_via_radius($USERNAME, $PASSWORD)) {
-      $this->_error = "Login failed: radius auth failed";
-        return 0;
-      }
-    } elseif ($row['passwd'] != $epass) {
+    if ($epass != $row['passwd']) {
       $this->_error = "Login failed: bad password";
       return 0;
     }
@@ -92,25 +85,11 @@ class SystemAuth {
       return 0;
     }
     # if we got to here, then we're logged in!
-    $_SESSION['uid'] = $this->uid = $row['id'];
-    $_SESSION['username'] = $this->username = $row['username'];
-    $_SESSION['name'] = $this->name = $row['name'];
-    $_SESSION['isadmin'] = $this->isadmin = $row['isadmin'];
+    $_SESSION['uid'] = $row['id'];
+    $_SESSION['username'] = $row['username'];
+    $_SESSION['name'] = $row['name'];
+    $_SESSION['isadmin'] = $row['isadmin'];
     return 1;
   }
- 
-  function _auth_via_radius($username, $password) {
-    require_once "Auth/Auth.php";
-    $params = array(
-                "servers" => array(array("localhost", 0, "secretKey", 3, 3)),
-                "authtype" => "PAP"
-                );
-    $a = new Auth("RADIUS", $params);
-    $a->username = $username;
-    $a->password = $password;
-    $a->start();
-    return ($a->getAuth());
-  }
-
-} //SystemAuth
+}
 ?> 

@@ -8,7 +8,6 @@ class DropList extends ChoiceList {
 
   function DropList($name, $description="") {
     $this->ChoiceList($name, $description);
-    $this->extendable = 0;
   }
 
   function display() {
@@ -20,7 +19,7 @@ class DropList extends ChoiceList {
 
     #echo "<pre>".print_r($data,1)."</pre>";
     #echo $this->value;
-    $selected = ($data[$this->formatid] == $this->getValue() ? " selected='1' " : "");
+    $selected = ($data[$this->formatid] == $this->value ? " selected='1' " : "");
     $t  = "<option "
          ."value='".$data[$this->formatid]."' $selected /> ";
     foreach ($this->formatter as $k => $v) {
@@ -36,14 +35,14 @@ class DropList extends ChoiceList {
 
   function selectable() {
     $t = "<select name='$this->namebase$this->name'>";
-    foreach ($this->list->choicelist as $k => $v) {
+    foreach ($this->list->list as $k => $v) {
       $t .= $this->format($v);
     }
     $t .= "</select>";
     return $t;
   }
 
-} // class DropList
+} // class RadioList
 
 
 ?> 

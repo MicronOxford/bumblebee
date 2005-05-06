@@ -1,5 +1,4 @@
 <?php
-# $Id$
 #
 
   function actionBilling()
@@ -156,16 +155,12 @@
   }
     
 
-  function displayPost() {
-    echo "<table border='1'><tr><th>key</th><th>value</th></tr>\n";
-    foreach ($_POST as $key => $supplied) {
-      echo "<tr><td>'$key'</td><td>'$supplied'</td></tr>\n";
-    }
-    echo "\n</table>";
-  }
-
   function returnBillingData() {
-    displayPost();
+    echo "<pre>\n";
+    foreach ($_POST as $key => $supplied) {
+      echo "key='$key' value='$supplied'\n";
+    }
+    echo "\n</pre>";
     $startdate = sprintf("%04d-%02d-%02d", $_POST['startyear'], $_POST['startmonth'], $_POST['startday']);
     $stopdate = sprintf("%04d-%02d-%02d", $_POST['stopyear'], $_POST['stopmonth'], $_POST['stopday']);
     #$q = "SELECT bookings.id,users.id,users.username,projects.id,projects.name,groups.id,groups.name,stoptime,starttime,ishalfday,isfullday "
@@ -290,7 +285,7 @@
     ### Now construct the entire query out of the different parts
     $q = implode("AND ", $restrictions);
 
-    echoSQL($q);
+    echo "<br /><br />Get booking details: '$q' <br />";
 
     echo "<table border='1'>";
     if (!$sql = mysql_query($q)) die(mysql_error());
@@ -311,9 +306,14 @@
         if (! is_int($key)) echo "<td>$supplied</td>";
       }
       echo "</tr>";
+      /*
+      foreach ($g as $key => $supplied) {
+        echo $key ."=". $supplied ." ";
+      }
+      echo "<br />";*/
     }
     echo "</table>";
-    echoSQL($q, 1);
+    echo "<br /><br />Get booking details: '$q' successful<br />";
     /*
     # appears to be a MySQL > 4.1 thing again. :(
     $newq = "SELECT * FROM ($q) AS billing WHERE groups.id='5'";
