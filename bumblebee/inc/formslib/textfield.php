@@ -38,11 +38,12 @@ class TextField extends Field {
   }
 
   function selectable() {
-    $t  = "<input type='text' name='$this->namebase$this->name' "
-         ."value='".xssqw($this->getValue())."' ";
-    $t .= (isset($this->attr['size']) ? "size='".$this->attr['size']."' " : "");
-    $t .= (isset($this->attr['maxlength']) ? "maxlength='".$this->attr['maxlength']."' " : "");
-    $t .= "/>";
+    $t  = '<input type="text" name="'.$this->namebase.$this->name.'" ';
+    $t .= 'title="'.$this->description.'" ';
+    $t .= 'value="'.xssqw($this->getValue()).'" ';
+    $t .= (isset($this->attr['size']) ? 'size="'.$this->attr['size'].'" ' : '');
+    $t .= (isset($this->attr['maxlength']) ? 'maxlength="'.$this->attr['maxlength'].'" ' : '');
+    $t .= '/>';
     return $t;
   }
   

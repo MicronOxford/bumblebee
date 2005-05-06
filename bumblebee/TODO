@@ -1,9 +1,17 @@
 $Id$can change another's bookings: edit, delete etc
 
 
-use consumable loses 2-step info
+* bookings
+  - pass/log book vs future/bookings setup for instruments
+  - TSR * blows up on 00:00-24:00
+  - TSR * does not validate against non-full time
 
-pass/log book vs future/bookings setup for instruments
+* use consumable
+  - doens't list by consumable,  only by user
+
+* projects
+  - Create project doesn't seem to actually sync projectgroups table on allocation.
+
 
 * instrument
   - edit timeslotrules; not silly granularity stuff in instruments

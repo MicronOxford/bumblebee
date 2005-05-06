@@ -17,7 +17,7 @@ class ActionConsume extends ActionAction {
   function go() {
     global $BASEURL;
     if (isset($this->PD['list']) && isset($this->PD['consumableid'])) {
-      $this->listConsumeConsumable($PD['consumableid']);
+      $this->listConsumeConsumable($this->PD['consumableid']);
     } elseif (isset($this->PD['list']) && isset($this->PD['user'])) {
       $this->listConsumeUser($this->PD['user']);
     } elseif (isset($this->PD['delete'])) {
@@ -43,7 +43,7 @@ class ActionConsume extends ActionAction {
   function mungePathData() {
     $this->PD = array();
     foreach ($_POST as $k => $v) {
-      $PD[$k] = $v;
+      $this->PD[$k] = $v;
     }
     $lPDATA = $this->PDATA;
     array_shift($lPDATA);
@@ -65,7 +65,7 @@ class ActionConsume extends ActionAction {
       }
     }
     #$PD['defaultclass'] = 12;
-    echoData($this->PD);
+    echoData($this->PD, 0);
   }
 
   function selectConsumeUser() {
@@ -73,8 +73,8 @@ class ActionConsume extends ActionAction {
     $extrapath = '';
     $listpath = '';
     if (isset($this->PD['consumableid'])) {
-      $extrapath =  "consumable/$this->PD[consumableid]/";
-      $listpath = "$BASEURL/consume/${extrapath}list";
+      $extrapath =  'consumable/'.$this->PD['consumableid'].'/';
+      $listpath = $BASEURL.'/consume/'.$extrapath.'list';
     }
     #$extrapath = (isset($PD['consumableid']) ? "consumable/$PD[consumableid]/" : "");
     $userselect = new AnchorTableList('Users', 'Select which user is consuming');
@@ -95,8 +95,8 @@ class ActionConsume extends ActionAction {
     $extrapath = '';
     $listpath = '';
     if (isset($this->PD['user'])) {
-      $extrapath =  "user/$PD[user]/";
-      $listpath = "$BASEURL/consume/${extrapath}list";
+      $extrapath =  'user/'.$this->PD['user'].'/';
+      $listpath = $BASEURL.'/consume/'.$extrapath.'list';
     }
     $consumableselect = new AnchorTableList('Consumables', 'Select which Consumables to use');
     $consumableselect->connectDB('consumables', array('id', 'name', 'longname'));

@@ -70,6 +70,11 @@ class SimpleDate {
     $this->setStr($this->datestring);
   }
 
+  function weekRound() {
+    $this->setStr($this->datestring);
+    $this->addDays(-1 * $this->dow());
+  }
+  
   /** 
    * returns the number of days between two dates ($this - $d) 
    * note that it will return fractional days across daylight saving boundaries
@@ -88,8 +93,8 @@ class SimpleDate {
     //We don't want to count an extra day (or part thereof) just because the day range 
     //includes going from summertime to wintertime so the date range includes an extra hour!
 
-    $tz1 = date("Z", $this->ticks);
-    $tz2 = date("Z", $date->ticks);
+    $tz1 = date('Z', $this->ticks);
+    $tz2 = date('Z', $date->ticks);
     if ($tz1 == $tz2) {
       // same timezone, so return the computed amount 
       #echo "Using numdays $tz1 $tz2 ";
@@ -181,6 +186,10 @@ class SimpleDate {
   **/
   function dow() {
     return date('w', $this->ticks);
+  }
+  
+  function dowStr() {
+    return date('l', $this->ticks);
   }
   
   /**

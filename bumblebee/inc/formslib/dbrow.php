@@ -126,14 +126,14 @@ class DBRow extends DBO {
     if ($vals != '') {
       if (! $this->insertRow) {
         //it's an existing record, so update
-        $q = "UPDATE $this->table "
-            ."SET $vals "
-            ."WHERE $this->idfield=".qw($this->id)
+        $q = 'UPDATE '.$this->table 
+            .' SET '.$vals 
+            .' WHERE '.$this->idfield.'='.qw($this->id)
             .(($this->restriction !== '') ? ' AND '.$this->restriction : '');
         $sql_result = db_quiet($q, $this->fatal_sql);
       } else {
         //it's a new record, insert it
-        $q = "INSERT $this->table SET $vals";
+        $q = 'INSERT '.$this->table.' SET '.$vals;
         $sql_result = db_quiet($q, $this->fatal_sql);
         # FIXME: do we need to check that this was successful in here?
         if ($this->autonumbering) {
@@ -175,6 +175,7 @@ class DBRow extends DBO {
         //Complex fields can use this as a JIT syncing point, and may
         //choose to return nothing here, in which case their entry is
         //not added to the return list for the row
+        $this->log('Getting SQL string for '.$this->fields[$k]->name, 8);
         $sqlval = $this->fields[$k]->sqlSetStr($force);
         if ($sqlval) {
           #echo "SQLUpdate: '$sqlval' <br />";
@@ -224,25 +225,21 @@ class DBRow extends DBO {
    * Fill this object (i.e. its fields) from the SQL query
   **/
   function fill() {
-    $q = "SELECT * FROM "
-        ."$this->table "
-        ."WHERE $this->idfield=".qw($this->id).' '
-        .(($this->restriction !== '') ? 'AND '.$this->restriction.' ' : '')
-        .(($this->recStart !== '') && ($this->recNum !== '') ? "LIMIT $this->recStart,$this->recNum" : '');
-    $g = db_get_single($q);
-    #echo "<pre>";print_r($g);echo "</pre>";
-    if (is_array($g)) { 
-      foreach ($this->fields as $k => $v) {
-        #echo "Filling $k ";
-        $val = issetSet($g,$k);
-        $this->fields[$k]->set($val);
-        #echo $this->fields[$k]->text_dump();
+    if ($this->id != -1) {
+      $q = 'SELECT * FROM '
+          .$this->table 
+          .' WHERE '.$this->idfield.'='.qw($this->id).' '
+          .(($this->restriction !== '') ? 'AND '.$this->restriction.' ' : '')
+          .(($this->recStart !== '') && ($this->recNum !== '') ? "LIMIT $this->recStart,$this->recNum" : '');
+      $g = db_get_single($q);
+      if (is_array($g)) { 
+        foreach ($this->fields as $k => $v) {
+          $val = issetSet($g,$k);
+          $this->fields[$k]->set($val);
+        }
       }
     }
-    //in case we get no rows back from the database, we have to have an id
-    //present otherwise we're in trouble next time
-    #echo "Completed fill, id=$this->id\n";
-    #echo "Filling $this->idfield ";
+    //we have to have an id present otherwise we're in trouble next time
     $this->fields[$this->idfield]->set($this->id);
   }
 

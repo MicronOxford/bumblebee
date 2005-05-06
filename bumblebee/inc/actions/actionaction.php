@@ -29,7 +29,7 @@ class ActionAction {
     foreach ($_POST as $k => $v) {
       $this->PD[$k] = $v;
     }
-    if (isset($this->PDATA[1])) {
+    if (isset($this->PDATA[1]) && $this->PDATA[1] !== '') {
       $this->PD['id'] = $this->PDATA[1];
     }
     #$PD['defaultclass'] = 12;

@@ -17,7 +17,7 @@ class ActionInstruments extends ActionAction {
     if (! isset($this->PD['id'])) {
       $this->selectInstruments();
     } elseif (isset($this->PD['delete'])) {
-      $this->deleteInstruments($this->PD['id']);
+      $this->deleteInstruments();
     } else {
       $this->editInstruments();
     }
