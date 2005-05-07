@@ -2,7 +2,7 @@
   # $Id$
   # Footer HTML to be included on every page
 
-  include 'systemstats.php';
+  include 'inc/systemstats.php';
   $stat = new SystemStats;
 ?>
 
@@ -15,17 +15,17 @@
   <br />
     This installation of BumbleBee currently manages
     <?
-      echo $stat->get('users') . " users, ";
-      echo $stat->get('projects') . " projects, ";
-      echo $stat->get('instruments') . " instruments and ";
-      echo $stat->get('bookings') . " bookings. ";
+      echo $stat->get('users') . ' users, ';
+      echo $stat->get('projects') . ' projects, ';
+      echo $stat->get('instruments') . ' instruments and ';
+      echo $stat->get('bookings') . ' bookings. ';
     ?>
   <br />
     Email the <a href="mailto:<?=$ADMINEMAIL?>">system administrator</a>
     for help.
   </p>
   <div class='copyright'>
-    Booking information Copyright &copy; <?=date("Y")?> University of Melbourne.
+    Booking information Copyright &copy; <?=date('Y')?> University of Melbourne.
   </div>
 </div>
 

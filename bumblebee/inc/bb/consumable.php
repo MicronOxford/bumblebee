@@ -2,35 +2,35 @@
 # $Id$
 # Consumables object (extends dbo)
 
-include_once 'dbforms/dbrow.php';
-include_once 'dbforms/textfield.php';
+include_once 'inc/formslib/dbrow.php';
+include_once 'inc/formslib/textfield.php';
 
 class Consumable extends DBRow {
   
   function Consumable($id) {
-    $this->DBRow("consumables", $id);
+    $this->DBRow('consumables', $id);
     $this->editable = 1;
-    $f = new IdField("id", "Consumable ID");
+    $f = new IdField('id', 'Consumable ID');
     $f->editable = 0;
     $this->addElement($f);
-    $f = new TextField("name", "Name");
-    $attrs = array('size' => "48");
+    $f = new TextField('name', 'Name');
+    $attrs = array('size' => '48');
     $f->required = 1;
-    $f->isValidTest = "is_nonempty_string";
+    $f->isValidTest = 'is_nonempty_string';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField("longname", "");
+    $f = new TextField('longname', '');
     $f->required = 1;
-    $f->isValidTest = "is_nonempty_string";
+    $f->isValidTest = 'is_nonempty_string';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField("cost", "Unit cost");
+    $f = new TextField('cost', 'Unit cost');
     $f->required = 1;
-    $f->isValidTest = "is_cost_amount";
+    $f->isValidTest = 'is_cost_amount';
     $f->setAttr($attrs);
     $this->addElement($f);
     $this->fill();
-    $this->dumpheader = "Consumables object";
+    $this->dumpheader = 'Consumables object';
   }
 
   function display() {
@@ -38,11 +38,11 @@ class Consumable extends DBRow {
   }
 
   function displayAsTable() {
-    $t = "<table class='tabularobject'>";
+    $t = '<table class="tabularobject">';
     foreach ($this->fields as $k => $v) {
       $t .= $v->displayInTable(2);
     }
-    $t .= "</table>";
+    $t .= '</table>';
     return $t;
   }
 

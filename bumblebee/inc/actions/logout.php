@@ -2,7 +2,7 @@
 # $Id$
 # print out a login form
 
-include_once 'actionaction.php';
+include_once 'inc/actions/actionaction.php';
 
 class ActionLogout extends ActionAction {
 

@@ -5,31 +5,33 @@
 # This behaves as a single field in the sense that it is all JOINed info,
 # so we respect the 'field' interface while overriding pretty muchh all of it.
 
-include_once('field.php');
+// NOTE: This code not currently used in BUMBLEBEE so it might not be very well debugged, it at all!
+
+include_once 'field.php';
 
 class MultiList extends Field {
-  var $joinTable,
-      $jtOuterColumn,
-      $jtoVal;
+  var $joinTable;
+  var $jtOuterColumn;
+  var $jtoVal;
   var $controlfield;
   var $fields;
   var $matchfield;
   var $values;
-  var $format,
-      $number;
-  var $radioclass = "item";
+  var $format;
+  var $number;
+  var $radioclass = 'item';
   var $elements;
 
   function MultiList($joinTable, $jtOuterColumn, $jtoVal,
-                     $name, $description="") {
-    $this->Field($name, "", $description);
+                     $name, $description='') {
+    $this->Field($name, '', $description);
     $this->joinTable = $joinTable;
     $this->jtOuterColumn = $jtOuterColumn;
     $this->jtoVal = $jtoVal;
     $this->elements = array();
   }
 
-  function controlField(&$f, $matchfield, $format="") {
+  function controlField(&$f, $matchfield, $format='') {
     $this->controlfield = $f;
     $this->matchfield = $matchfield;
     $this->format = (is_array($format) ? $format : array($format));
@@ -52,11 +54,11 @@ class MultiList extends Field {
       $j=0;
       $this->fields[$i] = array();
       $this->fields[$i][$j] = $this->controlfield; //**COPY**
-      $this->fields[$i][$j]->namebase = $this->name."-$i-";
+      $this->fields[$i][$j]->namebase = $this->name.'-$i-';
       foreach ($this->elements as $k => $v) {
         $j++;
         $this->fields[$i][$j] = $v;
-        $this->fields[$i][$j]->namebase = $this->name."-$i-";
+        $this->fields[$i][$j]->namebase = $this->name.'-$i-';
       }
     }
   }

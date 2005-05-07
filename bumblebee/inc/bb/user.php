@@ -2,11 +2,11 @@
 # $Id$
 # User object (extends dbo), with extra customisations for other links
 
-include_once 'dbforms/dbrow.php';
-include_once 'dbforms/textfield.php';
-include_once 'dbforms/radiolist.php';
-include_once 'dbforms/checkbox.php';
-include_once 'dbforms/passwdfield.php';
+include_once 'inc/formslib/dbrow.php';
+include_once 'inc/formslib/textfield.php';
+include_once 'inc/formslib/radiolist.php';
+include_once 'inc/formslib/checkbox.php';
+include_once 'inc/formslib/passwdfield.php';
 
 class User extends DBRow {
   

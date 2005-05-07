@@ -2,7 +2,8 @@
 # $Id$
 # edit the user details, project associations and permissions
 
-include_once 'inc/user.php';
+include_once 'inc/actions/actionaction.php';
+include_once 'inc/bb/user.php';
 
 class ActionPassword extends ActionAction {
 
@@ -29,8 +30,7 @@ class ActionPassword extends ActionAction {
           )
         );
     echo $user->display();
-    $submit = "Change password";
-    echo "<input type='submit' name='submit' value='$submit' />";
+    echo "<input type='submit' name='submit' value='Change password' />";
   }
 }
 

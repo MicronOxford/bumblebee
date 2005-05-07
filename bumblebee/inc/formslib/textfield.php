@@ -3,7 +3,7 @@
 # textfield object
 
 include_once 'field.php';
-include_once 'typeinfo.php';
+include_once 'inc/typeinfo.php';
 
 class TextField extends Field {
 

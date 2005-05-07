@@ -2,7 +2,7 @@
 # $Id$
 # Booking object
 
-include_once 'inc/dbforms/date.php';
+include_once 'inc/date.php';
 include_once 'timeslot.php';
 
 class Booking extends TimeSlot {

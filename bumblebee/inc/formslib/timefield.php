@@ -3,7 +3,7 @@
 # textfield object
 
 include_once 'field.php';
-include_once 'typeinfo.php';
+include_once 'inc/typeinfo.php';
 
 define('TF_FIXED', 0);
 define('TF_DROP', 1);
@@ -20,7 +20,7 @@ class TimeField extends Field {
   var $_manualRepresentation = TF_AUTO;
   var $droplist;
   
-  function TimeField($name, $longname="", $description="") {
+  function TimeField($name, $longname='', $description='') {
     parent::Field($name, $longname, $description);
     $this->time = new SimpleTime(0);
     $this->slotStart = new SimpleDate(0);
@@ -28,7 +28,7 @@ class TimeField extends Field {
   }
 
   function displayInTable($cols) {
-    $errorclass = ($this->isValid ? "" : "class='inputerror'");
+    $errorclass = ($this->isValid ? '' : "class='inputerror'");
     $t = "<tr $errorclass><td>$this->longname</td>\n"
         ."<td title='$this->description'>";
     if ($this->editable && ! $this->hidden) {

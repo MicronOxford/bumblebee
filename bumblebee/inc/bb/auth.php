@@ -2,8 +2,8 @@
 # $Id$
 # Authorisation object
 
-include_once ('dbforms/sql.php');
-include_once ('dbforms/typeinfo.php');
+include_once 'inc/formslib/sql.php';
+include_once 'inc/typeinfo.php';
 
 class BumbleBeeAuth {
   var $uid;    //user id from table

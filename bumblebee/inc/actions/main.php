@@ -4,6 +4,7 @@
 
 function actionMain()
 {
+  echo "FIXME: DEAD CODE IS NOT DEAD. LONG LIVE THE CODE!";
   global $ISADMIN, $UID;
 
   echo <<<END

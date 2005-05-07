@@ -11,6 +11,6 @@
   <link rel="icon" href="<?=$BASEPATH?>/theme/images/favicon.ico" />
   <link rel="shortcut icon" href="<?=$BASEPATH?>/theme/images/favicon.ico" />
 <?php
-  include 'jsfunctions.php'
+  include 'inc/jsfunctions.php'
 ?>
 </head>

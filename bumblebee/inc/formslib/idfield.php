@@ -2,12 +2,12 @@
 # $Id$
 # textfield object
 
-include_once("textfield.php");
-include_once("typeinfo.php");
+include_once 'textfield.php';
+include_once 'inc/typeinfo.php';
 
 class IdField extends TextField {
 
-  function IdField($name, $longname="", $description="") {
+  function IdField($name, $longname='', $description='') {
     parent::TextField($name, $longname, $description);
   }
 

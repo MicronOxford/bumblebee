@@ -2,12 +2,12 @@
 # $Id$
 # CheckBox object
 
-include_once("field.php");
-include_once("typeinfo.php");
+include_once 'field.php';
+include_once 'inc/typeinfo.php';
 
 class CheckBox extends Field {
 
-  function CheckBox($name, $longname="", $description="") {
+  function CheckBox($name, $longname='', $description='') {
     parent::Field($name, $longname, $description);
     $this->useNullValues = 1;
   }
@@ -24,7 +24,7 @@ class CheckBox extends Field {
   }
 
   function displayInTable($cols) {
-    $errorclass = ($this->isValid ? "" : "class='inputerror'");
+    $errorclass = ($this->isValid ? '' : "class='inputerror'");
     $t = "<tr $errorclass><td>$this->longname</td>\n"
         ."<td title='$this->description'>";
     if ($this->editable) {
@@ -36,9 +36,9 @@ class CheckBox extends Field {
     }
     $t .= "</td>\n";
     for ($i=0; $i<$cols-2; $i++) {
-      $t .= "<td></td>";
+      $t .= '<td></td>';
     }
-    $t .= "</tr>";
+    $t .= '</tr>';
     return $t;
   }
 

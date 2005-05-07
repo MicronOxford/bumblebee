@@ -2,8 +2,8 @@
 # $Id$
 # Group object (extends dbo)
 
-include_once 'dbforms/dbrow.php';
-include_once 'dbforms/textfield.php';
+include_once 'inc/formslib/dbrow.php';
+include_once 'inc/formslib/textfield.php';
 
 class ClassCost extends DBRow {
   

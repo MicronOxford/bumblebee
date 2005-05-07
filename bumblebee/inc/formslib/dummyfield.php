@@ -3,8 +3,8 @@
 # dummyfield object -- has no SQL representation, just place holds to create
 # form data
 
-include_once("field.php");
-include_once("typeinfo.php");
+include_once 'field.php';
+include_once 'inc/typeinfo.php';
 
 class DummyField extends Field {
 
@@ -30,6 +30,7 @@ class DummyField extends Field {
   }
   
   function sqlSetStr() {
+    return '';
   }
   
 } // class DummyField

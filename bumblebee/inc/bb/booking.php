@@ -2,7 +2,7 @@
 # $Id$
 # Booking object
 
-include_once 'dbforms/date.php';
+include_once 'date.php';
 
 class Booking {
   var $id,
@@ -19,6 +19,7 @@ class Booking {
       $useremail;
   
   function Booking($arr) {
+    echo "FIXME: DEAD CODE IS NOT DEAD. LONG LIVE THE CODE!";
     $this->id = $arr['bookid'];
     $this->start = new SimpleDate($arr['bookwhen'],1);
     $this->stop = new SimpleDate($arr['stoptime'],1);

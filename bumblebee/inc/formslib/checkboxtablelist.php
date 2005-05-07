@@ -2,21 +2,21 @@
 # $Id$
 # anchor list (<li><a href="$href">$name</a></li>) for a ChoiceList
 
-include_once("anchorlist.php");
+include_once 'anchorlist.php';
 
 class CheckBoxTableList extends ChoiceList {
-  var $numcols    = '',
-      $numSpareCols = '';
-  var $trclass    = 'itemrow',
-      $tdlclass   = 'itemL',
-      $tdrclass   = 'itemR',
-      $aclass     = 'itemanchor',
-      $tableclass = 'selectlist';
+  var $numcols    = '';
+  var $numSpareCols = '';
+  var $trclass    = 'itemrow';
+  var $tdlclass   = 'itemL';
+  var $tdrclass   = 'itemR';
+  var $aclass     = 'itemanchor';
+  var $tableclass = 'selectlist';
   var $tableHeading;
   var $checkboxes;
-  var $followHidden,
-      $followHiddenField,
-      $hidden;
+  var $followHidden;
+  var $followHiddenField;
+  var $hidden;
   var $footer;
 
   function CheckBoxTableList($name, $description='', $numSpareCols=0) {

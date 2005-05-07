@@ -2,11 +2,12 @@
 # $Id$
 # view a bookings calendar
 
-include_once 'inc/calendar.php';
-include_once 'inc/bookingentry.php';
-include_once 'inc/bookingentryro.php';
-include_once 'inc/dbforms/anchortablelist.php';
-include_once 'inc/dbforms/date.php';
+include_once 'inc/bb/calendar.php';
+include_once 'inc/bb/bookingentry.php';
+include_once 'inc/bb/bookingentryro.php';
+include_once 'inc/formslib/anchortablelist.php';
+include_once 'inc/date.php';
+include_once 'inc/actions/actionaction.php';
 
 class ActionView extends ActionAction {
     

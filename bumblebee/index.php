@@ -1,28 +1,30 @@
 <?php
-# $Id$
+// $Id$
 
+// prevent output for the moment to permit session headers
 ob_start();
 
-include 'config.php'; 
-#start the database session
-include 'db.php'; 
-include 'inc/auth.php';
-#var $auth = new Auth();
+include 'config/config.php'; 
+// start the database session
+include 'inc/db.php'; 
+// check the user's credentials, create a session to record them
+include 'inc/bb/auth.php';
 $auth = new BumbleBeeAuth();
 
-#ALL is ready to roll now, start the output again.
+// all is ready to roll now, start the output again.
 ob_end_flush();
 
-include_once 'action/actionfactory.php';
-
+// create the action factory to interpret what we are supposed to do
+include_once 'inc/actions/actionfactory.php';
 $action = new ActionFactory($auth);
 
-$pagetitle = $action->title . ' - ' . $CONFIG['main']['SiteTitle'];
 
 //FIXME -- streamline these includes?
-include_once 'adminmenu.php';
+include_once 'inc/adminmenu.php';
 // include_once 'action/masquerade.php';
 
+// $pagetitle can be used in the pageheader.php from the theme
+$pagetitle = $action->title . ' - ' . $CONFIG['main']['SiteTitle'];
 include 'theme/pageheader.php';
 include 'theme/contentheader.php';
 

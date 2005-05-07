@@ -4,7 +4,7 @@
 # 
 
 include_once 'textfield.php';
-include_once 'typeinfo.php';
+include_once 'inc/typeinfo.php';
 
 class PasswdField extends TextField {
   var $crypt_method = 'md5';

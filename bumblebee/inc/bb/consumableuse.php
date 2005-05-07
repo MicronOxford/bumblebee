@@ -2,9 +2,9 @@
 # $Id$
 # Consumables object (extends dbo)
 
-include_once 'dbforms/dbrow.php';
-include_once 'dbforms/textfield.php';
-include_once 'dbforms/referencefield.php';
+include_once 'inc/formslib/dbrow.php';
+include_once 'inc/formslib/textfield.php';
+include_once 'inc/formslib/referencefield.php';
 
 class ConsumableUse extends DBRow {
   

@@ -2,7 +2,7 @@
 # $Id$
 # test the validity of data according to a set of rules
 
-include_once 'typeinfo.php';
+include_once 'inc/typeinfo.php';
 
 function ValidTester($validator, $data, $DEBUG=0) {
   //global $VERBOSEDATA;

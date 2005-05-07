@@ -2,15 +2,15 @@
 # $Id$
 # anchor list (<li><a href="$href">$name</a></li>) for a ChoiceList
 
-include_once("anchorlist.php");
+include_once 'anchorlist.php';
 
 class AnchorTableList extends AnchorList {
   var $numcols    = '';
-  var $trclass    = 'itemrow',
-      $tdlclass   = 'itemL',
-      $tdrclass   = 'itemR',
-      $aclass     = 'itemanchor',
-      $tableclass = 'selectlist';
+  var $trclass    = 'itemrow';
+  var $tdlclass   = 'itemL';
+  var $tdrclass   = 'itemR';
+  var $aclass     = 'itemanchor';
+  var $tableclass = 'selectlist';
   var $tableHeading;
 
   function AnchorTableList($name, $description='', $numcols=2) {
@@ -44,7 +44,7 @@ class AnchorTableList extends AnchorList {
   }
 
   function display() {
-    $tableclass = (isset($this->tableclass) ? " class='$this->tableclass'" : "");
+    $tableclass = (isset($this->tableclass) ? " class='$this->tableclass'" : '');
     $t  = "<table title='$this->description' $tableclass>\n";
     if (isset($this->tableHeadings) && is_array($this->tableHeadings)) {
       $t .= '<tr>';

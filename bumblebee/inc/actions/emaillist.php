@@ -3,9 +3,9 @@
 # return a list of the email addresses depending on what we've been asked
 # for... e.g. per instrument for the "announce" list.
 
-include_once 'inc/dbforms/checkbox.php';
-include_once 'inc/dbforms/checkboxtablelist.php';
-include_once 'action/actionaction.php';
+include_once 'inc/formslib/checkbox.php';
+include_once 'inc/formslib/checkboxtablelist.php';
+include_once 'inc/actions/actionaction.php';
 
 class ActionEmailList extends ActionAction {
   var $fatal_sql = 1;

@@ -2,7 +2,7 @@
 # $Id$
 # Timeslot validation based on rules passed to us (presumably from an SQL entry)
 
-include_once 'inc/dbforms/date.php';
+include_once 'inc/date.php';
 include_once 'timeslot.php';
 
 //enumeration of date-time operations for sharing around code between find operations

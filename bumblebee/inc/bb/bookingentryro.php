@@ -2,8 +2,8 @@
 # $Id$
 # Booking object
 
-include_once 'bookings/booking.php';
-include_once 'bookings/bookingdata.php';
+include_once 'inc/bookings/booking.php';
+include_once 'inc/bookings/bookingdata.php';
 
 class BookingEntryRO {
   var $id;
@@ -24,9 +24,9 @@ class BookingEntryRO {
   }
 
   function displayAsTable($displayAdmin, $displayOwner) {
-    $t = "<table class='tabularobject'>";
+    $t = '<table class="tabularobject">';
     $t .= $this->data->displayInTable(2, $displayAdmin, $displayOwner);
-    $t .= "</table>";
+    $t .= '</table>';
     return $t;
   }
 

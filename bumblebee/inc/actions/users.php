@@ -2,8 +2,9 @@
 # $Id$
 # edit the user details, project associations and permissions
 
-include_once 'inc/user.php';
-include_once 'inc/dbforms/anchortablelist.php';
+include_once 'inc/bb/user.php';
+include_once 'inc/formslib/anchortablelist.php';
+include_once 'inc/actions/actionaction.php';
 
 class ActionUsers extends ActionAction {
 
@@ -26,11 +27,11 @@ class ActionUsers extends ActionAction {
 
   function selectUser() {
     global $BASEURL;
-    $select = new AnchorTableList("Users", "Select which user to view");
-    $select->connectDB("users", array("id", "name", "username"));
-    $select->list->prepend(array("-1","Create new user"));
-    $select->hrefbase = "$BASEURL/users/";
-    $select->setFormat("id", "%s", array("name"), " %s", array("username"));
+    $select = new AnchorTableList('Users', 'Select which user to view');
+    $select->connectDB('users', array('id', 'name', 'username'));
+    $select->list->prepend(array('-1','Create new user'));
+    $select->hrefbase = $BASEURL.'/users/';
+    $select->setFormat('id', '%s', array('name'), ' %s', array('username'));
     echo $select->display();
   }
 
@@ -47,11 +48,11 @@ class ActionUsers extends ActionAction {
         );
     echo $user->display();
     if ($user->id < 0) {
-      $submit = "Create new user";
-      $delete = "0";
+      $submit = 'Create new user';
+      $delete = '0';
     } else {
-      $submit = "Update entry";
-      $delete = "Delete entry";
+      $submit = 'Update entry';
+      $delete = 'Delete entry';
     }
     echo "<input type='submit' name='submit' value='$submit' />";
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";

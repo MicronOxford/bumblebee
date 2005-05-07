@@ -2,8 +2,9 @@
 # $Id$
 # edit consumables
 
-include_once 'inc/consumable.php';
-include_once 'inc/dbforms/anchortablelist.php';
+include_once 'inc/bb/consumable.php';
+include_once 'inc/formslib/anchortablelist.php';
+include_once 'inc/actions/actionaction.php';
 
 class ActionConsumables extends ActionAction {
 
@@ -26,11 +27,11 @@ class ActionConsumables extends ActionAction {
 
   function selectConsumables() {
     global $BASEURL;
-    $projectselect = new AnchorTableList("Consumables", "Select which Consumables to view");
-    $projectselect->connectDB("consumables", array("id", "name", "longname"));
-    $projectselect->list->prepend(array("-1","Create new consumable"));
-    $projectselect->hrefbase = "$BASEURL/consumables/";
-    $projectselect->setFormat("id", "%s", array("name"), " %50.50s", array("longname"));
+    $projectselect = new AnchorTableList('Consumables', 'Select which Consumables to view');
+    $projectselect->connectDB('consumables', array('id', 'name', 'longname'));
+    $projectselect->list->prepend(array('-1','Create new consumable'));
+    $projectselect->hrefbase = $BASEURL.'/consumables';
+    $projectselect->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'));
     echo $projectselect->display();
   }
 
@@ -47,16 +48,16 @@ class ActionConsumables extends ActionAction {
         );
     echo $consumable->display();
     if ($consumable->id < 0) {
-      $submit = "Create new consumable";
-      $delete = "0";
+      $submit = 'Create new consumable';
+      $delete = '0';
     } else {
-      $submit = "Update entry";
-      $delete = "Delete entry";
+      $submit = 'Update entry';
+      $delete = 'Delete entry';
     }
     echo "<input type='submit' name='submit' value='$submit' />";
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
     echo "\n<p><a href='$BASEURL/consume/consumable/$consumable->id/list'>"
-          ."View usage records</a> "
+          .'View usage records</a> '
         ."for this consumable</p>\n";
   }
 

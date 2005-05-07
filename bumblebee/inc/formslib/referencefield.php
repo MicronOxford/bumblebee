@@ -2,14 +2,14 @@
 # $Id$
 # a non-editable reference object that looks up data from a join table
 
-include_once('field.php');
-include_once('exampleentries.php');
-include_once('typeinfo.php');
+include_once 'field.php';
+include_once 'exampleentries.php';
+include_once 'inc/typeinfo.php';
 
 class ReferenceField extends Field {
    var $example;
 
-  function ReferenceField($name, $longname="", $description="") {
+  function ReferenceField($name, $longname='', $description='') {
     parent::Field($name, $longname, $description);
   }
 
@@ -31,9 +31,9 @@ class ReferenceField extends Field {
     }
     $t .= "</td>\n";
     for ($i=0; $i<$cols-2; $i++) {
-      $t .= "<td></td>";
+      $t .= '<td></td>';
     }
-    $t .= "</tr>";
+    $t .= '</tr>';
     return $t;
   }
 

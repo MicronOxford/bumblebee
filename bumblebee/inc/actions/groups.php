@@ -2,8 +2,9 @@
 # $Id$
 # edit the groups
 
-include_once 'inc/group.php';
-include_once 'inc/dbforms/anchortablelist.php';
+include_once 'inc/bb/group.php';
+include_once 'inc/formslib/anchortablelist.php';
+include_once 'inc/actions/actionaction.php';
 
 class ActionGroup extends ActionAction  {
 
@@ -36,11 +37,11 @@ class ActionGroup extends ActionAction  {
         );
     echo $group->display();
     if ($group->id < 0) {
-      $submit = "Create new group";
-      $delete = "0";
+      $submit = 'Create new group';
+      $delete = '0';
     } else {
-      $submit = "Update entry";
-      $delete = "Delete entry";
+      $submit = 'Update entry';
+      $delete = 'Delete entry';
     }
     #$submit = ($PD['id'] < 0 ? "Create new" : "Update entry");
     echo "<input type='submit' name='submit' value='$submit' />";
@@ -49,11 +50,11 @@ class ActionGroup extends ActionAction  {
 
   function selectgroup() {
     global $BASEURL;
-    $groupselect = new AnchorTableList("Group", "Select which group to view");
-    $groupselect->connectDB("groups", array("id", "name", "longname"));
-    $groupselect->list->prepend(array("-1","Create new group"));
-    $groupselect->hrefbase = "$BASEURL/groups/";
-    $groupselect->setFormat("id", "%s", array("name"), " %50.50s", array("longname"));
+    $groupselect = new AnchorTableList('Group', 'Select which group to view');
+    $groupselect->connectDB('groups', array('id', 'name', 'longname'));
+    $groupselect->list->prepend(array('-1','Create new group'));
+    $groupselect->hrefbase = $BASEURL.'/groups/';
+    $groupselect->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'));
     #echo $groupselect->list->text_dump();
     echo $groupselect->display();
   }

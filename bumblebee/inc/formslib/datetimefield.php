@@ -5,8 +5,8 @@
 include_once 'field.php';
 include_once 'timefield.php';
 include_once 'datefield.php';
-include_once 'date.php';
-include_once 'typeinfo.php';
+include_once 'inc/date.php';
+include_once 'inc/typeinfo.php';
 include_once 'inc/bookings/timeslotrule.php';
 
 class DateTimeField extends Field {

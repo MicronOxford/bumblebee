@@ -2,8 +2,9 @@
 # $Id$
 # edit the projects
 
-include_once 'inc/project.php';
-include_once 'inc/dbforms/anchortablelist.php';
+include_once 'inc/bb/project.php';
+include_once 'inc/formslib/anchortablelist.php';
+include_once 'inc/actions/actionaction.php';
 
 class ActionProjects extends ActionAction {
 
@@ -26,11 +27,11 @@ class ActionProjects extends ActionAction {
 
   function selectProject() {
     global $BASEURL;
-    $projectselect = new AnchorTableList("Projects", "Select which project to view");
-    $projectselect->connectDB("projects", array("id", "name", "longname"));
-    $projectselect->list->prepend(array("-1","Create new project"));
-    $projectselect->hrefbase = "$BASEURL/projects/";
-    $projectselect->setFormat("id", "%s", array("name"), " %50.50s", array("longname"));
+    $projectselect = new AnchorTableList('Projects', 'Select which project to view');
+    $projectselect->connectDB('projects', array('id', 'name', 'longname'));
+    $projectselect->list->prepend(array('-1','Create new project'));
+    $projectselect->hrefbase = $BASEURL.'/projects/';
+    $projectselect->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'));
     echo $projectselect->display();
   }
 
@@ -46,11 +47,11 @@ class ActionProjects extends ActionAction {
         );
     echo $project->display();
     if ($project->id < 0) {
-      $submit = "Create new project";
-      $delete = "0";
+      $submit = 'Create new project';
+      $delete = '0';
     } else {
-      $submit = "Update entry";
-      $delete = "Delete entry";
+      $submit = 'Update entry';
+      $delete = 'Delete entry';
     }
     echo "<input type='submit' name='submit' value='$submit' />";
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";

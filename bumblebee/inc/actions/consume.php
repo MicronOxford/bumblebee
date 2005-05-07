@@ -2,10 +2,11 @@
 # $Id$
 # record consumables usage on a per-use basis
 
-include_once 'inc/consumableuse.php';
-include_once 'inc/consumable.php';
-include_once 'inc/dbforms/date.php';
-include_once 'inc/dbforms/anchortablelist.php';
+include_once 'inc/bb/consumableuse.php';
+include_once 'inc/bb/consumable.php';
+include_once 'inc/date.php';
+include_once 'inc/formslib/anchortablelist.php';
+include_once 'inc/actions/actionaction.php';
 
 class ActionConsume extends ActionAction {
 

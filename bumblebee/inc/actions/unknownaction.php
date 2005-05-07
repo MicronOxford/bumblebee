@@ -2,6 +2,8 @@
 # $Id$
 # an unknown action... ERROR!
 
+include_once 'inc/actions/actionaction.php';
+
 class ActionUnknown extends ActionAction {
   var $action;
 

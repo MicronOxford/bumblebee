@@ -3,15 +3,15 @@
 # return a simple choice list based on an SQL statement
 
 class SimpleList {
-  var $table,
-      $restriction;
-  var $value,
-      $key;
+  var $table;
+  var $restriction;
+  var $value;
+  var $key;
   var $list;
   var $fatal_sql=1;
 
-  function SimpleList($table, $key="id", $value="name", $longvalue="longname",
-                      $restriction="1", $order="name") {
+  function SimpleList($table, $key='id', $value='name', $longvalue='longname',
+                      $restriction='1', $order='name') {
     $this->table = $table;
     $this->key = $key;
     $this->value = $value;
@@ -52,7 +52,7 @@ class SimpleList {
   }
 
   function display() {
-    return "<pre>SimpleList:\n".print_r($this->list, true)."</pre>";
+    return '<pre>SimpleList:'."\n".print_r($this->list, true).'</pre>';
   }
 
 } // class SimpleList

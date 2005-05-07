@@ -1,8 +1,9 @@
 <?php
 # $Id$
   
-include_once 'inc/specialcosts.php';
-include_once 'inc/dbforms/anchortablelist.php';
+include_once 'inc/bb/specialcosts.php';
+include_once 'inc/formslib/anchortablelist.php';
+include_once 'inc/actions/actionaction.php';
 
 class ActionSpecialCosts extends ActionAction {
 

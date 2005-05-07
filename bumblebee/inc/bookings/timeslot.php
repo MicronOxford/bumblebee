@@ -2,7 +2,7 @@
 # $Id$
 # Booking/Vacancy object
 
-include_once 'inc/dbforms/date.php';
+include_once 'inc/date.php';
 
 class TimeSlot {
   var $start;

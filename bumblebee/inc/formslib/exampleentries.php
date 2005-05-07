@@ -3,8 +3,8 @@
 # provide some example entries for existing values next to the choices in a
 # radiolist
 
-include_once('dbchoicelist.php');
-include_once('sql.php');
+include_once 'dbchoicelist.php';
+include_once 'sql.php';
 
 class ExampleEntries {
   var $source;
@@ -17,13 +17,13 @@ class ExampleEntries {
   var $list;
 
   function ExampleEntries($source, $table, $columnmatch, $columnreturn,
-                          $maxentries=3, $order="") {
+                          $maxentries=3, $order='') {
     $this->source = $source;
     $this->table = $table;
     $this->columnmatch = $columnmatch;
     $this->columnreturn = $columnreturn;
     $this->limit = $maxentries;
-    $this->order = ($order != "" ? $order : $columnreturn);
+    $this->order = ($order != '' ? $order : $columnreturn);
   }
 
   function fill($id) {

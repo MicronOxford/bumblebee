@@ -1,7 +1,7 @@
 <?php
 # $Id$
 
-include_once('inc/statuscodes.php');
+include_once 'inc/statuscodes.php';
 
 class ActionAction {
   var $auth;

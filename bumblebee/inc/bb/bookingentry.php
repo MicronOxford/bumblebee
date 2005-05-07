@@ -2,17 +2,17 @@
 # $Id$
 # Booking object
 
-include_once 'dbforms/dbrow.php';
-include_once 'dbforms/idfield.php';
-include_once 'dbforms/textfield.php';
-include_once 'dbforms/datetimefield.php';
-include_once 'dbforms/timefield.php';
-include_once 'dbforms/droplist.php';
-include_once 'dbforms/referencefield.php';
-include_once 'dbforms/dummyfield.php';
+include_once 'inc/formslib/dbrow.php';
+include_once 'inc/formslib/idfield.php';
+include_once 'inc/formslib/textfield.php';
+include_once 'inc/formslib/datetimefield.php';
+include_once 'inc/formslib/timefield.php';
+include_once 'inc/formslib/droplist.php';
+include_once 'inc/formslib/referencefield.php';
+include_once 'inc/formslib/dummyfield.php';
 
-include_once 'bookings/timeslotrule.php';
-include_once 'calendar.php';
+include_once 'inc/bookings/timeslotrule.php';
+include_once 'inc/bb/calendar.php';
 
 class BookingEntry extends DBRow {
   var $slotrules;

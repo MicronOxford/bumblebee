@@ -3,7 +3,8 @@
 # output formatter
 
 class OutputFormatter {
-  var $format, $formatfields;
+  var $format;
+  var $formatfields;
 
   function OutputFormatter($format, $fields) {
     $this->format = $format;

@@ -2,7 +2,7 @@
 # $Id$
 # database objects (self-initialising and self-updating object)
 
-include_once 'typeinfo.php';
+include_once 'inc/typeinfo.php';
 include_once 'validtester.php';
 
 /**

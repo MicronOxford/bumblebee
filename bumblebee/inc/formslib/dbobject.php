@@ -2,9 +2,9 @@
 # $Id$
 # database objects (self-initialising and self-updating object)
 
-include_once("typeinfo.php");
-include_once("db.php");
-include_once("sql.php");
+include_once 'inc/typeinfo.php';
+include_once 'inc/db.php';
+include_once 'sql.php';
 
 class DBO {
   var $table;
@@ -16,7 +16,7 @@ class DBO {
   var $changed = 0;
   var $isValid = 0;
   var $suppressValidation = 0;
-  var $dumpheader = "DBO object";
+  var $dumpheader = 'DBO object';
   var $fatal_sql = 1;
   var $namebase;
 

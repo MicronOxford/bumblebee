@@ -44,6 +44,7 @@ function qw($v) {
  * nasty HTML
 **/
 function xssqw($v) {
+  $v = preg_replace('/\&/', '&amp;', $v);
   $v = preg_replace('/\'/', '&#39;', $v);
   $v = preg_replace('/\"/', '&#34;', $v);
   $v = preg_replace('/\</', '&lt;', $v);

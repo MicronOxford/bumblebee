@@ -2,13 +2,13 @@
 # $Id$
 # Calendar object -- holds a collection of booking objects
 
-include_once 'dbforms/date.php';
-include_once 'bookings/booking.php';
-include_once 'bookings/vacancy.php';
-include_once 'bookings/cell.php';
-include_once 'bookings/matrix.php';
-include_once 'bookings/bookingdata.php';
-include_once 'bookings/timeslotrule.php';
+include_once 'inc/date.php';
+include_once 'inc/bookings/booking.php';
+include_once 'inc/bookings/vacancy.php';
+include_once 'inc/bookings/cell.php';
+include_once 'inc/bookings/matrix.php';
+include_once 'inc/bookings/bookingdata.php';
+include_once 'inc/bookings/timeslotrule.php';
 
 class Calendar {
   var $start;

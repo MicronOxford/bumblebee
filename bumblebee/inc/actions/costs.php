@@ -2,8 +2,9 @@
 # $Id$
 # edit the groups
 
-include_once 'inc/costs.php';
-include_once 'inc/dbforms/anchortablelist.php';
+include_once 'inc/bb/costs.php';
+include_once 'inc/formslib/anchortablelist.php';
+include_once 'inc/actions/actionaction.php';
 
 class ActionCosts extends ActionAction {
 
@@ -55,8 +56,7 @@ class ActionCosts extends ActionAction {
           )
         );
     echo $classCost->display();
-    $submit = "Update entry";
-    echo "<input type='submit' name='submit' value='$submit' />";
+    echo "<input type='submit' name='submit' value='Update entry' />";
   }
   
 }

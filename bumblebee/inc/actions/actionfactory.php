@@ -11,6 +11,7 @@ include_once 'password.php';
 #include_once 'book.php';
 
 #admin functions
+//FIXME: can thesee be selectively included?
 //include_once 'adminmenu.php';
 include_once 'groups.php';
 include_once 'projects.php';
@@ -25,9 +26,9 @@ include_once 'specialcosts.php';
 include_once 'emaillist.php';
 //include_once 'billing.php';
 include_once 'unknownaction.php';
-include_once('inc/dbforms/typeinfo.php');
+include_once 'inc/typeinfo.php';
 
-include_once('actions.php');
+include_once 'actions.php';
 
 class ActionFactory {
   var $_verb;

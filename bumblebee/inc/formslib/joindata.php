@@ -3,9 +3,9 @@
 # JoinData: object to deal with JOINed data in the database, mimicks a Field
 # for use in a DBRow although has autonomous data.
 
-include_once('field.php');
-include_once('dbrow.php');
-include_once('db.php');
+include_once 'field.php';
+include_once 'dbrow.php';
+include_once 'inc/db.php';
 
 /**
   * If the element in the table is a selection list then the setup will be
@@ -22,34 +22,34 @@ include_once('db.php');
   * table that is the listed in a join table 
   *
   * Typical usage:
-  *   $f = new JoinData("jointable",
-                       "id1", $table1_key,
-                       "fieldname", "label1");
-  *   $f2 = new DropList("id2", "label2");
-  *   $f2->connectDB("table2", array("id", "name"));
-  *   $f2->list->prepend(array("-1","(none)"));
-  *   $f2->setFormat("id", "%s", array("name"), " (%s)", array("longname"));
+  *   $f = new JoinData('jointable',
+                       'id1', $table1_key,
+                       'fieldname', 'label1');
+  *   $f2 = new DropList('id2', 'label2');
+  *   $f2->connectDB('table2', array('id', 'name'));
+  *   $f2->list->prepend(array('-1','(none)'));
+  *   $f2->setFormat('id', '%s', array('name'), ' (%s)', array('longname'));
   *   $f->addElement($f2);
-  *   $f3 = new TextField("field3", "");
-  *   $f->addElement($f3, "sum_is_100");
-  *   $f->joinSetup("id2", array('total' => 3));
+  *   $f3 = new TextField('field3', '');
+  *   $f->addElement($f3, 'sum_is_100');
+  *   $f->joinSetup('id2', array('total' => 3));
   */
 class JoinData extends Field {
-  var $joinTable,
-      $jtLeftIDCol,
-      $jtLeftID,
-      $jtRightIDCol;
-  var $protoRow,
-      $rows;
+  var $joinTable;
+  var $jtLeftIDCol;
+  var $jtLeftID;
+  var $jtRightIDCol;
+  var $protoRow;
+  var $rows;
   var $colspan;
-  var $format,
-      $number;
-  var $radioclass = "item";
+  var $format;
+  var $number;
+  var $radioclass = 'item';
   var $groupValidTest;
 
   function JoinData($joinTable, $jtLeftIDCol, $jtLeftID,
-                     $name, $description="") {
-    $this->Field($name, "", $description);
+                     $name, $description='') {
+    $this->Field($name, '', $description);
     $this->joinTable = $joinTable;
     $this->jtLeftIDCol = $jtLeftIDCol;
     $this->jtLeftID = $jtLeftID;
@@ -111,7 +111,7 @@ class JoinData extends Field {
 
   function selectable() {
     $t = '';
-    #$errorclass = ($this->isValid ? "" : "class='inputerror'");
+    #$errorclass = ($this->isValid ? '' : "class='inputerror'");
     $errorclass = '';
     for ($i=0; $i<$this->number; $i++) { 
       $t .= "<tr $errorclass><td colspan='$this->colspan'>\n";
@@ -139,9 +139,9 @@ class JoinData extends Field {
     }
     $t .= "</td>\n";
     for ($i=0; $i<$cols-2; $i++) {
-      $t .= "<td></td>";
+      $t .= '<td></td>';
     }
-    $t .= "</tr>";
+    $t .= '</tr>';
     return $t;
   }
 
@@ -166,7 +166,7 @@ class JoinData extends Field {
    *  to retrieve
   **/ 
   function _countRowsInJoin() {
-    $q = "SELECT COUNT(*) "
+    $q = 'SELECT COUNT(*) '
         ."FROM $this->joinTable "
         ."WHERE $this->jtLeftIDCol=".qw($this->jtLeftID);
     $g = db_get_single($q);
@@ -182,7 +182,7 @@ class JoinData extends Field {
     $this->_joinSync();
     //We return an empty string as this is only a join table entry,
     //so it has no representation within the row itself.
-    return "";
+    return '';
   }
 
   /**

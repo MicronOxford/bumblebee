@@ -3,6 +3,7 @@
 # Miscellaneous date functions
 
   function isodate($d) {
+    echo "FIXME THE CODE IS NOT DEAD.";
     return strftime("%Y-%m-%d", $d);
   }
 

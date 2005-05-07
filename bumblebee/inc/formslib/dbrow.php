@@ -2,8 +2,8 @@
 # $Id$
 # database objects (self-initialising and self-updating object)
 
-include_once('dbobject.php');
-include_once('inc/statuscodes.php');
+include_once 'dbobject.php';
+include_once 'inc/statuscodes.php';
 
 
 /**
