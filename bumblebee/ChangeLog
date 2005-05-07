@@ -1,0 +1,58 @@
+2005-05-07 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* bugfix: fix timeslotrule/bookingentry validation with FreeTime slots 
+	 
+
+2005-05-07 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* include per-instrument comment field  
+	* handle timeslot 00:00 vs 24:00 end of booking problem 
+
+2005-05-07 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* source reorganisation to protect includes from execution by webserver (.htaccess)
+
+2005-05-06 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* revamped approach to creating timeslot rule data 
+
+2005-05-06 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* added rudimentary interface to per-instrument calendar view controls and timeslot rules 
+
+2005-05-05 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* dbchoicelist bugfixes 
+	* extra descriptons in forms 
+	* capable of building from within after initial structure creation with exception of slotrules. 
+
+2005-05-05 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* booking cleanups (incl. IE6 compatability changes) 
+	* user password + radius auth incl 
+
+2005-05-03 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* radius auth model updated; use config files to specify details 
+
+2005-05-02 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* enabled interface for editing the standard costs for instrument usage 
+
+2005-05-01 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* added unified logging functions to most objects 
+	* booking system now works. TODO: auth for edit & delete 
+
+2005-04-30 Stuart Prescott <s.prescott@unimelb.edu.au>
+	Fixed calendar display for bookings crossing days 
+
+2005-04-27 Stuart Prescott <s.prescott@unimelb.edu.au>
+	changed deletion of bookings to only mark as deleted rather than actually delete the entry 
+
+2005-04-25 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* numerous FIXMEs fixed 
+	* return hrefs from booking functions fixed 
+
+2005-03-18 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* Initial implentation of checking booking permissions for non-admin users 
+
+2005-03-16 Stuart Prescott <s.prescott@unimelb.edu.au>
+	added duration of booking dropdown based on timeslot pattern  
+
+2005-03-06 Stuart Prescott <s.prescott@unimelb.edu.au>
+	initial addition of booking slots into create booking interface code (TODO: add to booking validation code) 
+
+2005-03-03 Stuart Prescott <s.prescott@unimelb.edu.au>
+	Added booking slot requirements to monthly and daily instrument display 
+
