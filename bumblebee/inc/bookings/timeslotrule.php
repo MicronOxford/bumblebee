@@ -156,14 +156,23 @@ class TimeSlotRule {
    * to this object's slot rules.
    */
   function isValidStop($date) {
+    $startday = $date;
+    $startday->dayRound();
+    //echo "$startday->datetimestring =? $date->datetimestring\n";
+    if ($startday->ticks == $date->ticks) {
+      $time = new SimpleTime('24:00');
+      $startday->addDays(-1);
+      //echo "$startday->datetimestring + $time->timestring\n";
+      return $this->_isValidStartStop($time, TSSTOP, $startday);
+    }
     return $this->_isValidStartStop($date, TSSTOP);
   }
   
   /**
    * perform the above operations with no code duplication
    */
-  function _isValidStartStop($date, $type) {
-    return $this->_findSlot($date, $type) != 0;
+  function _isValidStartStop($date, $type, $daysdate=0) {
+    return $this->_findSlot($date, $type, $daysdate) != 0;
   }
   
   /**
@@ -226,8 +235,8 @@ class TimeSlotRule {
    * that is the appropriate slot.
    */
   function _findSlot($date, $match, $datetime=0) {
-    $this->DEBUG=10;
-    $this->log("TimeSlotRule::_findSlot:($date->datetimestring, $match, $datetime)", 10);
+    //$this->DEBUG=10;
+    //$this->log("TimeSlotRule::_findSlot:($date->datetimestring, $match, $datetime)", 10);
     //preDump(debug_backtrace());
     if ($datetime == 0) {
       $time = $date->timePart();
@@ -237,6 +246,7 @@ class TimeSlotRule {
       $time = $date;
       $dow = $datetime->dow();
       $day = $datetime;
+      //echo "Found $time->timestring, $dow, $day->datetimestring\n";
     } 
     $slot=0;
     $timecmp = $match;
@@ -252,6 +262,7 @@ class TimeSlotRule {
       //echo "Stepped back a day ";
     }
     $this->log("Asking for ($dow, $slot, $timecmp, $match)", 10);
+    //preDump($this->slots[$dow]);
     while(
             //print_r("Asking for ($dow, $slot, $match)<br />") && 
             $slot < count($this->slots[$dow])-TSARRAYMIN 

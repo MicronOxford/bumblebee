@@ -18,6 +18,7 @@ class BookingEntry extends DBRow {
   var $slotrules;
   var $_isadmin = 0;
   var $euid;
+  var $uid;
   
   function BookingEntry($id, $auth, $instrumentid, $ip='', $start='', $duration='', $granlist='') {
     //$this->DEBUG = 10;
@@ -102,6 +103,7 @@ class BookingEntry extends DBRow {
     $f = new DummyField('edit');
     $f->value = '1';
     $this->addElement($f);
+    //$this->DEBUG=10;
   }
 
   /**
@@ -118,6 +120,8 @@ class BookingEntry extends DBRow {
     $f = new Field('userid', 'User');
     $f->value = $this->euid;
     $this->addElement($f);
+    $f = new Field('log', 'Log');
+    $this->addElement($f);
     $this->fill();
   }
 
@@ -126,6 +130,7 @@ class BookingEntry extends DBRow {
    */
   function _checkAuth($auth, $instrumentid) {
     $this->_isadmin = $auth->isSystemAdmin() || $auth->isInstrumentAdmin($instrumentid);
+    $this->uid = $auth->uid;
     if ($this->id > 0 && $this->_isadmin) {
       $row = quickSQLSelect('bookings', 'id', $this->id);
       $this->euid = $row['userid'];
@@ -294,10 +299,14 @@ class BookingEntry extends DBRow {
    */
   function delete() {
     $sql_result = -1;
-    $q = "UPDATE $this->table "
-        ."SET deleted=1 "       // old MySQL cannot handle true, use 1 instead
-        ."WHERE $this->idfield=".qw($this->id)
-        ." LIMIT 1";
+    $today = new SimpleDate(time());
+    $newlog = $this->fields['log']->value
+                  .'Booking deleted by user #'.$this->uid.' on '.$today->datetimestring.'.';
+    $q = 'UPDATE '.$this->table
+        .' SET deleted=1,'       // old MySQL cannot handle true, use 1 instead
+        .' log='.qw($newlog)
+        .' WHERE '.$this->idfield.'='.qw($this->id)
+        .' LIMIT 1';
     $sql_result = db_quiet($q, $this->fatal_sql);
     return $sql_result;
   }

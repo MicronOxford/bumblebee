@@ -61,6 +61,10 @@ class Instrument extends DBRow {
     $f->isValidTest = 'is_number';
     $f->setAttr($attrs);
     $this->addElement($f);
+    $f = new TextArea('calendarcomment', 'Advisory text', 'Displayed at the bottom of instrument calendar and on booking form. HTML permitted.');
+    $f->setAttr(array('rows' =>5, 'cols' => 30));
+    $f->required = 0;
+    $this->addElement($f);
     
     // associate with a charging class
     $f = new RadioList('class', 'Charging class');

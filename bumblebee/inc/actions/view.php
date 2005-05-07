@@ -172,8 +172,10 @@ class ActionView extends ActionAction {
     $cal->isAdminView = $this->auth->isSystemAdmin() || $this->auth->isInstrumentAdmin($this->PD['instrid']);
     $cal->setOutputStyles('', $CONFIG['calendar']['todaystyle'], 
                 preg_split('/\//',$CONFIG['calendar']['monthstyle']), 'm');
+    echo $this->displayInstrumentHeader($row);
     echo $this->_linksForwardBack($href,'/o='.($offset-28),'','/o='.($offset+28));
     echo $cal->displayMonthAsTable($daystart,$daystop,$granularity,$timelines);
+    echo $this->displayInstrumentFooter($row);
   }
 
   function _linksForwardBack($href, $back, $today, $forward) {
@@ -207,14 +209,15 @@ class ActionView extends ActionAction {
     $cal->href=$href;
     $cal->isAdminView = $this->auth->isSystemAdmin() || $this->auth->isInstrumentAdmin($this->PD['instrid']);
     $cal->setOutputStyles('', 'caltoday', array('monodd', 'moneven'), 'm');
+    echo $this->displayInstrumentHeader($row);
     echo $this->_linksForwardBack($href.'/', $start->datestring.'/o=-1', $today->datestring, $start->datestring.'/o=1');
     echo $cal->displayDayAsTable($daystart,$daystop,$granularity,$timelines);
+    echo $this->displayInstrumentFooter($row);
   }
 
   function createBooking() {
     $start = new SimpleDate(issetSet($this->PD, 'startticks'));
     $stop  = new SimpleDate(issetSet($this->PD, 'stopticks'));
-    $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
     $duration = new SimpleTime($stop->subtract($start));
     $this->log($start->datetimestring.', '.$duration->timestring.', '.$start->dow());
     $this->editCreateBooking(-1, $start->datetimestring, $duration->timestring);
@@ -237,6 +240,7 @@ class ActionView extends ActionAction {
     }
     $booking->update($this->PD);
     $booking->checkValid();
+    echo $this->displayInstrumentHeader($row);
     echo $this->reportAction($booking->sync(), 
               array(
                   STATUS_OK =>   ($bookid < 0 ? 'Booking made' : 'Booking updated'),
@@ -254,12 +258,15 @@ class ActionView extends ActionAction {
     #$submit = ($this->PD['id'] < 0 ? "Create new" : "Update entry");
     echo "<input type='submit' name='submit' value='$submit' />";
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
+    echo $this->displayInstrumentFooter($row);
   }
 
   function booking() {
     global $BASEURL;
     $booking = new BookingEntryRO($this->PD['bookid']);
     $this->_checkBookingAuth($booking->data->userid);
+    $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
+    echo $this->displayInstrumentHeader($row);
     echo $booking->display($this->_isAdminView, $this->_isOwnBooking);
     if ($this->_isOwnBooking || $this->_isAdminView) {
       echo "<p><a href='$BASEURL/view/".$this->PD['instrid']
@@ -275,6 +282,8 @@ class ActionView extends ActionAction {
     if (! $this->_haveWriteAccess) {
       return $this->_forbiddenError('Delete booking');
     }
+    $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
+    echo $this->displayInstrumentHeader($row);
     echo $this->reportAction($booking->delete(), 
               array(
                   STATUS_OK =>   'Booking deleted',
@@ -300,5 +309,26 @@ class ActionView extends ActionAction {
     return STATUS_FORBIDDEN;
   }
     
+  function displayInstrumentHeader($row) {
+    $t = '<h2 class="instrumentname">'
+        //.$row['name']
+        .$row['longname']
+        .'</h2>'
+       .'<p class="instrumentlocation">'
+       //. $row['longname'] .'; '
+       .$row['location'].'</p>'."\n";
+    return $t;
+  }
+  
+  function displayInstrumentFooter($row) {
+    $t = '';
+    if ($row['calendarcomment']) {
+      $t = '<h3>Notes</h3>'
+         .'<p>'.preg_replace("/\n+/", '</p><p>', $row['calendarcomment']).'</p>';
+    }
+    return $t;
+  }
+
+
 } // class ActionView
 ?> 

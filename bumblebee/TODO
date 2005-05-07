@@ -8,6 +8,7 @@ $Id$can change another's bookings: edit, delete etc
   - pass/log book vs future/bookings setup for instruments
   - TSR * blows up on 00:00-24:00
   - TSR * does not validate against non-full time
+  - admin can see a list of deleted bookings?
 
 * projects
   - Create project doesn't seem to actually sync projectgroups table on allocation.
