@@ -132,7 +132,7 @@ class MultiList extends Field {
     if ($this->editable) {
       $t .= $this->selectable();
     } else {
-      $t .= $this->selectedvalue();
+      $t .= $this->selectedValue();
       $t .= "<input type='hidden' name='$this->name' value='$this->value' />";
     }
     $t .= "</td>\n";

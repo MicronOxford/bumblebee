@@ -10,23 +10,23 @@ class Consumable extends DBRow {
   function Consumable($id) {
     $this->DBRow("consumables", $id);
     $this->editable = 1;
-    $f = new TextField("id", "Consumable ID");
+    $f = new IdField("id", "Consumable ID");
     $f->editable = 0;
     $this->addElement($f);
     $f = new TextField("name", "Name");
     $attrs = array('size' => "48");
     $f->required = 1;
-    $f->isInvalidTest = "is_nonempty_string";
+    $f->isValidTest = "is_nonempty_string";
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new TextField("longname", "");
     $f->required = 1;
-    $f->isInvalidTest = "is_nonempty_string";
+    $f->isValidTest = "is_nonempty_string";
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new TextField("cost", "Unit cost");
     $f->required = 1;
-    $f->isInvalidTest = "is_cost_amount";
+    $f->isValidTest = "is_cost_amount";
     $f->setAttr($attrs);
     $this->addElement($f);
     $this->fill();

@@ -22,7 +22,8 @@ class BookingCell {
     $this->todayClass   = $c;
   }
 
-  function display($class, $href) {
+  function display($class, $href, $isadmin=0) {
+    #preDump(debug_backtrace());
     $t = '';
     #$class = $this->class;
     #$rota = date($this->roton, $this->booking->start->ticks);
@@ -36,7 +37,7 @@ class BookingCell {
       $t .= '<td rowspan="'.$this->rows.'" class="'.$class.'"'
            .'title="'.$this->booking->generateBookingTitle().'">';
       $this->booking->href = $href;
-      $t .= $this->booking->displayInCell();
+      $t .= $this->booking->displayInCell($isadmin);
       $t .= '</td>';
     } else {
       $t .= '<!-- c:'.$this->booking->id.'-->';

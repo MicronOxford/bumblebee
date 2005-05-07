@@ -1,127 +1,74 @@
 <?php
-# edit the groups
+# $Id$
+# edit consumables
 
-  function actionConsumables()
-  {
-    if (! isset($_POST['consumable'])) {
-      selectconsumable();
-    } elseif (! isset($_POST['updateconsumable'])) {
-      editconsumable($_POST['consumable']);
-    } elseif ($_POST['delete'] == 1) {
-      deleteconsumable($_POST['consumable']);
-    } elseif ($_POST['consumable'] == -1) {
-      insertconsumable();
+include_once 'inc/consumable.php';
+include_once 'inc/dbforms/anchortablelist.php';
+
+class ActionConsumables extends ActionAction {
+
+  function ActionConsumables($auth, $PDATA) {
+    parent::ActionAction($auth, $PDATA);
+    $this->mungePathData();
+  }
+
+  function go() {
+    global $BASEURL;
+    if (! isset($this->PD['id'])) {
+      $this->selectConsumables();
+    } elseif (isset($this->PD['delete'])) {
+      $this->deleteConsumables($PD['id']);
     } else {
-      updateconsumable($_POST['updateconsumable']);
+      $this->editConsumables();
     }
+    echo "<br /><br /><a href='$BASEURL/consumables'>Return to consumables list</a>";
   }
 
-  function selectconsumable()
-  {
-    echo <<<END
-    <table>
-    <tr><th colspan='2'>Select consumable to view/edit or consume</th></tr>
-    <tr><td colspan='2'>
-      <select name="consumable">
-        <option value='-1'>--- Create new consumable</option>
-END;
-        $q = "SELECT id,name,longname "
-            ."FROM consumables "
-            ."ORDER BY name";
-        $sql = mysql_query($q);
-        if (! $sql) die (mysql_error());
-        while ($row = mysql_fetch_row($sql))
-        {
-          echo "<option value='$row[0]'>$row[1] ($row[2])</option>";
-        }                                    
-    echo <<<END
-      </select>
-    </td></tr>
-    <tr><td>
-      <button name="action" type="submit" value="consumables">
-        Edit/create consumable
-      </button>
-    </td></tr>
-    <tr><td>... or select a user as well to report usage</td></tr>
-    <tr><td>User: 
-END;
-    userselectbox('userid','select user');
-    echo <<<END
-    </td></tr>
-    <tr>
-    <td>
-      <button name="action" type="submit" value="consume">
-        Use consumable
-      </button>
-    </td></tr>
-    </table>
-END;
+  function selectConsumables() {
+    global $BASEURL;
+    $projectselect = new AnchorTableList("Consumables", "Select which Consumables to view");
+    $projectselect->connectDB("consumables", array("id", "name", "longname"));
+    $projectselect->list->prepend(array("-1","Create new consumable"));
+    $projectselect->hrefbase = "$BASEURL/consumables/";
+    $projectselect->setFormat("id", "%s", array("name"), " %50.50s", array("longname"));
+    echo $projectselect->display();
   }
 
-  function editconsumable($gpid)
-  {
-    if ($gpid > 0) {
-      $q = "SELECT * "
-          ."FROM consumables "
-          ."WHERE id='$gpid'";
-      $sql = mysql_query($q);
-      if (! $sql) die (mysql_error());
-      $g = mysql_fetch_array($sql);
+  function editConsumables() {
+    global $BASEURL;
+    $consumable = new Consumable($this->PD['id']);
+    $consumable->update($this->PD);
+    $consumable->checkValid();
+    echo $this->reportAction($consumable->sync(), 
+          array(
+              STATUS_OK =>   ($this->PD['id'] < 0 ? 'Consumable created' : 'Consumable updated'),
+              STATUS_ERR =>  'Consumable could not be changed: '.$consumable->errorMessage
+          )
+        );
+    echo $consumable->display();
+    if ($consumable->id < 0) {
+      $submit = "Create new consumable";
+      $delete = "0";
+    } else {
+      $submit = "Update entry";
+      $delete = "Delete entry";
     }
-
-    echo "<table>"
-        ."<tr><th>Edit/Create Consumable</th></tr>";
-    echo "<tr><td>Short name</td>
-          <td><input type='text' name='name' size='48' value='".$g['name']."' /></td></tr>";
-    echo "<tr><td>Long name</td>
-          <td><input type='text' name='longname' size='48' value='".$g['longname']."' /></td></tr>";
-    echo "<tr><td>Cost</td>"
-        ."<td><input type='text' name='cost' size='48' value='".$g['cost']."' /></td></tr>"
-    ."<tr><td>
-      <input type='checkbox' name='delete' value='1'> Delete consumable</input>
-    </td>
-    <td>
-      <button name='action' type='submit' value='consumables'>
-        Edit/create consumable
-      </button>
-      <input type='hidden' name='consumable' value='$gpid' />
-      <input type='hidden' name='updateconsumable' value='$gpid' />
-    </td></tr>
-    </table>
-";
+    echo "<input type='submit' name='submit' value='$submit' />";
+    if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
+    echo "\n<p><a href='$BASEURL/consume/consumable/$consumable->id/list'>"
+          ."View usage records</a> "
+        ."for this consumable</p>\n";
   }
 
-  function deleteconsumable($gpid)
-  {
-    $q = "DELETE FROM consumables WHERE id='$gpid'";
-    if (!mysql_query($q)) die(mysql_error());
-    echo "action: '$q' successful";
+  function deleteConsumable() {
+    $consumable = new Consumable($this->PD['id']);
+    echo $this->reportAction($consumable->delete(), 
+              array(
+                  STATUS_OK =>   'Consumable deleted',
+                  STATUS_ERR =>  'Consumable could not be deleted:<br/><br/>'.$consumable->errorMessage
+              )
+            );  
   }
-
-  function insertconsumable()
-  {
-    $q = "INSERT INTO consumables "
-        ."(name,longname,cost) "
-        ."VALUES "
-        ."("
-        ."'".$_POST['name']."','".$_POST['longname']."','".$_POST['cost']."'"
-        .")";
-    if (!mysql_query($q)) die(mysql_error());
-    echo "action: '$q' successful";
-  }
-
-  function updateconsumable($gpid)
-  {
-    $q = "UPDATE consumables SET "
-        ."name='".$_POST['name']."',"
-        ."longname='".$_POST['longname']."',"
-        ."cost='".$_POST['cost']."' "
-        ."WHERE id='$gpid'";
-    
-    #echo "SQL='$q'";
-    #echo "<br />now run the query<br />";
-    if (!mysql_query($q)) die(mysql_error());
-    echo "action: '$q' successful";
-  }
+}
 
 ?> 

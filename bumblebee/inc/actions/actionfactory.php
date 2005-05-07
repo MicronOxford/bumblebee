@@ -5,8 +5,10 @@
 # this is then acted upon later in the page
 
 include_once 'login.php';
+include_once 'logout.php';
 include_once 'view.php';
-include_once 'book.php';
+include_once 'password.php';
+#include_once 'book.php';
 
 #admin functions
 //include_once 'adminmenu.php';
@@ -17,8 +19,8 @@ include_once 'instruments.php';
 include_once 'consumables.php';
 include_once 'consume.php';
 //include_once 'masquerade.php';
-//include_once 'costs.php';
-//include_once 'specialcosts.php';
+include_once 'costs.php';
+include_once 'specialcosts.php';
 //include_once 'adminconfirm.php';
 include_once 'emaillist.php';
 //include_once 'billing.php';
@@ -28,21 +30,24 @@ include_once('inc/dbforms/typeinfo.php');
 include_once('actions.php');
 
 class ActionFactory {
-  var $_verb, $title;
+  var $_verb;
+  var $title;
   var $_action;
   var $_auth;
   var $PDATA;
-  var $nexthref;
-  var $actionListing,
-      $actionTitles;
+  var $nextaction;
+  var $actionListing;
+  var $actionTitles;
   
   function ActionFactory($auth) {
+    global $BASEURL;
     $this->_auth = $auth;
     $this->PDATA = $this->_eatPathInfo();
     $list = new ActionListing();
     $this->actionListing = $list->listing;
     $this->actionTitles = $list->titles;
     $this->_verb = $this->_checkActions();
+    $this->nextaction = $BASEURL.'/'.$this->_verb;  // override this in _makeAction if needed.
     $this->title = $this->actionTitles[$this->_verb];
     $this->_action = $this->_makeAction();
   }
@@ -52,7 +57,6 @@ class ActionFactory {
   }
 
   function _checkActions() {
-    global $BASEURL;
     $action = '';
   
     # first, we need to determine if we are actually logged in or not
@@ -80,9 +84,7 @@ class ActionFactory {
   
     # We also need to check to see if we are trying to change privileges
     #if (isset($_POST['changemasq']) && $_POST['changemasq']) return 'masquerade';
-  
-    $this->nextaction = "$BASEURL/$action";
-  
+    
     return $action;
   }
 
@@ -90,7 +92,7 @@ class ActionFactory {
     global $action;
     #$_POST['action']=$newaction;
     $this->_verb=$newaction;
-    $this->_makeAction();
+    $this->_action = $this->_makeAction();
     $this->go();
   }
   
@@ -114,29 +116,22 @@ class ActionFactory {
       }
     }
     return $pd;
-    /*
-    echo "<pre>";
-    print_r($pd);
-    echo "</pre>";
-    echo "<pre>";
-    echo $pathinfo;
-    #print_r($_SERVER);
-    echo "</pre>";
-    echo "<pre>";
-    print_r($path);
-    echo "</pre>";
-    */
   }
 
   function _makeaction() {
+    global $BASEURL;
     $act = $this->actionListing;
     switch ($act[$this->_verb]) {
       case $act['login']:
+        $this->nextaction = $BASEURL.'/view';
         return new ActionPrintLoginForm($this->_auth, $this->PDATA);
       case $act['logout']:
+        $this->_auth->logout();
         return new ActionLogout($this->_auth, $this->PDATA);
       case $act['view']:
         return new ActionView($this->_auth, $this->PDATA);
+      case $act['passwd']:
+        return new ActionPassword($this->_auth, $this->PDATA);
       /*case $act['book']:
         return new ActionBook($auth);*/
       case $act['groups']:
@@ -151,13 +146,14 @@ class ActionFactory {
         return new ActionConsumables($this->_auth, $this->PDATA);
       case $act['consume']:
         return new ActionConsume($this->_auth, $this->PDATA);
-      case $act['masquerade']:
-        /*return new ActionMasquerade($auth);
+      /*case $act['masquerade']:
+        return new ActionMasquerade($auth);
+        */
       case $act['costs']:
-        return new ActionCosts();
+        return new ActionCosts($this->_auth, $this->PDATA);
       case $act['specialcosts']:
-        return new ActionSpecialCosts();
-      case $act['bookmeta']:
+        return new ActionSpecialCosts($this->_auth, $this->PDATA);
+      /*case $act['bookmeta']:
         return new ActionBookmeta();
       case $act['adminconfirm']:
         return new ActionAdminconfirm();*/
@@ -173,10 +169,4 @@ class ActionFactory {
 }
  //class ActionFactory
  
- #FIXME??
-function checkLogout(&$auth, $action) {
-  if ($action == 'logout') {
-    $auth->logout(); 
-  }
-}
 ?>

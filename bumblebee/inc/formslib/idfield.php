@@ -15,7 +15,7 @@ class IdField extends TextField {
     if ($this->value != -1) {
       return parent::displayInTable($cols);
     } else {
-      return '';
+      return $this->hidden();
     }
   }
 

@@ -5,12 +5,12 @@
 include_once 'booking.php';
 
 class BookingData {
-  var $start,
-      $stop,
-      $instrument,
-      $id;
-  var $bookinglist,
-      $booking;
+  var $start;
+  var $stop;
+  var $instrument;
+  var $id;
+  var $bookinglist;
+  var $booking;
   var $fatal_sql = 1;
   
   function BookingData($arr) {
@@ -38,11 +38,12 @@ class BookingData {
         .'FROM bookings '
         .'LEFT JOIN users ON bookings.userid=users.id '
         .'LEFT JOIN users AS masq ON bookings.bookedby=masq.id '
-        .'LEFT JOIN projects ON bookings.projectid=projects.id ';
+        .'LEFT JOIN projects ON bookings.projectid=projects.id '
+        .'WHERE bookings.deleted<>1 ';
     if ($this->id) {
-      $q .= 'WHERE bookings.id='.qw($this->id);
+      $q .= 'AND bookings.id='.qw($this->id);
     } else {
-      $q .= 'WHERE bookings.instrument='.qw($this->instrument).' '
+      $q .= 'AND bookings.userid<>0 AND bookings.instrument='.qw($this->instrument).' '
            .'AND bookwhen BETWEEN '.qw($this->start)
                             .' AND '.qw($this->stop).' '
            .'ORDER BY bookwhen';

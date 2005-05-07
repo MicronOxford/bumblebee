@@ -249,15 +249,15 @@ th.caldow {
 }
 
 .moneven {
-  background-color: #ffe0f0;
+  background-color: #ffecfc;
 }
 
 .monodd {
-  background-color: #ddffff;
+  background-color: #eeffff;
 }
 
 .caltoday{
-  background-color: #ffddaa;
+  background-color: #ffeecc;
 }
 
 .startmonth {
@@ -310,17 +310,19 @@ th.caldow {
   /*background-color: #ccffcc;*/
 }
 
+.disabled {
+  background-color: #fff;
+}
+
 .booktimezoom .vacancy {
-  background-color: #ccffcc;
+  background-color: #ddffdd;
   margin: 0;
 }
 
 .booking {
-  /* this style can't have a px border as the exact height in em is important */
-  /*border: 1px solid red;*/
   border: 1px solid red;
   margin: 0 1em 0 0em;
-  background-color: #ffcccc;
+  background-color: #ffdddd;
   /*white-space: normal;*/
 }
 
@@ -335,19 +337,21 @@ th.caldow {
   overflow: hidden;
 }
 
+/*unused?*/
 a.but { 
-  border-right: 2px solid #000000;
+  /*border-right: 2px solid #000000;
   border-left: 2px solid #999999;
   border-top: 2px solid #999999;
   border-bottom: 2px solid #000000;
   padding: 0 0.2em 0 0.2em;
-  margin: 0.2em 0 0.2em 0em;
+  margin: 0.2em 0 0.2em 0em;*/
   background-color: #ccccff;
   color: black;
   text-decoration: none;
   font-size: 70%;
 }
 
+/* unused ? */
 .calendarzoom .but, .calendar .but {
   margin: 0 0 0 0;
   padding: 0 0 0 0;
@@ -356,16 +360,19 @@ a.but {
   background: transparent;
 }
 
+/* unused ? */
 .calendarzoom .but:hover, .calendar .but:hover {
   background: transparent;
 }
 
+/* unused ? */
 .calendar .but {
   height: 1.2em;
   width: 1.2em;
   border: none;
 }
 
+/* unused ? */
 .calendarzoom .but {
   margin: 0 0 0 0;
   padding: 0 0 0 0;
@@ -375,12 +382,12 @@ a.but {
 .calicon {
   margin: 0 0 0 0;
   padding: 0 0 0 0;
-  height: 1.0em;
-  width: 1.0em;
+  height: 1.8em;
+  width: 1.8em;
   border: none;
   background: transparent;
-  /*border: 1px solid black;
-  font-size: 70%;*/
+  /*border: 1px solid black;*/
+  /*font-size: 70%;*/
 }
 
 .calendarzoom .calicon {
@@ -407,9 +414,18 @@ a.but {
   background-color: #ccccff;
 }
 
-.error {
+.error, .msgerror {
   border: 1px solid red;
   background-color: #ffcccc;
+  margin: 1em;
+  padding: 1em;
+}
+
+.msgsuccess {
+  border: 1px solid green;
+  background-color: #ccffcc;
+  margin: 1em;
+  padding: 1em;
 }
 
 .sql, .error {
@@ -458,6 +474,12 @@ td.itemR {
 }
 
 tr.itemrow {
+}
+
+tr.itemrow:hover {
+  text-decoration: none;
+  color: #000000;
+  background-color: #FFFF99;
 }
 
 td.itemL a {

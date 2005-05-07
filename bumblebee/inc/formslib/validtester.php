@@ -2,14 +2,15 @@
 # $Id$
 # test the validity of data according to a set of rules
 
-include_once("typeinfo.php");
+include_once 'typeinfo.php';
 
-function ValidTester($validator, $data) {
+function ValidTester($validator, $data, $DEBUG=0) {
+  //global $VERBOSEDATA;
   $isValid = 1;
   if (isset($validator) && is_callable($validator)) {
     $isValid = $validator($data);
   } 
-  echo "[$data, $validator, $isValid]";
+  if ($DEBUG > 9) echo "[$data, $validator, $isValid]";
   return $isValid;
 }
 

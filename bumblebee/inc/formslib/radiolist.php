@@ -1,32 +1,42 @@
 <?php
 # $Id$
-# radio list (<input type='radio' ...> $description</ br>) for a ChoiceList
+# radio list (<input type='radio' ...> $description<br />) for a ChoiceList
 
-include_once("choicelist.php");
+include_once 'choicelist.php';
 
 class RadioList extends ChoiceList {
+  var $radioclass = 'item';
 
-  function AnchorList($name, $description="") {
+  function RadioList($name, $description='') {
+    //$this->DEBUG = 10;
     $this->ChoiceList($name, $description);
-    #ChoiceList::ChoiceList($name, $description);
   }
 
   function display() {
     return $this->selectable();
   }
 
+  function format($data) {
+    //$aclass  = (isset($this->aclass) ? " class='$this->aclass'" : "");
+    #echo "<pre>".print_r($data,1)."</pre>";
+    #echo $this->value;
+    $selected = ($data[$this->formatid] == $this->value ? ' checked="1" ' : '');
+    $t  = "<input type='radio' name='$this->name' "
+         ."value='".$data[$this->formatid]."' $selected /> ";
+    foreach ($this->formatter as $k => $v) {
+      $t .= $this->formatter[$k]->format($data);
+    }
+    if (isset($data['_field']) && $data['_field']) {
+      $t .= $data['_field']->selectable();
+    }
+    return $t;
+  }
+
+
   function selectable() {
-    foreach ($this->choices->list as $k => $v) {
-      $selected = ($v['key'] == $this->value ? " checked='1' " : "");
-      #echo "$k, ".$v['key'].", $this->value, $selected <br />";
-      $t .= "<input type='radio' name='$this->name' ".
-            "value='".$v['key']."'$selected> ".$v['value'];
-      if (isset($v['longvalue']) && $v['longvalue'] != "") {
-        $t .= " (".$v['longvalue'].")";
-      }
-      if (isset($v['field']) && $v['field']) {
-        $t .= $v['field']->selectable();
-      }
+    $t = "";
+    foreach ($this->list->choicelist as $k => $v) {
+      $t .= $this->format($v);
       $t .= "<br />\n";
     }
     return $t;

@@ -11,12 +11,26 @@ class OutputFormatter {
   }
 
   function format($data) {
-    //FIXME use func_num_args and fun_get_arg
-    if (isset($data[$this->formatfields[0]]) && $data[$this->formatfields[0]]) {
-      $s = sprintf($this->format, $data[$this->formatfields[0]],
-                                  $data[$this->formatfields[1]]);
+    $t = '';
+    #preDump($this);
+    #preDump($data);
+    if (is_array($this->formatfields)) {
+      $s = array();
+      foreach ($this->formatfields as $k => $v) {
+        $s[] = isset($data[$v]) ? $data[$v] : '';
+        #if (isset($data[$v]) && $data[$v]) {
+          #$s = $data[$v];
+          #$t .= sprintf($this->format, $s);
+        #}
+      }
+      $t .= vsprintf($this->format, $s);
+    } else {
+     $s = $this->formatfields->format($data);
+      if ($s != '') {
+        $t .= sprintf($this->format, $s);
+      }
     }
-    return $s;
+    return $t;
   }
   
 } // class OutputFormatter

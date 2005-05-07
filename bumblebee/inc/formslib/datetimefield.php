@@ -16,13 +16,13 @@ class DateTimeField extends Field {
   var $list;
 
   var $representation;
-  var $manualRepresentation = TF_AUTO;
+  var $_manualRepresentation = TF_AUTO;
   
   function DateTimeField($name, $longname="", $description="") {
     parent::Field($name, $longname, $description);
+    //$this->DEBUG=10;
     $this->time = new TimeField($name.'-time', $longname, $description);
     $this->time->isStart = true;
-    $this->time->manualRepresentation &= $this->manualRepresentation;
     $this->date = new DateField($name.'-date', $longname, $description);
   }
 
@@ -49,14 +49,17 @@ class DateTimeField extends Field {
   }
 
   function selectable() {
+    //preDump($this->time);
+    //echo "Assembling date-time field\ndate";
     $t  = $this->date->selectable();
+    //echo "Assembling date-time field\ntime";
     $t .= $this->time->selectable();
     return $t;
   }
   
   function hidden() {
-    return "<input type='hidden' name='$this->namebase$this->name' "
-           ."value='".xssqw($this->value)."' />";
+    $t  = $this->date->hidden();
+    $t .= $this->time->hidden();
   }
   
   /**
@@ -64,24 +67,16 @@ class DateTimeField extends Field {
    */
   function calcDateTimeParts() {
     $val = ($this->getValue() == '') ? 0 : $this->getValue();
-    echo "datetime=$val\n";
+    #echo "datetime=$val\n";
     $this->time->setDateTime($val);
-//     $this->time->calcDropDown();
     $this->date->setDate($val);
-//     } else {
-/*
-      $this->time->set('');
-      $this->date->setDate('');
-    }*/
   }
   
   /** 
    * overload the parent's value as we need to do some magic in here
    */
   function set($value) {
-    echo "V=$value\n";
-    #preDump(debug_backtrace());
-    #preDump($this);
+    #echo "V=$value\n";
     parent::set($value);
     $this->calcDateTimeParts();
   }
@@ -94,7 +89,10 @@ class DateTimeField extends Field {
    * @return boolean the value was updated
    */
   function update($data) {
-    if ($this->date->update($data) || $this->time->update($data)) {
+    $datechanged = $this->date->update($data);
+    $timechanged = $this->time->update($data);
+    if ($datechanged || $timechanged) {
+      $this->log('DateTimeField::update');
       $data[$this->namebase.$this->name] = $this->date->value .' '. $this->time->value;
       parent::update($data);
 //       $this->calcDateTimeParts();
@@ -103,16 +101,48 @@ class DateTimeField extends Field {
   }
   
   /** 
-   * create a TimeSlotRule for validation of the times that we are using
+   * associate a TimeSlotRule for validation of the times that we are using
    *
-   * @param string $list initialisation string for a TimeSlotRule
+   * @param TimeSlotRule $list a TimeSlotRule
    */
-  function setSlotPicture($list) {
-    $this->list = new TimeSlotRule($list);
-    $this->time->setSlotPicture($list);
+  function setSlots($list) {
+    $this->list = $list;
+    $this->time->setSlots($list);
     $this->calcDateTimeParts();
   }
-
+  
+  /** 
+   * set the appropriate date that we are refering to for the timeslot rule validation
+   *
+   * @param string $date passed to the TimeSlotRule
+   */
+  function setSlotStart($date) {
+    $this->time->setSlotStart($date);
+  }
+  
+  /**
+   * pass on any flags about the representation that we should use to our members
+   *
+   * @param integer $flag (TF_* types from class TimeField constants)
+   */
+  function setManualRepresentation($flag) {
+    $this->_manualRepresentation = $flag;
+    $this->time->setManualRepresentation($flag);
+  }
+  
+  /**
+   *
+   */
+/*  function isValid() {
+    echo "DateTimeField::isValid<br/>\n";
+    echo 'Value='.$this->value.'<br/>';
+    echo 'GETValue='.$this->getValue().'<br/>';
+    parent::isValid();
+    $this->isValid = $this->isValid && $this->list->
+    return $this->isValid;
+  }*/
+  
+  
 } // class DateTimeField
 
 
