@@ -59,8 +59,19 @@ function echoSQLerror($echo, $fatal=0) {
   return STATUS_ERR;
 }
   
-function quickSQLSelect($table, $key, $value, $fatal=1) {
-  $q = "SELECT * FROM $table WHERE $key=".qw($value);
+function quickSQLSelect($table, $key, $value, $fatal=1, $countonly=0) {
+  global $TABLEPREFIX;
+  if (! is_array($key) && ! is_array($value) && $key != '' && $value != '') {
+    $key = array($key);
+    $value = array($value);
+  }
+  $where = array();
+  foreach ($key as $k => $col) {
+    $where[] = $col.'='.qw($value[$k]);
+  }
+  $q = 'SELECT '.($countonly ? 'count(*)' : '*')
+      .' FROM '.$TABLEPREFIX.$table
+      .(count($where) ? ' WHERE '.join($where,' AND ') : '');
   return db_get_single($q, $fatal);
 }
 

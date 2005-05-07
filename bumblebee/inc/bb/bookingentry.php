@@ -53,7 +53,7 @@ class BookingEntry extends DBRow {
     $durationf = new TimeField('duration', 'Duration');
 //     $this->duration = &$durationf;
     $durationf->required = 1;
-    $durationf->isValidTest = 'is_valid_time';
+    $durationf->isValidTest = 'is_valid_nonzero_time';
     $durationf->defaultValue = $duration;
     $durationf->setManualRepresentation($this->_isadmin ? TF_FREE : TF_AUTO);
 //     echo $f->manualRepresentation .'-'.$f->time->manualRepresentation."\n";
@@ -103,7 +103,6 @@ class BookingEntry extends DBRow {
     $f = new DummyField('edit');
     $f->value = '1';
     $this->addElement($f);
-    //$this->DEBUG=10;
   }
 
   /**
@@ -161,6 +160,7 @@ class BookingEntry extends DBRow {
    * secures the slot (no race conditions) and is then updated by the sync() method.
    */
   function checkValid() {
+    //$this->DEBUG = 10;
     parent::checkValid();
     $this->log('Individual fields are '.($this->isValid ? 'VALID' : 'INVALID'));
     $this->isValid = $this->_isadmin || ($this->isValid && $this->_legalSlot());
@@ -190,6 +190,7 @@ class BookingEntry extends DBRow {
    * This is to prevent a race condition for checking and then making the new booking.
   **/
   function _checkIsFree() {
+    global $TABLEPREFIX;
     if (! $this->changed) return 1;
     #preDump($this);
     $doubleBook = 0;
@@ -203,14 +204,15 @@ class BookingEntry extends DBRow {
     $tmpid = $this->_makeTempBooking($instrument, $start, $duration);
     $this->log('Created temp row for locking, id='.$tmpid.'(origid='.$this->id.')');
     
-    $q = 'SELECT bookings.id AS bookid, bookwhen, duration, '
+    $q = 'SELECT '.$TABLEPREFIX.'bookings.id AS bookid, bookwhen, duration, '
         .'DATE_ADD( bookwhen, INTERVAL duration HOUR_SECOND ) AS stoptime, '
         .'name AS username '
-        .'FROM bookings '
-        .'LEFT JOIN users on bookings.userid = users.id '
+        .'FROM '.$TABLEPREFIX.'bookings '
+        .'LEFT JOIN '.$TABLEPREFIX.'users ON '
+        .$TABLEPREFIX.'bookings.userid = '.$TABLEPREFIX.'users.id '
         .'WHERE instrument='.qw($instrument).' '
-        .'AND bookings.id<>'.qw($this->id).' '
-        .'AND bookings.id<>'.qw($tmpid).' '
+        .'AND '.$TABLEPREFIX.'bookings.id<>'.qw($this->id).' '
+        .'AND '.$TABLEPREFIX.'bookings.id<>'.qw($tmpid).' '
         .'AND userid<>0 '
         .'AND deleted<>1 '        // old version of MySQL cannot handle true, use 1 instead
         .'HAVING (bookwhen <= '.qw($start).' AND stoptime > '.qw($start).') '
@@ -246,12 +248,21 @@ class BookingEntry extends DBRow {
    * Ensure that the entered data fits the granularity criteria specified for this instrument
    */
   function _legalSlot() {
+    //$this->DEBUG=10;
     $starttime = new SimpleDate($this->fields['bookwhen']->getValue());
     $stoptime = $starttime;
     $stoptime->addTime(new SimpleTime($this->fields['duration']->getValue()));
     $this->log('BookingEntry::_legalSlot '.$starttime->datetimestring
                   .' '.$stoptime->datetimestring);
     $validslot = $this->slotrules->isValidSlot($starttime, $stoptime);
+    if (! $validslot) {
+      $this->log('This slot isn\'t legal so far... perhaps it is FreeForm?');
+      $startslot = $this->slotrules->findSlotFromWithin($starttime);
+      //echo "now stop";
+      $stopslot  = $this->slotrules->findSlotFromWithin($stoptime);
+      $validslot = $startslot->isFreeForm && $stopslot->isFreeForm;
+      $this->log('It '.($validslot ? 'is' : 'is not').'!');
+    }
     if (! $validslot) {
       $this->errorMessage .= 'Sorry, the timeslot you have selected is not valid, '
                             .'due to restrictions imposed by the instrument administrator.';
@@ -298,11 +309,12 @@ class BookingEntry extends DBRow {
    *  Note, this function returns false on success
    */
   function delete() {
+    global $TABLEPREFIX;
     $sql_result = -1;
     $today = new SimpleDate(time());
     $newlog = $this->fields['log']->value
                   .'Booking deleted by user #'.$this->uid.' on '.$today->datetimestring.'.';
-    $q = 'UPDATE '.$this->table
+    $q = 'UPDATE '.$TABLEPREFIX.$this->table
         .' SET deleted=1,'       // old MySQL cannot handle true, use 1 instead
         .' log='.qw($newlog)
         .' WHERE '.$this->idfield.'='.qw($this->id)

@@ -22,28 +22,32 @@ class BookingData {
   }
 
   function _fill() {
-    $q = 'SELECT bookings.id AS bookid,bookwhen,duration,'
+    global $TABLEPREFIX;
+    $q = 'SELECT '.$TABLEPREFIX.'bookings.id AS bookid,bookwhen,duration,'
         .'DATE_ADD(bookwhen, INTERVAL duration HOUR_SECOND) AS stoptime,'
         /*.'ishalfday,isfullday,'*/
         .'discount,log,comments,projectid,'
         .'userid,'
-        .'users.name AS name, '
-        .'users.username AS username, '
-        .'users.email AS email, '
+        .$TABLEPREFIX.'users.name AS name, '
+        .$TABLEPREFIX.'users.username AS username, '
+        .$TABLEPREFIX.'users.email AS email, '
         .'bookedby AS masquserid, '
         .'masq.name AS masquser, '
         .'masq.username AS masqusername, '
         .'masq.email AS masqemail, '
-        .'projects.name AS project '
-        .'FROM bookings '
-        .'LEFT JOIN users ON bookings.userid=users.id '
-        .'LEFT JOIN users AS masq ON bookings.bookedby=masq.id '
-        .'LEFT JOIN projects ON bookings.projectid=projects.id '
-        .'WHERE bookings.deleted<>1 ';
+        .$TABLEPREFIX.'projects.name AS project '
+        .'FROM '.$TABLEPREFIX.'bookings '
+        .'LEFT JOIN '.$TABLEPREFIX.'users ON '
+            .$TABLEPREFIX.'bookings.userid='.$TABLEPREFIX.'users.id '
+        .'LEFT JOIN '.$TABLEPREFIX.'users AS masq ON '
+            .$TABLEPREFIX.'bookings.bookedby='.$TABLEPREFIX.'masq.id '
+        .'LEFT JOIN '.$TABLEPREFIX.'projects ON '
+            .$TABLEPREFIX.'bookings.projectid='.$TABLEPREFIX.'projects.id '
+        .'WHERE '.$TABLEPREFIX.'bookings.deleted<>1 ';
     if ($this->id) {
-      $q .= 'AND bookings.id='.qw($this->id);
+      $q .= 'AND '.$TABLEPREFIX.'bookings.id='.qw($this->id);
     } else {
-      $q .= 'AND bookings.userid<>0 AND bookings.instrument='.qw($this->instrument).' '
+      $q .= 'AND '.$TABLEPREFIX.'bookings.userid<>0 AND '.$TABLEPREFIX.'bookings.instrument='.qw($this->instrument).' '
            .'AND bookwhen BETWEEN '.qw($this->start)
                             .' AND '.qw($this->stop).' '
            .'ORDER BY bookwhen';

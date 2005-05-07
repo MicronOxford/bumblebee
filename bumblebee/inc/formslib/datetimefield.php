@@ -131,18 +131,14 @@ class DateTimeField extends Field {
   }
   
   /**
-   *
+   *  isValid test (extend Field::isValid), looking at the individual parts of the field
    */
-/*  function isValid() {
-    echo "DateTimeField::isValid<br/>\n";
-    echo 'Value='.$this->value.'<br/>';
-    echo 'GETValue='.$this->getValue().'<br/>';
+  function isValid() {
     parent::isValid();
-    $this->isValid = $this->isValid && $this->list->
+    $this->isValid = $this->isValid && $this->date->isValid() && $this->time->isValid();
     return $this->isValid;
-  }*/
-  
-  
+  }
+    
 } // class DateTimeField
 
 

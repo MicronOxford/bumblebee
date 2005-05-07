@@ -277,6 +277,7 @@ class TimeSlotRule {
     if ($match == TSSTART || $match == TSSTOP) {
       $slot--;
       $finalslot = ($slot < count($this->slots[$dow])-TSARRAYMIN
+                    && $slot >= 0
                     && $time->ticks == $this->slots[$dow][$slot]->$timecmp->ticks) 
                     ? $slot : TS_SLOT_NOT_FOUND ;
     } elseif ($match == TSWITHIN) {

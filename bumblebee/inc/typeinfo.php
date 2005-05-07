@@ -93,6 +93,11 @@ function is_valid_time($v) {
   return (preg_match('/^\d\d:\d\d/',$v) || preg_match('/^\d\d:\d\d:\d\d/',$v));
 }
 
+function is_valid_nonzero_time($v) {
+  return (preg_match('/^\d\d:\d\d/',$v) || preg_match('/^\d\d:\d\d:\d\d/',$v)) 
+            && ! preg_match('/^00:00/',$v) && ! preg_match('/^00:00:00/',$v);
+}
+
 function sum_is_100($vs) {
   #echo "<br/>Checking sum<br/>";
   $sum=0;

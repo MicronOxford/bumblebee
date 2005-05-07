@@ -82,6 +82,7 @@ class DBChoiceList extends DBO {
    * members (->table etc).
    */
   function fill() {
+    global $TABLEPREFIX;
     $fields = $this->fields;
     $fields[] = isset($this->idfieldreal) ? 
                       array($this->idfieldreal, $this->idfield) :
@@ -96,7 +97,7 @@ class DBChoiceList extends DBO {
       $joinSyntax .= 'LEFT JOIN '.$k.' ON '.$v.' ';
     }
     $q = "SELECT $f "
-        ."FROM $this->table "
+        .'FROM '.$TABLEPREFIX.$this->table.' '
         #."WHERE $this->restriction "
         #."ORDER BY $this->order "
         .$joinSyntax
@@ -264,7 +265,7 @@ class DBChoiceList extends DBO {
       if ($this->id == -1) {
         //it's a new record, insert it
         $vals = $this->_sqlvals();
-        $q = "INSERT $this->table SET $vals";
+        $q = 'INSERT '.$TABLEPREFIX.$this->table.' SET '.$vals;
         $sql_result = db_quiet($q, $this->fatal_sql);
         $this->id = db_new_id();
         $this->fill();

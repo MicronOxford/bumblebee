@@ -110,6 +110,7 @@ class DBRow extends DBO {
    * Note, this function returns false on success
   **/
   function sync() {
+    global $TABLEPREFIX;
     // If the input isn't valid then bail out straight away
     if (! $this->changed) {
       $this->log('not syncing: changed='.$this->changed);
@@ -126,14 +127,14 @@ class DBRow extends DBO {
     if ($vals != '') {
       if (! $this->insertRow) {
         //it's an existing record, so update
-        $q = 'UPDATE '.$this->table 
+        $q = 'UPDATE '.$TABLEPREFIX.$this->table 
             .' SET '.$vals 
             .' WHERE '.$this->idfield.'='.qw($this->id)
             .(($this->restriction !== '') ? ' AND '.$this->restriction : '');
         $sql_result = db_quiet($q, $this->fatal_sql);
       } else {
         //it's a new record, insert it
-        $q = 'INSERT '.$this->table.' SET '.$vals;
+        $q = 'INSERT '.$TABLEPREFIX.$this->table.' SET '.$vals;
         $sql_result = db_quiet($q, $this->fatal_sql);
         # FIXME: do we need to check that this was successful in here?
         if ($this->autonumbering) {
@@ -158,10 +159,10 @@ class DBRow extends DBO {
      return STATUS_NOOP;
     }
     $sql_result = -1;
-    $q = "DELETE FROM $this->table "
-        ."WHERE $this->idfield=".qw($this->id)
+    $q = 'DELETE FROM '.$TABLEPREFIX.$this->table 
+        .' WHERE '.$this->idfield.'='.qw($this->id)
         .(($this->restriction !== '') ? ' AND '.$this->restriction : '')
-        ." LIMIT 1";
+        .' LIMIT 1';
     #$this->log($q);
     $sql_result = db_quiet($q, $this->fatal_sql);
     return $sql_result;
@@ -226,8 +227,9 @@ class DBRow extends DBO {
   **/
   function fill() {
     if ($this->id != -1) {
+      //FIXME: can we do this using quickSQLSelect()?
       $q = 'SELECT * FROM '
-          .$this->table 
+          .$TABLEPREFIX.$this->table 
           .' WHERE '.$this->idfield.'='.qw($this->id).' '
           .(($this->restriction !== '') ? 'AND '.$this->restriction.' ' : '')
           .(($this->recStart !== '') && ($this->recNum !== '') ? "LIMIT $this->recStart,$this->recNum" : '');

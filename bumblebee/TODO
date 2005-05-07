@@ -2,12 +2,14 @@ $Id$can change another's bookings: edit, delete etc
 
 * db structure:
   - SMALLINT is max 32767. Is this a limitation (e.g. number bookings!)?
-
+  - permit table prefix:
+    - billing
+    - emaillist
+    - specialcosts
+    
 
 * bookings
   - pass/log book vs future/bookings setup for instruments
-  - TSR * blows up on 00:00-24:00
-  - TSR * does not validate against non-full time
   - admin can see a list of deleted bookings?
 
 * projects
@@ -19,11 +21,6 @@ $Id$can change another's bookings: edit, delete etc
 
 * special costs 
   - todo
-
-reorganise source code into clean include regions. 
-use .inc?
-use a config/ dir
-protect these with .htaccess files.
 
 look at other PHP methods for getting things out of hash arrays (array_walk, array_keys, in_array)
 
@@ -72,8 +69,6 @@ css today, monthodd/even booking/vacant configurable?
 joindata::_countNumRows counts the rows too early (can we force a recount?)
   => when adding permissions to a user, the number of permissions doesn't increase
 
-DBRow now has delete method too (and deleteProject($id) is not qw safe!!!)
-
 clean up action functions.
 should most actions just be invoking objects? (help with namespace)
 should groups, projects, users actions etc be invocations of the *same* obj?
@@ -106,13 +101,8 @@ reflect postdata in case of re-login
 $string = strip_tags($string, '<a><b><i><u>')
 also do this in qw? $string = strip_tags($string, '')
 
-define("CONSTANT", "Hello world.");
 
 $_SERVER['PHP_SELF']
-
-Objects for forms... (date, time, simple string)
-
-INPUT VALIDATION (do this through objects?)
 
 check for noise in error logs
 

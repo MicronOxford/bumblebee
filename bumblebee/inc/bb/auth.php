@@ -143,17 +143,7 @@ class BumbleBeeAuth {
   }
  
   function _retrieveUserInfo($identifier, $type=1) {
-    $q = 'SELECT username,name,passwd,id,isadmin,suspended '
-        .'FROM '.$this->table.' WHERE ';
-    if ($type) {
-      $q .= 'username='.qw($identifier);
-    } else {
-      $q .= 'id='.qw($identifier);
-    }
-    //$sql = mysql_query($q);
-    //if (! $sql) die (mysql_error());
-    $row = db_get_single($q, 1);
-    //if (mysql_num_rows($sql) != 1) {
+    $row = quickSQLSelect('users',($type?'username':'id'),$identifier);
     if (! is_array($row)) {
       $this->_error = "Login failed: unknown username";
       return 0;
@@ -210,9 +200,7 @@ class BumbleBeeAuth {
        return false;
     }
     if (! isset($this->permissions[$instr]) || $this->permissions[$instr]===NULL) {
-       $q = 'SELECT isadmin FROM permissions WHERE userid='.qw($this->uid)
-          .' AND instrid='.qw($instr);
-       $row = db_get_single($q,1);
+       $row = quickSQLSelect('permissions',array('userid','instrid'), array($this->uid,$instr));
        $this->permissions[$instr] = (is_array($row) && $row['isadmin']);
     }
     return $this->permissions[$instr];

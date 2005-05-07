@@ -75,6 +75,15 @@ class DateField extends Field {
     return $this->changed;
   }
 
+  /**
+   *  isValid test (extend Field::isValid), looking at whether the string parsed OK
+   */
+  function isValid() {
+    parent::isValid();
+    $this->isValid = $this->isValid && $this->date->isValid;
+    return $this->isValid;
+  }
+    
 }
 
 ?> 

@@ -22,10 +22,12 @@ class SimpleList {
   }
 
   function _populate() {
+    global $TABLEPREFIX;
+    //FIXME: can we do this using quickSQLSelect()?
     $q = "SELECT $this->key AS 'key', "
         ."$this->value AS 'value', "
         ."$this->longvalue AS 'longvalue' "
-        ."FROM $this->table "
+        ."FROM $TABLEPREFIX$this->table "
         ."WHERE $this->restriction "
         ."ORDER BY $this->order";
     $sql = db_get($q, $this->fatal_sql);

@@ -95,6 +95,7 @@ class TimeField extends Field {
       $this->representation = TF_FIXED;
       return;
     }
+    //preDump($this->slot);
     if ($this->_manualRepresentation != TF_AUTO) {
       $this->representation = $this->_manualRepresentation;
     } elseif (! $this->editable) {
@@ -217,8 +218,20 @@ class TimeField extends Field {
   function _findExactSlot() {
     $this->log('Looking for slot starting at '.$this->slotStart->datetimestring, 10);
     $this->slot = $this->list->findSlotByStart($this->slotStart);
+    if ($this->slot == '0') {
+      $this->slot = $this->list->findSlotFromWithin($this->slotStart);
+    }
   }
-  
+
+  /**
+   *  isValid test (extend Field::isValid), looking at whether the string parsed OK
+   */
+  function isValid() {
+    parent::isValid();
+    $this->isValid = $this->isValid && $this->time->isValid;
+    return $this->isValid;
+  }
+      
 } // class TimeField
 
 

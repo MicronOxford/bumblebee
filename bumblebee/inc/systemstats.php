@@ -15,10 +15,7 @@ class SystemStats {
 
   function countEntries($table) {
     global $TABLEPREFIX;
-    $query='SELECT count(*) FROM '.$TABLEPREFIX.$table;
-    //FIXME use sql fns
-    if(!$sql = mysql_query($query)) die(mysql_error());
-    $row=mysql_fetch_row($sql);
+    $row = quickSQLSelect($table, '', '', 0, 1);
     return $row[0];
   }
 

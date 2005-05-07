@@ -166,10 +166,11 @@ class JoinData extends Field {
    *  to retrieve
   **/ 
   function _countRowsInJoin() {
-    $q = 'SELECT COUNT(*) '
+    $g = quickSQLSelect($this->joinTable, $this->jtLeftIDCol, $this->jtLeftID, $this->fatalsql, 1);
+/*    $q = 'SELECT COUNT(*) '
         ."FROM $this->joinTable "
         ."WHERE $this->jtLeftIDCol=".qw($this->jtLeftID);
-    $g = db_get_single($q);
+    $g = db_get_single($q);*/
     return $g[0];
   }
 

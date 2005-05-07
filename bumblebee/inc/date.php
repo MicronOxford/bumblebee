@@ -10,9 +10,9 @@ class SimpleDate {
   var $datestring = '';
   var $ticks  = '';
   var $datetimestring = '';
+  var $isValid = 1;
 
   function SimpleDate($time) {
-    #echo "New SimpleDate: $time, $type<br />";
     ($time == NULL) && $time = 0;
     if (is_numeric($time)) {
       $this->setTicks($time);
@@ -32,6 +32,7 @@ class SimpleDate {
     #echo "SimpleDate::Str $this->ticks<br />";
     $this->datestring = strftime('%Y-%m-%d', $this->ticks);
     $this->datetimestring = strftime('%Y-%m-%d %H:%M:%S', $this->ticks);
+    $this->isValid = ($this->datestring != '' && $this->datetimestring != '');
   }
 
   function setTicks($t) {
@@ -205,15 +206,8 @@ class SimpleDate {
 class SimpleTime {
   var $timestring = '';
   var $ticks = '';
+  var $isValid = 1;
 
-/*  function SimpleTime($time, $type=0) {
-    #echo "New SimpleTime: $time, $type<br />";
-    if ($type) {
-      $this->setStr($time);
-    } else {
-      $this->setTicks($time);
-    }
-  }*/
   function SimpleTime($time) {
     #echo "New SimpleTime: $time, $type<br />";
     if (is_numeric($time)) {
@@ -231,9 +225,6 @@ class SimpleTime {
   }
 
   function _setStr() {
-    #echo "SimpleDate::Str $this->ticks<br />";
-    #$this->timestring = strftime('%H:%M', $this->ticks);
-    //$ticks = $this->seconds();
     $this->timestring = sprintf('%02d:%02d', $this->ticks/3600, $this->ticks%3600);
   }
 
@@ -243,18 +234,16 @@ class SimpleTime {
   }
 
   function _setTicks($s) {
-//     echo "SimpleDate::Ticks $s<br />";
-    //$this->ticks = strtotime($s);
-    #echo "matching $s for time HH:MM or HH:MM:SS\n";
     if (preg_match('/^(\d\d):(\d\d):(\d\d)$/', $s, $t)) {
       #preDump($t);
       $this->ticks = $t[1]*3600+$t[2]*60+$t[3];
-    } else {
-      preg_match('/^(\d\d):(\d\d)$/', $s, $t);
+    } elseif (preg_match('/^(\d\d):(\d\d)$/', $s, $t) || preg_match('/^(\d):(\d\d)$/', $s, $t)) {
       #preDump($t);
       $this->ticks = $t[1]*3600+$t[2]*60;
+    } else {
+      $this->ticks = 0;
+      $this->inValid = 0;
     }
-    #echo $this->ticks;
   }
 
   function subtract($d) {
@@ -268,11 +257,6 @@ class SimpleTime {
 
   function seconds() {
     return $this->ticks;
-    /*
-    return date('s',$this->ticks)
-         + date('i',$this->ticks)*60
-         + date('H',$this->ticks)*60*60;
-    */
   }
   
   function min($t) {
