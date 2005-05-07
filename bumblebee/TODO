@@ -12,10 +12,6 @@ $Id$can change another's bookings: edit, delete etc
 * projects
   - Create project doesn't seem to actually sync projectgroups table on allocation.
 
-
-* instrument
-  - edit timeslotrules; not silly granularity stuff in instruments
-
 * costs
   - join table not working
   - define what half-day etc is to make billing calcs.
