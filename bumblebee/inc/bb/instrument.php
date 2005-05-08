@@ -61,6 +61,18 @@ class Instrument extends DBRow {
     $f->isValidTest = 'is_number';
     $f->setAttr($attrs);
     $this->addElement($f);
+    $f = new TextField('callength', 'Number of weeks displayed in calendar');
+    $f->required = 1;
+    $f->defaultValue = $CONFIG['instruments']['usualcallength'];
+    $f->isValidTest = 'is_number';
+    $f->setAttr($attrs);
+    $this->addElement($f);
+    $f = new TextField('calhistory', 'Number of weeks history shown');
+    $f->required = 1;
+    $f->defaultValue = $CONFIG['instruments']['usualcalhistory'];
+    $f->isValidTest = 'is_number';
+    $f->setAttr($attrs);
+    $this->addElement($f);
     $f = new TextArea('calendarcomment', 'Advisory text', 'Displayed at the bottom of instrument calendar and on booking form. HTML permitted.');
     $f->setAttr(array('rows' =>5, 'cols' => 30));
     $f->required = 0;
@@ -82,6 +94,18 @@ class Instrument extends DBRow {
     $f->extendable = 1;
     $f->required = 1;
     $f->isValidTest = 'is_valid_radiochoice';
+    $this->addElement($f);
+    $f = new TextField('halfdaylength', 'Hours in a half-day');
+    $f->required = 1;
+    $f->defaultValue = $CONFIG['instruments']['usualhalfdaylength'];
+    $f->isValidTest = 'is_number';
+    $f->setAttr($attrs);
+    $this->addElement($f);
+    $f = new TextField('fulldaylength', 'Hours in a full-day');
+    $f->required = 1;
+    $f->defaultValue = $CONFIG['instruments']['usualfulldaylength'];
+    $f->isValidTest = 'is_number';
+    $f->setAttr($attrs);
     $this->addElement($f);
 
     // create the timeslot rule information required

@@ -1,4 +1,7 @@
 2005-05-07 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* first cut at implementing a TABLEPREFIX to permit shared database 
+
+2005-05-07 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* bugfix: fix timeslotrule/bookingentry validation with FreeTime slots 
 	 
 

@@ -135,30 +135,21 @@ class ActionView extends ActionAction {
   function instrumentMonth() {
     global $BASEURL;
     global $CONFIG;
-    # FIXME: get this from a configuration table or file?
-    #Show a window 6 weeks long starting 2 weeks before the current date
-    #Displayed week starts on Monday
+    $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
+    // Show a window $row['calendarlength'] weeks long starting $row['calendarhistory'] weeks 
+    // before the current date. Displayed week always starts on Monday
     $offset = issetSet($this->PD, 'caloffset');
-    #$offset -= 8;
     $now = new SimpleDate(time());
-    #$day = date("w Z", $now);
-    #echo "o=$offset,d=$day\n";
     $now->dayRound();
     $start = $now;
     $start->addDays($offset);
-    $day = date('w', $start->ticks); #the day of the week, 0=Sun, 6=Sat
-//     echo "o=$offset,d=$day\n";
-    //add one day to the offset so that the weekly display begins on a Monday
-    //subtract seven days to start in the previous week
-    $start->addDays(1-7-$day);
-//     echo $start->datetimestring;
+    $day = date('w', $start->ticks); // the day of the week, 0=Sun, 6=Sat
+    $start->addDays(1-7*$row['calhistory']-$day);
     $stop = $start;
-    $stop->addDays(7*6);
-//     echo $stop->datetimestring;
+    $stop->addDays(7*$row['callength']);
+    
     $cal = new Calendar($start, $stop, $this->PD['instrid']);
 
-    $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
-    //preDump($row);
     $daystart    = new SimpleTime($row['usualopen']);
     $daystop     = new SimpleTime($row['usualclose']);
     //configure the calendar view granularity (not the same as booking granularity)
@@ -171,7 +162,7 @@ class ActionView extends ActionAction {
     $cal->href=$href;
     $cal->isAdminView = $this->auth->isSystemAdmin() || $this->auth->isInstrumentAdmin($this->PD['instrid']);
     $cal->setOutputStyles('', $CONFIG['calendar']['todaystyle'], 
-                preg_split('/\//',$CONFIG['calendar']['monthstyle']), 'm');
+                preg_split('{/}',$CONFIG['calendar']['monthstyle']), 'm');
     echo $this->displayInstrumentHeader($row);
     echo $this->_linksForwardBack($href,'/o='.($offset-28),'','/o='.($offset+28));
     echo $cal->displayMonthAsTable($daystart,$daystop,$granularity,$timelines);
