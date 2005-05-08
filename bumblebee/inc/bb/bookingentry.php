@@ -13,17 +13,20 @@ include_once 'inc/formslib/dummyfield.php';
 
 include_once 'inc/bookings/timeslotrule.php';
 include_once 'inc/bb/calendar.php';
+include_once 'inc/statuscodes.php';
 
 class BookingEntry extends DBRow {
   var $slotrules;
   var $_isadmin = 0;
   var $euid;
   var $uid;
+  var $minunbook;
   
-  function BookingEntry($id, $auth, $instrumentid, $ip='', $start='', $duration='', $granlist='') {
+  function BookingEntry($id, $auth, $instrumentid, $ip='', $start='', $duration='', $granlist='', $minunbook='') {
     //$this->DEBUG = 10;
     $this->DBRow('bookings', $id);
     $this->_checkAuth($auth, $instrumentid);
+    $this->minunbook = $minunbook;
     if ($ip=='' && $start=='' && $duration=='' && $granlist=='') {
       return $this->_bookingEntryShort($id, $instrumentid);
     }
@@ -68,7 +71,7 @@ class BookingEntry extends DBRow {
                   'id', 
                   NULL, 
                   array('userprojects'=>'projectid=id'));
-    $f->setFormat('id', '%s', array('name'), ' (%15.15s)', array('longname'));
+    $f->setFormat('id', '%s', array('name'), ' (%35.35s)', array('longname'));
     $this->addElement($f);
     $attrs = array('size' => '48');
     $f = new TextField('comments', 'Comments');
@@ -116,6 +119,8 @@ class BookingEntry extends DBRow {
     $f = new Field('instrument');   //not necessary, but for peace-of-mind.
     $f->value = $instrumentid;
     $this->addElement($f);
+    $f = new Field('bookwhen');
+    $this->addElement($f);
     $f = new Field('userid', 'User');
     $f->value = $this->euid;
     $this->addElement($f);
@@ -139,11 +144,8 @@ class BookingEntry extends DBRow {
   }
     
   /** 
-   * override the default update() method with a custom one that allows us to
-   * munge the start and finish times to fit in with the permitted granularity
-   * 
-   * * actually... do we really want to do that? let's just pass this through
-   * * for the time being.
+   * override the default update() method with a custom one that allows us to:
+   * - munge the start and finish times to fit in with the permitted granularity
    */
   function update($data) {
     parent::update($data);
@@ -152,6 +154,45 @@ class BookingEntry extends DBRow {
     return $this->changed;
   }
 
+  /** 
+   * override the default fill() method with a custom one that allows us to...
+   * - check permissions on whether we should be allowed to change the dates
+   */
+  function fill() {
+    parent::fill();
+    $this->_checkMinNotice();
+  }
+
+  /** 
+   * override the default sync() method with a custom one that allows us to...
+   * - check permissions on whether we should be allowed to change the dates
+   */
+  function sync() {
+    return parent::sync();
+  }
+
+  function _checkMinNotice() {
+    return;
+    //FIXME!
+    $this->DEBUG=10;
+//     preDump($this->fields['bookwhen']);
+    $booking = new SimpleDate($this->fields['bookwhen']->getValue());
+    $booking->addTime(-1*$this->minunbook);
+    $now = new SimpleDate(time());
+    echo "$booking->datetimestring $now->datetimestring\n";
+    echo "$this->_isadmin, $this->insertRow.";
+    echo "$this->id.";
+    if ($booking->ticks < $now->ticks && ! $this->_isadmin && $this->id != -1) {
+      // then we can't edit the date and time and we shouldn't delete the booking
+      $this->log('Within limitation period, preventing time changes and deletion');
+      $this->deletable = 0;
+      $this->fields['bookwhen']->editable = 0;
+      $this->fields['duration']->editable = 0;
+    } else {
+      $this->log('Booking changes not limited by time restrictions.');
+    }
+  }
+  
   /** 
    * override the default checkValid() method with a custom one that also checks that the
    * booking is permissible (i.e. the instrument is indeed free)
@@ -310,6 +351,12 @@ class BookingEntry extends DBRow {
    */
   function delete() {
     global $TABLEPREFIX;
+    $this->_checkMinNotice();
+    if (! $this->deletable && ! $this->_isadmin) {
+      // we're not allowed to do so 
+      $this->errorMessage = 'Sorry, this booking cannot be deleted due to booking policy.';
+      return STATUS_FORBIDDEN;
+    }
     $sql_result = -1;
     $today = new SimpleDate(time());
     $newlog = $this->fields['log']->value

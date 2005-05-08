@@ -154,10 +154,15 @@ class DBRow extends DBO {
   **/
   function delete() {
     if ($this->id == -1) {
-     // nothing to do
-     $this->log('$id == -1, so nothing to do');
-     return STATUS_NOOP;
+      // nothing to do
+      $this->log('$id == -1, so nothing to do');
+      return STATUS_NOOP;
     }
+    if (! $this->deletable) {
+      $this->log('Object not deletable by rule.');
+      $this->errorMessage = 'Cannot delete this item. Permission denied.';
+      return STATUS_FORBIDDEN;
+    }  
     $sql_result = -1;
     $q = 'DELETE FROM '.$TABLEPREFIX.$this->table 
         .' WHERE '.$this->idfield.'='.qw($this->id)

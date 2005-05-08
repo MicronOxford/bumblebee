@@ -39,7 +39,7 @@ function echoSQL($echo, $success=0) {
   global $VERBOSESQL;
   if ($VERBOSESQL) {
     echo "<div class='sql'>$echo "
-        .($success ? "<div>(successful)</div>" : "")
+        .($success ? '<div>(successful)</div>' : '')
         ."</div>";
   }
 }
@@ -47,7 +47,7 @@ function echoSQL($echo, $success=0) {
 
 function echoSQLerror($echo, $fatal=0) {
   global $VERBOSESQL;
-  if ($echo != "" && $echo) {
+  if ($echo != '' && $echo) {
     if ($VERBOSESQL) {
       echo "<div class='sql error'>$echo</div>";
     }

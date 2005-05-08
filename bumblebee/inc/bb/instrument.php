@@ -116,7 +116,6 @@ class Instrument extends DBRow {
     $f->isValidTest = 'is_set';
     $f->setAttr($attrs);
     $this->addElement($f);
-
     $weekstart = new SimpleDate(time());
     $weekstart->weekRound();
     for ($day=0; $day<7; $day++) {
@@ -128,6 +127,13 @@ class Instrument extends DBRow {
       $f->required = 1;
       $this->addElement($f);
     }
+    
+    $f = new TextField('mindatechange', 'Minimum notice for booking change');
+    $f->required = 1;
+    $f->defaultValue = $CONFIG['instruments']['usualmindatechange'];
+    $f->isValidTest = 'is_number';
+    $f->setAttr($attrs);
+    $this->addElement($f);
     
     $this->fill();
     $this->dumpheader = 'Instrument object';

@@ -33,7 +33,7 @@ class DateTimeField extends Field {
     if ($this->editable && ! $this->hidden) {
       $t .= $this->selectable();
     } else {
-      if (!$this->hidden) $t .= xssqw($this->value);
+      if (!$this->hidden) $t .= xssqw($this->getValue());
       $t .= $this->hidden();
     }
     if ($this->duplicateName) {
@@ -58,8 +58,7 @@ class DateTimeField extends Field {
   }
   
   function hidden() {
-    $t  = $this->date->hidden();
-    $t .= $this->time->hidden();
+    return $this->date->hidden() .' '. $this->time->hidden();
   }
   
   /**

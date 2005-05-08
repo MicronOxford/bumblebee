@@ -18,7 +18,7 @@ class OutputFormatter {
     if (is_array($this->formatfields)) {
       $s = array();
       foreach ($this->formatfields as $k => $v) {
-        $s[] = isset($data[$v]) ? $data[$v] : '';
+        $s[] = isset($data[$v]) ? xssqw($data[$v]) : '';
         #if (isset($data[$v]) && $data[$v]) {
           #$s = $data[$v];
           #$t .= sprintf($this->format, $s);
@@ -28,7 +28,7 @@ class OutputFormatter {
     } else {
      $s = $this->formatfields->format($data);
       if ($s != '') {
-        $t .= sprintf($this->format, $s);
+        $t .= sprintf($this->format, xssqw($s));
       }
     }
     return $t;

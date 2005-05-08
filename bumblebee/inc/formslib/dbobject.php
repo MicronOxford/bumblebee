@@ -13,6 +13,7 @@ class DBO {
   var $id=-1;
   var $fields;
   var $editable = 0;
+  var $deletable = 1;
   var $changed = 0;
   var $isValid = 0;
   var $suppressValidation = 0;

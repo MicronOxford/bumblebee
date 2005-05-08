@@ -224,7 +224,7 @@ class ActionView extends ActionAction {
     //echo $ip;
     $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
     $booking = new BookingEntry($bookid,$this->auth,$this->PD['instrid'],$ip, 
-                                      $start, $duration, $row['timeslotpicture']);
+                                $start, $duration, $row['timeslotpicture'], $row['mindatechange']);
     $this->_checkBookingAuth($booking->fields['userid']->getValue());
     if (! $this->_haveWriteAccess) {
       return $this->_forbiddenError('Edit booking');
@@ -240,11 +240,11 @@ class ActionView extends ActionAction {
             );
     echo $booking->display();
     if ($booking->id < 0) {
-      $submit = "Make booking";
-      $delete = "0";
+      $submit = 'Make booking';
+      $delete = '0';
     } else {
-      $submit = "Update booking";
-      $delete = "Delete booking";
+      $submit = 'Update booking';
+      $delete = 'Delete booking';
     }
     #$submit = ($this->PD['id'] < 0 ? "Create new" : "Update entry");
     echo "<input type='submit' name='submit' value='$submit' />";
