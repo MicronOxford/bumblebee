@@ -59,7 +59,7 @@ class ActionProjects extends ActionAction {
 
   function deleteProject() {
     $project = new Project($this->PD['id']);
-    echo $this->reportAction($user->delete(), 
+    echo $this->reportAction($project->delete(), 
               array(
                   STATUS_OK =>   'Project deleted',
                   STATUS_ERR =>  'Project could not be deleted:<br/><br/>'.$project->errorMessage

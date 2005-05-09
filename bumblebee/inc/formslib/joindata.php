@@ -43,12 +43,14 @@ class JoinData extends Field {
   var $rows;
   var $colspan;
   var $format;
-  var $number;
+  var $number = 0;
   var $radioclass = 'item';
   var $groupValidTest;
+  var $fatalsql = 0;
 
   function JoinData($joinTable, $jtLeftIDCol, $jtLeftID,
                      $name, $description='') {
+//     $this->DEBUG=10;
     $this->Field($name, '', $description);
     $this->joinTable = $joinTable;
     $this->jtLeftIDCol = $jtLeftIDCol;
@@ -93,8 +95,15 @@ class JoinData extends Field {
 
   function _fill() {
     $sjtLeftID = qw($this->jtLeftID);
+    $this->_fillFromProto();
+    return;
+  }
+
+  function _fillFromProto() {
+    $oldnumber = $this->number;
     $this->_calcMaxNumber();
-    for ($i=0; $i < $this->number; $i++) {
+    $this->log('Extending rows from '.$oldnumber.' to '.$this->number);
+    for ($i=$oldnumber; $i < $this->number; $i++) {
       $this->_createRow($i);
       $this->rows[$i]->recNum = 1;
       $this->rows[$i]->recStart = $i;
@@ -102,10 +111,11 @@ class JoinData extends Field {
       $this->rows[$i]->restriction = $this->jtRightIDCol .'='. qw($this->rows[$i]->fields[$this->jtRightIDCol]->value); 
       $this->rows[$i]->insertRow = ! ($this->rows[$i]->fields[$this->jtRightIDCol]->value > 0);
     }
-    return;
   }
-
+  
   function display() {
+    //check how many fields we need to have (again) as we might have to show more this time around.
+    $this->_fillFromProto();
     return $this->selectable();
   }
 
@@ -149,6 +159,7 @@ class JoinData extends Field {
     for ($i=0; $i < $this->number; $i++) {
       $rowchanged = $this->rows[$i]->update($data);
       if ($rowchanged) {
+        $this->log('JoinData-Row '.$i.' has changed.');
         foreach ($this->rows[$i]->fields as $k => $v) {
           #$this->rows[$i]->fields[$this->jtRightIDCol]->changed = $rowchanged;
           #if ($v->name != $this->jtRightIDCol && $v->name != $this->jtLeftIDCol) {
@@ -158,6 +169,7 @@ class JoinData extends Field {
       }
       $this->changed += $rowchanged;
     }
+    $this->log('Overall JoinData row changed='.$this->changed);
     return $this->changed;
   }
 
@@ -167,10 +179,6 @@ class JoinData extends Field {
   **/ 
   function _countRowsInJoin() {
     $g = quickSQLSelect($this->joinTable, $this->jtLeftIDCol, $this->jtLeftID, $this->fatalsql, 1);
-/*    $q = 'SELECT COUNT(*) '
-        ."FROM $this->joinTable "
-        ."WHERE $this->jtLeftIDCol=".qw($this->jtLeftID);
-    $g = db_get_single($q);*/
     return $g[0];
   }
 
@@ -196,6 +204,7 @@ class JoinData extends Field {
         //then this row is to be deleted...
         $this->changed += ! $this->rows[$i]->delete();
       } else {
+        $this->log('JoinData::_joinSync(): Syncing row '.$i);
         $this->changed += ! $this->rows[$i]->sync();
       }
     }

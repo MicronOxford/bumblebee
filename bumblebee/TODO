@@ -8,7 +8,7 @@ $Id$can change another's bookings: edit, delete etc
     - specialcosts
 
 * bookings
-  - admin can see a list of deleted bookings?
+  - 
 
 * projects
   - Create project doesn't seem to actually sync projectgroups table on allocation.

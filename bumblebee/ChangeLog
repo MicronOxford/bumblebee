@@ -1,4 +1,7 @@
 2005-05-09 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* admin can now view a list of deleted bookings for each instrument 
+
+2005-05-09 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* enabled admin to prevent users from changing the times of bookings or deleting bookings within a given time period of the booking (log/book paradigm) 
 
 2005-05-09 Stuart Prescott <s.prescott@unimelb.edu.au>

@@ -71,7 +71,7 @@ class User extends DBRow {
                         'projects', 'Project membership');
       $projectfield = new DropList('projectid', 'Project');
       $projectfield->connectDB('projects', array('id', 'name', 'longname'));
-      $projectfield->prepend(array('0','(none)'));
+      $projectfield->prepend(array('0','(none)', 'no selection'));
       $projectfield->setDefault(0);
       $projectfield->setFormat('id', '%s', array('name'), ' (%25.25s)', array('longname'));
       $f->addElement($projectfield);
@@ -84,8 +84,8 @@ class User extends DBRow {
                         'userid', $this->id,
                         'instruments', 'Instrument permissions');
       $instrfield = new DropList('instrid', 'Instrument');
-      $instrfield->connectDB('instruments', array('id', 'name'));
-      $instrfield->prepend(array('0','(none)'));
+      $instrfield->connectDB('instruments', array('id', 'name', 'longname'));
+      $instrfield->prepend(array('0','(none)', 'no selection'));
       $instrfield->setDefault(0);
       $instrfield->setFormat('id', '%s', array('name'), ' (%25.25s)', array('longname'));
       $f->addElement($instrfield);

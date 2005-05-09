@@ -12,6 +12,7 @@ class Project extends DBRow {
   
   function Project($id) {
     $this->DBRow('projects', $id);
+    $this->DEBUG=10;
     $this->editable = 1;
     $f = new IdField('id', 'Project ID');
     $f->editable = 0;

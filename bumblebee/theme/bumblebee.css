@@ -490,6 +490,11 @@ td.itemL a {
   text-decoration: none;
 }
 
+.selectlist td {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+
 .radioitem {
 }
 
