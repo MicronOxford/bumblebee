@@ -58,7 +58,7 @@ class DBChoiceList extends DBO {
    */
   function DBChoiceList($table, $fields='', $restriction='',
                   $order='', $idfield='id', $limit='', $join='') {
-    $this->DBO($table, "", $idfield);
+    $this->DBO($table, '', $idfield);
     $this->fields = (is_array($fields) ? $fields : array($fields));
     $this->restriction = $restriction;
     #$this->idfield = $idfield;
@@ -94,10 +94,10 @@ class DBChoiceList extends DBO {
     $f = implode(", ", $aliasfields);
     $joinSyntax = '';
     foreach ($this->join as $k => $v) {
-      $joinSyntax .= 'LEFT JOIN '.$k.' ON '.$v.' ';
+      $joinSyntax .= 'LEFT JOIN '.$TABLEPREFIX.$k.' AS '.$k.' ON '.$v.' ';
     }
     $q = "SELECT $f "
-        .'FROM '.$TABLEPREFIX.$this->table.' '
+        .'FROM '.$TABLEPREFIX.$this->table.' AS '.$this->table.' '
         #."WHERE $this->restriction "
         #."ORDER BY $this->order "
         .$joinSyntax

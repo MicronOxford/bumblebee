@@ -245,15 +245,15 @@ class BookingEntry extends DBRow {
     $tmpid = $this->_makeTempBooking($instrument, $start, $duration);
     $this->log('Created temp row for locking, id='.$tmpid.'(origid='.$this->id.')');
     
-    $q = 'SELECT '.$TABLEPREFIX.'bookings.id AS bookid, bookwhen, duration, '
+    $q = 'SELECT bookings.id AS bookid, bookwhen, duration, '
         .'DATE_ADD( bookwhen, INTERVAL duration HOUR_SECOND ) AS stoptime, '
         .'name AS username '
-        .'FROM '.$TABLEPREFIX.'bookings '
-        .'LEFT JOIN '.$TABLEPREFIX.'users ON '
-        .$TABLEPREFIX.'bookings.userid = '.$TABLEPREFIX.'users.id '
+        .'FROM '.$TABLEPREFIX.'bookings AS bookings '
+        .'LEFT JOIN '.$TABLEPREFIX.'users AS users ON '
+        .'bookings.userid = users.id '
         .'WHERE instrument='.qw($instrument).' '
-        .'AND '.$TABLEPREFIX.'bookings.id<>'.qw($this->id).' '
-        .'AND '.$TABLEPREFIX.'bookings.id<>'.qw($tmpid).' '
+        .'AND bookings.id<>'.qw($this->id).' '
+        .'AND bookings.id<>'.qw($tmpid).' '
         .'AND userid<>0 '
         .'AND deleted<>1 '        // old version of MySQL cannot handle true, use 1 instead
         .'HAVING (bookwhen <= '.qw($start).' AND stoptime > '.qw($start).') '

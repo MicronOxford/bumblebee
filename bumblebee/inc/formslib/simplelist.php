@@ -2,6 +2,9 @@
 # $Id$
 # return a simple choice list based on an SQL statement
 
+/* WARNING: this appears to be DEAD CODE: that means that it might be pretty buggy too */
+
+
 class SimpleList {
   var $table;
   var $restriction;
@@ -27,7 +30,7 @@ class SimpleList {
     $q = "SELECT $this->key AS 'key', "
         ."$this->value AS 'value', "
         ."$this->longvalue AS 'longvalue' "
-        ."FROM $TABLEPREFIX$this->table "
+        ."FROM $TABLEPREFIX$this->table AS $this->table"
         ."WHERE $this->restriction "
         ."ORDER BY $this->order";
     $sql = db_get($q, $this->fatal_sql);

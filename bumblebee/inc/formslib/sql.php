@@ -28,7 +28,8 @@ function db_get($q, $fatal_sql=0) {
 
 function db_get_single($q, $fatal_sql=0) {
   $sql = db_get($q, $fatal_sql);
-  return mysql_fetch_array($sql);
+  //preDump($sql);
+  return ($sql != STATUS_ERR ? mysql_fetch_array($sql) : false);
 }
 
 function db_new_id() {

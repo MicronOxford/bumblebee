@@ -18,7 +18,7 @@ class DateTimeField extends Field {
   var $representation;
   var $_manualRepresentation = TF_AUTO;
   
-  function DateTimeField($name, $longname="", $description="") {
+  function DateTimeField($name, $longname='', $description='') {
     parent::Field($name, $longname, $description);
     //$this->DEBUG=10;
     $this->time = new TimeField($name.'-time', $longname, $description);
@@ -27,7 +27,7 @@ class DateTimeField extends Field {
   }
 
   function displayInTable($cols) {
-    $errorclass = ($this->isValid ? "" : "class='inputerror'");
+    $errorclass = ($this->isValid ? '' : "class='inputerror'");
     $t = "<tr $errorclass><td>$this->longname</td>\n"
         ."<td title='$this->description'>";
     if ($this->editable && ! $this->hidden) {
@@ -42,9 +42,9 @@ class DateTimeField extends Field {
     }
     $t .= "</td>\n";
     for ($i=0; $i<$cols-2; $i++) {
-      $t .= "<td></td>";
+      $t .= '<td></td>';
     }
-    $t .= "</tr>";
+    $t .= '</tr>';
     return $t;
   }
 

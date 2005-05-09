@@ -153,6 +153,7 @@ class DBRow extends DBO {
    * Note, this function returns false on success
   **/
   function delete() {
+    global $TABLEPREFIX;
     if ($this->id == -1) {
       // nothing to do
       $this->log('$id == -1, so nothing to do');
@@ -231,10 +232,11 @@ class DBRow extends DBO {
    * Fill this object (i.e. its fields) from the SQL query
   **/
   function fill() {
+    global $TABLEPREFIX;
     if ($this->id != -1) {
       //FIXME: can we do this using quickSQLSelect()?
       $q = 'SELECT * FROM '
-          .$TABLEPREFIX.$this->table 
+          .$TABLEPREFIX.$this->table .' AS '. $this->table
           .' WHERE '.$this->idfield.'='.qw($this->id).' '
           .(($this->restriction !== '') ? 'AND '.$this->restriction.' ' : '')
           .(($this->recStart !== '') && ($this->recNum !== '') ? "LIMIT $this->recStart,$this->recNum" : '');
