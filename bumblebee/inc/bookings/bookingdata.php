@@ -12,12 +12,14 @@ class BookingData {
   var $bookinglist;
   var $booking;
   var $fatal_sql = 1;
+  var $includeDeleted = 0;
   
-  function BookingData($arr) {
+  function BookingData($arr, $includeDeleted=false) {
     $this->start = issetSet($arr,'start');
     $this->stop  = issetSet($arr,'stop');
     $this->instrument  = issetSet($arr,'instrument');
     $this->id  = issetSet($arr,'id');
+    $this->includeDeleted = $includeDeleted;
     $this->_fill();
   }
 
@@ -43,11 +45,11 @@ class BookingData {
             .'bookings.bookedby=masq.id '
         .'LEFT JOIN '.$TABLEPREFIX.'projects AS projects ON '
             .'bookings.projectid=projects.id '
-        .'WHERE bookings.deleted<>1 ';
+        .'WHERE '.($this->includeDeleted ? 'bookings.deleted<>1 AND ' : '');
     if ($this->id) {
-      $q .= 'AND bookings.id='.qw($this->id);
+      $q .= 'bookings.id='.qw($this->id);
     } else {
-      $q .= 'AND bookings.userid<>0 AND bookings.instrument='.qw($this->instrument).' '
+      $q .= 'bookings.userid<>0 AND bookings.instrument='.qw($this->instrument).' '
            .'AND bookwhen BETWEEN '.qw($this->start)
                             .' AND '.qw($this->stop).' '
            .'ORDER BY bookwhen';

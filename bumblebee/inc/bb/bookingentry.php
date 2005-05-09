@@ -52,6 +52,7 @@ class BookingEntry extends DBRow {
 //     echo $f->manualRepresentation .'-'.$f->time->manualRepresentation."\n";
     $startf->setSlots($this->slotrules);
     $startf->setSlotStart($start);
+    $startf->setEditableOutput(false, true);
     $this->addElement($startf);
     $durationf = new TimeField('duration', 'Duration');
 //     $this->duration = &$durationf;
@@ -245,12 +246,12 @@ class BookingEntry extends DBRow {
     $instrument = $this->fields['instrument']->getValue();
     $startdate = new SimpleDate($this->fields['bookwhen']->getValue());
     $start = $startdate->datetimestring;
-    $d = new SimpleDate($start,1);
-    $duration = $this->fields['duration']->getValue();
-    $d->addTime(new SimpleTime($duration));
+    $d = new SimpleDate($start);
+    $duration = new SimpleTime($this->fields['duration']->getValue());
+    $d->addTime($duration);
     $stop = $d->datetimestring;
     
-    $tmpid = $this->_makeTempBooking($instrument, $start, $duration);
+    $tmpid = $this->_makeTempBooking($instrument, $start, $duration->getHMSstring());
     $this->log('Created temp row for locking, id='.$tmpid.'(origid='.$this->id.')');
     
     $q = 'SELECT bookings.id AS bookid, bookwhen, duration, '

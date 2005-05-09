@@ -7,6 +7,7 @@ include_once 'inc/typeinfo.php';
 
 class DateField extends Field {
   var $date;
+  var $editableOutput=1;
 
   function DateField($name, $longname="", $description="") {
     parent::Field($name, $longname, $description);
@@ -18,7 +19,19 @@ class DateField extends Field {
     $errorclass = ($this->isValid ? "" : "class='inputerror'");
     $t = "<tr $errorclass><td>$this->longname</td>\n"
         ."<td title='$this->description'>";
-    if ($this->editable && ! $this->hidden) {
+    $t .= $this->getdisplay();
+    $t .= "</td>\n";
+    for ($i=0; $i<$cols-2; $i++) {
+      $t .= '<td></td>';
+    }
+    $t .= '</tr>';
+    return $t;
+  }
+
+  
+  function getdisplay() {
+    $t = '';
+    if ($this->editable && $this->editableOutput && ! $this->hidden) {
       $t .= $this->selectable();
     } else {
       if (!$this->hidden) $t .= xssqw($this->value);
@@ -28,19 +41,17 @@ class DateField extends Field {
       $t .= "<input type='hidden' name='$this->duplicateName' "
              ."value='".xssqw($this->value)."' />";
     }
-    $t .= "</td>\n";
-    for ($i=0; $i<$cols-2; $i++) {
-      $t .= "<td></td>";
-    }
-    $t .= "</tr>";
     return $t;
   }
+  
 
+  
   function selectable() {
-    #echo "DATE=".$this->date->datestring."\n";
-    $t  = $this->date->datestring .' ';
-    $t .= "<input type='hidden' name='$this->namebase$this->name' "
-         ."value='".xssqw($this->date->datestring)."' />";
+    $t  = "<input type='text' name='$this->namebase$this->name' "
+        ."value='".xssqw($this->date->datestring)."' ";
+    $t .= (isset($this->attr['size']) ? "size='".$this->attr['size']."' " : "");
+    $t .= (isset($this->attr['maxlength']) ? "maxlength='".$this->attr['maxlength']."' " : "");
+    $t .= "/>";
     return $t;
   }
   

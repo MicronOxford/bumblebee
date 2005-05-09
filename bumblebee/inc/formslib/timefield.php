@@ -19,6 +19,7 @@ class TimeField extends Field {
   var $representation;
   var $_manualRepresentation = TF_AUTO;
   var $droplist;
+  var $editableOutput=1;
   
   function TimeField($name, $longname='', $description='') {
     parent::Field($name, $longname, $description);
@@ -31,7 +32,18 @@ class TimeField extends Field {
     $errorclass = ($this->isValid ? '' : "class='inputerror'");
     $t = "<tr $errorclass><td>$this->longname</td>\n"
         ."<td title='$this->description'>";
-    if ($this->editable && ! $this->hidden) {
+    $t .= $this->getdisplay();
+    $t .= "</td>\n";
+    for ($i=0; $i<$cols-2; $i++) {
+      $t .= '<td></td>';
+    }
+    $t .= '</tr>';
+    return $t;
+  }
+
+  function getdisplay() {
+    $t = '';
+    if ($this->editable && $this->editableOutput && ! $this->hidden) {
       $t .= $this->selectable();
     } else {
       if (!$this->hidden) $t .= xssqw($this->value);
@@ -41,14 +53,9 @@ class TimeField extends Field {
       $t .= "<input type='hidden' name='$this->duplicateName' "
              ."value='".xssqw($this->value)."' />";
     }
-    $t .= "</td>\n";
-    for ($i=0; $i<$cols-2; $i++) {
-      $t .= "<td></td>";
-    }
-    $t .= "</tr>";
     return $t;
   }
-
+  
   function selectable() {
     #echo "TIME=".$this->time->timestring."\n";
     $this->_determineRepresentation();
@@ -231,7 +238,24 @@ class TimeField extends Field {
     $this->isValid = $this->isValid && $this->time->isValid;
     return $this->isValid;
   }
-      
+
+  /**
+   * return a SQL-injection-cleansed string that can be used in an SQL
+   * UPDATE or INSERT statement. i.e. "name='Stuart'".
+   *
+   * @return string  in SQL assignable form
+   */
+  function sqlSetStr() {
+    if (! $this->sqlHidden) {
+      return $this->name .'='. qw($this->time->getHMSstring());
+    } else {
+      return '';
+    }
+  }
+
+
+
+        
 } // class TimeField
 
 

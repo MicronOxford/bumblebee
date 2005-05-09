@@ -19,6 +19,7 @@ include_once 'users.php';
 include_once 'instruments.php';
 include_once 'consumables.php';
 include_once 'consume.php';
+include_once 'deletedbookings.php';
 //include_once 'masquerade.php';
 include_once 'costs.php';
 include_once 'specialcosts.php';
@@ -147,6 +148,8 @@ class ActionFactory {
         return new ActionConsumables($this->_auth, $this->PDATA);
       case $act['consume']:
         return new ActionConsume($this->_auth, $this->PDATA);
+      case $act['deletedbookings']:
+        return new ActionDeletedBookings($this->_auth, $this->PDATA);
       /*case $act['masquerade']:
         return new ActionMasquerade($auth);
         */

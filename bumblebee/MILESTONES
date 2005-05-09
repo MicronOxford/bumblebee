@@ -10,6 +10,9 @@
 1.5
  * 
 
+ 
+1.1
+ * permit admin user to masquerade as another user a.k.a su to make bookings
 
 1.0: Initial public release
  * permit export of billing data to other external program

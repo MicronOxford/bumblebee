@@ -267,6 +267,11 @@ class SimpleTime {
     $this->setTicks(max($t->ticks, $this->ticks));
   }
 
+  function getHMSstring() {
+    return sprintf('%02d:%02d:%02d', $this->ticks/3600, $this->ticks%3600, $this->ticks%60);
+  }
+
+
   /**
    * round time down to the nearest $g time-granularity measure
   **/

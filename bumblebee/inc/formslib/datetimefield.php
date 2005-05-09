@@ -12,7 +12,9 @@ include_once 'inc/bookings/timeslotrule.php';
 class DateTimeField extends Field {
 
   var $time;
+  var $timeeditable;
   var $date;
+  var $dateeditable;
   var $list;
 
   var $representation;
@@ -51,9 +53,10 @@ class DateTimeField extends Field {
   function selectable() {
     //preDump($this->time);
     //echo "Assembling date-time field\ndate";
-    $t  = $this->date->selectable();
+    $t  = $this->date->getdisplay();
+    $t .= ' ';
     //echo "Assembling date-time field\ntime";
-    $t .= $this->time->selectable();
+    $t .= $this->time->getdisplay();
     return $t;
   }
   
@@ -69,6 +72,7 @@ class DateTimeField extends Field {
     #echo "datetime=$val\n";
     $this->time->setDateTime($val);
     $this->date->setDate($val);
+    $this->value = $this->date->value .' '. $this->time->value;
   }
   
   /** 
@@ -137,7 +141,31 @@ class DateTimeField extends Field {
     $this->isValid = $this->isValid && $this->date->isValid() && $this->time->isValid();
     return $this->isValid;
   }
-    
+  
+  function setEditableOutput($date, $time) {
+    $this->dateeditable = $date;
+    $this->date->editableOutput = $date;
+    $this->timeeditable = $time;
+    $this->time->editableOutput = $time;
+  }
+
+  /**
+   * return a SQL-injection-cleansed string that can be used in an SQL
+   * UPDATE or INSERT statement. i.e. "name='Stuart'".
+   *
+   * @return string  in SQL assignable form
+   */
+  function sqlSetStr() {
+    if (! $this->sqlHidden) {
+      $date = new SimpleDate($this->getValue());
+      return $this->name .'='. qw($date->datetimestring);
+    } else {
+      return '';
+    }
+  }
+
+
+      
 } // class DateTimeField
 
 

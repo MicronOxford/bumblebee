@@ -255,7 +255,7 @@ class ActionView extends ActionAction {
     echo $booking->display($this->_isAdminView, $this->_isOwnBooking);
     if ($this->_isOwnBooking || $this->_isAdminView) {
       echo "<p><a href='$BASEURL/view/".$this->PD['instrid']
-            .'/'.$this->PD['isodate']
+          //  .'/'.$this->PD['isodate']
             .'/'.$this->PD['bookid']."/edit'>Edit booking</a></p>\n";
     }
   }
