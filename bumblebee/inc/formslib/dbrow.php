@@ -32,10 +32,22 @@ class DBRow extends DBO {
   var $recStart = '';
   var $recNum   = '';
   var $errorMessage = '';
+  var $use2StepSync;
   
   function DBRow($table, $id, $idfield='id') {
     $this->DBO($table, $id, $idfield);
     #$this->fields = array();
+  }
+  
+  function setId($newId) {
+    $this->log('DBRow: setting new id'.$newId);
+    $this->id = $newId;
+    $this->fields[$this->idfield]->set($this->id);
+    foreach (array_keys($this->fields) as $k) {
+      if ($this->fields[$k]->notifyIdChange) {
+        $this->fields[$k]->idChange($newId);
+      }
+    }
   }
   
   /** 
@@ -52,7 +64,7 @@ class DBRow extends DBO {
     // We're a new object, but has the user filled the form in, or is the
     // user about to fill the form in?
     $this->newObject = 1;
-    foreach ($this->fields as $k => $v) {
+    foreach (array_keys($this->fields) as $k) {
       if ($k != $this->idfield && isset($data[$this->namebase.$k])) {
         $this->log('I AM NOT NEW '.$k.':changed');
         $this->newObject = 0;
@@ -61,7 +73,7 @@ class DBRow extends DBO {
     }
   
     // check each field in turn to allow it to update its data
-    foreach ($this->fields as $k => $v) {
+    foreach (array_keys($this->fields) as $k) {
       $this->log("Check $k ov:".$this->fields[$k]->value
                             .'('.$this->fields[$k]->useNullValues .'/'. $this->newObject.')');
       if (!($this->fields[$k]->useNullValues && $this->newObject)) {
@@ -81,7 +93,7 @@ class DBRow extends DBO {
     // check each field in turn to allow it to update its data
     // if this object has not been filled in by the user, then 
     // suppress validation
-    foreach ($this->fields as $k => $v) {
+    foreach (array_keys($this->fields) as $k) {
       if (! ($this->newObject && $this->insertRow)) {
         $this->log('Checking valid '.$this->fields[$k]->namebase . $k);
         if (! $this->fields[$k]->isValid()) {
@@ -120,6 +132,9 @@ class DBRow extends DBO {
       return STATUS_ERR;
     }
     $this->log('syncing: changed='.$this->changed.' valid='.$this->isValid);
+    if ($this->use2StepSync) {
+      $this->_twoStageSync();
+    }
     $sql_result = -1;
     //obtain the *clean* parameter='value' data that has been SQL-cleansed
     //this will also trip any complex fields to sync
@@ -139,14 +154,44 @@ class DBRow extends DBO {
         # FIXME: do we need to check that this was successful in here?
         if ($this->autonumbering) {
           //the record number can now be copied into the object's data.
-          $this->id = db_new_id();
-          $this->fields[$this->idfield]->set($this->id);
+          $this->setId(db_new_id());
         }
       }
     }
     return $sql_result;
   }
-
+  
+  /**
+   * An alternative way of synchronising this object's fields with the database.
+   *
+   * Using this approach, we:
+   *
+   * If the object is new, then INSERT a temp row first. 
+   * Then, trip the sqlvals() calls.
+   * Then, UPDATE the data. 
+   *
+   * Here, we to the 'create temp row' part.
+   */
+  function _twoStageSync() {
+    global $TABLEPREFIX;
+    if ($this->id == -1) {
+      $row = new DBRow($this->table, -1, 'id');
+      $f = new Field($this->idfield);
+      $f->value = -1;
+      $row->addElement($f);
+      $row->isValid = 1;
+      $row->changed = 1;
+      $row->insertRow = 1;
+      $row->sync();
+      if ($this->autonumbering) {
+        //the record number can now be copied into the object's data.
+        $this->setId($row->id);
+      }
+      $this->insertRow = 0;
+      $this->log('Created temp row for locking, id='.$this->id.')');
+    }
+  }  
+  
   /**
    * delete this object's row from the database.
    *

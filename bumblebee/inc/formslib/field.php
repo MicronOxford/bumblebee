@@ -26,6 +26,7 @@ class Field {
   var $changed = 0;
   var $hidden;
   var $isValid = 1;
+  var $notifyIdChange = 0;
   var $suppressValidation = -1;
   var $useNullValues = 0;
   var $attr;

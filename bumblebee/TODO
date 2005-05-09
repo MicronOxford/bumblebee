@@ -11,8 +11,7 @@ $Id$can change another's bookings: edit, delete etc
   - 
 
 * projects
-  - Create project doesn't seem to actually sync projectgroups table on allocation.
-  - change dropdown doesn't apply without some other change on the page too
+  - 
 
 * costs
   - join table not working

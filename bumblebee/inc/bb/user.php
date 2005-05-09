@@ -18,6 +18,7 @@ class User extends DBRow {
   function User($id, $passwdOnly=false) {
     $this->DBRow('users', $id);
     $this->editable = ! $passwdOnly;
+    $this->use2StepSync = 1;
     $f = new IdField('id', 'UserID');
     $f->editable = 0;
     $this->addElement($f);

@@ -62,6 +62,7 @@ class JoinData extends Field {
     $this->protoRow->autonumbering = 0;
     $this->rows = array();
     $this->groupValidTest = array();
+    $this->notifyIdChange = 1;
   }
 
   function joinSetup($jtRightIDCol, $format='') {
@@ -209,7 +210,7 @@ class JoinData extends Field {
       }
     }
   }
-
+  
   /**
    * override the isValid method of the Field class, using the
    * checkValid method of each member row completed as well as 
@@ -249,6 +250,12 @@ class JoinData extends Field {
       }
     }
     return $this->isValid;
+  }
+  
+  function idChange($newId) {
+    for ($i=0; $i < $this->number; $i++) {
+      $this->rows[$i]->setId($newId);
+    }
   }
   
   function setNamebase($namebase='') {

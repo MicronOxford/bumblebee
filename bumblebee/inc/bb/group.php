@@ -11,6 +11,7 @@ class Group extends DBRow {
     //$this->DEBUG=10;
     $this->DBRow('groups', $id);
     $this->editable = 1;
+    //$this->use2StepSync = 1;
     $f = new IdField('id', 'Group ID');
     $f->editable = 0;
     $this->addElement($f);
