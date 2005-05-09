@@ -223,8 +223,8 @@ class ActionView extends ActionAction {
     $ip = $this->auth->getRemoteIP();
     //echo $ip;
     $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
-    $booking = new BookingEntry($bookid,$this->auth,$this->PD['instrid'],$ip, 
-                                $start, $duration, $row['timeslotpicture'], $row['mindatechange']);
+    $booking = new BookingEntry($bookid,$this->auth,$this->PD['instrid'], $row['mindatechange'],$ip, 
+                                $start, $duration, $row['timeslotpicture']);
     $this->_checkBookingAuth($booking->fields['userid']->getValue());
     if (! $this->_haveWriteAccess) {
       return $this->_forbiddenError('Edit booking');
@@ -239,14 +239,8 @@ class ActionView extends ActionAction {
               )
             );
     echo $booking->display();
-    if ($booking->id < 0) {
-      $submit = 'Make booking';
-      $delete = '0';
-    } else {
-      $submit = 'Update booking';
-      $delete = 'Delete booking';
-    }
-    #$submit = ($this->PD['id'] < 0 ? "Create new" : "Update entry");
+    $submit = ($booking->id < 0) ? 'Make booking' : 'Update booking';
+    $delete = ($booking->id >= 0 && $booking->deletable) ? 'Delete booking' : '';
     echo "<input type='submit' name='submit' value='$submit' />";
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
     echo $this->displayInstrumentFooter($row);
@@ -268,12 +262,12 @@ class ActionView extends ActionAction {
   
   function deleteBooking() {
     global $BASEURL;
-    $booking = new BookingEntry($this->PD['bookid'], $this->auth, $this->PD['instrid']);
+    $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
+    $booking = new BookingEntry($this->PD['bookid'], $this->auth, $this->PD['instrid'], $row['mindatechange']);
     $this->_checkBookingAuth($booking->fields['userid']->getValue());
     if (! $this->_haveWriteAccess) {
       return $this->_forbiddenError('Delete booking');
     }
-    $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
     echo $this->displayInstrumentHeader($row);
     echo $this->reportAction($booking->delete(), 
               array(

@@ -6,10 +6,8 @@ $Id$can change another's bookings: edit, delete etc
     - billing
     - emaillist
     - specialcosts
-  - test out TABLEPREFIX  
 
 * bookings
-  - pass/log book vs future/bookings setup for instruments
   - admin can see a list of deleted bookings?
 
 * projects

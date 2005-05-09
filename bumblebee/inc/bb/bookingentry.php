@@ -22,7 +22,7 @@ class BookingEntry extends DBRow {
   var $uid;
   var $minunbook;
   
-  function BookingEntry($id, $auth, $instrumentid, $ip='', $start='', $duration='', $granlist='', $minunbook='') {
+  function BookingEntry($id, $auth, $instrumentid, $minunbook='', $ip='', $start='', $duration='', $granlist='') {
     //$this->DEBUG = 10;
     $this->DBRow('bookings', $id);
     $this->_checkAuth($auth, $instrumentid);
@@ -160,6 +160,7 @@ class BookingEntry extends DBRow {
    */
   function fill() {
     parent::fill();
+    // check whether we are allowed to modify time fields: this picks up existing objects immediately
     $this->_checkMinNotice();
   }
 
@@ -172,24 +173,27 @@ class BookingEntry extends DBRow {
   }
 
   function _checkMinNotice() {
-    return;
-    //FIXME!
-    $this->DEBUG=10;
-//     preDump($this->fields['bookwhen']);
+  //$this->DEBUG=10;
+    // get some cursory checks out of the way to save the expensive checks for later
+    if ($this->_isadmin || $this->id == -1) {
+      //then we are unrestricted
+      $this->log('Booking changes not limited by time restrictions as we are admin or new booking.',9);
+      return;
+    }
     $booking = new SimpleDate($this->fields['bookwhen']->getValue());
-    $booking->addTime(-1*$this->minunbook);
+    $timeoffset = $this->minunbook*60*60;
+    $booking->addTime(-1*$timeoffset);
     $now = new SimpleDate(time());
-    echo "$booking->datetimestring $now->datetimestring\n";
-    echo "$this->_isadmin, $this->insertRow.";
-    echo "$this->id.";
-    if ($booking->ticks < $now->ticks && ! $this->_isadmin && $this->id != -1) {
+    $this->log('Booking times comparison: now='.$now->datetimestring
+                  .', minunbook='.$booking->datetimestring);
+    if ($booking->ticks < $now->ticks) {
       // then we can't edit the date and time and we shouldn't delete the booking
-      $this->log('Within limitation period, preventing time changes and deletion');
+      $this->log('Within limitation period, preventing time changes and deletion',9);
       $this->deletable = 0;
       $this->fields['bookwhen']->editable = 0;
       $this->fields['duration']->editable = 0;
     } else {
-      $this->log('Booking changes not limited by time restrictions.');
+      $this->log('Booking changes not limited by time restrictions.',9);
     }
   }
   
@@ -212,6 +216,9 @@ class BookingEntry extends DBRow {
   }
 
   function display() {
+    // check again whether we are allowed to modify time objects -- after sync() we might not
+    // be allowed to any more.
+    $this->_checkMinNotice();
     return $this->displayAsTable();
   }
 
@@ -236,7 +243,8 @@ class BookingEntry extends DBRow {
     #preDump($this);
     $doubleBook = 0;
     $instrument = $this->fields['instrument']->getValue();
-    $start = $this->fields['bookwhen']->getValue();
+    $startdate = new SimpleDate($this->fields['bookwhen']->getValue());
+    $start = $startdate->datetimestring;
     $d = new SimpleDate($start,1);
     $duration = $this->fields['duration']->getValue();
     $d->addTime(new SimpleTime($duration));
