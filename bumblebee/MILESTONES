@@ -1,0 +1,61 @@
+
+
+
+2.0
+ * full, user-configurable billing support included
+ * can export invoices or statements of usage
+ * can email invoices or statements of usage to groups
+ 
+
+1.5
+ * 
+
+ 
+1.1
+ * permit admin user to masquerade as another user a.k.a su to make bookings
+
+1.0: Initial public release
+ * permit export of billing data to other external program
+ * database backup/dump function
+ * install script 
+ * removal/hiding of unimplemented features (billing etc)
+ 
+0.9
+ * restrictions on when users can change booking details in place
+ * per-instrument customisation of calendar views
+ * inclusion of notes text on calendar views
+ * permit customisable prefix on all database tables (allow db sharing)
+ * extended user testing
+
+0.8
+ * can generate all data for booking system from within admin functions 
+   (i.e. create users, set passwords etc all works sufficiently to be operable)
+ * ability for local user to change password 
+  
+0.7
+ * working time-slot verification on bookings
+ * secure filesystem layout for ini files etc, ability to have ini files out of webserver tree
+ * build in radius authentication (and other single-sign-on technologies as appropriate)
+ * initial user testing
+ 
+0.6
+ * working time-slot display on caledar views
+
+0.5
+ * include instrument permissions system with instrument admin as well as system admin
+
+0.4
+ * able to edit complex many:many associations between users/projects/groups 
+   and users/instruments.
+
+0.3
+ * display a calendar view of a selected instrument
+ * create users and groups
+
+0.2
+ * first admin functions built on OO db+forms layer
+ * remove billing features until rest of system matures sufficiently
+
+0.1: Initial public announcement
+ * initial non-OO mock up to see feasibility
+ * some user testing and expressions of interest sought
