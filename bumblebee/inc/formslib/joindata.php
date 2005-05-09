@@ -33,6 +33,7 @@ include_once 'inc/db.php';
   *   $f3 = new TextField('field3', '');
   *   $f->addElement($f3, 'sum_is_100');
   *   $f->joinSetup('id2', array('total' => 3));
+  *   $f->use2StepSync = 1;
   */
 class JoinData extends Field {
   var $joinTable;

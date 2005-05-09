@@ -1,4 +1,7 @@
 2005-05-09 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* add an optional two-step sync algorithm for dbrow objects to facilitate join-table objects 
+
+2005-05-09 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* admin can now view a list of deleted bookings for each instrument 
 
 2005-05-09 Stuart Prescott <s.prescott@unimelb.edu.au>

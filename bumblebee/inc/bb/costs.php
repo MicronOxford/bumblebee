@@ -10,6 +10,7 @@ class ClassCost extends DBRow {
   function ClassCost($id) {
     $this->DBRow('userclass', $id);
     $this->editable = 1;
+    $this->use2StepSync = 1;
     $f = new IdField('id', 'UserClass ID');
     $f->editable = 0;
     $this->addElement($f);
