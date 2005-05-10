@@ -45,7 +45,7 @@ class BookingData {
             .'bookings.bookedby=masq.id '
         .'LEFT JOIN '.$TABLEPREFIX.'projects AS projects ON '
             .'bookings.projectid=projects.id '
-        .'WHERE '.($this->includeDeleted ? 'bookings.deleted<>1 AND ' : '');
+        .'WHERE '.($this->includeDeleted ? '' : 'bookings.deleted<>1 AND ');
     if ($this->id) {
       $q .= 'bookings.id='.qw($this->id);
     } else {

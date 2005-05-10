@@ -1,3 +1,7 @@
+2005-05-10 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* enabled date ranges for deleted bookings and consumable usage views.  
+	* included javascript +/- class to control a number of text fields 
+
 2005-05-09 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* add an optional two-step sync algorithm for dbrow objects to facilitate join-table objects 
 

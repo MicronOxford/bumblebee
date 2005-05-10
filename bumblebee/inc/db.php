@@ -14,6 +14,6 @@ $connection = mysql_pconnect($dbhost, $dbusername, $dbpasswd)
 $db = mysql_select_db($dbname, $connection)
     or die('Couldn\'t select database.');
 
-include_once('inc/formslib/sql.php');
+include_once 'inc/formslib/sql.php';
 
 ?> 

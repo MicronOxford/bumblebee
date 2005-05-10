@@ -23,7 +23,6 @@ include_once 'inc/statuscodes.php';
  */
  
 class DBRow extends DBO {
-  var $fatal_sql = 1;
   var $newObject = 0;
   var $insertRow = 0;
   var $includeAllFields = 0;

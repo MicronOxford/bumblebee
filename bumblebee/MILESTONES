@@ -10,6 +10,8 @@
 1.5
  * 
 
+ * unbooking an instrument causes an email to be sent to admin for some timeslots
+ * unbooking an instrument causes an email to be sent to the unbook list for some timeslots
  
 1.1
  * permit admin user to masquerade as another user a.k.a su to make bookings
@@ -19,13 +21,13 @@
  * database backup/dump function
  * install script 
  * removal/hiding of unimplemented features (billing etc)
+ * extended user testing
  
 0.9
  * restrictions on when users can change booking details in place
  * per-instrument customisation of calendar views
  * inclusion of notes text on calendar views
  * permit customisable prefix on all database tables (allow db sharing)
- * extended user testing
 
 0.8
  * can generate all data for booking system from within admin functions 

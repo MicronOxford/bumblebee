@@ -5,6 +5,7 @@
 include_once 'inc/formslib/anchortablelist.php';
 include_once 'inc/formslib/datefield.php';
 include_once 'inc/date.php';
+include_once 'inc/bb/daterange.php';
 include_once 'inc/actions/actionaction.php';
 
 class ActionDeletedBookings extends ActionAction {
@@ -22,18 +23,19 @@ class ActionDeletedBookings extends ActionAction {
       $this->selectInstrument();
       return;
     }
-    $instrument = $this->PD['instrid'];
-    if (isset($this->PD['startdate']) && isset($this->PD['stopdate'])) {
-      $start = new SimpleDate($this->PD['startdate']);
-      $stop  = new SimpleDate($this->PD['stopdate']);
-      if ($start->isValid && $stop->isValid) {
-        $this->showDeleted($start, $stop);
-        echo "<br /><br /><a href='$BASEURL/deletedbookings/$instrument'>Choose different dates</a>";
-        return;
-      }
+    $daterange = new DateRange('daterange', 'Select date range', 
+                      'Enter the dates over which you want to report deleted bookings');
+    $daterange->update($this->PD);
+    $daterange->checkValid();
+    if ($daterange->newObject) {
+      $daterange->setDefaults(DR_PREVIOUS, DR_MONTH);
+      echo $daterange->display($this->PD);
+      echo "<br /><br /><a href='$BASEURL/deletedbookings/'>Return to instrument list</a>";
+    } else {
+      $instrument = $this->PD['instrid'];
+      $this->showDeleted($daterange);
+      echo "<br /><br /><a href='$BASEURL/deletedbookings/$instrument'>Choose different dates</a>";
     }
-    $this->getStartStopDates();
-    echo "<br /><br /><a href='$BASEURL/deletedbookings/'>Return to instrument list</a>";
   }
 
   function mungePathData() {
@@ -44,7 +46,7 @@ class ActionDeletedBookings extends ActionAction {
     if (isset($this->PDATA[1])) {
       $this->PD['instrid'] = $this->PDATA[1];
     }
-    echoData($this->PD, 1);
+    echoData($this->PD, 0);
   }
   
   function selectInstrument() {
@@ -58,8 +60,11 @@ class ActionDeletedBookings extends ActionAction {
     echo $instrselect->display();
   }
 
-  function showDeleted($start, $stop) {
+  function showDeleted($daterange) {
     global $BASEURL;
+    $start = $daterange->getStart();
+    $stop  = $daterange->getStop();
+    $stop->addDays(1);
     $instrument = $this->PD['instrid'];
     $bookings = new AnchorTableList('Bookings', 'Select deleted bookings');
     $bookings->setTableHeadings(array('Date', 'Duration', 'User', 'Log Entry'));
@@ -68,7 +73,7 @@ class ActionDeletedBookings extends ActionAction {
                             array('bookings.id', 'username', 'bookwhen', 'duration','log'),
                             'deleted = 1'
                               .' AND bookwhen >= '.qw($start->datetimestring)
-                              .' AND bookwhen <= '.qw($stop->datetimestring)
+                              .' AND bookwhen < '.qw($stop->datetimestring)
                               .' AND instrument = '.qw($instrument),
                             'bookwhen', 
                             'bookings.id', 
@@ -81,24 +86,6 @@ class ActionDeletedBookings extends ActionAction {
                                '%s', array('log'));
     echo $bookings->display();
   }
-
-  function getStartStopDates() {
-    global $BASEURL;
-    $now = new SimpleDate(time());
-    $then = $now;
-    $then->addDays(-28);
-    $startdate = new DateField('startdate','Start date');
-    $startdate->setDate($then->datestring);
-    $stopdate  = new DateField('stopdate','Stop date');
-    $stopdate->setDate($now->datestring);
-    echo '<table>';
-    echo '<input type="hidden" name="instrid" value="'.xssqw($this->PD['instrid']).'" />';
-    echo $startdate->displayInTable(2);
-    echo $stopdate->displayInTable(2);
-    echo '</table>';
-    echo '<input type="submit" name="submit" value="Go" />';
-  }
-
 
 } // class ActionDeletedBookings
 ?> 

@@ -24,6 +24,7 @@ class SimpleDate {
   }
 
   function setStr($s) {
+    $this->isValid = 1;
     $this->_setTicks($s);
     $this->_setStr();
   }
@@ -32,10 +33,12 @@ class SimpleDate {
     #echo "SimpleDate::Str $this->ticks<br />";
     $this->datestring = strftime('%Y-%m-%d', $this->ticks);
     $this->datetimestring = strftime('%Y-%m-%d %H:%M:%S', $this->ticks);
-    $this->isValid = ($this->datestring != '' && $this->datetimestring != '');
+    $this->isValid = $this->isValid && ($this->datestring != '' && $this->datetimestring != '' 
+                   && $this->datestring != -1 && $this->datetimestring != -1);
   }
 
   function setTicks($t) {
+    $this->isValid = 1;
     $this->ticks = $t;
     $this->_setStr();
   }
@@ -44,6 +47,7 @@ class SimpleDate {
     #echo "SimpleDate::Ticks $s<br />";
     #preDump(debug_backtrace());
     $this->ticks = strtotime($s);
+    $this->isValid = $this->isValid && ($this->ticks != '' && $this->ticks != -1);
   }
 
   function addDays($d) {
@@ -53,11 +57,10 @@ class SimpleDate {
   function addTime($t) {
     if (is_a($t, 'SimpleTime')) {
       $this->ticks += $t->seconds();
-      $this->_setStr();
     } else {
       $this->ticks += $t;
-      $this->_setStr();
     }
+    $this->_setStr();
   }
   
   function addSecs($s) {
@@ -70,8 +73,24 @@ class SimpleDate {
   }
 
   function weekRound() {
-    $this->setStr($this->datestring);
+    $this->dayRound();
     $this->addDays(-1 * $this->dow());
+  }
+  
+  function monthRound() {
+    $this->dayRound();
+    $this->addDays(-1*$this->dom()+1);
+  }
+
+  function quarterRound() {
+    $month = $this->moy();
+    $quarter = floor(($month-1)/3)*3+1;
+    $this->setTimeParts(0,0,0,1,$quarter,$this->year());
+  }
+  
+  function yearRound() {
+    $this->dayRound();
+    $this->addDays(-1*$this->doy());
   }
   
   /** 
@@ -167,7 +186,7 @@ class SimpleDate {
     $this->setTime($tp->timestring);
   }
   
-  function addTimeParts($sec, $min, $hour, $day, $month, $year) {
+  function addTimeParts($sec=0, $min=0, $hour=0, $day=0, $month=0, $year=0) {
     $this->ticks = mktime(
                             date('H',$this->ticks) + $hour,
                             date('i',$this->ticks) + $min,
@@ -175,6 +194,18 @@ class SimpleDate {
                             date('m',$this->ticks) + $month,
                             date('d',$this->ticks) + $day,
                             date('y',$this->ticks) + $year
+                        );
+    $this->_setStr();
+  }
+  
+  function setTimeParts($sec=0, $min=0, $hour=0, $day=0, $month=0, $year=0) {
+    $this->ticks = mktime(
+                            $hour,
+                            $min,
+                            $sec,
+                            $month,
+                            $day,
+                            $year
                         );
     $this->_setStr();
   }
@@ -189,6 +220,34 @@ class SimpleDate {
   
   function dowStr() {
     return date('l', $this->ticks);
+  }
+  
+  /**
+   * day of month   (1..31)
+   */
+  function dom() {
+    return date('d', $this->ticks);
+  }
+  
+  /**
+   * month of year (1..12)
+   */
+  function moy() {
+    return date('m', $this->ticks);
+  }
+  
+  /**
+   * day of year (0..365)
+   */
+  function doy() {
+    return date('z', $this->ticks);
+  }
+
+  /**
+   * year (YYYY)
+   */
+  function year() {
+    return date('Y', $this->ticks);
   }
   
   /**

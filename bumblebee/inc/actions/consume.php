@@ -4,6 +4,8 @@
 
 include_once 'inc/bb/consumableuse.php';
 include_once 'inc/bb/consumable.php';
+include_once 'inc/bb/user.php';
+include_once 'inc/bb/daterange.php';
 include_once 'inc/date.php';
 include_once 'inc/formslib/anchortablelist.php';
 include_once 'inc/actions/actionaction.php';
@@ -17,10 +19,19 @@ class ActionConsume extends ActionAction {
 
   function go() {
     global $BASEURL;
-    if (isset($this->PD['list']) && isset($this->PD['consumableid'])) {
-      $this->listConsumeConsumable($this->PD['consumableid']);
-    } elseif (isset($this->PD['list']) && isset($this->PD['user'])) {
-      $this->listConsumeUser($this->PD['user']);
+    if (isset($this->PD['list'])) {
+      $daterange = new DateRange('daterange', 'Select date range', 
+                      'Enter the dates over which you want to report consumable use');
+      $daterange->update($this->PD);
+      $daterange->checkValid();
+      if ($daterange->newObject || !$daterange->isValid) {
+        $daterange->setDefaults(DR_PREVIOUS, DR_QUARTER);
+        echo $daterange->display($this->PD);
+      } elseif (isset($this->PD['consumableid'])) {
+        $this->listConsumeConsumable($this->PD['consumableid'], $daterange);
+      } elseif (isset($this->PD['user'])) {
+        $this->listConsumeUser($this->PD['user'], $daterange);
+      }
     } elseif (isset($this->PD['delete'])) {
       $this->deleteConsumeRecord();
     } elseif (  
@@ -150,10 +161,13 @@ class ActionConsume extends ActionAction {
             );  
   }
 
-  function listConsumeConsumable($consumableID) {
+  function listConsumeConsumable($consumableID, $daterange) {
     global $BASEURL;
     $extrapath = '';
     $listpath = '';
+    $start = $daterange->getStart();
+    $stop  = $daterange->getStop();
+    $stop->addDays(1);
     $consumable = new Consumable($consumableID);
     echo '<p>Consumption records for '
         .$consumable->fields['name']->value."</p>\n";
@@ -161,7 +175,9 @@ class ActionConsume extends ActionAction {
     $recselect->setTableHeadings(array('Date', 'User','Quantity'));
     $recselect->connectDB('consumables_use',
                           array(array('consumables_use.id','conid'), 'consumable', 'usewhen', 'username', 'name', 'quantity'),
-                          'consumable='.qw($consumableID),
+                          'consumable='.qw($consumableID)
+                              .' AND usewhen >= '.qw($start->datetimestring)
+                              .' AND usewhen < '.qw($stop->datetimestring),
                           'usewhen',
                           array('consumables_use.id','conid'),
                           NULL,
@@ -172,10 +188,13 @@ class ActionConsume extends ActionAction {
     echo $recselect->display();
   }
 
-  function listConsumeUser($userID) {
+  function listConsumeUser($userID, $daterange) {
     global $BASEURL;
     $extrapath = '';
     $listpath = '';
+    $start = $daterange->getStart();
+    $stop  = $daterange->getStop();
+    $stop->addDays(1);
     $user = new User($userID, true);
     echo '<p>Consumption records for '
         .$user->fields['username']->value
@@ -184,7 +203,9 @@ class ActionConsume extends ActionAction {
     $recselect->setTableHeadings(array('Date', 'Item','Quantity'));
     $recselect->connectDB('consumables_use',
                           array(array('consumables_use.id','conid'), 'consumable', 'usewhen', 'name', 'longname', 'quantity'),
-                          'userid='.qw($userID),
+                          'userid='.qw($userID)
+                              .' AND usewhen >= '.qw($start->datetimestring)
+                              .' AND usewhen < '.qw($stop->datetimestring),
                           'usewhen',
                           array('consumables_use.id','conid'),
                           NULL,
@@ -194,7 +215,6 @@ class ActionConsume extends ActionAction {
 
     echo $recselect->display();
   }
-
 }
 
 ?> 
