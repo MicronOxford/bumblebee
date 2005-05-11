@@ -12,6 +12,7 @@ class TimeSlot {
   var $baseclass;
   var $isDisabled=0;
   var $isVacant = 0;
+  var $isStart = 1;
   var $displayStart;
   var $displayStop;
   var $slotRule;
@@ -34,9 +35,9 @@ class TimeSlot {
 
   function displayInCell($isadmin=0) {
     #return "Time slot $start->datetimestring for $duration->timestring\n";
-    $t = '';
-    global $BASEPATH;
-    $isodate = $this->start->datestring;
+    //$t = '';
+    //global $BASEPATH;
+    //$isodate = $this->start->datestring;
     /*$t .= "<div style='float:right;'><a href='$this->href/$isodate' class='but' title='Zoom in on date: $isodate'><img src='$BASEPATH/theme/images/zoom.png' alt='Zoom in on $isodate' class='calicon' /></a></div>";
     $t .= "<div class='caldate'>" . strftime("%e", $this->start->ticks);
     $t .= "<span class='calmonth "
@@ -46,8 +47,9 @@ class TimeSlot {
         ."</span>";
     $t .= "</div>";
     */
-    $t .= $this->displayCellDetails($isadmin);
-    return $t;
+/*    $t .= $this->displayCellDetails($isadmin);
+    return $t;*/
+    return $this->displayCellDetails($isadmin);
   }
 
   function displayShort() {

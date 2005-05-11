@@ -177,6 +177,7 @@ class Calendar {
                       .$bl[$bv]->start->datetimestring.' - '.$bl[$bv]->stop->datetimestring, 8);
       $cbook = $bl[$bv];
       $cbook->original = $cbook;
+      $isStart = 1;
       $slot = $list->findSlotFromWithin($bl[$bv]->start);  
       #$start = $list->findSlotStart($bl[$bv]->start);
       if ($slot == 0) {
@@ -190,6 +191,8 @@ class Calendar {
         $this->log('cstart='.$slot->start->datetimestring
               .' cstop='.$slot->stop->datetimestring, 10);
         $this->bookinglist[$booking] = $cbook;
+        $this->bookinglist[$booking]->isStart = $isStart;
+        $isStart = 0;
         
         // while PHP's handling of methods is broken, we have to this as a two-step operation:
         // all we want to do is:

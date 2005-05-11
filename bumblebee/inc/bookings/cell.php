@@ -32,7 +32,8 @@ class BookingCell {
     #if ($today->datestring==$this->booking->start->datestring) {
       #$class .= ' '.$this->todayClass;
     #}
-    if ($this->isStart) {
+    //echo $this->booking->isVacant;
+    if ($this->isStart || $this->booking->isVacant) {
       $class .= ' '.$this->booking->baseclass;
       $t .= '<td rowspan="'.$this->rows.'" class="'.$class.'"'
            .'title="'.$this->booking->generateBookingTitle().'">';

@@ -33,8 +33,11 @@ class BookingMatrix {
       $bookDay->dayRound();
       if ($bookDay->ticks == $this->day->ticks) {
         $bookDayStart = $bookDay;
+        $mystart = isset($b->displayStart) ? $b->displayStart : $b->start;
+        $mystop  = isset($b->displayStop)  ? $b->displayStop  : $b->stop;
         $bookDayStart->setTime($this->dayStart);
-        $starttime = $b->start->subtract($bookDayStart);
+        //$starttime = $b->start->subtract($bookDayStart);
+        $starttime = $mystart->subtract($bookDayStart);
         if ($starttime > 0) {
           //then the start of the booking is after the start time of the matrix
           $rowstart = floor($starttime/$this->granularity);
@@ -44,10 +47,12 @@ class BookingMatrix {
         }
         $bookDayStop = $bookDay;
         $bookDayStop->setTime($this->dayStop);
-        $stoptime = $b->stop->subtract($bookDayStop);
+        //$stoptime = $b->stop->subtract($bookDayStop);
+        $stoptime = $mystop->subtract($bookDayStop);
         if ($stoptime < 0) {
           //the stop time is before the stop time of the matrix
-          $stoptimestart = $b->stop->subtract($bookDayStart);
+          //$stoptimestart = $b->stop->subtract($bookDayStart);
+          $stoptimestart = $mystop->subtract($bookDayStart);
           $rowstop = floor($stoptimestart/$this->granularity);
         } else {
           //the stop time is after the stop time of the matrix,
@@ -56,8 +61,8 @@ class BookingMatrix {
         }
         $rowspan = $rowstop - $rowstart;
 
-        $cell = new BookingCell($this->bookings[$k],1,$rowspan);
-        $this->rows[$rowstart] = new BookingCell($this->bookings[$k],1,$rowspan);
+        $cell = new BookingCell($this->bookings[$k],$this->bookings[$k]->isStart,$rowspan);
+        $this->rows[$rowstart] = $cell;//new BookingCell($this->bookings[$k],1,$rowspan);
         #echo "Allocated $rowstart-$rowstop = $rowstart, $rowspan to booking starting on "
             #." (".$b->start->datetimestring.")<br/>\n";
       }
