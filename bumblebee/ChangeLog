@@ -1,4 +1,9 @@
 2005-05-11 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* enabled comments from either booking or from timeslotrule to appear in calendar view 
+	* many CSS changes to make more sense of calendar view 
+	* some simple HTML changes to ensure every tr has a td within it (validator.w3.org) 
+
+2005-05-11 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* foreach cleanups 
 	* permit comments in timeslotrule pictures 
 

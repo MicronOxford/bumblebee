@@ -30,7 +30,8 @@ $Id$can change another's bookings: edit, delete etc
   - create admin user, password
   - can only run once?
 
-
+* ini file
+  - move bumblebee.ini to a db table? 
 
 
 look at other PHP methods for getting things out of hash arrays (array_walk, array_keys, in_array)
@@ -190,6 +191,16 @@ maybe use a CREATE...SELECT statement into a temporary table. (how?)
 CEIL(x) or CEILING(x) can be used to round up to nearest integer for num hours
 
 Can existing (huge!) expression be used with just variable SELECT (or just select everything?) ORDER BY and GROUP BY clauses.
+
+
+// We'll be outputting a PDF
+header("Content-type: application/pdf");
+
+// It will be called downloaded.pdf
+header("Content-Disposition: attachment; filename=downloaded.pdf");
+
+
+
 
 
 
