@@ -276,12 +276,12 @@ class Calendar {
   }
 
   function displayAsTable() {
-    $t = "<table class='tabularobject'>";
-    foreach ($this->bookinglist as $k => $v) {
+    $t = '<table class="tabularobject">';
+    foreach ($this->bookinglist as $v) {
       #$t .= '<tr><td>'.$v[0].'</td><td>'.$v[1].'</td></tr>'."\n";
       $t .= $v->displayShort();
     }
-    $t .= "</table>";
+    $t .= '</table>';
     return $t;
   }
 

@@ -17,7 +17,7 @@ class OutputFormatter {
     #preDump($data);
     if (is_array($this->formatfields)) {
       $s = array();
-      foreach ($this->formatfields as $k => $v) {
+      foreach ($this->formatfields as $v) {
         $s[] = isset($data[$v]) ? xssqw($data[$v]) : '';
         #if (isset($data[$v]) && $data[$v]) {
           #$s = $data[$v];

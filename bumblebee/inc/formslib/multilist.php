@@ -55,7 +55,7 @@ class MultiList extends Field {
       $this->fields[$i] = array();
       $this->fields[$i][$j] = $this->controlfield; //**COPY**
       $this->fields[$i][$j]->namebase = $this->name.'-$i-';
-      foreach ($this->elements as $k => $v) {
+      foreach ($this->elements as $v) {
         $j++;
         $this->fields[$i][$j] = $v;
         $this->fields[$i][$j]->namebase = $this->name.'-$i-';
@@ -66,7 +66,7 @@ class MultiList extends Field {
   function _fill() {
     $sjtoVal = qw($this->jtoVal);
     $getfields = array($this->matchfield);
-    foreach ($this->elements as $k=>$v) {
+    foreach ($this->elements as $v) {
       $getfields[] = $v->name;
     }
     $this->values = new DBList($this->joinTable, $getfields,
@@ -112,9 +112,9 @@ class MultiList extends Field {
 */
 
   function selectable() {
-    $t = "";
-    $errorclass = ($this->invalid ? "class='inputerror'" : "");
-    foreach ($this->fields as $k => $v) {
+    $t = '';
+    $errorclass = ($this->invalid ? 'class="inputerror"' : '');
+    foreach (array_keys($this->fields) as $k) {
       $t .= "<tr $errorclass>\n";
       #$t .= $this->fields[$k][0]->selectable();
       #$t .= "</td>\n";

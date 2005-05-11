@@ -5,6 +5,7 @@
 include_once 'inc/formslib/dbrow.php';
 include_once 'inc/formslib/textfield.php';
 include_once 'inc/formslib/textarea.php';
+include_once 'inc/formslib/commentfield.php';
 include_once 'inc/formslib/radiolist.php';
 include_once 'inc/formslib/exampleentries.php';
 include_once 'inc/bookings/timeslotrule.php';
@@ -109,6 +110,10 @@ class Instrument extends DBRow {
     $this->addElement($f);
 
     // create the timeslot rule information required
+    $f = new CommentField('timeslotpicturecomment', 'Instrument timeslots',
+                              'These fields describe when the instrument is available. ');
+    $f->value = 'Format: HH:MM-HH:MM/n,comment';
+    $this->addElement($f);
     $f = new TextField('timeslotpicture', 'Time slot picture');
     $f->required = 1;
     $f->hidden = 1;
@@ -194,7 +199,7 @@ class Instrument extends DBRow {
         $this->fields['tsr-'.$day]->isValid = 0;
         $this->isValid = 0;
       }
-      $newslot .= '['.$day.']<'.join($lines,',').'>';
+      $newslot .= '['.$day.']<'.join($lines,';').'>';
       $this->log('Calculated picture '. $newslot);
     }
     return $newslot;    
@@ -202,15 +207,6 @@ class Instrument extends DBRow {
   
   function display() {
     return $this->displayAsTable();
-  }
-
-  function displayAsTable() {
-    $t = '<table class="tabularobject">';
-    foreach ($this->fields as $k => $v) {
-      $t .= $v->displayInTable(2);
-    }
-    $t .= '</table>';
-    return $t;
   }
 
 } //class Instrument

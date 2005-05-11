@@ -162,7 +162,7 @@ class JoinData extends Field {
       $rowchanged = $this->rows[$i]->update($data);
       if ($rowchanged) {
         $this->log('JoinData-Row '.$i.' has changed.');
-        foreach ($this->rows[$i]->fields as $k => $v) {
+        foreach (array_keys($this->rows[$i]->fields) as $k) {
           #$this->rows[$i]->fields[$this->jtRightIDCol]->changed = $rowchanged;
           #if ($v->name != $this->jtRightIDCol && $v->name != $this->jtLeftIDCol) {
             $this->rows[$i]->fields[$k]->changed = $rowchanged;

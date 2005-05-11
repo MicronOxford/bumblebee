@@ -37,21 +37,21 @@ class DBO {
   
   function setNamebase($newname='') {
     $this->namebase = $newname;
-    foreach ($this->fields as $k => $v) {
+    foreach (array_keys($this->fields) as $k) {
       $this->fields[$k]->setNamebase($newname);
     }
   }
 
   function setEditable($editable=1) {
     $this->editable = $editable;
-    foreach ($this->fields as $k => $v) {
+    foreach (array_keys($this->fields) as $k) {
       $this->fields[$k]->setEditable($editable);
     }
   }
 
   function text_dump() {
     $t  = "<pre>$this->dumpheader $this->table (id=$this->id)\n{\n";
-    foreach ($this->fields as $k => $v) {
+    foreach ($this->fields as $v) {
       $t .= "\t".$v->text_dump();
     }
     $t .= "}\n</pre>";

@@ -148,12 +148,12 @@ class DateRange extends nonDBRow {
       array_push   ($rangePile, $nextrange);
     }
     //preDump($rangePile);
-    $jswalk = new JSQuickWalk($this->namebase,'Previous', 'Next', array('startdate', 'stopdate'), $rangePile, $maxRanges);
+    $jswalk = new JSQuickWalk($this->namebase,'&laquo; Previous', 'Next &raquo;', array('startdate', 'stopdate'), $rangePile, $maxRanges);
     //preDump($jswalk);
     //$this->extrarows[] = array('', $prevRange[0]->datestring.$prevRange[1]->datestring);
     //$this->extrarows[] = array('', $nextRange[0]->datestring.$nextRange[1]->datestring);
     $this->extrarows[] = array($jswalk->displayJS(),
-                        '&laquo;'.$jswalk->displayBack().' | '.$jswalk->displayFwd().'&raquo;');  
+                        $jswalk->displayBack().' | '.$jswalk->displayFwd());  
   }
   
   

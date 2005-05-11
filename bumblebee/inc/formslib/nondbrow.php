@@ -140,7 +140,7 @@ class nonDBRow {
   **/
   function text_dump() {
     $t  = "<pre>$this->dumpheader $this->table (id=$this->id)\n{\n";
-    foreach ($this->fields as $k => $v) {
+    foreach ($this->fields as $v) {
       $t .= "\t".$v->text_dump();
     }
     $t .= "}\n</pre>";

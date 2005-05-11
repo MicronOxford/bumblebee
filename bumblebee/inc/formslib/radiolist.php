@@ -21,9 +21,9 @@ class RadioList extends ChoiceList {
     #echo "<pre>".print_r($data,1)."</pre>";
     #echo $this->value;
     $selected = ($data[$this->formatid] == $this->value ? ' checked="1" ' : '');
-    $t  = "<input type='radio' name='$this->name' "
-         ."value='".$data[$this->formatid]."' $selected /> ";
-    foreach ($this->formatter as $k => $v) {
+    $t  = '<input type="radio" name="'.$this->name.'" '  
+         .'value="'.$data[$this->formatid].'" '.$selected.' /> ';
+    foreach (array_keys($this->formatter) as $k) {
       $t .= $this->formatter[$k]->format($data);
     }
     if (isset($data['_field']) && $data['_field']) {
@@ -34,8 +34,8 @@ class RadioList extends ChoiceList {
 
 
   function selectable() {
-    $t = "";
-    foreach ($this->list->choicelist as $k => $v) {
+    $t = '';
+    foreach ($this->list->choicelist as $v) {
       $t .= $this->format($v);
       $t .= "<br />\n";
     }

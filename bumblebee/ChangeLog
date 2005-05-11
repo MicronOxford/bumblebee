@@ -1,3 +1,7 @@
+2005-05-11 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* foreach cleanups 
+	* permit comments in timeslotrule pictures 
+
 2005-05-10 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* enabled date ranges for deleted bookings and consumable usage views.  
 	* included javascript +/- class to control a number of text fields 

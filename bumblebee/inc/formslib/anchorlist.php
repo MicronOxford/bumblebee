@@ -29,7 +29,7 @@ class AnchorList extends ChoiceList {
     $liclass = (isset($this->liclass) ? " class='$this->liclass'" : '');
     $t  = "<ul title='$this->description'$ulclass>\n";
     if (is_array($this->list->choicelist)) {
-      foreach ($this->list->choicelist as $k => $v) {
+      foreach ($this->list->choicelist as $v) {
         $t .= "<li$liclass>";
         #$t .= print_r($v, true);
         $t .= $this->format($v);

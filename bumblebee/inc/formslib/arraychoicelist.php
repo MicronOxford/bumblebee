@@ -88,7 +88,7 @@ class ArrayChoiceList {
     if (isset($newval)) {
       //check to see if the newval is legal (does it exist on our choice list?)
       $isExisting = 0;
-      foreach ($this->choicelist as $k => $v) {
+      foreach ($this->choicelist as $v) {
         if ($this->DEBUG) echo "($isExisting:".$v['id'].":$newval)";
         if ($v['id'] == $newval && $v['id'] >= 0) {
           $isExisting = 1;
@@ -144,7 +144,7 @@ class ArrayChoiceList {
     $vals = array();
     if ($this->changed) {
       #echo "This has changed";
-      foreach ($this->choicelist as $k => $v) {
+      foreach ($this->choicelist as $v) {
         if (isset($v['_field'])) {
           $vals[] = $v['_field']->name ."=". qw($v['_field']->value);
         }
@@ -158,7 +158,7 @@ class ArrayChoiceList {
 
   function selectedValue() {
     $val = array();
-    foreach ($this->choicelist as $k => $v) {
+    foreach ($this->choicelist as $v) {
       //echo "H:$this->idfield, $k, $v, $this->id";
       if ($v[$this->listKey] == $this->id) {
         foreach ($this->fields as $f) {

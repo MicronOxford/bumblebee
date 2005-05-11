@@ -176,10 +176,10 @@ class DBChoiceList extends DBO {
    * choicelist. Use this if they fields are lost due to a fill()
    */
   function _reAddExtraFields() {
-    foreach ($this->appendedfields as $k => $v) {
+    foreach ($this->appendedfields as $v) {
       $this->_append($v);
     }
-    foreach ($this->prependedfields as $k => $v) {
+    foreach ($this->prependedfields as $v) {
       $this->_prepend($v);
     }
   }
@@ -209,7 +209,7 @@ class DBChoiceList extends DBO {
     if (isset($newval)) {
       //check to see if the newval is legal (does it exist on our choice list?)
       $isExisting = 0;
-      foreach ($this->choicelist as $k => $v) {
+      foreach ($this->choicelist as $v) {
         $this->log('('.$isExisting.':'.$v[$this->idfield].':'.$newval.')');
         if ($v[$this->idfield] == $newval && $v[$this->idfield] >= 0) {
           $isExisting = 1;
@@ -283,7 +283,7 @@ class DBChoiceList extends DBO {
     $vals = array();
     if ($this->changed) {
       #echo "This has changed";
-      foreach ($this->choicelist as $k => $v) {
+      foreach ($this->choicelist as $v) {
         if (isset($v['_field'])) {
           $vals[] = $v['_field']->name ."=". qw($v['_field']->value);
         }
@@ -297,7 +297,7 @@ class DBChoiceList extends DBO {
 
   function selectedValue($returnArray=0) {
     $val = array();
-    foreach ($this->choicelist as $k => $v) {
+    foreach ($this->choicelist as $v) {
       //echo "H:$this->idfield, $k, $v, $this->id";
       if ($v[$this->idfield] == $this->id) {
         foreach ($this->fields as $f) {

@@ -101,7 +101,7 @@ function is_valid_nonzero_time($v) {
 function sum_is_100($vs) {
   #echo "<br/>Checking sum<br/>";
   $sum=0;
-  foreach ($vs as $k => $v) {
+  foreach ($vs as $v) {
     #echo "'$v', ";
     $sum += $v;
   }

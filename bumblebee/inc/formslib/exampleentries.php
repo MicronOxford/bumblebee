@@ -39,7 +39,7 @@ class ExampleEntries {
     #var_dump($data);
     $this->fill($data[$this->source]);
     $entries = array();
-    foreach ($this->list->choicelist as $k => $v) {
+    foreach ($this->list->choicelist as $v) {
       $entries[] = $v[$this->columnreturn];
     }
     $t = implode($this->separator, $entries);

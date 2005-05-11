@@ -54,7 +54,7 @@ class AnchorTableList extends AnchorList {
       $t .= "</tr>\n";
     }
     if (is_array($this->list->choicelist)) {
-      foreach ($this->list->choicelist as $k => $v) {
+      foreach ($this->list->choicelist as $v) {
         $t .= $this->format($v);
       }
     }

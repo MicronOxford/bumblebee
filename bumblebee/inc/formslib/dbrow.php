@@ -220,8 +220,8 @@ class DBRow extends DBO {
 
   function _sqlvals($force=0) {
     $vals = array();
-    foreach ($this->fields as $k => $v) {
-      if ($v->changed || $force) {
+    foreach (array_keys($this->fields) as $k) {
+      if ($this->fields[$k]->changed || $force) {
         //obtain a string of the form "name='Stuart'" from the field.
         //Complex fields can use this as a JIT syncing point, and may
         //choose to return nothing here, in which case their entry is
@@ -286,9 +286,11 @@ class DBRow extends DBO {
           .(($this->recStart !== '') && ($this->recNum !== '') ? "LIMIT $this->recStart,$this->recNum" : '');
       $g = db_get_single($q);
       if (is_array($g)) { 
-        foreach ($this->fields as $k => $v) {
-          $val = issetSet($g,$k);
-          $this->fields[$k]->set($val);
+        foreach (array_keys($this->fields) as $k) {
+          if (! $this->fields[$k]->sqlHidden) {
+            $val = issetSet($g,$k);
+            $this->fields[$k]->set($val);
+          }
         }
       }
     }
@@ -301,7 +303,7 @@ class DBRow extends DBO {
   **/
   function text_dump() {
     $t  = "<pre>$this->dumpheader $this->table (id=$this->id)\n{\n";
-    foreach ($this->fields as $k => $v) {
+    foreach ($this->fields as $v) {
       $t .= "\t".$v->text_dump();
     }
     $t .= "}\n</pre>";
@@ -313,13 +315,18 @@ class DBRow extends DBO {
   }
 
   function displayInTable($j) {
-    $t = "<table class='tabularobject'>";
-    foreach ($this->fields as $k => $v) {
+    $t = '<table class="tabularobject">';
+    foreach ($this->fields as $v) {
       $t .= $v->displayInTable($j);
     }
-    $t .= "</table>";
+    $t .= '</table>';
     return $t;
   }
+
+  function displayAsTable($j=2) {
+    return $this->displayInTable($j);
+  }
+
 
 } // class dbrow
 

@@ -152,9 +152,7 @@ class Field {
    * 
    */
   function setattr($attrs) {
-    foreach ($attrs as $k => $v) {
-      $this->attr[$k] = $v;
-    }
+    $this->attr = array_merge($this->attr, $attrs);
   }
 
   /** 

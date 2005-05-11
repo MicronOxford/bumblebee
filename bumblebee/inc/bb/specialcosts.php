@@ -154,13 +154,4 @@ END;
     return $this->displayAsTable();
   }
 
-  function displayAsTable() {
-    $t = '<table class="tabularobject">';
-    foreach ($this->fields as $k => $v) {
-      $t .= $v->displayInTable(2);
-    }
-    $t .= '</table>';
-    return $t;
-  }
-
-} //class Group
+} //class SpecialCost

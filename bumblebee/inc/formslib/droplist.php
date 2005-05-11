@@ -22,7 +22,7 @@ class DropList extends ChoiceList {
     $selected = ($data[$this->formatid] == $this->getValue() ? " selected='1' " : '');
     $t  = '<option '
          ."value='".$data[$this->formatid]."' $selected> ";
-    foreach ($this->formatter as $k => $v) {
+    foreach (array_keys($this->formatter) as $k) {
       $t .= $this->formatter[$k]->format($data);
     }
     //if (isset($data['_field']) && $data['_field']) {
@@ -36,7 +36,7 @@ class DropList extends ChoiceList {
 
   function selectable() {
     $t = "<select name='$this->namebase$this->name'>";
-    foreach ($this->list->choicelist as $k => $v) {
+    foreach ($this->list->choicelist as $v) {
 //       echo "droplist: $k => $v<br />\n";
       //preDump($v);
       $t .= $this->format($v);
@@ -47,7 +47,7 @@ class DropList extends ChoiceList {
 
   function selectedValue() {
     $value = $this->getValue();
-    foreach ($this->list->choicelist as $k => $data) {
+    foreach ($this->list->choicelist as $data) {
       if ($data[$this->formatid] == $value) {
         break;
       }
@@ -55,7 +55,7 @@ class DropList extends ChoiceList {
     //preDump($data);
     $t  = '<input type="hidden" '
           .'value="'.$data[$this->formatid].'" /> ';
-    foreach ($this->formatter as $k => $v) {
+    foreach (array_keys($this->formatter) as $k) {
       $t .= $this->formatter[$k]->format($data);
     }
     $t .= "\n";
