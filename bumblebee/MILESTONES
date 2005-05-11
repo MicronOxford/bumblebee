@@ -14,10 +14,11 @@
  * unbooking an instrument causes an email to be sent to the unbook list for some timeslots
  
 1.1
- * permit admin user to masquerade as another user a.k.a su to make bookings
+ * permit export of billing data to other external program
+ * permit admin user to masquerade as another user like 'su' to make bookings
 
 1.0: Initial public release
- * permit export of billing data to other external program
+ * rich calendar display with comments from booking or slot.
  * database backup/dump function
  * install script 
  * removal/hiding of unimplemented features (billing etc)

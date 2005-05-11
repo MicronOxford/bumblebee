@@ -3,6 +3,7 @@
 # Some javascript functions for use in the pages
 ?>
 <script type='text/javascript'>
+<!--
 function selectall () {
   return setcheckboxes(true, 0, 1);
 }
@@ -34,4 +35,5 @@ function setcheckboxes (setval, offset, mod) {
   } 
   return false;
 }
+-->
 </script>

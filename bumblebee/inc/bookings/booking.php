@@ -77,7 +77,8 @@ class Booking extends TimeSlot {
     return $t;
   }
 
-  function displayCellDetails() {
+  //function displayCellDetails() {
+  function displayInCell($isadmin=0) {
 //     preDump($this);
     global $BASEPATH;
     $start = isset($this->displayStart) ? $this->displayStart : $this->start;
@@ -87,9 +88,15 @@ class Booking extends TimeSlot {
     $isodate = $start->datestring;
     $t = '';
     $t .= "<div style='float:right;'><a href='$this->href/$isodate/$this->id' title='View or edit booking $timedescription' class='but'><img src='$BASEPATH/theme/images/editbooking.png' alt='View/edit booking $timedescription' class='calicon' /></a></div>";
+    // Finally include details of the booking:
     $t .= '<div class="calbookperson">'
          .'<a href="mailto:'.$this->useremail.'">'
          .$this->name.'</a></div>';
+    if ($this->comments) {
+      $t .= '<div class="calcomment">'
+          .xssqw($this->comments)
+          .'</div>';
+    }
     return $t;
   }
 

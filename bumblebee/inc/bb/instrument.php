@@ -190,14 +190,15 @@ class Instrument extends DBRow {
     $newslot = '';
     for ($day=0; $day<7; $day++) {
       //preDump($this->fields['tsr-'.$day]->value);
-      $lines = preg_split('/\s+/', $this->fields['tsr-'.$day]->value);
+      $lines = preg_split('/[\n\r]+/', $this->fields['tsr-'.$day]->value);
       // get rid of blanks
       $lines = preg_grep('/^\s*$/', $lines,PREG_GREP_INVERT);
-      $rejects = preg_grep('{^\d\d:\d\d\-\d\d:\d\d/(\d+|\*)$}', $lines,PREG_GREP_INVERT);
+      $rejects = preg_grep('{^\d\d:\d\d\-\d\d:\d\d/(\d+|\*)(,.+)?$}', $lines,PREG_GREP_INVERT);
       if (count($rejects) > 0) {
         //then this input is invalid
         $this->fields['tsr-'.$day]->isValid = 0;
         $this->isValid = 0;
+        preDump($rejects);
       }
       $newslot .= '['.$day.']<'.join($lines,';').'>';
       $this->log('Calculated picture '. $newslot);

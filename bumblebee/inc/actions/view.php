@@ -96,6 +96,7 @@ class ActionView extends ActionAction {
     $now = new SimpleDate(time());
     if (isset($this->PD['isodate'])) {
       $then = new SimpleDate($this->PD['isodate']);
+      return 'o='.floor($then->dsDaysBetween($now));
     } elseif (isset($this->PD['startticks'])) {
       $then = new SimpleDate($this->PD['startticks']);
       return $then->datestring;
@@ -107,7 +108,7 @@ class ActionView extends ActionAction {
     
   function _calendarViewLink($instrument) {
     global $BASEURL;
-    return '<br /><br /><a href="'."$BASEURL/view/$instrument/"
+    return '<br /><br /><a href="'.$BASEURL.'/view/'.$instrument.'/'
                       .$this->_offset().'">Return to calendar view</a>';
   }
                       

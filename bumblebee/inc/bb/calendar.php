@@ -312,7 +312,7 @@ class Calendar {
     $t = '<table class="tabularobject calendar">';
     $weekstart = $this->start;
     $weekstart->addDays(-7);
-    $t .= '<tr><th></th>';
+    $t .= '<tr><th colspan="2"></th>';
     for ($day=0; $day<7; $day++) {
       $current = $weekstart;
       $current->addDays($day);
@@ -323,13 +323,13 @@ class Calendar {
       $dayRow = $row % $numRowsPerDay;
       if ($dayRow == 0) {
         $weekstart->addDays(7);
-        $t .= '<tr><td></td>';
+        $t .= '<tr><td colspan="2"></td>';
         for ($day=0; $day<7; $day++) {
           $current = $weekstart;
           $current->addDays($day);
           $isodate = $current->datestring;
           $class = $this->_getDayClass($today, $current);
-          $t .= '<td class="caldate '.$class.'">';
+          $t .= '<td class="caldatecell '.$class.'">';
           $t .= '<div style="float:right;"><a href="'.$this->href.'/'.$isodate.'" class="but" title="Zoom in on date: '.$isodate.'"><img src="'.$BASEPATH.'/theme/images/zoom.png" alt="Zoom in on '.$isodate.'" class="calicon" /></a></div>'."\n";
           $t .= '<div class="caldate">' . strftime("%e", $current->ticks);
           $t .= '<span class="calmonth '
@@ -342,9 +342,11 @@ class Calendar {
         }
         $t .= '</tr>';
       }
-      $t .= '<tr>';
+      //$t .= '<tr>';
+      $t .= '<tr><td class="dummy"></td>';
       if ($dayRow % $reportPeriod == 0) {
-        $t .= '<td rowspan="'.$reportPeriod.'">';
+        //$t .= '<td colspan="2" rowspan="'.$reportPeriod.'">';
+        $t .= '<td rowspan="'.$reportPeriod.'" class="timemark">';
         $t .= $timecolumn[$dayRow]->timestring;
         $t .= '</td>';
       }

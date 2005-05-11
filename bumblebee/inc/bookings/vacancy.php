@@ -33,7 +33,8 @@ class Vacancy extends TimeSlot {
             .'</td></tr>'."\n";
   }
 
-  function displayCellDetails($isadmin=0) {
+  //function displayCellDetails($isadmin=0) {
+  function displayInCell($isadmin=0) {
 //     preDump(debug_backtrace());
 //     preDump($this);
     global $BASEPATH;
@@ -46,7 +47,23 @@ class Vacancy extends TimeSlot {
       $timedescription = $start->datetimestring.' - '.$stop->datetimestring;
       //$timedescription = $this->start->timestring.' - '.$this->stop->timestring;
       $isodate = $start->datestring;
-      $t .= "<div style='float:right;'><a href='$this->href/$isodate/$startticks-$stopticks' class='but' title='Make booking $timedescription'><img src='$BASEPATH/theme/images/book.png' alt='Make booking $timedescription' class='calicon' /></a></div>&nbsp;";
+      $t .= '<div style="float:right;">'
+              .'<a href="'
+                  .$this->href.'/'.$isodate.'/'.$startticks.'-'.$stopticks.'" '
+                  .'class="but" title="Make booking '.$timedescription.'">'
+                      .'<img src="'.$BASEPATH.'/theme/images/book.png" '
+                          .'alt="Make booking '.$timedescription.'" '
+                          .'class="calicon" />'
+              .'</a>'
+            .'</div>';
+    }
+    if ($this->slotRule->comment) {
+      $t .= '<div class="calcomment" title="'.xssqw($this->slotRule->comment).'">'
+                //.xssqw(sprintf('%20.20s',$this->slotRule->comment))
+                .xssqw($this->slotRule->comment)
+          .'</div>';
+    } else {
+      $t .= '&nbsp;';   // make sure there is some non-floating content in the table.
     }
     return $t;
   }

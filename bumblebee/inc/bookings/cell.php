@@ -35,7 +35,7 @@ class BookingCell {
     //echo $this->booking->isVacant;
     if ($this->isStart || $this->booking->isVacant) {
       $class .= ' '.$this->booking->baseclass;
-      $t .= '<td rowspan="'.$this->rows.'" class="'.$class.'"'
+      $t .= '<td rowspan="'.$this->rows.'" class="'.$class.'" '
            .'title="'.$this->booking->generateBookingTitle().'">';
       $this->booking->href = $href;
       $t .= $this->booking->displayInCell($isadmin);

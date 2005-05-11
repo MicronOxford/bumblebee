@@ -75,10 +75,10 @@ class BookingEntry extends DBRow {
     $f->setFormat('id', '%s', array('name'), ' (%35.35s)', array('longname'));
     $this->addElement($f);
     $attrs = array('size' => '48');
-    $f = new TextField('comments', 'Comments');
+    $f = new TextField('comments', 'Comment to show on calendar');
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField('log', 'Log');
+    $f = new TextField('log', 'Instrument Log Entry');
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new ReferenceField('userid', 'User');
