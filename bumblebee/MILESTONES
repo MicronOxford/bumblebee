@@ -15,9 +15,9 @@
  
 1.1
  * permit export of billing data to other external program
- * permit admin user to masquerade as another user like 'su' to make bookings
 
 1.0: Initial public release
+ * permit admin user to masquerade as another user like 'su' to make bookings
  * rich calendar display with comments from booking or slot.
  * database backup/dump function
  * install script 

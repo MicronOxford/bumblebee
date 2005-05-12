@@ -42,7 +42,8 @@ class ActionListing {
       #'bookmeta=Points system and booking controls',
       #'adminconfirm=Booking confirmation',
       'emaillist=Email lists',
-      'billing=Prepare billing summaries'
+      'billing=Prepare billing summaries',
+      'backupdb=Backup database'
     );
   }
 

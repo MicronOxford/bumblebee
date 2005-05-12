@@ -11,13 +11,15 @@ include 'inc/db.php';
 include 'inc/bb/auth.php';
 $auth = new BumbleBeeAuth();
 
-// all is ready to roll now, start the output again.
-ob_end_flush();
 
 // create the action factory to interpret what we are supposed to do
 include_once 'inc/actions/actionfactory.php';
 $action = new ActionFactory($auth);
-
+if ($action->ob_flush_ok()) {
+  // some actions will dump back a file, so we might not actually want to reflush the output.
+  // all is ready to roll now, start the output again.
+  ob_end_flush();
+}
 
 //FIXME -- streamline these includes?
 include_once 'inc/adminmenu.php';
@@ -52,15 +54,21 @@ if ($auth->isLoggedIn() && $action->_verb != 'logout') {
   <div class="content">
     <form method="post" action="<?=$action->nextaction?>" >
     <?
-      #echo "decide what happens here: $action (". $act[$action] .")<br />";
       if (! $auth->isLoggedIn()) {
         echo $auth->loginError();
       }
-      $action->go();//($auth, $action);
+      $action->go();
     ?>
     </form>
   </div>
 <?
-  include 'theme/contentfooter.php';
-  include 'theme/pagefooter.php';
+include 'theme/contentfooter.php';
+include 'theme/pagefooter.php';
+
+if (! $action->ob_flush_ok()) {
+  // some actions will dump back a file, so we might never want this stuff to get to a file...
+  ob_end_clean();
+  $action->returnBufferedStream();
+}
+
 ?>

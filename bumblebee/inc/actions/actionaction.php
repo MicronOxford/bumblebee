@@ -7,6 +7,7 @@ class ActionAction {
   var $auth;
   var $PDATA;
   var $PD;
+  var $ob_flush_ok = 1;
   var $stdmessages = array(
       STATUS_NOOP => '',
       STATUS_OK   => 'Operation completed successfully',

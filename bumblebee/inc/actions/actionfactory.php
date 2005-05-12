@@ -26,6 +26,7 @@ include_once 'specialcosts.php';
 //include_once 'adminconfirm.php';
 include_once 'emaillist.php';
 //include_once 'billing.php';
+include_once 'backupdatabase.php';
 
 include_once 'unknownaction.php';
 include_once 'inc/typeinfo.php';
@@ -119,6 +120,16 @@ class ActionFactory {
     }
     return $pd;
   }
+  
+  function ob_flush_ok() {
+    return $this->_action->ob_flush_ok;
+  }
+  
+  function returnBufferedStream() {
+    if (method_exists($this->_action, 'sendBufferedStream')) {
+      $this->_action->sendBufferedStream();
+    }
+  }
 
   function _makeaction() {
     global $BASEURL;
@@ -163,6 +174,8 @@ class ActionFactory {
         return new ActionAdminconfirm();*/
       case $act['emaillist']:
         return new ActionEmaillist($this->_auth, $this->PDATA);
+      case $act['backupdb']:
+        return new ActionBackupDB($this->_auth, $this->PDATA);
       case $act['billing']:
         return new ActionBilling($this->_auth, $this->PDATA);
       default:

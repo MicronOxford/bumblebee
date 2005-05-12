@@ -33,8 +33,11 @@ $Id$can change another's bookings: edit, delete etc
 * ini file
   - move bumblebee.ini to a db table? 
 
+* joindata
+  - can sync() OK but doesn't report that it changed.
 
-look at other PHP methods for getting things out of hash arrays (array_walk, array_keys, in_array)
+
+
 
 create a real db with no bogus booking data and no dodgy invalid users etc
 
