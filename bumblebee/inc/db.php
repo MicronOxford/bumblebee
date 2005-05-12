@@ -9,12 +9,19 @@ $CONFIG['database']['dbpasswd']   = $db_ini['passwd'];
 $CONFIG['database']['dbname']     = $db_ini['database'];
 $TABLEPREFIX = $db_ini['tableprefix'];
 
+$dberrmsg = '<p>Sorry, I couldn\'t connect to the database, '
+           .'so there\'s nothing I can presently do. '
+           .'This could be due to a booking system misconfiguration, or a failure of '
+           .'the database subsystem.</p>'
+           .'<p>If this persists, please contact the '
+           .'<a href="mailto:'.$ADMINEMAIL.'">booking system administrator</a>.</p>';
+           
 $connection = mysql_pconnect($CONFIG['database']['dbhost'], 
                              $CONFIG['database']['dbusername'], 
                              $CONFIG['database']['dbpasswd'])
-    or die ('Couldn\'t connect to server.');
+    or die ($dberrmsg);
 $db = mysql_select_db($CONFIG['database']['dbname'], $connection)
-    or die('Couldn\'t select database.');
+    or die($dberrmsg);
 
 include_once 'inc/formslib/sql.php';
 

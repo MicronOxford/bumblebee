@@ -1,4 +1,7 @@
 2005-05-12 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* added a system(mysqldump) call to permit a backup of the entire database. 
+
+2005-05-12 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* first cut at installing script 
 
 2005-05-11 Stuart Prescott <s.prescott@unimelb.edu.au>

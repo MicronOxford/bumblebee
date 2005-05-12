@@ -178,6 +178,11 @@ class DBRow extends DBO {
       $f = new Field($this->idfield);
       $f->value = -1;
       $row->addElement($f);
+      foreach ($this->fields as $field) {
+        if ($field->requiredTwoStage) {
+          $row->addElement($field);
+        }
+      }
       $row->isValid = 1;
       $row->changed = 1;
       $row->insertRow = 1;

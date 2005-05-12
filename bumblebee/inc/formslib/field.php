@@ -34,6 +34,7 @@ class Field {
   var $namebase;
   var $isValidTest = 'isset';
   var $sqlHidden = 0;
+  var $requiredTwoStage = 0;
   var $DEBUG = 0;
 
   /**

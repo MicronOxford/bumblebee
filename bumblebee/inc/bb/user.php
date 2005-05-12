@@ -25,6 +25,7 @@ class User extends DBRow {
     $f = new TextField('username', 'Username');
     $attrs = array('size' => '48');
     $f->required = 1;
+    $f->requiredTwoStage = 1;
     $f->isValidTest = 'is_empty_string';
     $f->setAttr($attrs);
     $this->addElement($f);
@@ -151,17 +152,31 @@ class User extends DBRow {
     //echo $this->_authMethod. '-';
     //preDump($this->fields['passwd']);
     //echo $this->fields['passwd']->value;
+    //echo $this->fields['auth_method']->changed.'/'.$this->fields['passwd']->value;
     $this->_authMethod = $this->fields['auth_method']->getValue();
-    if ($this->_authMethod != 'Local' 
-            && $this->fields['passwd']->value != ''
-            && $this->fields['passwd']->value != $this->_magicPassList[$this->_authMethod]) {
-      $this->log('User::sync(): indulging in password munging, '. $this->_authMethod);
-      $this->fields['passwd']->set($this->_magicPassList[$this->_authMethod]);
-      $this->fields['passwd']->crypt_method = '';
-      $this->fields['passwd']->changed = 1;
-      $this->changed = 1;
-    } else {
+    if ($this->_authMethod == 'Local') {
       $this->fields['passwd']->crypt_method = $this->_magicPassList['Local'];
+      if (in_array($this->fields['passwd']->value, $this->_magicPassList)) {
+        $this->fields['passwd']->value = '';
+      }
+    }
+    if ($this->fields['auth_method']->changed || $this->fields['passwd']->changed) {
+      if ($this->_authMethod != 'Local' 
+            /*&& $this->fields['passwd']->value != ''*/
+            && $this->fields['passwd']->value != $this->_magicPassList[$this->_authMethod]) {
+        $this->log('User::sync(): indulging in password munging, '. $this->_authMethod);
+        $this->fields['passwd']->set($this->_magicPassList[$this->_authMethod]);
+        $this->fields['passwd']->crypt_method = '';
+        $this->fields['passwd']->changed = 1;
+        $this->changed = 1;
+      } elseif ($this->_authMethod == 'Local' && $this->fields['passwd']->value == '' 
+                        && $this->fields['username']->value != '')  {
+        $this->fields['passwd']->changed = 1;
+        $this->fields['passwd']->isValid = 0;
+        $this->errorMessage .= 'password must be set for local login.<br/>';
+        $this->isValid = 0;
+      } else {
+      }
     }
     return parent::sync();
   }

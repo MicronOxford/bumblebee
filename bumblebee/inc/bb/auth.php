@@ -154,7 +154,7 @@ class BumbleBeeAuth {
   
   function _auth_via_radius($username, $password) {
     require_once 'Auth/Auth.php';
-    $RADIUSCONFIG = parse_ini_file('radius.ini');
+    $RADIUSCONFIG = parse_ini_file('config/radius.ini');
     $params = array(
                 "servers" => array(array($RADIUSCONFIG['host'], 
                                          0, 

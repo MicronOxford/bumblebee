@@ -36,6 +36,19 @@ $Id$can change another's bookings: edit, delete etc
 * joindata
   - can sync() OK but doesn't report that it changed.
 
+* email lists
+  - ooify?
+* masq
+  - ooify, make sensible
+
+* USER TESTING
+  - Firefox
+  - IE6
+  - Konq
+  - IE5.5
+  - IE5
+  - Safari
+  - Netscape 7 OSX
 
 
 
@@ -61,13 +74,8 @@ numdays = MIN(                                           a)              b)     
         calc'd                                         0.25          0.6                 1
         current                                        0.4           0.6                 1
         
-backups of database
 
 
-* email lists
-  - ooify?
-* masq
-  - ooify, make sensible
 * billing
   - todo
 
