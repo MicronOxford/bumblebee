@@ -30,7 +30,9 @@ a:active {
 .bumblebeecopyright {
 }
 
-#bumblebeefooter a {
+#bumblebeefooter a, #bumblebeefooter a:link, 
+#bumblebeefooter a:hover, #bumblebeefooter a:visited, #bumblebeefooter a:active  {
+  text-decoration: none;
 }
   
 pre {
