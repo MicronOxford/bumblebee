@@ -68,14 +68,14 @@ a img {
   margin-left: 0em;
 }
 
-.fmenu {
+#fmenu {
   float: right;
   width: 10em;
   font-size: 80%;
   padding: 1em 1em 1em 1em;
 }
 
-.fmenu h3 {
+#fmenu h3 {
   margin: 0;
   padding: 0;
 }

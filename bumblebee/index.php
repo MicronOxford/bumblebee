@@ -30,7 +30,7 @@ include 'theme/contentheader.php';
 
 if ($auth->isLoggedIn() && $action->_verb != 'logout') {
   ?>
-    <div class='fmenu'>
+    <div id='fmenu'>
       <h3>Menu</h3>
       <div class='menulist'>
       <ul>
