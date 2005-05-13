@@ -70,7 +70,7 @@ if ($auth->isLoggedIn() && $action->_verb != 'logout') {
     </form>
   </div>
 <?
-include 'theme/contentfooter.php';
+
 include 'theme/pagefooter.php';
 
 if (! $action->ob_flush_ok()) {

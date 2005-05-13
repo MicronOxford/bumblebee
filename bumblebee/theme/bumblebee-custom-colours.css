@@ -23,6 +23,12 @@ a:active {
 }
 
 .bumblebeefooter {
+  padding-top: 0em;
+  margin-top: 1em;
+  border-top: 0;
+  font-size: 70%;
+  color: #cccccc;
+  clear: both;
 }
 
 .bumblebeecopyright {
