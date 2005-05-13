@@ -59,7 +59,7 @@ if ($auth->isLoggedIn() && $action->_verb != 'logout') {
   <?
 }
 ?>
-  <div class="content">
+  <div class="bumblebeecontent">
     <form method="post" action="<?=$action->nextaction?>" >
     <?
       if (! $auth->isLoggedIn()) {
