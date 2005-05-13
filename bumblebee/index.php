@@ -32,7 +32,7 @@ if ($auth->isLoggedIn() && $action->_verb != 'logout') {
   ?>
     <div id='fmenu'>
       <h3>Menu</h3>
-      <div class='menulist'>
+      <div id='menulist'>
       <ul>
         <li><a href='<?=$BASEURL?>/'>Main</a></li>
         <?
@@ -45,7 +45,6 @@ if ($auth->isLoggedIn() && $action->_verb != 'logout') {
         ?>
         <li><a href='<?=$BASEURL?>/logout'>Logout</a></li>
       </ul>
-      </div>
       <?
         if ($auth->isadmin) printAdminMenu();  //FIXME: oo-ify this?
         if ($auth->amMasqed() && $action->_verb != 'masquerade') {
@@ -55,6 +54,7 @@ if ($auth->isLoggedIn() && $action->_verb != 'logout') {
               .'</div>';
         }
       ?>
+      </div>
     </div>
   <?
 }

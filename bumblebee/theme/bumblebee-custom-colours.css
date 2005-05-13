@@ -22,7 +22,7 @@ a:hover {
 a:active { 
 }
 
-.bumblebeefooter {
+#bumblebeefooter {
   font-size: 70%;
   color: #999999;
 }
@@ -30,33 +30,33 @@ a:active {
 .bumblebeecopyright {
 }
 
-.bumblebeefooter a {
+#bumblebeefooter a {
 }
   
 pre {
 }
 
-.fmenu {
+#fmenu {
 }
 
-.fmenu h3 {
+#fmenu h3 {
 }
 
-.menulist li, .menulist ul {
+#menulist li, #menulist ul {
 }
 
-.menulist a {
+#menulist a {
 }
 
-.menulist a {
+#menulist a {
   background-color: #ccccff;
 }
 
-.menulist a:hover, a.but:hover {
+#menulist a:hover, a.but:hover {
   background-color: #ffffff;
 }
 
-.menulist a:active, a.but:active {
+#menulist a:active, a.but:active {
   background-color: #ccffcc;
 }
 
