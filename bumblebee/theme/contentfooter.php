@@ -6,7 +6,7 @@
   $stat = new SystemStats;
 ?>
 
-<div class='bumblebeefooter'>
+<div id='bumblebeefooter'>
   <p>
     System managed by 
     <a href="http://www.nanonanonano.net/projects/bumblebee/">BumbleBee</a> version
