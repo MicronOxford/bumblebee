@@ -25,7 +25,7 @@
     Email the <a href="mailto:<?=$ADMINEMAIL?>">system administrator</a>
     for help.
   </p>
-  <div class='bumblebeecopyright'>
+  <p class='bumblebeecopyright'>
     Booking information Copyright &copy; <?=date('Y')?> University of Melbourne.
-  </div>
+  </p>
 </div>
