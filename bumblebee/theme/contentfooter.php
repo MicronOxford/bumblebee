@@ -9,7 +9,8 @@
 <div class='footer'>
   <p>
     System managed by 
-    <a href="http://www.nanonanonano.net/projects/bumblebee/">BumbleBee</a>,
+    <a href="http://www.nanonanonano.net/projects/bumblebee/">BumbleBee</a> version
+    <?=$BUMBLEBEEVERSION?>,
     released under the 
     <a href="http://www.gnu.org/licenses/gpl.html">GNU GPL</a>.
   <br />

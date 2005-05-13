@@ -1,71 +1,13 @@
 /* $Id$ */
 
-body {
-  background: #fafafa url("/images/nanobg.png");
-  background-repeat: repeat-y;
-  background-position: right;
-  font-family: "Bitstream Vera Sans", Verdana, Helvetica, Arial, sans-serif; 
-}
-
-#header {
-  position: relative;
-  border-bottom: 3px solid #0000cc;
-  margin-bottom: 1em;
-}
-
-#headerLeft {
-  height: 70px; 
-  width: 90px;
-}
-
-#headerRight {
-  margin-left: 2em;
-  position: absolute;
-  left: 90px;
-  top: 0px;
-}
-
-#headerRight h1 {
-  /*border-top:    1px solid #7c7c7c;*/
-  display: block;
-  width: 100%;
-}
-
-.headerCrumbs {
-  font-style: italic;
-}
-
-.crumbs {
-  margin: 1em 0px 5px 15px;
-  /*display: block;*/
-  font-size: 80%;
-  /*border-bottom: 1px dotted #cccccc;*/
-}
-
-/* the links probably don't need as much decoration on them in this case */
-.crumbs a:link, .crumbs a:visited, .crumbs a:active
-{
-  text-decoration: none;
-  color: #2071CC;
-}
-
-.crumbs a:hover
-{
-  text-decoration: none;
-  color: #000000;
-  background-color: #FFFF99;
-}
-
-.crumbs a:active
-{
-  text-decoration: underline;
-  color: #FF3333;
-}
-
+/* Styles used within the bumblebee program 
+ 
+  All styles defined in here are used somewhere... if the theme is structured to include multiple
+  stylesheets (this one first and then custom ones following that), then the minimum amount
+  of work is required to implement the theme.
+*/
 
 .content {
-  /*background-color: white;*/
-  /*font-size: smaller;*/
   padding: 0px;
   margin: 0px;
   margin-right: 11em;
@@ -88,25 +30,12 @@ a:active
   color: #DA4C71; 
 }
 
-h1 a {
-  text-decoration: none;
-}
-
-.hidden {
-  display: none;
-}
-
-.editdate {
-  font-size: 80%;
-  margin-bottom: -1ex; 
-}
-
 .footer {
   padding-top: 5em;
   margin-top: 1em;
   border-top: 3px solid #0000cc;
   font-size: 70%;
-  color: #aaaaaa;
+  color: #999999;
   clear: both;
 }
 
@@ -114,10 +43,9 @@ h1 a {
 }
 
 .footer a {
-  color: #aaaaff;
+  color: #9999ff;
 }
   
-
 pre {
   font-family: "Bitstream Vera Sans Mono",Courier New, monospace;
   border: 1px solid #aaaaff;
@@ -167,19 +95,15 @@ a img {
   text-decoration: none;
 }
 
-/*.fmenu a:hover, .fmenu a:active, .fmenu a:visited {
-  color
-*/
-
 .menulist a {
   width: 100%;
   padding: 0 0.2em 0 0.2em;
   margin: 0.2em 0 0.2em 0em;
   background-color: #ccccff;
-  border-right: 2px solid #000000;
-  border-left: 2px solid #999999;
-  border-top: 2px solid #999999;
-  border-bottom: 2px solid #000000;
+  border-right: 1px solid #000000;
+  border-left: 1px solid #999999;
+  border-top: 1px solid #999999;
+  border-bottom: 1px solid #000000;
 }
 
 .menulist a:hover, a.but:hover {
@@ -188,10 +112,10 @@ a img {
 
 .menulist a:active, a.but:active {
   background-color: #ccffcc;
-  border-left: 2px solid #000000;
-  border-right: 2px solid #999999;
-  border-bottom: 2px solid #999999;
-  border-top: 2px solid #000000;
+  border-left: 1px solid #000000;
+  border-right: 1px solid #999999;
+  border-bottom: 1px solid #999999;
+  border-top: 1px solid #000000;
 }
 
 .centrein {
@@ -219,10 +143,8 @@ table.calendar {
 }
 
 .calendar tr, .calendar td {
-  /*height: 0.5em;*/
 }
 
-/*.calendar td, .calendar th {*/
 .calday, .caldow {
   width: 14%;
   border-left:0;
@@ -296,7 +218,6 @@ th.caldow {
   /*border: 1px solid green;*/
   border-right: 1px solid green;
   border-bottom: 1px solid green;
-  /*margin: 0 1em 0 0em;*/
   /*background-color: #ccffcc;*/
 }
 
@@ -312,12 +233,10 @@ th.caldow {
 .booking {
   border-right: 1px solid red;
   border-bottom: 1px solid red;
-  /*margin: 0 1em 0 0em;*/
   background-color: #ffdddd;
   /*white-space: normal;*/
   /*height: 0.5em;*/
 }
-
 
 .booktimezoom .booking {
   margin: 0;
@@ -334,27 +253,17 @@ th.caldow {
 }
 
 td.dummy {
-/*   width: 0%; */
   width: 0px;
   background-color: #ffffff;
   margin: 0 0em 0 0;
   padding: 0 0 0 0em;
-  /*border: 1px solid black;*/
-  /*border-spacing : 0px;*/
   /*border-collapse: collapse;*/
   visibility: hidden;
-  /*empty-cells: hide;*/
   overflow: hidden;
   font-size: 1px;
 }
 
 a.but { 
-  /*border-right: 2px solid #000000;
-  border-left: 2px solid #999999;
-  border-top: 2px solid #999999;
-  border-bottom: 2px solid #000000;
-  padding: 0 0.2em 0 0.2em;
-  margin: 0.2em 0 0.2em 0em;*/
   background-color: #ccccff;
   color: black;
   text-decoration: none;
@@ -362,32 +271,14 @@ a.but {
   background: transparent;
 }
 
-/* unused ? */
 .calendarzoom .but, .calendar .but {
   margin: 0 0 0 0;
   padding: 0 0 0 0;
-  /*border: 1px solid black;
-  font-size: 70%;*/
   background: transparent;
 }
 
-/* unused ? */
 .calendarzoom .but:hover, .calendar .but:hover {
   background: transparent;
-}
-
-/* unused ? */
-.calendar .but {
-  height: 1.2em;
-  width: 1.2em;
-  border: none;
-}
-
-/* unused ? */
-.calendarzoom .but {
-  margin: 0 0 0 0;
-  padding: 0 0 0 0;
-  border: none;
 }
 
 .calicon {
@@ -397,8 +288,6 @@ a.but {
   width: 1.8em;
   border: none;
   background: transparent;
-  /*border: 1px solid black;*/
-  /*font-size: 70%;*/
 }
 
 .calendarzoom .calicon {
@@ -407,12 +296,9 @@ a.but {
 }
 
 .calbookperson {
-  /*width: 90%;*/
-  /*margin-right: 1.1em;*/
   white-space: nowrap;
   color: blue;
   overflow: hidden;
-  /*border: 1px solid black;*/
 }
 
 .calendarzoom .calbookperson {
@@ -426,9 +312,6 @@ a.but {
   height: 2.4em;
   width: 100%;
   line-height: 90%;
-/*   clear: both; */
-/*   border: 1px solid #8888ff; */
-/*   height: 100%; */
 }
 
 .calendarzoom .calcomment {
@@ -437,7 +320,7 @@ a.but {
 }
 
 
-
+/* if VERBOSESQL is turned on, then the SQL command are echoed to the screen in this style */
 .sql {
   margin: 1em 5% 1em 5%;
   padding: 0.5em;
@@ -445,6 +328,7 @@ a.but {
   background-color: #ccccff;
 }
 
+/* error messages from trying to execute updates on objects (e.g. invalid data) */
 .error, .msgerror {
   border: 1px solid red;
   background-color: #ffcccc;
@@ -452,6 +336,7 @@ a.but {
   padding: 1em;
 }
 
+/* successful updates (sync()) can report their success  */
 .msgsuccess {
   border: 1px solid green;
   background-color: #ccffcc;
@@ -490,6 +375,7 @@ ul.selectlist {
   list-style: none;
 }
 
+/* used in table selection lists */
 table.selectlist {
   margin: 0 3em 0 3em;
   border-collapse: collapse;

@@ -4,11 +4,11 @@
 // prevent output for the moment to permit session headers
 ob_start();
 
-include 'config/config.php'; 
+include_once 'config/config.php'; 
 // start the database session
-include 'inc/db.php'; 
+include_once 'inc/db.php'; 
 // check the user's credentials, create a session to record them
-include 'inc/bb/auth.php';
+include_once 'inc/bb/auth.php';
 $auth = new BumbleBeeAuth();
 
 
@@ -16,17 +16,15 @@ $auth = new BumbleBeeAuth();
 include_once 'inc/actions/actionfactory.php';
 $action = new ActionFactory($auth);
 if ($action->ob_flush_ok()) {
-  // some actions will dump back a file, so we might not actually want to reflush the output.
+  // some actions will dump back a file, so we might not actually want to output content so far.
   // all is ready to roll now, start the output again.
   ob_end_flush();
 }
 
-//FIXME -- streamline these includes?
 include_once 'inc/adminmenu.php';
-// include_once 'action/masquerade.php';
 
-// $pagetitle can be used in the pageheader.php from the theme
-$pagetitle = $action->title . ' - ' . $CONFIG['main']['SiteTitle'];
+// $pagetitle can be used in theme/pageheader.php 
+$pagetitle = $action->title . ' : ' . $CONFIG['main']['SiteTitle'];
 include 'theme/pageheader.php';
 include 'theme/contentheader.php';
 
@@ -76,7 +74,7 @@ include 'theme/contentfooter.php';
 include 'theme/pagefooter.php';
 
 if (! $action->ob_flush_ok()) {
-  // some actions will dump back a file, so we might never want this stuff to get to a file...
+  // some actions will dump back a file, and we never want all the HTML guff to end up in it...
   ob_end_clean();
   $action->returnBufferedStream();
 }

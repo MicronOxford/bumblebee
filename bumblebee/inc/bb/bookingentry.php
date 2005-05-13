@@ -231,6 +231,7 @@ class BookingEntry extends DBRow {
   **/
   function _checkIsFree() {
     global $TABLEPREFIX;
+    global $BASEURL;
     if (! $this->changed) return 1;
     #preDump($this);
     $doubleBook = 0;
@@ -267,7 +268,7 @@ class BookingEntry extends DBRow {
       $doubleBook = 1;
       $this->errorMessage .= 'Sorry, the instrument is not free at this time.<br /><br />'
                           .'Instrument booked by ' .$row['username']
-                          .' (<a href="'.$row['bookid'].'">booking #'.$row['bookid'].'</a>)<br />'
+                          .' (<a href="'.$BASEURL.'/view/'.$instrument.'/'.$row['bookid'].'">booking #'.$row['bookid'].'</a>)<br />'
                           .'from '.$row['bookwhen'].' until ' .$row['stoptime'];
       // The error should be displayed by the driver class, not us. We *never* echo.
       //echo $this->errorMessage;
