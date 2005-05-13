@@ -31,7 +31,7 @@ body {
   width: 100%;
 }
 
-.bumblebeefooter {
+#bumblebeefooter {
   padding-top: 5em;
   margin-top: 1em;
   border-top: 3px solid #0000cc;

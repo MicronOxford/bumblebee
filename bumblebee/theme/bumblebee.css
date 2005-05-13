@@ -30,7 +30,7 @@ a:active
   color: #DA4C71; 
 }
 
-.bumblebeefooter {
+#bumblebeefooter {
   font-size: 70%;
   color: #999999;
   clear: both;
@@ -39,7 +39,7 @@ a:active
 .bumblebeecopyright {
 }
 
-.bumblebeefooter a {
+#bumblebeefooter a {
   color: #9999ff;
 }
   
@@ -80,19 +80,19 @@ a img {
   padding: 0;
 }
 
-.menulist li, .menulist ul {
+#menulist li, #menulist ul {
   padding: 0;
   margin: 0;
   list-style: none;
 }
 
-.menulist a {
+#menulist a {
   display: block;
   color: black;
   text-decoration: none;
 }
 
-.menulist a {
+#menulist a {
   width: 100%;
   padding: 0 0.2em 0 0.2em;
   margin: 0.2em 0 0.2em 0em;
@@ -103,11 +103,11 @@ a img {
   border-bottom: 1px solid #000000;
 }
 
-.menulist a:hover, a.but:hover {
+#menulist a:hover, a.but:hover {
   background-color: #ffffff;
 }
 
-.menulist a:active, a.but:active {
+#menulist a:active, a.but:active {
   background-color: #ccffcc;
   border-left: 1px solid #000000;
   border-right: 1px solid #999999;
