@@ -1,4 +1,7 @@
 2005-05-13 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* CSS clean-ups, including splitting main CSS file for easier theming 
+
+2005-05-13 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* enabled masquerading as another user for admin user and instrument admins 
 
 2005-05-12 Stuart Prescott <s.prescott@unimelb.edu.au>

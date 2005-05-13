@@ -3,43 +3,11 @@
 
 /* Custom styles to define 
  
-  All styles defined in here are used somewhere... if the theme is structured to include multiple
-  stylesheets (this one first and then custom ones following that), then the minimum amount
-  of work is required to implement the theme.
+  These styles override those in bumblebee.css. The intention is to use this file mainly
+  for defining customisation of the colours of the different elements rather than the 
+  spacing, placement etc of the elements.
+  
 */
-
-
-
-body {
-  background: #fafafa url("/images/nanobg.png");
-  background-repeat: repeat-y;
-  background-position: right;
-  font-family: "Bitstream Vera Sans", Verdana, Helvetica, Arial, sans-serif; 
-}
-
-#header {
-  position: relative;
-  border-bottom: 3px solid #0000cc;
-  margin-bottom: 1em;
-}
-
-#headerLeft {
-  height: 70px; 
-  width: 90px;
-}
-
-#headerRight {
-  margin-left: 2em;
-  position: absolute;
-  left: 90px;
-  top: 0px;
-}
-
-#headerRight h1 {
-  /*border-top:    1px solid #7c7c7c;*/
-  display: block;
-  width: 100%;
-}
 
 
 .content {
