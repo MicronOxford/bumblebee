@@ -14,7 +14,7 @@ a {
 
 a:hover {
   text-decoration: none;
-  background-color: #FFFF99;
+  background-color: #ffff99;
   color: #1005A7;
 }
 
@@ -48,7 +48,7 @@ td {
   margin-top: 0em;
 }
 
-#bumblebeefooter {
+#bumblebeefooter p {
   font-size: 70%;
   color: #999999;
   clear: both;
@@ -142,6 +142,15 @@ td {
   border-right: 1px solid #999999;
   border-bottom: 1px solid #999999;
   border-top: 1px solid #000000;
+}
+
+/* form elements */
+input {
+  font-size: 100%;
+}
+
+select {
+  font-size: 100%;
 }
 
 .centrein {
