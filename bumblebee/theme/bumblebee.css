@@ -10,7 +10,7 @@
 #bumblebeecontent {
   padding: 0px;
   margin: 0px;
-  margin-right: 11em;
+  margin-right: 13em;
   margin-top: 0em;
 }
 
@@ -37,6 +37,7 @@ a:active
 }
 
 .bumblebeecopyright {
+  font-size: 100%;
 }
 
 #bumblebeefooter a {
@@ -70,7 +71,7 @@ a img {
 
 #fmenu {
   float: right;
-  width: 10em;
+  width: 12em;
   font-size: 80%;
   padding: 1em 1em 1em 1em;
 }
