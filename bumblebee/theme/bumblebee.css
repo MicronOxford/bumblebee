@@ -30,7 +30,7 @@ a:active
   color: #DA4C71; 
 }
 
-.footer {
+.bumblebeefooter {
   padding-top: 5em;
   margin-top: 1em;
   border-top: 3px solid #0000cc;
@@ -39,7 +39,7 @@ a:active
   clear: both;
 }
 
-.copyright {
+.bumblebeecopyright {
 }
 
 .footer a {

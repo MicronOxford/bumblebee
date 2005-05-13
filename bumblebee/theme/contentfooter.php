@@ -6,7 +6,7 @@
   $stat = new SystemStats;
 ?>
 
-<div class='footer'>
+<div class='bumblebeefooter'>
   <p>
     System managed by 
     <a href="http://www.nanonanonano.net/projects/bumblebee/">BumbleBee</a> version
@@ -25,9 +25,7 @@
     Email the <a href="mailto:<?=$ADMINEMAIL?>">system administrator</a>
     for help.
   </p>
-  <div class='copyright'>
+  <div class='bumblebeecopyright'>
     Booking information Copyright &copy; <?=date('Y')?> University of Melbourne.
   </div>
 </div>
-
-</body>

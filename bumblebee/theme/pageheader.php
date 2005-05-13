@@ -2,9 +2,13 @@
 # $Id$
 
 /* 
-  Note that two CSS files are used:
-    1. bumblebee.css    contains the specific classes that are used for bumblebee markup
-    2. sitelayout.css   contains other classes that are used by your own layout
+  Note that three CSS files are used:
+    1. bumblebee.css    
+                contains the specific classes that are used for bumblebee markup
+    2. bumblebee-custom-colours.css
+                contains customisations of the default ones (mainly for colour customisation)
+    2. pagelayout.css   
+                contains other classes that are used by your own layout
 */
 
 ?>
