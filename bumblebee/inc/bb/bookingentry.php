@@ -78,7 +78,7 @@ class BookingEntry extends DBRow {
     $f = new TextField('comments', 'Comment to show on calendar');
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField('log', 'Instrument Log Entry');
+    $f = new TextField('log', 'Logbook Entry');
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new ReferenceField('userid', 'User');

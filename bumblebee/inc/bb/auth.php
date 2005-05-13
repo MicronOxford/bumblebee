@@ -10,9 +10,9 @@ class BumbleBeeAuth {
   var $username;
   var $name;
   var $isadmin;
-  var $euid;   //permit user masquerading like su. Effective UID
-  var $ename;  //effective name
-  var $eusername;  //effective username
+  var $euid;            //permit user masquerading like su. Effective UID
+  var $ename;           //effective name
+  var $eusername;       //effective username
   var $permissions;
   var $_loggedin=0;
   var $_error;
@@ -23,6 +23,7 @@ class BumbleBeeAuth {
   function BumbleBeeAuth($table='users') {
     session_start();
     $this->table = $table;
+    $this->permissions = array();
     if (isset($_SESSION['uid'])) {
       // the we have a session login already done, check it
       $this->_loggedin = $this->_verifyLogin();
@@ -33,7 +34,6 @@ class BumbleBeeAuth {
     } else {
       // we're not logged in at all
     }
-    $this->permissions = array();
   }
 
   function logout() {
@@ -196,13 +196,34 @@ class BumbleBeeAuth {
   }
   
   function isInstrumentAdmin($instr) {
+    if (isset($this->permissions[$instr])) {
+      return $this->permissions[$instr];
+    }
+    $permission = 0;
     if ($instr==0) {
-       return false;
+      // we can use cached queries for this too
+      if (in_array(1, $this->permissions)) {
+        return 1;
+      }
+      // then we look at *any* instrument that we have this permission for
+       $row = quickSQLSelect('permissions',
+                                array('userid',  'isadmin'), 
+                                array($this->uid, 1)
+                            );
+      if (is_array($row)) {
+        $this->permissions[$instr] = 1;
+        $instr = $row['instrid'];
+        $permission = 1;
+      }
+    } else {
+      $row = quickSQLSelect('permissions',
+                              array('userid',   'instrid'), 
+                              array($this->uid, $instr)
+                           );
+      $permission = (is_array($row) && $row['isadmin']);
     }
-    if (! isset($this->permissions[$instr]) || $this->permissions[$instr]===NULL) {
-       $row = quickSQLSelect('permissions',array('userid','instrid'), array($this->uid,$instr));
-       $this->permissions[$instr] = (is_array($row) && $row['isadmin']);
-    }
+    //save the permissions to speed this up later
+    $this->permissions[$instr] = $permission;
     return $this->permissions[$instr];
   }
   
@@ -214,16 +235,21 @@ class BumbleBeeAuth {
     return $this->isadmin || $this->isInstrumentAdmin($instr);
   }
 
+  function amMasqed() {
+    return (isset($this->euid) && $this->euid != $this->uid);
+  }
+  
   /** 
    * start masquerading as another user
   **/
   function assumeMasq($id) {
     if ($this->masqPermitted()) {
       //masquerade permitted
-      $row = $this->_retrieveUserInfo($id, 1);
-      $_SESSION['euid'] = $this->uid = $row['id'];
-      $_SESSION['eusername'] = $this->username = $row['username'];
-      $_SESSION['ename'] = $this->name = $row['name'];
+      $row = $this->_retrieveUserInfo($id, 0);
+      $_SESSION['euid'] = $this->euid = $row['id'];
+      $_SESSION['eusername'] = $this->eusername = $row['username'];
+      $_SESSION['ename'] = $this->ename = $row['name'];
+      return $row;
     } else {
       // masquerade not permitted
       return 0;
@@ -233,7 +259,7 @@ class BumbleBeeAuth {
   /** 
    * stop masquerading as another user
   **/
-  function removeMasq($id) {
+  function removeMasq() {
     $_SESSION['euid'] = $this->euid = null;
     $_SESSION['eusername'] = $this->eusername = null;
     $_SESSION['ename'] = $this->ename = null;

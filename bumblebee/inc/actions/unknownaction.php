@@ -6,19 +6,29 @@ include_once 'inc/actions/actionaction.php';
 
 class ActionUnknown extends ActionAction {
   var $action;
+  var $forbiden;
 
-  function ActionUnknown($action) {
+  function ActionUnknown($action, $forbidden=0) {
     parent::ActionAction('','');
     $this->action = $action;
+    $this->forbidden = $forbidden;
   }
 
   function go() {
     global $ADMINEMAIL;
-    echo "<h2>Error</h2>"
-    ."<p>An unknown error occurred. I was asked to perform the "
-    ."action '$this->action' but I don't know how to do that.</p>"
-    ."<p>Please contact <a href='mailto:$ADMINEMAIL'>the system "
-    ."administrator</a> to report this error.</p>";
+    echo '<h2>Error</h2><div class="msgerror">';
+    if ($this->forbidden) {
+      echo '<p>Sorry, you don\'t have permission to perform the '
+          .'action "'.$this->action.'".</p>';
+    } else {
+      echo '<p>An unknown error occurred. I was asked to perform the '
+          .'action "'.$this->action.'" but I don\'t know how to do that.</p>';
+    }
+    echo '<p>Please contact <a href="mailto:'.$ADMINEMAIL.'">the system '
+        .'administrator</a> for more information.</p></div>';
   }
-}
+  
+  
+  
+} //ActionUnknown
 ?> 

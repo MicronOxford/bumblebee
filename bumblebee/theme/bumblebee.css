@@ -155,13 +155,13 @@ a img {
   padding: 0;
 }
 
-.fmenu li, .fmenu ul {
+.menulist li, .menulist ul {
   padding: 0;
   margin: 0;
   list-style: none;
 }
 
-.fmenu a {
+.menulist a {
   display: block;
   color: black;
   text-decoration: none;
@@ -171,7 +171,7 @@ a img {
   color
 */
 
-.fmenu a {
+.menulist a {
   width: 100%;
   padding: 0 0.2em 0 0.2em;
   margin: 0.2em 0 0.2em 0em;
@@ -182,11 +182,11 @@ a img {
   border-bottom: 2px solid #000000;
 }
 
-.fmenu a:hover, a.but:hover {
+.menulist a:hover, a.but:hover {
   background-color: #ffffff;
 }
 
-.fmenu a:active, a.but:active {
+.menulist a:active, a.but:active {
   background-color: #ccffcc;
   border-left: 2px solid #000000;
   border-right: 2px solid #999999;
@@ -537,3 +537,16 @@ td {
   vertical-align: top;
 }
 
+.highlight {
+  font-weight: bolder;
+  color: #cc6666;
+}
+
+div.masquerade {
+  border: 2px solid #cc6666;
+  padding: 0.2em 0.2em 0.2em 0.2em;
+  margin: 0.4em 0 0 0;
+  display: block;
+  width: 100%;
+  background-color: #ffeeee;
+}

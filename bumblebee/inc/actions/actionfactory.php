@@ -20,7 +20,7 @@ include_once 'instruments.php';
 include_once 'consumables.php';
 include_once 'consume.php';
 include_once 'deletedbookings.php';
-//include_once 'masquerade.php';
+include_once 'masquerade.php';
 include_once 'costs.php';
 include_once 'specialcosts.php';
 //include_once 'adminconfirm.php';
@@ -34,6 +34,7 @@ include_once 'actions.php';
 
 class ActionFactory {
   var $_verb;
+  var $_original_verb;
   var $title;
   var $_action;
   var $_auth;
@@ -82,8 +83,16 @@ class ActionFactory {
     if ($pathaction) $action = $pathaction;
     if ($formaction) $action = $formaction;
   
-    #protect admin functions
-    if ($this->actionListing[$action] > 999 && ! $this->_auth->isadmin) return 'forbidden!';
+    $this->_original_verb = $action;
+    
+    // dump if unknown action
+    if (! isset($this->actionListing[$action])) {
+      return 'unknown';
+    }
+    // protect admin functions
+    if ($this->actionListing[$action] > 999 && ! $this->_auth->isadmin) {
+      return 'forbidden!';
+    }
   
     # We also need to check to see if we are trying to change privileges
     #if (isset($_POST['changemasq']) && $_POST['changemasq']) return 'masquerade';
@@ -145,8 +154,10 @@ class ActionFactory {
         return new ActionView($this->_auth, $this->PDATA);
       case $act['passwd']:
         return new ActionPassword($this->_auth, $this->PDATA);
-      /*case $act['book']:
-        return new ActionBook($auth);*/
+      // instrument-admin only
+      case $act['masquerade']:
+        return new ActionMasquerade($this->_auth, $this->PDATA);
+      // admin only
       case $act['groups']:
         return new ActionGroup($this->_auth, $this->PDATA);
       case $act['projects']:
@@ -161,9 +172,6 @@ class ActionFactory {
         return new ActionConsume($this->_auth, $this->PDATA);
       case $act['deletedbookings']:
         return new ActionDeletedBookings($this->_auth, $this->PDATA);
-      /*case $act['masquerade']:
-        return new ActionMasquerade($auth);
-        */
       case $act['costs']:
         return new ActionCosts($this->_auth, $this->PDATA);
       case $act['specialcosts']:
@@ -178,8 +186,10 @@ class ActionFactory {
         return new ActionBackupDB($this->_auth, $this->PDATA);
       case $act['billing']:
         return new ActionBilling($this->_auth, $this->PDATA);
+      case $act['forbidden!']:
+        return new ActionUnknown($this->_original_verb, 1);
       default:
-        return new ActionUnknown($this->_verb);
+        return new ActionUnknown($this->_original_verb);
     }
   }
      

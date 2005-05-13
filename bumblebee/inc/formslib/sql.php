@@ -72,7 +72,8 @@ function quickSQLSelect($table, $key, $value, $fatal=1, $countonly=0) {
   }
   $q = 'SELECT '.($countonly ? 'count(*)' : '*')
       .' FROM '.$TABLEPREFIX.$table
-      .(count($where) ? ' WHERE '.join($where,' AND ') : '');
+      .(count($where) ? ' WHERE '.join($where,' AND ') : '')
+      .' LIMIT 1';         // we only ever return one row from this fn, so LIMIT the query.
   return db_get_single($q, $fatal);
 }
 

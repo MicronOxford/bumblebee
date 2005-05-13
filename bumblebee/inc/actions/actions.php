@@ -19,10 +19,13 @@ class ActionListing {
   function _createUserFunctions() {
     $this->userfunctions = array(
       'view=View instrument bookings',
-      //'book=Create or edit instrument bookings',
       'passwd=Change password',
       'login=Login',
-      'logout=Logout'
+      'logout=Logout',
+      //permit this as a user function, but it has its own permission checks within
+      'masquerade=Masquerade as another user',
+      'unknown=Oops. I cannot do that',
+      'forbidden!=No, you cannot do that!'
     );
   }
 
@@ -35,7 +38,6 @@ class ActionListing {
       'instruments=Manage instruments',
       'consumables=Manage consumables',
       'consume=Record consumable usage',
-      'masquerade=Masquerade as another user',
       'costs=Edit standard costs',
       'specialcosts=Edit or create special charges',
       'deletedbookings=View deleted bookings',

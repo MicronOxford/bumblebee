@@ -34,19 +34,29 @@ if ($auth->isLoggedIn() && $action->_verb != 'logout') {
   ?>
     <div class='fmenu'>
       <h3>Menu</h3>
+      <div class='menulist'>
       <ul>
         <li><a href='<?=$BASEURL?>/'>Main</a></li>
         <?
            if ($auth->localLogin) {
              echo '<li><a href="'.$BASEURL.'/passwd">Change Password</a></li>'."\n";
            }
+           if ($auth->masqPermitted()) {
+             echo '<li><a href="'.$BASEURL.'/masquerade">Masquerade</a></li>'."\n";
+           }
         ?>
         <li><a href='<?=$BASEURL?>/logout'>Logout</a></li>
       </ul>
-    <?
-      if ($auth->isadmin) printAdminMenu();  //FIXME: oo-ify this?
-      #if (($act[$action] != $act['masquerade']) && $ISADMIN) checkMasquerade();
-    ?>
+      </div>
+      <?
+        if ($auth->isadmin) printAdminMenu();  //FIXME: oo-ify this?
+        if ($auth->amMasqed() && $action->_verb != 'masquerade') {
+          echo '<div class="masquerade">'
+              .'Mask: '.$auth->eusername
+              .' (<a href="'.$BASEURL.'/masquerade/-1">end</a>)'
+              .'</div>';
+        }
+      ?>
     </div>
   <?
 }
