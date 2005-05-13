@@ -7,13 +7,7 @@
   of work is required to implement the theme.
 */
 
-#bumblebeecontent {
-  padding: 0px;
-  margin: 0px;
-  margin-right: 13em;
-  margin-top: 0em;
-}
-
+/* general elements first */
 a {
   text-decoration: underline;
 }
@@ -30,20 +24,6 @@ a:active
   color: #DA4C71; 
 }
 
-#bumblebeefooter {
-  font-size: 70%;
-  color: #999999;
-  clear: both;
-}
-
-.bumblebeecopyright {
-  font-size: 100%;
-}
-
-#bumblebeefooter a {
-  color: #9999ff;
-}
-  
 pre {
   font-family: "Bitstream Vera Sans Mono",Courier New, monospace;
   border: 1px solid #aaaaff;
@@ -55,6 +35,54 @@ a img {
   border: none;
 }
 
+td {
+  vertical-align: top;
+}
+
+
+/* some named elements from the layout */
+#bumblebeecontent {
+  padding: 0px;
+  margin: 0px;
+  margin-right: 13em;
+  margin-top: 0em;
+}
+
+#bumblebeefooter {
+  font-size: 70%;
+  color: #999999;
+  clear: both;
+}
+
+.bumblebeecopyright {
+  font-size: 100%;
+}
+
+#bumblebeefooter a, #bumblebeefooter a:link, 
+#bumblebeefooter a:hover, #bumblebeefooter a:visited, #bumblebeefooter a:active  {
+  color: #9999ff;
+  text-decoration: none;
+}
+  
+#menulist li, #menulist ul {
+}
+
+#menulist a, #menulist a:link, #menulist a:visited {
+  background-color: #ccccff;
+  text-decoration: none;
+  color: #111166;
+}
+
+#menulist a:hover, a.but:hover {
+  background-color: #ffffff;
+  text-decoration: none;
+}
+
+#menulist a:active, a.but:active {
+  background-color: #ccffcc;
+  text-decoration: none;
+}
+  
 .floatRight {
   clear: both;
   float: right;
@@ -415,10 +443,6 @@ td.itemL a {
 }
 
 input.radioitem {
-}
-
-td {
-  vertical-align: top;
 }
 
 .highlight {
