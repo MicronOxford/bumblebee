@@ -195,7 +195,9 @@ class ChoiceList extends Field {
    */
   function sqlSetStr($force) {
     #echo "Choicelist::sqlSetStr";
-    $this->list->sync();
+    $this->oob_status = $this->list->sync();
+    //preDump($this->list);
+    $this->oob_errorMessage = $this->list->oob_errorMessage;
     $this->value = $this->list->id;
     #preDump($this);
     return Field::sqlSetStr($force);

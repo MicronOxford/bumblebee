@@ -5,7 +5,7 @@
 include_once('inc/statuscodes.php');
 
 function db_quiet($q, $fatal_sql=0) {
-  #returns false on success, true (error) on failure
+  // returns from statuscodes
   $sql = mysql_query($q);
   echoSQL($q);
   if (! $sql) {
@@ -16,7 +16,7 @@ function db_quiet($q, $fatal_sql=0) {
 }
 
 function db_get($q, $fatal_sql=0) {
-  #returns false on success, true (error) on failure
+  // returns from statuscodes
   $sql = mysql_query($q);
   echoSQL($q);
   if (! $sql) {

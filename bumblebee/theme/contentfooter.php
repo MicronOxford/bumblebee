@@ -26,6 +26,6 @@
     for help.
   </p>
   <p class='bumblebeecopyright'>
-    Booking information Copyright &copy; <?=date('Y')?> University of Melbourne.
+    Booking information Copyright &copy; <?=date('Y').' '.$COPYRIGHTOWNER?>.
   </p>
 </div>

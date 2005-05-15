@@ -30,7 +30,6 @@ class DBRow extends DBO {
   var $restriction = '';
   var $recStart = '';
   var $recNum   = '';
-  var $errorMessage = '';
   var $use2StepSync;
   
   function DBRow($table, $id, $idfield='id') {
@@ -118,7 +117,7 @@ class DBRow extends DBO {
    * do be simple fields (such as JOINed data) should perform their updates
    * during the _sqlvals() call 
    *
-   * Note, this function returns false on success
+   * Note, returns from statuscodes
   **/
   function sync() {
     global $TABLEPREFIX;
@@ -134,11 +133,12 @@ class DBRow extends DBO {
     if ($this->use2StepSync) {
       $this->_twoStageSync();
     }
-    $sql_result = -1;
+    $sql_result = STATUS_NOOP;
     //obtain the *clean* parameter='value' data that has been SQL-cleansed
     //this will also trip any complex fields to sync
     $vals = $this->_sqlvals($this->insertRow || $this->includeAllFields);
     if ($vals != '') {
+      //echo "changed with vals=$vals<br/>";
       if (! $this->insertRow) {
         //it's an existing record, so update
         $q = 'UPDATE '.$TABLEPREFIX.$this->table 
@@ -156,8 +156,10 @@ class DBRow extends DBO {
           $this->setId(db_new_id());
         }
       }
-    }
-    return $sql_result;
+    } 
+    $this->errorMessage .= $this->oob_errorMessage;
+    //echo "sql=$sql_result, oob=$this->oob_status\n";
+    return $sql_result | $this->oob_status;
   }
   
   /**
@@ -199,7 +201,7 @@ class DBRow extends DBO {
   /**
    * delete this object's row from the database.
    *
-   * Note, this function returns false on success
+   * Returns from statuscodes
   **/
   function delete() {
     global $TABLEPREFIX;
@@ -233,6 +235,9 @@ class DBRow extends DBO {
         //not added to the return list for the row
         $this->log('Getting SQL string for '.$this->fields[$k]->name, 8);
         $sqlval = $this->fields[$k]->sqlSetStr($force);
+        #echo "$k,oob = '".$this->fields[$k]->oob_status."' ";
+        $this->oob_status |= $this->fields[$k]->oob_status;
+        $this->oob_errorMessage .= $this->fields[$k]->oob_errorMessage;
         if ($sqlval) {
           #echo "SQLUpdate: '$sqlval' <br />";
           $vals[] = $sqlval;

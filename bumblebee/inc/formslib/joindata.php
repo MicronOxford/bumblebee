@@ -189,6 +189,7 @@ class JoinData extends Field {
     * to then know our actual value (at last).
    **/
   function sqlSetStr() {
+    //$this->DEBUG=10;
     #echo "JoinData::sqlSetStr";
     $this->_joinSync();
     //We return an empty string as this is only a join table entry,
@@ -201,16 +202,23 @@ class JoinData extends Field {
    **/
   function _joinSync() {
     for ($i=0; $i < $this->number; $i++) {
+      #echo "before sync row $i oob='".$this->oob_status."' ";
+      $this->changed += $this->rows[$i]->changed;
       if ($this->rows[$i]->fields[$this->jtRightIDCol]->value == 0
        && $this->rows[$i]->fields[$this->jtRightIDCol]->changed) {
         //then this row is to be deleted...
-        $this->changed += ! $this->rows[$i]->delete();
+        $this->oob_status |= $this->rows[$i]->delete();
       } else {
         $this->log('JoinData::_joinSync(): Syncing row '.$i);
-        $this->changed += ! $this->rows[$i]->sync();
+//         preDump($this->rows[$i]);
+        $this->oob_status |= $this->rows[$i]->sync();
       }
+      $this->oob_errorMessage .= $this->rows[$i]->errorMessage;
+      $this->changed += $this->rows[$i]->changed;
+      #echo " after sync row $i oob='".$this->oob_status."'";
     }
   }
+  
   
   /**
    * override the isValid method of the Field class, using the

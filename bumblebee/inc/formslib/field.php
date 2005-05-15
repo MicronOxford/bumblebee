@@ -4,6 +4,7 @@
 
 include_once 'inc/typeinfo.php';
 include_once 'validtester.php';
+include_once 'inc/statuscodes.php';
 
 /**
  * Field object that corresponds to one field in a SQL table row.
@@ -35,6 +36,8 @@ class Field {
   var $isValidTest = 'isset';
   var $sqlHidden = 0;
   var $requiredTwoStage = 0;
+  var $oob_status = STATUS_NOOP;         //out-of-band data reporting
+  var $oob_errorMessage = '';
   var $DEBUG = 0;
 
   /**

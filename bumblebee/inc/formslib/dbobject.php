@@ -20,6 +20,9 @@ class DBO {
   var $dumpheader = 'DBO object';
   var $fatal_sql = 1;
   var $namebase;
+  var $errorMessage = '';
+  var $oob_status = STATUS_NOOP;
+  var $oob_errorMessage = '';
 
   var $DEBUG = 0;
   

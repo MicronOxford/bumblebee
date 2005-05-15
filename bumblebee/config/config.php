@@ -9,6 +9,8 @@ $CONFIG = parse_ini_file($CONFIGLOCATION.'bumblebee.ini',1);
 $ADMINEMAIL = $CONFIG['main']['AdminEmail'];
 $BASEPATH   = $CONFIG['main']['BasePath'];
 $BASEURL    = $CONFIG['main']['BaseURL'];
+$COPYRIGHTOWNER = $CONFIG['main']['CopyrightOwner'];
+
 
 $VERBOSESQL = $CONFIG['error_handling']['VerboseSQL'];
 $VERBOSEDATA = $CONFIG['error_handling']['VerboseData'];
@@ -23,6 +25,6 @@ if ($CONFIG['error_handling']['AllWarnings']) {
   ini_set("error_reporting",E_ERROR); #force all warnings to be echoed
 }
 
-$BUMBLEBEEVERSION = '0.9.5.1';
+$BUMBLEBEEVERSION = '0.9.5.4';
 
 ?> 

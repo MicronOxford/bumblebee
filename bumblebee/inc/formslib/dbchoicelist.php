@@ -244,6 +244,9 @@ class DBChoiceList extends DBO {
         $this->isValid = 0;
       }
     }
+    if (! $this->isValid) {
+      $this->errorMessage .= '<br />Invalid data: '.$this->longname;
+    }
     #echo " DBchoiceList::changed=$this->changed<br />";
     return $this->isValid;
   }
@@ -256,21 +259,27 @@ class DBChoiceList extends DBO {
   /**
    * synchronise with the database -- this also creates the true value for
    * this field if it is undefined
-   * returns false on success
+   * returns code from statuscodes
    */
   function sync() {
     #preDump($this);
-    if ($this->changed && $this->isValid) {
-      //echo "Syncing...<br />";
-      if ($this->id == -1) {
-        //it's a new record, insert it
-        $vals = $this->_sqlvals();
-        $q = 'INSERT '.$TABLEPREFIX.$this->table.' SET '.$vals;
-        $sql_result = db_quiet($q, $this->fatal_sql);
-        $this->id = db_new_id();
-        $this->fill();
-        return $sql_result;
-      }
+    // If the input isn't valid then bail out straight away
+    if (! $this->changed) {
+      $this->log('not syncing: changed='.$this->changed);
+      return STATUS_NOOP;
+    } elseif (! $this->isValid) {
+      $this->log('not syncing: valid='.$this->isValid);
+      return STATUS_ERR;
+    }
+    //echo "Syncing...<br />";
+    if ($this->id == -1) {
+      //it's a new record, insert it
+      $vals = $this->_sqlvals();
+      $q = 'INSERT '.$TABLEPREFIX.$this->table.' SET '.$vals;
+      $sql_result = db_quiet($q, $this->fatal_sql);
+      $this->id = db_new_id();
+      $this->fill();
+      return $sql_result;
     }
   }
 

@@ -18,6 +18,8 @@ class ArrayChoiceList {
   var $DEBUG = 0;
   var $listKey;
   var $displayKey;
+  var $oob_status = STATUS_NOOP;         //out-of-band data reporting
+  var $oob_errorMessage = '';
 
   function ArrayChoiceList($array, $iv, $dv) {
     $this->choicelist = array();

@@ -348,7 +348,7 @@ class BookingEntry extends DBRow {
   /**
    *  delete the entry by marking it as deleted, don't actually delete the 
    *
-   *  Note, this function returns false on success
+   *  Returns from statuscodes
    */
   function delete() {
     global $TABLEPREFIX;

@@ -148,6 +148,7 @@ class User extends DBRow {
   }
   
   function sync() {
+    //$this->DEBUG = 10;
     //monkey the passwd/auth fields
     //echo $this->_authMethod. '-';
     //preDump($this->fields['passwd']);

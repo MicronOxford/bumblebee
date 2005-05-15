@@ -47,6 +47,7 @@ class ActionAction {
    */
   function reportAction($status, $messages='') {
     //$this->log('ActionStatus: '.$status);
+    #echo 'final='.$status;
     if ($status == STATUS_NOOP) return '';
     $message = '';
     if (isset($messages[$status])) {
@@ -68,7 +69,7 @@ class ActionAction {
     if (! $message) {
       $message = 'Unknown status code. Error: '. $status;
     }
-    $t = '<div class="'.($status <= 0 ? 'msgsuccess' : 'msgerror').'">'
+    $t = '<div class="'.($status & STATUS_OK ? 'msgsuccess' : 'msgerror').'">'
          .$message
          ."</div>\n";
     return $t;

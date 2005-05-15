@@ -309,7 +309,7 @@ class ActionView extends ActionAction {
   function displayInstrumentFooter($row) {
     $t = '';
     if ($row['calendarcomment']) {
-      $t = '<h3>Notes</h3>'
+      $t = '<h3 style="padding-top: 2em;">Notes</h3>'
          .'<p>'.preg_replace("/\n+/", '</p><p>', $row['calendarcomment']).'</p>';
     }
     return $t;
