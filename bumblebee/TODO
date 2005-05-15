@@ -96,10 +96,12 @@ document radius install and config
   - css?
   - pix?
 
-
-clean up action functions.
-should most actions just be invoking objects? (help with namespace)
-should groups, projects, users actions etc be invocations of the *same* obj?
+joindata::_countNumRows counts the rows too early (can we force a recount?)
+  => when adding permissions to a user, the number of permissions doesn't increase
+      done??????? test this some more
+  
+* clean up action functions.
+  - should groups, projects, users actions etc be invocations of the *same* obj?
 
 " " to ' ' where possible
 

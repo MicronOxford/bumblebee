@@ -139,6 +139,8 @@ class JoinData extends Field {
   }
 
   function displayInTable($cols) {
+    //check how many fields we need to have (again) as we might have to show more this time around.
+    $this->_fillFromProto();
     //$cols += $this->colspan;
     $t = "<tr><td colspan='$cols'>$this->description</td></tr>\n";
     if ($this->editable) {
@@ -181,6 +183,7 @@ class JoinData extends Field {
   **/ 
   function _countRowsInJoin() {
     $g = quickSQLSelect($this->joinTable, $this->jtLeftIDCol, $this->jtLeftID, $this->fatalsql, 1);
+    $this->log('Found '.$g[0].' rows currently in join');
     return $g[0];
   }
 
