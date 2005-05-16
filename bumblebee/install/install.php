@@ -108,7 +108,7 @@ function constructini($source, $defaults) {
   $eol = "\n";
   $s = '[database]'.$eol
       .'host = "localhost"'.$eol
-      .'username = "'.$defaults['sqlPass'].'"'.$eol
+      .'username = "'.$defaults['sqlUser'].'"'.$eol
       .'passwd = "'.$defaults['sqlPass'].'"'.$eol
       .'database = "'.$defaults['sqlDB'].'"'.$eol
       .'tableprefix = "'.$defaults['sqlTablePrefix'].'"'.$eol;

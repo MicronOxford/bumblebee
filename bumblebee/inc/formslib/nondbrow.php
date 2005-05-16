@@ -151,11 +151,11 @@ class nonDBRow {
     return $this->text_dump();
   }
 
-  function displayInTable($j) {
+  function displayInTable($numCols=2) {
     $t  = '<h3>'.$this->longname.'</h3>';
     $t .= '<table class="tabularobject" title="'.$this->description.'">';
     foreach ($this->fields as $v) {
-      $t .= $v->displayInTable($j);
+      $t .= $v->displayInTable($numCols);
     }
     if (is_array($this->extrarows)) {
       foreach ($this->extrarows as $v) {

@@ -31,7 +31,8 @@ class DBRow extends DBO {
   var $recStart = '';
   var $recNum   = '';
   var $use2StepSync;
-  
+  var $extrarows;
+    
   function DBRow($table, $id, $idfield='id') {
     $this->DBO($table, $id, $idfield);
     #$this->fields = array();
@@ -330,6 +331,15 @@ class DBRow extends DBO {
       $t .= $v->displayInTable($j);
     }
     $t .= '</table>';
+    if (is_array($this->extrarows)) {
+      foreach ($this->extrarows as $v) {
+        $t .= '<tr>';
+        foreach ($v as $c) {
+          $t .= '<td>'.$c.'</td>';
+        }
+        $t .= '</tr>';
+      }
+    }
     return $t;
   }
 

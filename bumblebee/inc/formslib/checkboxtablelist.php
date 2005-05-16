@@ -6,7 +6,7 @@ include_once 'anchorlist.php';
 
 class CheckBoxTableList extends ChoiceList {
   var $numcols    = '';
-  var $numSpareCols = '';
+  var $numExtraInfoCols = '';
   var $trclass    = 'itemrow';
   var $tdlclass   = 'itemL';
   var $tdrclass   = 'itemR';
@@ -19,12 +19,12 @@ class CheckBoxTableList extends ChoiceList {
   var $hidden;
   var $footer;
 
-  function CheckBoxTableList($name, $description='', $numSpareCols=0) {
+  function CheckBoxTableList($name, $description='', $numExtraInfoCols=-1) {
     $this->ChoiceList($name, $description);
-    $this->numSpaceCols = $numSpareCols;
+    $this->numExtraInfoCols = $numExtraInfoCols;
     $this->checkboxes = array();
     $this->footer = array();
-    $this->hidden = new TextField('');
+    $this->hidden = new TextField('row');
     $this->hidden->hidden = 1;
   }
 
@@ -47,23 +47,12 @@ class CheckBoxTableList extends ChoiceList {
     $this->footer = $f;
   }
 
-  function format($data, $j) {
+  function format($data, $j, $numcols) {
     $aclass  = (isset($this->aclass) ? " class='$this->aclass'" : '');
     $trclass  = (isset($this->trclass) ? " class='$this->trclass'" : '');
     $tdlclass  = (isset($this->tdlclass) ? " class='$this->tdlclass'" : '');
     $tdrclass  = (isset($this->tdrclass) ? " class='$this->tdrclass'" : '');
-    $t  = "<tr $trclass>"
-         ."<td $tdlclass>";
-    $t .= "<span $aclass>"
-         .$this->formatter[0]->format($data)
-         .'</span>';
-    $t .= "</td>\n";
-    for ($i=1; $i<=$this->numSpareCols; $i++) {
-      $t .= "<td $tdrclass>"
-           .$this->formatter[$i]->format($data);
-      $t .= "</td>";
-    }
-    
+
     $namebase = $this->name.'-'.$j.'-';
     $fh = $this->followHidden;
     $fh->value = $data[$this->followHiddenField];
@@ -71,11 +60,27 @@ class CheckBoxTableList extends ChoiceList {
     $h = $this->hidden;
     $h->value = $j;
     $h->namebase = $namebase;
+    
+    $t  = "<tr $trclass>"
+         ."<td $tdlclass>";
+    $t .= "<span $aclass>"
+         .$this->formatter[0]->format($data)
+         .'</span>';
     $t .= $fh->hidden() . $h->hidden();
+    $t .= "</td>\n";
+    for ($i=1; $i<=$this->numExtraInfoCols; $i++) {
+      $t .= "<td $tdrclass>"
+           .$this->formatter[$i]->format($data);
+      $t .= "</td>";
+    }
+    
     for ($i=0; $i<$this->numcols; $i++) {
       $cb = $this->checkboxes[$i];
       $cb->namebase = $namebase;
       $t .= '<td>'.$cb->selectable().'</td>';
+    }
+    for ($i=0; $i<=$numcols; $i++) {
+      $t .= '<th></th>';
     }
     $t .= "</tr>\n";
     return $t;
@@ -84,6 +89,18 @@ class CheckBoxTableList extends ChoiceList {
   function display() {
     $tableclass = (isset($this->tableclass) ? " class='$this->tableclass'" : "");
     $t  = "<table title='$this->description' $tableclass>\n";
+    $t .= $this->displayInTable($this->numcols);
+    $t .= "</table>\n";
+    return $t;
+  }
+
+  
+  function displayInTable($numCols) {
+    $totalCols = 1 + $this->numExtraInfoCols + $this->numcols;
+    $t='';
+    if ($this->numExtraInfoCols = -1) {
+      $this->numExtraInfoCols = count($this->formatter)-1;
+    }
     if (isset($this->tableHeadings) && is_array($this->tableHeadings)) {
       $t .= '<tr>';
       foreach ($this->tableHeadings as $heading) {
@@ -92,29 +109,34 @@ class CheckBoxTableList extends ChoiceList {
       $t .= "</tr>\n";
     }
     $t  .= '<tr>';
-    for ($i=0; $i<=$this->numSpareCols; $i++) {
+    for ($i=0; $i<=$this->numExtraInfoCols; $i++) {
       $t .= '<th></th>';
     }
     for ($i=0; $i<$this->numcols; $i++) {
       $t .= '<th>'.$this->checkboxes[$i]->longname.'</th>';
     }
+    for ($i=$totalCols; $i<=$numCols; $i++) {
+      $t .= '<th></th>';
+    }
     $t .= '</tr>'."\n";    
     if (is_array($this->list->choicelist)) {
       for ($j=0; $j<count($this->list->choicelist); $j++) {
-        $t .= $this->format($this->list->choicelist[$j], $j);
+        $t .= $this->format($this->list->choicelist[$j], $j, $numCols - $totalCols);
       }
     }
     $t .= '<tr>';
-    for ($i=0; $i<=$this->numSpareCols; $i++) {
+    for ($i=0; $i<=$this->numExtraInfoCols; $i++) {
       $t .= '<td></td>';
     }
     for ($i=0; $i<$this->numcols; $i++) {
         $t .= '<td>'.sprintf($this->footer, $i, $i).'</td>';
     }
-    $t .= "</table>\n";
+    for ($i=$totalCols; $i<=$numCols; $i++) {
+      $t .= '<td></td>';
+    }
     return $t;
-  }
-
+  }  
+  
 } // class CheckBoxTableList
 
 

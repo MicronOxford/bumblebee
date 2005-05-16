@@ -35,10 +35,10 @@ $Id$can change another's bookings: edit, delete etc
   - ooify?
   
 * joindata
-  - can sync() OK but doesn't report that it changed.
+  - can sync() OK but doesn't report that it changed.   fixed now?
 
 * email lists
-  - ooify?
+  - ooify further
 
 * USER TESTING
   - Firefox

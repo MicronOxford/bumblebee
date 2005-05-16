@@ -1,10 +1,10 @@
-'isadm-- Create the user and tables that will actually be used for the system
+-- Create the user and tables that will actually be used for the system
 -- 
 -- mysql -p --user bumblebee < setup-tables.sql
 -- 
 -- $Id$
 
-DROP DATABASE bumblebeedb;
+DROP DATABASE IF EXISTS bumblebeedb;
 CREATE DATABASE bumblebeedb;
 
 USE mysql;
