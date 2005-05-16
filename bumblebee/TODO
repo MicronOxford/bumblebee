@@ -1,4 +1,4 @@
-$Id$can change another's bookings: edit, delete etc
+$Id$
 
 * db structure:
   - SMALLINT is max 32767. Is this a limitation (e.g. number bookings!)?
@@ -15,7 +15,7 @@ $Id$can change another's bookings: edit, delete etc
 
 * costs
   - join table not working
-  - define what half-day etc is to make billing calcs.
+  - define what half-day etc is to make billing calcs. <= this is in instrument setup now?
 
 * special costs 
   - todo
@@ -53,7 +53,8 @@ $Id$can change another's bookings: edit, delete etc
   
 * reporting
   - groups, projects, users using instruments in a period
-  - 
+  - instrument log book 
+
 
 create a real db with no bogus booking data and no dodgy invalid users etc
 
@@ -132,11 +133,8 @@ check for noise in error logs
 
 use redirect header to react to override action= 
 
-divs => table cells for calendar
-
 hour => halfday => fullday from costs table
 
-log book reporting
 
 permit deletion of instrument classes
 

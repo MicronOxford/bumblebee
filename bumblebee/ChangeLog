@@ -1,3 +1,8 @@
+2005-05-16 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* unborked email list action 
+	* extended emai list form to allow a value separator to be specified 
+	* re-enabled email list in adminmenu 
+
 2005-05-15 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* joindata count num rows JIT update 
 

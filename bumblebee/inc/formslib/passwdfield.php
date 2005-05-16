@@ -44,7 +44,7 @@ class PasswdField extends TextField {
    */
   function sqlSetStr() {
     if (! $this->sqlHidden && $this->value != '') {
-      if ($this->crypt_method != '') {
+      if ($this->crypt_method != '' && is_callable($this->crypt_method)) {
         $crypt_method = $this->crypt_method;
         $pass = $crypt_method($this->value);
       } else {

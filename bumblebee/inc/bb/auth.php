@@ -15,7 +15,7 @@ class BumbleBeeAuth {
   var $eusername;       //effective username
   var $permissions;
   var $_loggedin=0;
-  var $_error;
+  var $_error = '';
   var $table;
   var $localLogin = 0;
   var $DEBUGMODE = 1;
@@ -48,9 +48,15 @@ class BumbleBeeAuth {
   function loginError() {
     if ($this->DEBUGMODE) {
       return $this->_error;
-    } else {
-      list($public,$private) = preg_split("/:/", $this->_error);
+    } elseif (strpos($this->_error, ':') !== false) {
+      // protect any additional info that is in the error string:
+      // functions in this class can report the error in the format 'General error: details'
+      // Normally, we shouldn't reveal whether it was a bad username or password, 
+      // but for debugging purposes, it's nice to have the extra info.
+      list($public,$private) = preg_split('/:/', $this->_error);
       return $public;
+    } else {
+      return $this->_error;
     }
   }
 
@@ -78,7 +84,7 @@ class BumbleBeeAuth {
       return 1;
     } else {
       $this->logout();
-      $this->_error = 'SESSION INVALID: Login failed.';
+      $this->_error = 'Login failed: SESSION INVALID!';
       return 0;
     }
   }
@@ -103,11 +109,11 @@ class BumbleBeeAuth {
    */
   function _login() {
     global $CONFIG;
-    //FIXME is it fair to assume alphabetic? 
-    if (! is_alphabetic($_POST['username']) || ! isset($_POST['pass']) ) {
-      //preDump($_POST);
+    // test the username first to make sure it looks valid
+    $validUserRegexp = $CONFIG['auth']['validUserRegexp'];
+    if (! preg_match($validUserRegexp, $_POST['username']) || ! isset($_POST['pass']) ) {
       $this->_error = 'Login failed: bad username';
-      return 0;
+      return false;
     }
     // then there is data provided to us in a login form
     // need to verify if it is valid login info
@@ -184,11 +190,18 @@ class BumbleBeeAuth {
   }
 
   function _auth_local($username, $password, $row) {
-    $auth = ($row['passwd'] == md5($password));
-    if (! $auth) {
-      $this->_error = 'Login failed: bad password';
+    global $CONFIG;
+    $crypt_method = $CONFIG['auth']['LocalPassToken'];
+    if ($crypt_method != '' && is_callable($crypt_method)) {
+      $passOK = ($row['passwd'] == $crypt_method($password));
+      if (! $passOK) {
+        $this->_error = 'Login failed: bad password';
+      }
+      return $passOK;
+    } else {
+      $this->_error = 'Login failed: no crypt method';
+      return false;
     }
-    return $auth;
   }
         
   function isSystemAdmin() {
