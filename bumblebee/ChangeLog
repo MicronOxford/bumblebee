@@ -1,4 +1,7 @@
 2005-05-15 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* joindata count num rows JIT update 
+
+2005-05-15 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* implemented an out-of-band data mechanism to permit feedback from complex fields into the reportAction mechanism 
 
 2005-05-13 Stuart Prescott <s.prescott@unimelb.edu.au>
