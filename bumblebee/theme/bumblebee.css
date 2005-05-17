@@ -459,11 +459,29 @@ input.radioitem {
   color: #cc6666;
 }
 
-div.masquerade {
+
+#masquerade {
   border: 2px solid #cc6666;
   padding: 0.2em 0.2em 0.2em 0.2em;
   margin: 0.4em 0 0 0;
   display: block;
   width: 100%;
   background-color: #ffeeee;
+}
+
+#masquerade a, #masquerade a:link, 
+#masquerade a:visited, #masquerade a:hover, #masquerade a:active {
+  border: 0;
+  display: inline;
+  padding: 0;
+  margin: 0;
+  background-color: transparent;
+  color: #3333ff;
+  text-decoration: underline;
+}
+
+#masquerade a:hover, #masquerade a:active {
+  background-color: #ff0000;
+  color: #000000;
+  text-decoration: none;
 }

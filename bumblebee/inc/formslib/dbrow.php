@@ -56,7 +56,7 @@ class DBRow extends DBO {
   function update($data) {
     $this->log('DBRow:'.$this->namebase.' Looking for updates:');
     // First, check to see if this record is new
-    if ($this->id == -1) {
+    if ($this->id == -1 && ! $this->ignoreId) {
       $this->insertRow = 1;
     }
     
@@ -156,6 +156,7 @@ class DBRow extends DBO {
           //the record number can now be copied into the object's data.
           $this->setId(db_new_id());
         }
+        $this->insertRow = 0;
       }
     } 
     $this->errorMessage .= $this->oob_errorMessage;
@@ -288,12 +289,20 @@ class DBRow extends DBO {
   **/
   function fill() {
     global $TABLEPREFIX;
-    if ($this->id != -1) {
+    if ($this->id != -1 || $this->ignoreId) {
       //FIXME: can we do this using quickSQLSelect()?
+      $where = array();
+      if (! $this->ignoreId) {
+        $where[] = $this->idfield.'='.qw($this->id);
+      }
+      if (is_array($this->restriction)) {
+        $where = array_merge($where, $this->restriction);
+      } elseif ($this->restriction !== '') {
+        $where[] = $this->restriction;
+      }
       $q = 'SELECT * FROM '
           .$TABLEPREFIX.$this->table .' AS '. $this->table
-          .' WHERE '.$this->idfield.'='.qw($this->id).' '
-          .(($this->restriction !== '') ? 'AND '.$this->restriction.' ' : '')
+          .' WHERE '.join($where, ' AND ')
           .(($this->recStart !== '') && ($this->recNum !== '') ? "LIMIT $this->recStart,$this->recNum" : '');
       $g = db_get_single($q);
       if (is_array($g)) { 
@@ -303,10 +312,16 @@ class DBRow extends DBO {
             $this->fields[$k]->set($val);
           }
         }
+      } else {
+        $this->insertRow = $this->ignoreId;
       }
     }
-    //we have to have an id present otherwise we're in trouble next time
-    $this->fields[$this->idfield]->set($this->id);
+    if ($this->ignoreId) {
+      $this->id = $this->fields[$this->idfield]->value;
+    } else {
+      //we have to have an id present otherwise we're in trouble next time
+      $this->fields[$this->idfield]->set($this->id);
+    }
   }
 
   /** 

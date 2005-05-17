@@ -25,6 +25,7 @@ include_once 'inc/adminmenu.php';
 
 // $pagetitle can be used in theme/pageheader.php 
 $pagetitle = $action->title . ' : ' . $CONFIG['main']['SiteTitle'];
+$pageheading = $action->title;
 include 'theme/pageheader.php';
 include 'theme/contentheader.php';
 
@@ -48,7 +49,7 @@ if ($auth->isLoggedIn() && $action->_verb != 'logout') {
       <?
         if ($auth->isadmin) printAdminMenu();  //FIXME: oo-ify this?
         if ($auth->amMasqed() && $action->_verb != 'masquerade') {
-          echo '<div class="masquerade">'
+          echo '<div id="masquerade">'
               .'Mask: '.$auth->eusername
               .' (<a href="'.$BASEURL.'/masquerade/-1">end</a>)'
               .'</div>';

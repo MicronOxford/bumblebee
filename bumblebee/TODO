@@ -14,7 +14,6 @@ $Id$
   - 
 
 * costs
-  - join table not working
   - define what half-day etc is to make billing calcs. <= this is in instrument setup now?
 
 * special costs 
@@ -25,7 +24,7 @@ $Id$
   
 * installer
   - create bumblebee.ini file?
-  - can only run once?
+  - can only run once? delete itself?
   - actually do the sql stuff?
 
 * ini file
@@ -35,7 +34,7 @@ $Id$
   - ooify?
   
 * joindata
-  - can sync() OK but doesn't report that it changed.   fixed now?
+  - 
 
 * email lists
   - ooify further
@@ -58,8 +57,6 @@ $Id$
 
 create a real db with no bogus booking data and no dodgy invalid users etc
 
-M$IE testing etc
-
 include BILLING algorithm:
 
 settings:  numhoursperhalfday = 5, numhoursperfullday=8, halfdaysperday=0.6
@@ -80,6 +77,7 @@ numdays = MIN(                                           a)              b)     
 
 * billing
   - todo
+  - incl consumables
 
 
 
@@ -89,14 +87,6 @@ document radius install and config
   - design new theme, bg etc
   - icon location
 
-* massive CSS cleanup
-  - ununsed classes
-  - absolute paths
-  - 
-* theme into CVS?
-  - css?
-  - pix?
-
 joindata::_countNumRows counts the rows too early (can we force a recount?)
   => when adding permissions to a user, the number of permissions doesn't increase
       done??????? test this some more
@@ -104,15 +94,7 @@ joindata::_countNumRows counts the rows too early (can we force a recount?)
 * clean up action functions.
   - should groups, projects, users actions etc be invocations of the *same* obj?
 
-" " to ' ' where possible
 
-XSS checks
-
-SQL bad character checking -- qw, unqw?
-
-' => \' => \\\' etc. bad.
-
-billing analysis, incl consumables
 
 ->layout switch? use as call back function?
 
@@ -122,6 +104,7 @@ make sure large data structures are being passed by reference not value
 (speed up)
 
 reflect postdata in case of re-login
+ - when do sessions die?
 
 $string = strip_tags($string, '<a><b><i><u>')
 also do this in qw? $string = strip_tags($string, '')

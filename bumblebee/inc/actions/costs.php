@@ -51,12 +51,12 @@ class ActionCosts extends ActionAction {
     $classCost->checkValid();
     echo $this->reportAction($classCost->sync(), 
           array(
-              STATUS_OK =>   ($this->PD['id'] < 0 ? 'Cost schedule created' : 'Cost schedule updated'),
+              STATUS_OK =>   ($this->PD['userclass'] < 0 ? 'Cost schedule created' : 'Cost schedule updated'),
               STATUS_ERR =>  'Cost schedule could not be changed: '.$classCost->errorMessage
           )
         );
     echo $classCost->display();
-    echo "<input type='submit' name='submit' value='Update entry' />";
+    echo '<input type="submit" name="submit" value="Update entry" />';
   }
   
 }

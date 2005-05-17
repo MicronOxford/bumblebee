@@ -18,7 +18,7 @@ class BumbleBeeAuth {
   var $_error = '';
   var $table;
   var $localLogin = 0;
-  var $DEBUGMODE = 1;
+  var $DEBUG = 1;
 
   function BumbleBeeAuth($table='users') {
     session_start();
@@ -46,7 +46,7 @@ class BumbleBeeAuth {
   }
 
   function loginError() {
-    if ($this->DEBUGMODE) {
+    if ($this->DEBUG) {
       return $this->_error;
     } elseif (strpos($this->_error, ':') !== false) {
       // protect any additional info that is in the error string:

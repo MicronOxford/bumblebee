@@ -20,7 +20,7 @@ class TextField extends Field {
       if ($this->editable) {
         $t .= $this->selectable();
         } else {
-        $t .= xssqw($this->getValue()).$this->hidden();
+        $t .= $this->selectedValue();
       }
       if ($this->duplicateName) {
         $t .= '<input type="hidden" name="'.$this->duplicateName.'" '
@@ -37,6 +37,11 @@ class TextField extends Field {
     return $t;
   }
 
+  function selectedValue() {
+    return xssqw($this->getValue()).$this->hidden();
+  }
+
+  
   function selectable() {
     $t  = '<input type="text" name="'.$this->namebase.$this->name.'" ';
     $t .= 'title="'.$this->description.'" ';

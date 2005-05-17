@@ -7,6 +7,7 @@ include_once 'choicelist.php';
 class DropList extends ChoiceList {
 
   function DropList($name, $description='') {
+    //$this->DEBUG=10;
     $this->ChoiceList($name, $description);
     $this->extendable = 0;
   }

@@ -11,6 +11,7 @@ class DBO {
   var $idfield;
   var $idfieldreal;
   var $id=-1;
+  var $ignoreId = false;
   var $fields;
   var $editable = 0;
   var $deletable = 1;

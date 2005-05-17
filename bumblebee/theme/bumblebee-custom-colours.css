@@ -197,7 +197,7 @@ tr.itemrow:hover {
 }
 
 /* masquerade settings */
-div.masquerade {
+#masquerade {
   border: 2px solid #cc6666;
   background-color: #ffeeee;
 }

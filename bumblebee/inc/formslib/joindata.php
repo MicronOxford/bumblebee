@@ -83,6 +83,10 @@ class JoinData extends Field {
       $this->number += $this->format['minspare'];
       return;
     }
+    if (isset($this->format['matrix'])) {
+      $this->number = $this->protoRow->fields[$this->jtRightIDCol]->list->length;
+      return;
+    }
   }
 
   function addElement($field, $groupValidTest=NULL) {
