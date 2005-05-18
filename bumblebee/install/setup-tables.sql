@@ -15,7 +15,7 @@ INSERT INTO user (Host,User,Password,Reload_priv) VALUES ('localhost','bumblebee
 --REVOKE ALL PRIVILEGES ON *.* FROM bumblebee;
 --REVOKE GRANT OPTION ON *.* FROM bumblebee;
 --REVOKE ALL ON bumblebeedb.* FROM bumblebee;
-GRANT SELECT,INSERT,UPDATE,DELETE ON bumblebeedb.* TO bumblebee;
+GRANT SELECT,INSERT,UPDATE,DELETE ON bumblebeedb.localhost TO bumblebee;
 
 USE bumblebeedb;
 
@@ -229,5 +229,5 @@ CREATE TABLE billing_formats (
 
 --     Create an admin user
 INSERT INTO users (username,name,passwd,isadmin) VALUES
-  ('BumblebeeAdmin','Queen Bee',PASSWORD('defaultpassword123'),1)
+  ('BumblebeeAdmin','Queen Bee',MD5('defaultpassword123'),1)
 ;

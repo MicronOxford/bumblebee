@@ -1,3 +1,7 @@
+2005-05-18 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* allow different hosts in install script 
+	* change system user passwd handling in install script to not use PASSWORD() 
+
 2005-05-17 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* create JoinMatrix class to handle data in one table that has coordinates (keys) from two tables 
 	* edit standard costs for instrument usage in matrix form 

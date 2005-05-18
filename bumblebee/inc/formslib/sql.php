@@ -62,9 +62,19 @@ function echoSQLerror($echo, $fatal=0) {
   
 function quickSQLSelect($table, $key, $value, $fatal=1, $countonly=0) {
   global $TABLEPREFIX;
-  if (! is_array($key) && ! is_array($value) && $key != '' && $value != '') {
-    $key = array($key);
-    $value = array($value);
+  if (! is_array($key)) {
+    if ($key != '') {
+      $key = array($key);
+    } else {
+      $key = array();
+    }
+  }
+  if (! is_array($value)) {
+    if ($value != '') {
+      $value = array($value);
+    } else {
+      $value = array();
+    }
   }
   $where = array();
   foreach ($key as $k => $col) {

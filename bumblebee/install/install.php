@@ -7,6 +7,8 @@ $iniSourceFile = 'db.ini';
 $iniSetupFilename = 'db.ini';
 
 $defaults['sqlTablePrefix'] = '';
+$defaults['sqlDefaultHost'] = 'localhost';
+$defaults['sqlHost']        = $defaults['sqlDefaultHost'];
 $defaults['sqlDefaultDB']   = 'bumblebeedb';
 $defaults['sqlDB']          = $defaults['sqlDefaultDB'];
 $defaults['sqlDefaultUser'] = 'bumblebee';
@@ -43,6 +45,8 @@ function constructSQL($source, $replacements) {
   $sqlSourceFile = $source;
     
   $sqlTablePrefix       = $replacements['sqlTablePrefix'];
+  $sqlDefaultHost       = $replacements['sqlDefaultHost'];
+  $sqlHost              = $replacements['sqlHost'];
   $sqlDefaultDB         = $replacements['sqlDefaultDB'];
   $sqlDB                = $replacements['sqlDB'];
   $sqlDefaultUser       = $replacements['sqlDefaultUser'];
@@ -60,11 +64,11 @@ function constructSQL($source, $replacements) {
   
   $sql = preg_replace("/(DELETE .+ WHERE User=')$sqlDefaultUser';/",
                       "$1$sqlUser';", $sql);
-  $sql = preg_replace("/(INSERT INTO user .+localhost',\s*)'$sqlDefaultUser',\s*PASS.+\)(.+);/",
-                      "$1'$sqlUser',PASSWORD('$sqlPass')\$2;", $sql);
+  $sql = preg_replace("/(INSERT INTO user .+)'$sqlDefaultHost','$sqlDefaultUser',\s*PASS.+\)(.+);/",
+                      "$1'$sqlHost','$sqlUser',PASSWORD('$sqlPass')\$2;", $sql);
   // GRANT OR REVOKE PRIVS
-  $sql = preg_replace("/(.+ ON) $sqlDefaultDB\.\* (TO|FROM) $sqlDefaultUser;/",
-                      "\$1 $sqlDB.* \$2 $sqlUser;", $sql);
+  $sql = preg_replace("/(.+ ON) $sqlDefaultDB\.$sqlDefaultHost (TO|FROM) $sqlDefaultUser;/",
+                      "\$1 $sqlDB.$sqlHost \$2 $sqlUser;", $sql);
   // REVOKE ALL PRIVILEGES ON *.* FROM bumblebee;
   // REVOKE GRANT OPTION ON *.* FROM bumblebee;
   $sql = preg_replace("/(REVOKE .+ FROM) $sqlDefaultUser;/",
@@ -82,8 +86,8 @@ function constructSQL($source, $replacements) {
   $sql = preg_replace("/INSERT INTO (users)/",
                       "INSERT INTO $sqlTablePrefix\$1", $sql);
   
-  $sql = preg_replace("/\('$bbDefaultAdmin','$bbDefaultAdminName',PASSWORD\('$bbDefaultAdminPass'\),1\)/",
-                      "('$bbAdmin','$bbAdminName',PASSWORD('$bbAdminPass'),1);", $sql);
+  $sql = preg_replace("/\('$bbDefaultAdmin','$bbDefaultAdminName',MD5\('$bbDefaultAdminPass'\),1\)/",
+                      "('$bbAdmin','$bbAdminName','".md5($bbAdminPass)."',1);", $sql);
   $sql = preg_replace('/^(.*?)--.*$/',
                       '$1', $sql);
   $sql = preg_grep('/^\s*$/', $sql, PREG_GREP_INVERT);
@@ -107,7 +111,7 @@ function constructSQL($source, $replacements) {
 function constructini($source, $defaults) {
   $eol = "\n";
   $s = '[database]'.$eol
-      .'host = "localhost"'.$eol
+      .'host = "'.$defaults['sqlHost'].'"'.$eol
       .'username = "'.$defaults['sqlUser'].'"'.$eol
       .'passwd = "'.$defaults['sqlPass'].'"'.$eol
       .'database = "'.$defaults['sqlDB'].'"'.$eol
@@ -134,6 +138,10 @@ function printUserForm($defaults) {
   <form action='install.php' method='POST'>
   
   <table>
+  <tr>
+    <td>MySQL host</td>
+    <td><input type='text' name='sqlHost' value='<?=$defaults[sqlDefaultHost]?>' /></td>
+  </tr>
   <tr>
     <td>MySQL database</td>
     <td><input type='text' name='sqlDB' value='<?=$defaults[sqlDefaultDB]?>' /></td>
