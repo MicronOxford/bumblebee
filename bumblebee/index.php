@@ -61,7 +61,7 @@ if ($auth->isLoggedIn() && $action->_verb != 'logout') {
 }
 ?>
   <div id="bumblebeecontent">
-    <form method="post" action="<?=$action->nextaction?>" >
+    <form method="post" action="<?=$action->nextaction?>" id="bumblebeeform">
     <?
       if (! $auth->isLoggedIn()) {
         echo $auth->loginError();

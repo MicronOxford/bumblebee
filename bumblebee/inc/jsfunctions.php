@@ -23,11 +23,12 @@ function deselectsome (offset, mod) {
 function setcheckboxes (setval, offset, mod) {
   //alert("start");
   count = 0;
-  for (var i=0; i<document.forms[0].length; i++) {
-    if (document.forms[0].elements[i].type == "checkbox") {
+  rightForm = "bumblebeeform";
+  for (var i=0; i<document.forms[rightForm].length; i++) {
+    if (document.forms[rightForm].elements[i].type == "checkbox") {
     //alert('c='+count+'\no='+offset+'\nm='+mod+'\ny='+((count-offset)%mod));
       if ((count-offset) % mod == 0) {
-        document.forms[0].elements[i].checked=setval;
+        document.forms[rightForm].elements[i].checked=setval;
       }
       count++;
     }
