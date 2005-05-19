@@ -27,14 +27,18 @@ function is_alphabetic($var) {
 }
 
 function qw($v) {
-  ///FIXME check magic_quotes-gpc in here somewhere?
-  // http://www.sitepoint.com/article/php-anthology-3-php-mysql/7
-  # remove \ from strings
-  $v = preg_replace('/\\\\/', '', $v);
-  # replace ' with \' in strings, but not \' with \\', as that would be bad
-  $v = preg_replace("/'/", "\\'", $v);
-  # return the string in single quotes
-  return "'$v'";
+  // magic-quotes-gpc is a pain in the backside: I would rather I was just given
+  // the data the user entered.
+  // We can't just return the data if magic_quotes_gpc is turned on because 
+  // that would be wrong if there was programatically set data in there.
+  if (get_magic_quotes_gpc()) { 
+    // first remove any (partial or full) escaping then add it in properly
+    $v = addslashes(stripslashes($v));
+  } else {
+    // just add in the slashes
+    $v = addslashes($v);
+  }
+  return "'".$v."'";
 }
 
 /**
@@ -44,12 +48,12 @@ function qw($v) {
  * nasty HTML
 **/
 function xssqw($v) {
-  $v = preg_replace('/\&/', '&amp;', $v);
-  $v = preg_replace('/\'/', '&#39;', $v);
-  $v = preg_replace('/\"/', '&#34;', $v);
-  $v = preg_replace('/\</', '&lt;', $v);
-  $v = preg_replace('/\>/', '&gt;', $v);
-  return $v;
+  // once again magic_quotes_gpc gets in the way
+  if (get_magic_quotes_gpc()) { 
+    // first remove any (partial or full) escaping then we'll do it properly below
+    $v = stripslashes($v);
+  }
+  return htmlentities($v, ENT_QUOTES);
 }
 
 function is_nonempty_string($v) {
