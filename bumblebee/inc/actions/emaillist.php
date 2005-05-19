@@ -5,6 +5,7 @@
 
 include_once 'inc/formslib/checkbox.php';
 include_once 'inc/formslib/checkboxtablelist.php';
+include_once 'inc/formslib/dblist.php';
 include_once 'inc/actions/actionaction.php';
 
 /**
@@ -51,54 +52,36 @@ class ActionEmailList extends ActionAction {
     $separator->defaultValue = ',';
     $separator->setattr(array('size' => '2'));
     $selectRow->addElement($separator);
-    //echo '<table><tr><td colspan=2>';
-    //echo $select->display();
-    //echo '</td></tr>';
-    //echo $separator->displayInTable(2);
     echo $selectRow->displayInTable(4);
-    //echo '</table>';
     echo '<input type="hidden" name="selectlist" value="1" />';
     echo '<input type="submit" name="submit" value="Select" />';
   }
 
   function returnLists() {
-    global $TABLEPREFIX;
-    // start constructing the query, the 'WHERE 0 OR ...' is a pretty ugly hack
-    // to ensure that we always have a valid conditional
-    $q = 'SELECT DISTINCT users.email '
-        .'FROM '.$TABLEPREFIX.'permissions AS permissions '
-        .'LEFT JOIN '.$TABLEPREFIX.'users AS users ON users.id=permissions.userid '
-        .'WHERE 0 ';
-    
-    $where = '';
+    $where = array('0');  //start the WHERE with 0 in case nothing was selected (always get valid SQL)
     $namebase = 'Instrument-';
     for ($j=0; isset($this->PD[$namebase.$j.'-row']); $j++) {
       $instr = issetSet($this->PD,$namebase.$j.'-instrument');
-      $announce = issetSet($this->PD,$namebase.$j.'-announce');
-      $unbook = issetSet($this->PD,$namebase.$j.'-unbook');
-      #echo "$j ($instr) => ($unbook, $announce)<br />";
-      #$where .= "OR (permissions.announce='1' AND permissions.instrid='$instr') ";
-      $where .= $announce 
-                ? 'OR (permissions.instrid='.qw($instr).' AND permissions.announce='.qw(1).') ' 
-                : '';
-      $where .= $unbook 
-                ? 'OR (permissions.instrid='.qw($instr).' AND permissions.unbook='.qw(1).') ' 
-                : '';
+      //echo "$j ($instr) => ($unbook, $announce)<br />";
+      if (issetSet($this->PD,$namebase.$j.'-announce')) {
+        $where[] ='(permissions.instrid='.qw($instr).' AND permissions.announce='.qw(1).')' ;
+      }
+      if (issetSet($this->PD,$namebase.$j.'-unbook')) {
+        $where[] = '(permissions.instrid='.qw($instr).' AND permissions.unbook='.qw(1).')' ;
+      }
     }
-    $q .= $where;
     #echo "Gathering email addresses: $q<br />";
-    $sql = db_get($q, $this->fatal_sql);
-    // FIXME: mysql specific functions
-    if (mysql_num_rows($sql)==0) {
+    $list = new DBList('permissions', 'email', join($where, ' OR '), true);
+    $list->join[] = (array('table' => 'users', 'condition' => 'users.id=permissions.userid'));
+    $list->setFormat('%s', array('email'));
+    $list->fill();
+    if (count($list->data) == 0) {
       echo '<p>No email addresses found</p>';
     } else {
-      $separator = $this->PD['separator'];
-      $list = array();
-      while ($g = mysql_fetch_array($sql)) {
-        $list[] = xssqw($g['email']);
-      }
-      echo join($list,  xssqw($separator).'<br />');
+      $list->formatList();
+      echo join($list->formatdata, xssqw($this->PD['separator']).'<br />');
     }
   }
+
 }
 ?> 

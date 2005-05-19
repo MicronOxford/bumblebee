@@ -41,6 +41,7 @@ class ActionListing {
       'costs=Edit standard costs',
       'specialcosts=Edit or create special charges',
       'deletedbookings=View deleted bookings',
+      'report=Report usage',
       #'bookmeta=Points system and booking controls',
       #'adminconfirm=Booking confirmation',
       'emaillist=Email lists',

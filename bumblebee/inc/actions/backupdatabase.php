@@ -30,7 +30,7 @@ class ActionBackupDB extends ActionAction {
     global $CONFIG;
     // get a MySQL dump of the database
     $output = array();
-    $retstring = exec('mysqldump -h localhost'
+    $retstring = exec('mysqldump -h '.$CONFIG['database']['dbhost']
                 .' --user='.escapeshellarg($CONFIG['database']['dbusername'])
                 .' --password='.escapeshellarg($CONFIG['database']['dbpasswd'])
                 .' '.escapeshellarg($CONFIG['database']['dbname'])

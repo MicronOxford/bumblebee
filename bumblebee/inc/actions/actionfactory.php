@@ -25,6 +25,7 @@ include_once 'costs.php';
 include_once 'specialcosts.php';
 //include_once 'adminconfirm.php';
 include_once 'emaillist.php';
+include_once 'report.php';
 //include_once 'billing.php';
 include_once 'backupdatabase.php';
 
@@ -184,6 +185,8 @@ class ActionFactory {
         return new ActionEmaillist($this->_auth, $this->PDATA);
       case $act['backupdb']:
         return new ActionBackupDB($this->_auth, $this->PDATA);
+      case $act['report']:
+        return new ActionReport($this->_auth, $this->PDATA);
       case $act['billing']:
         return new ActionBilling($this->_auth, $this->PDATA);
       case $act['forbidden!']:

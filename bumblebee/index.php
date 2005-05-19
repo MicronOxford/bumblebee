@@ -24,8 +24,8 @@ if ($action->ob_flush_ok()) {
 include_once 'inc/adminmenu.php';
 
 // $pagetitle can be used in theme/pageheader.php 
-$pagetitle = $action->title . ' : ' . $CONFIG['main']['SiteTitle'];
-$pageheading = $action->title;
+$pagetitle  = $action->title . ' : ' . $CONFIG['main']['SiteTitle'];
+$pageheader = $action->title;
 include 'theme/pageheader.php';
 include 'theme/contentheader.php';
 
