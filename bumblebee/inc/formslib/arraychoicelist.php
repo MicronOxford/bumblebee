@@ -9,7 +9,7 @@
  * 
  */
 class ArrayChoiceList {
-  var $id;
+  var $id=-1;
   var $editable = 0;
   var $extendable = 0;
   var $changed = 0;
@@ -173,7 +173,7 @@ class ArrayChoiceList {
   }
 
   function setDefault($val) {
-    //echo "DBChoiceList::setDefault: $val";
+    //echo "ArrayChoiceList::setDefault: $val";
     if (isset($this->id) || $this->id < 0) {
       $this->id = $val;
     }

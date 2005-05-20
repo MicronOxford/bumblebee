@@ -1,18 +1,21 @@
 <?php
 # $Id$
-# anchor list (<li><a href="$href">$name</a></li>) for a ChoiceList
+# generic database list/export class
 
 include_once 'choicelist.php';
+include_once 'inc/exportcodes.php';
 
 class DBList {
   var $restriction;
   var $join = array();
   var $returnFields;
+  var $realFields;
   var $formatter;
   var $distinct = 0;
   var $table;
   var $data;
   var $formatdata;
+  var $outputFormat = EXPORT_FORMAT_CUSTOM;
   var $fatal_sql = 1;
   
   function DBList($table, $returnFields, $restriction, $distinct=0) {
@@ -27,6 +30,13 @@ class DBList {
       $this->returnFields = $returnFields;
     } else {
       $this->returnFields = array($returnFields);
+    }
+    foreach ($returnFields as $f) {
+      if (preg_match('/^(.+)\s+AS\s+(.+)$/i', $f, $names)) {
+        $this->realFields[$names[1]] = $names[2];
+      } else {
+        $this->realFields[$f] = $f;
+      }
     }
   }
 
@@ -58,7 +68,31 @@ class DBList {
   }
     
   function format($data) {
-    return $this->formatter->format($data);
+    $d = array();
+    foreach ($this->realFields as $f) {
+      $d[] = $data[$f];
+    }
+    switch ($this->outputFormat) {
+      case EXPORT_FORMAT_CSV:
+      // FIXME we will return twice as many elements here due to [1] and [id] from mysql
+        return join(preg_replace(array('/"/',     '/^(.*,.*)$/'), 
+                               array('\\"',   '"$1"'       ), $d), ',');
+      case EXPORT_FORMAT_TAB:
+        return join(preg_replace("/^(.*\t.*)$/", '"$1"', $d), "\t");
+      case EXPORT_FORMAT_HTML:
+        return '<td>'.join(array_xssqw($d), '</td><td>').'</td>';
+      case EXPORT_FORMAT_CUSTOM:
+      default:
+        return $this->formatter->format($d);
+    }
+  }
+  
+  function outputHeader() {
+    $d = array();
+    foreach ($this->realFields as $label => $f) {
+      $d[$f] = $label;
+    }
+    return $this->format($d);
   }
 
  /**

@@ -12,13 +12,13 @@ a {
   text-decoration: underline;
 }
 
-a:hover {
+#bumblebeecontent a:hover {
   text-decoration: none;
   background-color: #ffff99;
   color: #1005A7;
 }
 
-a:active 
+#bumblebeecontent a:active 
 { 
   text-decoration: underline;
   color: #DA4C71; 

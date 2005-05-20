@@ -20,8 +20,8 @@ class RadioList extends ChoiceList {
     //$aclass  = (isset($this->aclass) ? " class='$this->aclass'" : "");
     #echo "<pre>".print_r($data,1)."</pre>";
     #echo $this->value;
-    $selected = ($data[$this->formatid] == $this->value ? ' checked="1" ' : '');
-    $t  = '<input type="radio" name="'.$this->name.'" '  
+    $selected = ($data[$this->formatid] == $this->getValue() ? ' checked="1" ' : '');
+    $t  = '<label><input type="radio" name="'.$this->name.'" '  
          .'value="'.$data[$this->formatid].'" '.$selected.' /> ';
     foreach (array_keys($this->formatter) as $k) {
       $t .= $this->formatter[$k]->format($data);
@@ -29,7 +29,7 @@ class RadioList extends ChoiceList {
     if (isset($data['_field']) && $data['_field']) {
       $t .= $data['_field']->selectable();
     }
-    return $t;
+    return $t.'</label>';
   }
 
 

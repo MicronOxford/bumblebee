@@ -36,6 +36,16 @@ class ConsumableUse extends DBRow {
       $f->value = $ip;
       $f->editable = 0;
       $this->addElement($f);
+      $f = new DropList('projectid', 'Project');
+      $f->connectDB('projects', 
+                    array('id', 'name', 'longname'), 
+                    'userid='.qw($userid),
+                    'name', 
+                    'id', 
+                    NULL, 
+                    array('userprojects'=>'projectid=id'));
+      $f->setFormat('id', '%s', array('name'), ' (%35.35s)', array('longname'));
+      $this->addElement($f);
       $f = new TextField('usewhen', 'Date');
       $f->value = $today;
       $f->required = 1;

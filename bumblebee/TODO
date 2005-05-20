@@ -1,5 +1,9 @@
 $Id$
 
+
+* scrap the report action all together?
+
+
 * db structure:
   - SMALLINT is max 32767. Is this a limitation (e.g. number bookings!)?
   - permit table prefix:

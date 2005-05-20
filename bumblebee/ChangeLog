@@ -1,3 +1,6 @@
+2005-05-19 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* fix up to magic_quotes_gpc handling (wouldn't it be nice if it could be turned off at runtime?) 
+
 2005-05-18 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* allow different hosts in install script 
 	* change system user passwd handling in install script to not use PASSWORD() 

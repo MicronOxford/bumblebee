@@ -23,6 +23,7 @@ define('DR_YEAR',   128);
 
 class DateRange extends nonDBRow { 
   var $reflectData = 1;
+  var $includeSubmitButton = 1;
 
   function dateRange($name, $longname, $description) {
     parent::nonDBRow($name, $longname, $description);
@@ -165,7 +166,9 @@ class DateRange extends nonDBRow {
       }
     }
     $t .= $this->displayInTable(2);
-    $t .= '<input type="submit" name="submit" value="Go" />';
+    if ($this->includeSubmitButton) {
+      $t .= '<input type="submit" name="submit" value="Go" />';
+    }
     return $t;
   }
   

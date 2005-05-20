@@ -22,9 +22,9 @@ if ($CONFIG['error_handling']['AllWarnings']) {
   //this is nice for development but probably turn it off for production
   ini_set("error_reporting",E_ALL); #force all warnings to be echoed
 } else {
-  ini_set("error_reporting",E_ERROR); #force all warnings to be echoed
+  ini_set("error_reporting",E_ERROR); #only errors should be echoed
 }
 
-$BUMBLEBEEVERSION = '0.9.5.7';
+$BUMBLEBEEVERSION = '0.9.5.8';
 
 ?> 

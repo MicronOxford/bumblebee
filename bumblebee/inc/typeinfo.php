@@ -56,6 +56,10 @@ function xssqw($v) {
   return htmlentities($v, ENT_QUOTES);
 }
 
+function array_xssqw($a) {
+  return array_map('xssqw', $a);
+}
+
 function is_nonempty_string($v) {
   #echo "'val=$v' ";
   return !(strlen($v) == 0);
