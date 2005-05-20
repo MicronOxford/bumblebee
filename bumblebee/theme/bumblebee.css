@@ -485,3 +485,20 @@ input.radioitem {
   color: #000000;
   text-decoration: none;
 }
+
+.exportdata {
+  width: 100%;
+  border: 1px solid black;
+  margin: 1em;
+  border-collapse: collapse;
+}
+
+.exportdata tr {
+  border-bottom: 1px solid black;
+}
+
+.exportdata tr.header {
+  background-color: #3333aa;
+  color: #ffffff;
+}
+

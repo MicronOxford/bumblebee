@@ -136,8 +136,8 @@ class ActionExport extends BufferedAction {
     if ($this->format == EXPORT_FORMAT_HTML || $this->format == EXPORT_FORMAT_PDF) {
       $list->outputFormat = EXPORT_FORMAT_HTML;
       $list->formatList();   
-      $htmlBuffer = '<table>'
-                    .'<tr>'.$list->outputHeader().'</tr>'."\n"
+      $htmlBuffer = '<table class="exportdata">'
+                    .'<tr class="header">'.$list->outputHeader().'</tr>'."\n"
                     .'<tr>'.join($list->formatdata, "</tr>\n<tr>").'</tr>'
                     .'</table>';
     } else {
@@ -167,11 +167,25 @@ class ActionExport extends BufferedAction {
     $start = $daterange->getStart();
     $stop  = $daterange->getStop();
     $stop->addDays(1);
+    
+    $limitation = array();
+    $namebase = 'limitation-';
+    for ($j=0; isset($this->PD[$namebase.$j.'-row']); $j++) {
+      $item = issetSet($this->PD,$namebase.$j.'-'.$export->limitation);
+      //echo "$j ($instr) => ($unbook, $announce)<br />";
+      if (issetSet($this->PD,$namebase.$j.'-selected')) {
+        $limitation[] = $export->limitation.'.id='.qw($item);
+      }
+    }
     $where = $export->where;
     $where[] = $export->timewhere[0].qw($start->datetimestring);
     $where[] = $export->timewhere[1].qw($stop->datetimestring);
+    $where[] = '('.join($limitation, ' OR ').')';
     $list = new DBList($export->basetable, $export->fields, join($where, ' AND '));
     $list->join = array_merge($list->join, $export->join);
+    $list->group = $export->group;
+    $list->order = $export->order;
+    $list->distinct = $export->distinct;
     return $list;
   }
 

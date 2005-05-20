@@ -1,3 +1,11 @@
+2005-05-20 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* initial cut at billing calculations in SQL 
+	* some bugfixes on export 
+
+2005-05-20 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* initial attempt for exporting data from database in various formats added 
+	 
+
 2005-05-19 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* fix up to magic_quotes_gpc handling (wouldn't it be nice if it could be turned off at runtime?) 
 

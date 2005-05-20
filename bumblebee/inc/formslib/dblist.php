@@ -33,7 +33,7 @@ class DBList {
     }
     foreach ($returnFields as $f) {
       if (preg_match('/^(.+)\s+AS\s+(.+)$/i', $f, $names)) {
-        $this->realFields[$names[1]] = $names[2];
+        $this->realFields[$names[2]] = $names[2];
       } else {
         $this->realFields[$f] = $f;
       }
@@ -52,6 +52,8 @@ class DBList {
            .' ON '.$t['condition'];
     }
     $q .= ' WHERE '. join($this->restriction, ' AND ');
+    $q .= (is_array($this->order) ? ' ORDER BY '.join($this->order,', ') : '');
+    $q .= (is_array($this->group) ? ' GROUP BY '.join($this->group,', ') : '');
     $sql = db_get($q, $this->fatal_sql);
     $this->data = array();
     // FIXME: mysql specific functions
