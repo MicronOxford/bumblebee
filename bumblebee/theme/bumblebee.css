@@ -500,5 +500,10 @@ input.radioitem {
 .exportdata tr.header {
   background-color: #3333aa;
   color: #ffffff;
+  font-weight: bolder;
 }
 
+.exportdata td {
+  padding-left: 0.5em;
+  margin-right: 0.2em;
+}

@@ -24,7 +24,22 @@ class ExportType {
      
 } //class ExportType
 
-
+class sqlFieldName {
+  var $name;
+  var $alias;
+  var $heading;
+  var $format;
+  
+  function sqlFieldName($name, $heading=NULL, $alias=NULL, $format=NULL) {
+    $this->name = $name;
+    $this->heading = (isset($heading) ? $heading : $name);
+    if ($alias===NULL && strpos($name, '.')!== NULL) {
+      $alias = strtr($name, '.', '_');
+    }
+    $this->alias = (isset($alias) ? $alias : $name);
+    $this->format = $format;
+  }
+} //sqlFieldName
 
 class ExportTypeList {
   var $types = array();
@@ -50,11 +65,16 @@ class ExportTypeList {
     $type->join[] = array('table' => 'users', 'condition' =>  'users.id=bookings.userid');
     $type->join[] = array('table' => 'instruments', 'condition' =>  'instruments.id=bookings.instrument');
     $type->join[] = array('table' => 'projects', 'condition' =>  'bookings.projectid=projects.id');
-    $type->fields = array('bookwhen', 'duration', 
-                    'username', 'users.name AS user_name', 
-                    'instruments.name AS instrument_name', 
-                    'projects.name as project_name', 
-                    'comments', 'log');
+    $type->fields = array(
+                      new sqlFieldName('bookwhen', 'Date/Time'), 
+                      new sqlFieldName('duration', 'Length'),
+                      new sqlFieldName('username', 'Username'), 
+                      new sqlFieldName('users.name', 'Name', 'user_name'), 
+                      new sqlFieldName('instruments.name', 'Instrument', 'instrument_name'), 
+                      new sqlFieldName('projects.name', 'Project name', 'project_name'), 
+                      new sqlFieldName('comments', 'User comments'),
+                      new sqlFieldName('log', 'Log entry')
+                    );
     $type->where[] = 'deleted <> 1';
     $type->where[] = 'bookings.userid <> 0';
     $type->group = array('instrument_name', 'bookwhen', 'user_name', 'project_name');
@@ -65,9 +85,13 @@ class ExportTypeList {
     $type = new ExportType('project', 'bookings', 'Projects using instruments', 'instruments');
     $type->join[] = array('table' => 'instruments', 'condition' =>  'instruments.id=bookings.instrument');
     $type->join[] = array('table' => 'projects', 'condition' =>  'bookings.projectid=projects.id');
-    $type->fields = array('instruments.name AS instrument_name', 
-                    'projects.name AS project_name', 'projects.longname AS project_longname',
-                    'SUM(TIME_TO_SEC(duration))/60/60 AS hours_used');
+    $type->fields = array(
+                      new sqlFieldName('instruments.name', 'Instrument', 'instrument_name'),
+                      new sqlFieldName('projects.name', 'Project', 'project_name'),
+                      new sqlFieldName('projects.longname', 'Description'),
+                      new sqlFieldName('SUM(TIME_TO_SEC(duration))/60/60', 'Hours used',
+                                                                    'hours_used')
+                    );
     $type->where[] = 'deleted <> 1';
     $type->where[] = 'bookings.userid <> 0';
     $type->group = array('instrument_name', 'project_name');
@@ -80,9 +104,16 @@ class ExportTypeList {
     $type->join[] = array('table' => 'projects', 'condition' =>  'bookings.projectid=projects.id');
     $type->join[] = array('table' => 'projectgroups', 'condition' =>  'projectgroups.projectid=bookings.projectid');
     $type->join[] = array('table' => 'groups', 'condition' =>  'groups.id=projectgroups.groupid');
-    $type->fields = array('instruments.name AS instrument_name', 
-                    'groups.name AS group_name', 'groups.longname AS group_longname', 
-                    'SUM(TIME_TO_SEC(duration)*grouppc)/60/60/100 AS weighted_hours_used');
+    $type->fields = array(
+                      new sqlFieldName('instruments.name', 'Instrument', 'instrument_name'),
+                      new sqlFieldName('groups.name', 'Supervisor', 'group_name'),
+                      new sqlFieldName('groups.longname', 'Group'),
+                      new sqlFieldName('ROUND('
+                                          .'SUM(TIME_TO_SEC(duration)*grouppc)/60/60/100,'
+                                        .'2) ', 
+                                      'Weighted hours used',
+                                      'weighted_hours_used')
+                   );
     $type->where[] = 'deleted <> 1';
     $type->where[] = 'bookings.userid <> 0';
     $type->group = array('instrument_name', 'group_name');
@@ -93,9 +124,16 @@ class ExportTypeList {
     $type = new ExportType('user', 'bookings', 'Users using instruments', 'instruments');
     $type->join[] = array('table' => 'users', 'condition' =>  'users.id=bookings.userid');
     $type->join[] = array('table' => 'instruments', 'condition' =>  'instruments.id=bookings.instrument');
-    $type->fields = array('username', 'users.name AS user_name',
-                    'instruments.name AS instrument_name', 
-                    'SUM(TIME_TO_SEC(duration))/60/60 AS hours_used');
+    $type->fields = array(
+                      new sqlFieldName('username', 'Username'), 
+                      new sqlFieldName('users.name', 'Name', 'user_name'), 
+                      new sqlFieldName('instruments.name', 'Instrument', 'instrument_name'), 
+                      new sqlFieldName('ROUND('
+                                          .'SUM(TIME_TO_SEC(duration))/60/60,'
+                                        .'2) ', 
+                                      'Hours used',
+                                      'hours_used')
+                    );
     $type->where[] = 'deleted <> 1';
     $type->where[] = 'bookings.userid <> 0';
     $type->group = array('instrument_name', 'user_name');
@@ -108,10 +146,12 @@ class ExportTypeList {
     $type->join[] = array('table' => 'consumables', 'condition' =>  'consumables.id=consumables_use.consumable');
     $type->join[] = array('table' => 'projects', 'condition' =>  'consumables_use.projectid=projects.id');
     $type->fields = array(
-                      'consumables.name AS consumable_name', 'quantity',
-                      'usewhen',
-                      'username', 'users.name AS user_name',
-                      'projects.name as project_name', 
+                      new sqlFieldName('consumables.name', 'Item', 'consumable_name'),
+                      new sqlFieldName('quantity', 'Quantity', 'quantity'),
+                      new sqlFieldName('usewhen', 'Date'),
+                      new sqlFieldName('username', 'Username'), 
+                      new sqlFieldName('users.name', 'Name', 'user_name'), 
+                      new sqlFieldName('projects.name', 'Project', 'project_name')
                     );
     $type->timewhere = array('usewhen >= ', 'usewhen < ');
     $type->group = array('consumable_name', 'usewhen', 'user_name', 'project_name', 'quantity');
@@ -125,10 +165,16 @@ class ExportTypeList {
     $type->join[] = array('table' => 'projects', 'condition' =>  'bookings.projectid=projects.id');
     $type->join[] = array('table' => 'projectgroups', 'condition' =>  'projectgroups.projectid=bookings.projectid');
     $type->join[] = array('table' => 'groups', 'condition' =>  'groups.id=projectgroups.groupid');
-    $type->fields = array('username', 'users.name AS uname', 'instruments.name AS iname', 
-                    'projects.name as pname', 
-                    'groups.name AS group_name', 'groups.longname AS glongname', 
-                    'bookwhen', 'duration');
+    $type->fields = array(
+                      new sqlFieldName('username', 'Username'), 
+                      new sqlFieldName('users.name', 'Name', 'user_name'), 
+                      new sqlFieldName('instruments.name', 'Instrument', 'instrument_name'), 
+                      new sqlFieldName('projects.name', 'Project name', 'project_name'), 
+                      new sqlFieldName('groups.name', 'Supervisor', 'group_name'),
+                      new sqlFieldName('groups.longname', 'Group'),
+                      new sqlFieldName('bookwhen', 'Date/Time'), 
+                      new sqlFieldName('duration', 'Length')
+                    );
     $type->where[] = 'deleted <> 1';
     $type->where[] = 'bookings.userid <> 0';
     return $type;
@@ -141,12 +187,14 @@ class ExportTypeList {
     $type->join[] = array('table' => 'projectgroups', 'condition' =>  'projectgroups.projectid=consumables_use.projectid');
     $type->join[] = array('table' => 'groups', 'condition' =>  'groups.id=projectgroups.groupid');
     $type->fields = array(
-                        'groups.name AS group_name', 'groups.longname AS group_longname', 
-                        'consumables.name AS consumable_name', 
-                        'consumables.cost AS unit_cost',
-                        'SUM(consumables_use.quantity) AS quantity',
-                        '(consumables.cost * grouppc/100)*quantity AS cost_to_group'
-                      );
+                      new sqlFieldName('groups.name', 'Supervisor', 'group_name'),
+                      new sqlFieldName('groups.longname', 'Group'),
+                      new sqlFieldName('consumables.name', 'Item', 'consumable_name'),
+                      new sqlFieldName('consumables.cost', 'Unit cost'),
+                      new sqlFieldName('SUM(consumables_use.quantity)', 'Quantity', 'totquantity'),
+                      new sqlFieldName('(consumables.cost * grouppc/100)*SUM(consumables_use.quantity)',
+                                          'Cost to group', 'cost_to_group')
+                    );
     $type->group = array('group_name', 'consumable_name');
     return $type;
   }
@@ -156,23 +204,38 @@ class ExportTypeList {
     $type->name = 'bookingbilling';
     $type->description = 'Billing data for instrument usage';
     $type->join[] = array('table' => 'costs', 'condition' =>  'costs.userclass=projects.defaultclass AND costs.instrumentclass=instruments.class');
-    $type->fields = array('instruments.name AS instrument_name', 
-                    'groups.name AS group_name', 'groups.longname AS group_longname', 
-                    //'(TIME_TO_SEC(duration)/60/60) AS hours',
-                    'SUM('
-                      .'IF('
-                        .'TIME_TO_SEC(duration)/60/60 > instruments.fulldaylength, '
-                        .'1, '
-                        .'IF('
-                          .'TIME_TO_SEC(duration)/60/60 > instruments.halfdaylength, '
-                          .'costs.halfdayfactor, '
-                          .'TIME_TO_SEC(duration)/60/60/24*costs.hourfactor'
-                        .')'
-                      .')'
-                   .')*grouppc/100 AS weighted_days_used'
+    $type->fields = array(
+                      new sqlFieldName('instruments.name', 'Instrument', 'instrument_name'), 
+                      new sqlFieldName('groups.name', 'Supervisor', 'group_name'),
+                      new sqlFieldName('SUM(ROUND(TIME_TO_SEC(duration)/60/60,2))', 'Total hours used', 'total_hours', EXPORT_HTML_DECIMAL),
+/*                    'instruments.fulldaylength AS fulldaylength', 'instruments.halfdaylength AS halfdaylength', 'costs.hourfactor AS hourfactor','costs.halfdayfactor AS halfdayfactor',*/
+                      new sqlFieldName(
+                        'ROUND('
+                        .'SUM('
+                          .'(CASE '
+                            .'WHEN TIME_TO_SEC(duration)/60/60 >= instruments.fulldaylength '
+                                .'THEN 1 '
+                            .'WHEN TIME_TO_SEC(duration)/60/60 '
+                                  .'BETWEEN instruments.halfdaylength '
+                                  .'AND instruments.fulldaylength '
+                                .'THEN LEAST('
+                                        .'1, '
+                                        .'(TIME_TO_SEC(duration)/60/60-instruments.halfdaylength)'
+                                          .'*costs.hourfactor + costs.halfdayfactor'
+                                      .') '
+                            .'ELSE '
+                                .'LEAST('
+                                        .'costs.halfdayfactor, '
+                                        .'TIME_TO_SEC(duration)/60/60*costs.hourfactor'
+                                      .') '
+                          .'END)'
+                        .'*grouppc/100), '
+                        .'2) ',             //END OF ROUND()
+                        'Weighted days used', 'weighted_days_used', EXPORT_HTML_DECIMAL)
                    );
     $type->where[] = 'deleted <> 1';
     $type->where[] = 'bookings.userid <> 0';
+    //$type->group = '';
     $type->group = array('instrument_name', 'group_name');
     return $type;
   }
