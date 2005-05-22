@@ -3,6 +3,8 @@
 # the main menu for an admin user
 
 class UserMenu {
+  var $menuPrologue   = '';
+  var $menuEpilogue   = '';
   var $menuDivId      = 'menulist';
   var $menuStart      = '<ul>';
   var $menuStop       = '</ul>';
@@ -27,20 +29,24 @@ class UserMenu {
     if (! $this->showMenu) {
       return '';
     }
-    $menu  = '<div id="'.$this->menuDivId.'">';
+    $menu  = '<div'.($this->menuDivId ? ' id="'.$this->menuDivId.'"' :'' ).'>';
+    $menu .= $this->menuStart;
     $menu .= $this->_getUserMenu();
     if ($this->_auth->isadmin) 
           $menu .= $this->_getAdminMenu();
     if ($this->_auth->amMasqed() && $this->_verb != 'masquerade') 
           $menu .= $this->_getMasqAlert();
+    $menu .= $this->menuStop;
     $menu .= '</div>';
     return $menu;
   }
   
   function _getUserMenu() {
     global $BASEURL;
-    $t = $this->headerStart.$this->mainMenuHeader.$this->headerStop;
-    $t .= $this->menuStart;
+    $t = '';
+    if ($this->mainMenuHeader) {
+      $t .= $this->headerStart.$this->mainMenuHeader.$this->headerStop;
+    }
     $t .= $this->itemStart
           .'<a href="'.$BASEURL.'/">Main</a>'
         .$this->itemStop;
@@ -57,7 +63,6 @@ class UserMenu {
     $t .= $this->itemStart
             .'<a href="'.$BASEURL.'/logout">Logout</a>'
           .$this->itemStop;
-    $t .= $this->menuStop;
     return $t;
   }
   
@@ -91,7 +96,10 @@ class UserMenu {
       //array('a'=>'billing',           't'=>'Billing'),
         array('a'=>'backupdb',          't'=>'Backup database')
     );
-    $t = $this->headerStart.$this->adminHeader.$this->headerStop;
+    $t = '';
+    if ($this->adminHeader) {
+      $t .= $this->headerStart.$this->adminHeader.$this->headerStop;
+    }
     $t .= $this->menuStart;
     foreach ($menu as $entry) {
       $t .= $this->itemStart
