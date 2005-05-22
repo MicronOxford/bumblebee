@@ -34,10 +34,11 @@ class JSQuickWalk {
     $c = $this->namebase.'walkcounter';
     $t .= 'var '.$c.'='.$this->counter.';'.$eol;
     $t .= 'function '.$this->namebase.'walkfwd() {'.$eol
+         .'  rightForm = "bumblebeeform";'
          //.'  alert("FOO"+'.$c.')'.$eol
          .'  ('.$c.' < '.(count($this->values)-1).' && '.$c.'++);'.$eol;
     foreach ($this->keys as $k) {
-      $t .= '  document.forms[0].'.$this->namebase.$k.'.value='
+      $t .= '  document.forms[rightForm].'.$this->namebase.$k.'.value='
                               .$this->namebase.'walkarray['.$c.']["'.$k.'"];'.$eol;
     }
     
@@ -46,9 +47,10 @@ class JSQuickWalk {
     $t .= '}'.$eol;
 
     $t .= 'function '.$this->namebase.'walkback() {'.$eol
+         .'  rightForm = "bumblebeeform";'
          .'  ('.$c.' > 0 && '.$c.'--);'.$eol;
     foreach ($this->keys as $k) {
-      $t .= '  document.forms[0].'.$this->namebase.$k.'.value='
+      $t .= '  document.forms[rightForm].'.$this->namebase.$k.'.value='
                               .$this->namebase.'walkarray['.$c.']["'.$k.'"];'.$eol;
     }
     $t .= '}'.$eol;
