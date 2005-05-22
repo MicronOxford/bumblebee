@@ -180,7 +180,7 @@ function printUserForm($defaults) {
   </body>
 </html>
 
-  <?
+  <?php
 
 }
 

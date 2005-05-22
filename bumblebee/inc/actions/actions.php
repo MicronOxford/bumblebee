@@ -1,4 +1,4 @@
-<?
+<?php
 # $Id$
 # Create data structures that can describe both the action-word to be acted
 # on, as well as the title to be reflected in the HTML title tag.

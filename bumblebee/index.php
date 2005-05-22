@@ -21,7 +21,9 @@ if ($action->ob_flush_ok()) {
   ob_end_flush();
 }
 
-include_once 'inc/adminmenu.php';
+include_once 'inc/menu.php';
+$usermenu = new UserMenu($auth, $action->_verb);
+$usermenu ->showMenu = ($auth->isLoggedIn() && $action->_verb != 'logout');
 
 // $pagetitle can be used in theme/pageheader.php 
 $pagetitle  = $action->title . ' : ' . $CONFIG['main']['SiteTitle'];
@@ -29,40 +31,10 @@ $pageheader = $action->title;
 include 'theme/pageheader.php';
 include 'theme/contentheader.php';
 
-if ($auth->isLoggedIn() && $action->_verb != 'logout') {
-  ?>
-    <div id='fmenu'>
-      <h3>Menu</h3>
-      <div id='menulist'>
-      <ul>
-        <li><a href='<?=$BASEURL?>/'>Main</a></li>
-        <?
-           if ($auth->localLogin) {
-             echo '<li><a href="'.$BASEURL.'/passwd">Change Password</a></li>'."\n";
-           }
-           if ($auth->masqPermitted()) {
-             echo '<li><a href="'.$BASEURL.'/masquerade">Masquerade</a></li>'."\n";
-           }
-        ?>
-        <li><a href='<?=$BASEURL?>/logout'>Logout</a></li>
-      </ul>
-      <?
-        if ($auth->isadmin) printAdminMenu();  //FIXME: oo-ify this?
-        if ($auth->amMasqed() && $action->_verb != 'masquerade') {
-          echo '<div id="masquerade">'
-              .'Mask: '.$auth->eusername
-              .' (<a href="'.$BASEURL.'/masquerade/-1">end</a>)'
-              .'</div>';
-        }
-      ?>
-      </div>
-    </div>
-  <?
-}
 ?>
   <div id="bumblebeecontent">
-    <form method="post" action="<?=$action->nextaction?>" id="bumblebeeform">
-    <?
+    <form method="post" action="<?php echo $action->nextaction ?>" id="bumblebeeform">
+    <?php
       if (! $auth->isLoggedIn()) {
         echo $auth->loginError();
       }

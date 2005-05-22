@@ -1,3 +1,9 @@
+2005-05-22 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* changed menu creation code to clean up index.php and permit shelling into templates more easily 
+
+2005-05-21 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* cleanups of export code, incl format options added to output 
+
 2005-05-20 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* initial cut at billing calculations in SQL 
 	* some bugfixes on export 

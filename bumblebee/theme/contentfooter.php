@@ -1,6 +1,13 @@
-<?
+<?php
   # $Id$
-  # Footer HTML to be included on every page
+  # Footer HTML that is included on every page
+  
+  // this is only a sample implementation giving credit to the BumbleBee project and some
+  // feedback on what BumbleBee has been managing.
+  //
+  // This is GPL'd software, so it is *not* a requirement that you give credit to BumbleBee,
+  // link to the site etc. In fact, this is in the theme/ directory to allow you to customise
+  // it easily, without having to delve into the rest of the code.
 
   include 'inc/systemstats.php';
   $stat = new SystemStats;
@@ -10,22 +17,22 @@
   <p>
     System managed by 
     <a href="http://www.nanonanonano.net/projects/bumblebee/">BumbleBee</a> version
-    <?=$BUMBLEBEEVERSION?>,
+    <?php echo $BUMBLEBEEVERSION ?>,
     released under the 
     <a href="http://www.gnu.org/licenses/gpl.html">GNU GPL</a>.
   <br />
     This installation of BumbleBee currently manages
-    <?
+    <?php
       echo $stat->get('users') . ' users, ';
       echo $stat->get('projects') . ' projects, ';
       echo $stat->get('instruments') . ' instruments and ';
       echo $stat->get('bookings') . ' bookings. ';
     ?>
   <br />
-    Email the <a href="mailto:<?=$ADMINEMAIL?>">system administrator</a>
+    Email the <a href="mailto:<?php echo $ADMINEMAIL ?>">system administrator</a>
     for help.
   </p>
   <p class='bumblebeecopyright'>
-    Booking information Copyright &copy; <?=date('Y').' '.$COPYRIGHTOWNER?>.
+    Booking information Copyright &copy; <?php echo date('Y').' '.$COPYRIGHTOWNER ?>.
   </p>
 </div>

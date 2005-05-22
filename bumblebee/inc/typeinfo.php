@@ -1,4 +1,4 @@
-<?
+<?php
 # $Id$
 # functions for handling types, comparisons, conversions etc
 

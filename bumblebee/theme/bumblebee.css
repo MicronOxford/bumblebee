@@ -44,8 +44,6 @@ td {
 #bumblebeecontent {
   padding: 0px;
   margin: 0px;
-  margin-right: 13em;
-  margin-top: 0em;
 }
 
 #bumblebeefooter p {
@@ -95,18 +93,6 @@ td {
   float: left;
   margin: 0.2em;
   margin-left: 0em;
-}
-
-#fmenu {
-  float: right;
-  width: 12em;
-  font-size: 80%;
-  padding: 1em 1em 1em 1em;
-}
-
-#fmenu h3 {
-  margin: 0;
-  padding: 0;
 }
 
 #menulist li, #menulist ul {

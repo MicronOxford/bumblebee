@@ -37,3 +37,20 @@ body {
   border-top: 3px solid #0000cc;
   clear: both;
 }
+
+#fmenu {
+  float: left;
+  width: 12em;
+  font-size: 80%;
+  padding: 1em 1em 1em 1em;
+  margin: 0;
+}
+
+#fmenu h3 {
+  margin: 0;
+  padding: 0;
+}
+
+#bumblebeecontent {
+  margin-left: 12em;
+}
