@@ -100,13 +100,11 @@ class UserMenu {
     if ($this->adminHeader) {
       $t .= $this->headerStart.$this->adminHeader.$this->headerStop;
     }
-    $t .= $this->menuStart;
     foreach ($menu as $entry) {
       $t .= $this->itemStart
             .'<a href="'.$BASEURL.'/'.$entry['a'].'">'.$entry['t'].'</a>'
           .$this->itemStop;
     }
-    $t .= $this->menuStop;
     return $t;
   }
   
