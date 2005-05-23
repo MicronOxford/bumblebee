@@ -201,3 +201,27 @@ tr.itemrow:hover {
   border: 2px solid #cc6666;
   background-color: #ffeeee;
 }
+
+#bumblebeeExport {
+}
+
+#bumblebeeExport .exportdata {
+}
+
+#bumblebeeExport .exportdata tr {
+}
+
+#bumblebeeExport .exportdata tr.header, #bumblebeeExport th {
+  background-color: #113A70;
+  color: #ffffff;
+}
+
+#bumblebeeExport .exportdata td {
+}
+
+#bumblebeeExport .exportHeader {
+  border-bottom: 2px solid black;
+}
+
+#bumblebeeExport .exportSectionHeader {
+}

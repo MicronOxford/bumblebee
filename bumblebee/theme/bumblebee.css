@@ -472,24 +472,40 @@ input.radioitem {
   text-decoration: none;
 }
 
-.exportdata {
+#bumblebeeExport {
+}
+
+
+#bumblebeeExport .exportdata {
   width: 100%;
   border: 1px solid black;
   margin: 1em;
   border-collapse: collapse;
+  page-break-after: always;
 }
 
-.exportdata tr {
+#bumblebeeExport .exportdata tr {
   border-bottom: 1px solid black;
 }
 
-.exportdata tr.header {
-  background-color: #3333aa;
-  color: #ffffff;
+#bumblebeeExport .exportdata tr.header {
   font-weight: bolder;
 }
 
-.exportdata td {
+#bumblebeeExport .exportdata td {
   padding-left: 0.5em;
   margin-right: 0.2em;
+}
+
+#bumblebeeExport .exportHeader {
+  margin: 0;
+  font-weight: bold;
+  font-size: 120%;
+  border-bottom: 2px solid black;
+}
+
+#bumblebeeExport .exportSectionHeader {
+  margin-top: 2em;
+  font-size: 110%;
+  font-weight: bold;
 }
