@@ -8,7 +8,10 @@ include_once 'inc/exportcodes.php';
 class DBList {
   var $restriction;
   var $join = array();
+  var $order;
+  var $group;
   var $returnFields;
+  var $omitFields = array();
   var $formatter;
   var $distinct = 0;
   var $table;
@@ -17,7 +20,7 @@ class DBList {
   var $outputFormat = EXPORT_FORMAT_CUSTOM;
   var $fatal_sql = 1;
   
-  function DBList($table, $returnFields, $restriction, $distinct=0) {
+  function DBList($table, $returnFields, $restriction, $distinct=false) {
     $this->table = $table;
     $this->distinct = $distinct;
     if (is_array($restriction)) {
@@ -68,7 +71,9 @@ class DBList {
   function format($data) {
     $d = array();
     foreach ($this->returnFields as $f) {
-      $d[$f->alias] = $data[$f->alias];
+      if (! array_key_exists($f->alias, $this->omitFields)) {
+        $d[$f->alias] = $data[$f->alias];
+      }
     }
     switch ($this->outputFormat) {
       case EXPORT_FORMAT_CSV:
@@ -88,6 +93,9 @@ class DBList {
   function _formatHTML($d) {
     $t = '';
     foreach ($this->returnFields as $f) {
+      if (array_key_exists($f->alias, $this->omitFields)) {
+        continue;
+      }
       switch($f->format) {
         case EXPORT_HTML_DECIMAL:
         case EXPORT_HTML_CENTRE:
