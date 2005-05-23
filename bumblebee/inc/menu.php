@@ -52,16 +52,16 @@ class UserMenu {
         .$this->itemStop;
     if ($this->_auth->localLogin) {
       $t .= $this->itemStart
-              .'<a href="'.$BASEURL.'/passwd">Change Password</a>'
+              .'<a href="'.$BASEURL.'/passwd/">Change Password</a>'
             .$this->itemStop;
     }
     if ($this->_auth->masqPermitted()) {
       $t .= $this->itemStart
-              .'<a href="'.$BASEURL.'/masquerade">Masquerade</a>'
+              .'<a href="'.$BASEURL.'/masquerade/">Masquerade</a>'
             .$this->itemStop;
     }
     $t .= $this->itemStart
-            .'<a href="'.$BASEURL.'/logout">Logout</a>'
+            .'<a href="'.$BASEURL.'/logout/">Logout</a>'
           .$this->itemStop;
     return $t;
   }
@@ -85,14 +85,14 @@ class UserMenu {
         array('a'=>'consumables',       't'=>'Edit consumables'),
         array('a'=>'consume',           't'=>'Use consumable'),
         array('a'=>'masquerade',        't'=>'Masquerade'),
-      //array('a'=>'costs',             't'=>'Edit std costs'),
+        array('a'=>'costs',             't'=>'Edit std costs'),
       //array('a'=>'specialcosts',      't'=>'Edit special costs'),
         array('a'=>'deletedbookings',   't'=>'Deleted bookings'),
        #array('a'=>'bookmeta',          't'=>'Points system'),
        #array('a'=>'adminconfirm',      't'=>'Confirmations'),
         array('a'=>'emaillist',        't'=>'Email lists'),
       //array('a'=>'report',            't'=>'Report usage'),
-      //array('a'=>'export',            't'=>'Export data'),
+        array('a'=>'export',            't'=>'Export data'),
       //array('a'=>'billing',           't'=>'Billing'),
         array('a'=>'backupdb',          't'=>'Backup database')
     );
@@ -102,7 +102,7 @@ class UserMenu {
     }
     foreach ($menu as $entry) {
       $t .= $this->itemStart
-            .'<a href="'.$BASEURL.'/'.$entry['a'].'">'.$entry['t'].'</a>'
+            .'<a href="'.$BASEURL.'/'.$entry['a'].'/">'.$entry['t'].'</a>'
           .$this->itemStop;
     }
     return $t;
