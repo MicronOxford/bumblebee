@@ -8,6 +8,7 @@ include_once 'inc/formslib/datareflector.php';
 include_once 'inc/actions/bufferedaction.php';
 include_once 'inc/bb/exporttypes.php';
 include_once 'inc/exportcodes.php';
+include_once 'inc/formslib/dblist.php';
 
 /**
  *  Find out what sort of report is required and generate it
@@ -18,6 +19,8 @@ class ActionExport extends BufferedAction {
   var $fatal_sql = 1;
   var $format;
   var $typelist;
+  var $_export;  // ExportType format description
+  var $_daterange;
 
   function ActionExport($auth, $pdata) {
     parent::BufferedAction($auth, $pdata);
@@ -35,17 +38,17 @@ class ActionExport extends BufferedAction {
       $this->selectExport();
     } else {
       $allDataOK = true;
-      $daterange = new DateRange('daterange', 'Select date range', 
+      $this->_daterange = new DateRange('daterange', 'Select date range', 
                       'Enter the dates over which you want to export data');
-      $daterange->update($this->PD);
-      $daterange->checkValid();
-      $daterange->reflectData = 0;
-      $daterange->includeSubmitButton = 0;
-      if ($daterange->newObject || !$daterange->isValid) {
+      $this->_daterange->update($this->PD);
+      $this->_daterange->checkValid();
+      $this->_daterange->reflectData = 0;
+      $this->_daterange->includeSubmitButton = 0;
+      if ($this->_daterange->newObject || !$this->_daterange->isValid) {
         $allDataOK = false;
         $this->unbuffer();
-        $daterange->setDefaults(DR_PREVIOUS, DR_QUARTER);
-        echo $daterange->display($this->PD);
+        $this->_daterange->setDefaults(DR_PREVIOUS, DR_QUARTER);
+        echo $this->_daterange->display($this->PD);
       } 
       if (! isset($this->format)) {
         $allDataOK = false;
@@ -58,7 +61,7 @@ class ActionExport extends BufferedAction {
         $this->outputSelect();
       }
       if ($allDataOK) {
-        echo $this->reportAction($this->returnExport($daterange),
+        echo $this->reportAction($this->returnExport(),
               array(STATUS_ERR =>  'Error exporting data: '.$this->errorMessage
                    )
              );
@@ -71,7 +74,7 @@ class ActionExport extends BufferedAction {
     foreach ($_POST as $k => $v) {
       $this->PD[$k] = $v;
     }
-    if (isset($this->PDATA[1])) {
+    if (isset($this->PDATA[1]) && ! empty($this->PDATA[1])) {
       $this->PD['what'] = $this->PDATA[1];
     }
     if (isset($this->PD['outputformat'])) {
@@ -94,16 +97,22 @@ class ActionExport extends BufferedAction {
   }
 
   function formatSelect() {
+    global $CONFIG;
     $formatlist = array(EXPORT_FORMAT_HTML  => 'View in web browser', 
                         EXPORT_FORMAT_CSV   => 'Save as comma separated variable (csv)', 
-                        EXPORT_FORMAT_TAB   => 'Save as tab separated variable (txt)', 
-                        EXPORT_FORMAT_PDF   => 'Save as pdf report'
-                       );
+                        EXPORT_FORMAT_TAB   => 'Save as tab separated variable (txt)');
+    if ($CONFIG['export']['enablePDF']) {
+      $formatlist[EXPORT_FORMAT_PDF] = 'Save as pdf report';
+    }
     $select = new RadioList('outputformat', 'Select which data to export', 1);
     $select->setValuesArray($formatlist, 'id', 'iv');
     $select->setFormat('id', '%s', array('iv'));
-    $select->setDefault(EXPORT_FORMAT_CSV);
-    echo '<div>'.$select->display().'</div>';
+    if (is_numeric($CONFIG['export']['defaultFormat'])) {
+      $select->setDefault($CONFIG['export']['defaultFormat']);
+    } else {
+      $select->setDefault(exportStringToCode($CONFIG['export']['defaultFormat']));
+    }
+    echo '<div style="margin: 2em 0 2em 0;">'.$select->display().'</div>';
   }  
   
   
@@ -126,8 +135,8 @@ class ActionExport extends BufferedAction {
 
   
     
-  function returnExport($daterange) {
-    $list = $this->_getDataList($daterange);
+  function returnExport() {
+    $list = $this->_getDataList();
     $list->fill();
     if (count($list->data) == 0) {
       return $this->unbufferForError('<p>No data found for those criteria</p>');
@@ -135,11 +144,9 @@ class ActionExport extends BufferedAction {
     // start rendering the data
     if ($this->format == EXPORT_FORMAT_HTML || $this->format == EXPORT_FORMAT_PDF) {
       $list->outputFormat = EXPORT_FORMAT_HTML;
+      $list->omitFields = $this->_export->omitFields;
       $list->formatList();   
-      $htmlBuffer = '<table class="exportdata">'
-                    .'<tr class="header">'.$list->outputHeader().'</tr>'."\n"
-                    .'<tr>'.join($list->formatdata, "</tr>\n<tr>").'</tr>'
-                    .'</table>';
+      $htmlBuffer = $this->_formatDataHTML($list);
     } else {
       $list->outputFormat = $this->format;
       $list->formatList();   
@@ -154,7 +161,9 @@ class ActionExport extends BufferedAction {
       // the data itself will be dumped later by the action driver (index.php)
     } elseif ($this->format == EXPORT_FORMAT_CSV || $this->format == EXPORT_FORMAT_TAB) {
       $this->_getFilename();
-      $this->bufferedStream = $list->outputHeader()."\n".join($list->formatdata, "\n");
+      $this->bufferedStream = '"'.$this->_reportHeader().'"'
+                               .$list->outputHeader()."\n"
+                               .join($list->formatdata, "\n");
       // the data itself will be dumped later by the action driver (index.php)
     } else {
       $this->unbuffer();
@@ -162,30 +171,30 @@ class ActionExport extends BufferedAction {
     }
   }
   
-  function _getDataList($daterange) {
-    $export = $this->typelist->types[$this->PD['what']];
-    $start = $daterange->getStart();
-    $stop  = $daterange->getStop();
+  function _getDataList() {
+    $this->_export = $this->typelist->types[$this->PD['what']];
+    $start = $this->_daterange->getStart();
+    $stop  = $this->_daterange->getStop();
     $stop->addDays(1);
     
     $limitation = array();
     $namebase = 'limitation-';
     for ($j=0; isset($this->PD[$namebase.$j.'-row']); $j++) {
-      $item = issetSet($this->PD,$namebase.$j.'-'.$export->limitation);
+      $item = issetSet($this->PD,$namebase.$j.'-'.$this->_export->limitation);
       //echo "$j ($instr) => ($unbook, $announce)<br />";
       if (issetSet($this->PD,$namebase.$j.'-selected')) {
-        $limitation[] = $export->limitation.'.id='.qw($item);
+        $limitation[] = $this->_export->limitation.'.id='.qw($item);
       }
     }
-    $where = $export->where;
-    $where[] = $export->timewhere[0].qw($start->datetimestring);
-    $where[] = $export->timewhere[1].qw($stop->datetimestring);
+    $where = $this->_export->where;
+    $where[] = $this->_export->timewhere[0].qw($start->datetimestring);
+    $where[] = $this->_export->timewhere[1].qw($stop->datetimestring);
     $where[] = '('.join($limitation, ' OR ').')';
-    $list = new DBList($export->basetable, $export->fields, join($where, ' AND '));
-    $list->join = array_merge($list->join, $export->join);
-    $list->group = $export->group;
-    $list->order = $export->order;
-    $list->distinct = $export->distinct;
+    $list = new DBList($this->_export->basetable, $this->_export->fields, join($where, ' AND '));
+    $list->join = array_merge($list->join, $this->_export->join);
+    $list->group = $this->_export->group;
+    $list->order = $this->_export->order;
+    $list->distinct = $this->_export->distinct;
     return $list;
   }
 
@@ -212,8 +221,44 @@ class ActionExport extends BufferedAction {
     $this->mimetype = $type;
   }
 
+  function _formatDataHTML($list) {
+    $buf = '<div id="bumblebeeExport">';
+    $buf .= '<div class="exportHeader">'.$this->_reportHeader().'</div>';
+    $entry = 0;
+    while ($entry < count($list->formatdata)) {
+      $buf .= $this->_sectionReportHTML($list, $entry);
+    }
+    $buf .= '</div>';
+    return $buf;
+  }
   
-  
+  function _reportHeader() {
+    $start = $this->_daterange->getStart();
+    $stop  = $this->_daterange->getStop();
+    $s = $this->_export->description .' for '. $start->datestring .' - '. $stop->datestring;
+    return $s;
+  }  
+
+  function _sectionHeader($row) {
+    $s = $row[$this->_export->breakField];
+    return $s;
+  }  
+
+  function _sectionReportHTML($list, &$entry) {
+    $buf = '<div class="exportSectionHeader">'
+              .$this->_sectionHeader($list->data[$entry])
+            .'</div>';
+    $buf .= '<table class="exportdata">'
+           .'<tr class="header">'.$list->outputHeader().'</tr>'."\n";
+    $initial = $list->data[$entry][$this->_export->breakField];
+    while ($entry < count($list->formatdata) 
+               && $initial == $list->data[$entry][$this->_export->breakField]) {
+      $buf .= '<tr>'.$list->formatdata[$entry].'</tr>'."\n";
+      $entry++;
+    }
+    $buf .= '</table>'."\n";
+    return $buf;
+  }
 //     $q = "SELECT "
 //         ."bookings.id AS bookingid,"
 //         ."users.id AS userid,"
