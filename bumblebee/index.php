@@ -28,6 +28,7 @@ $usermenu ->showMenu = ($auth->isLoggedIn() && $action->_verb != 'logout');
 // $pagetitle can be used in theme/pageheader.php 
 $pagetitle  = $action->title . ' : ' . $CONFIG['main']['SiteTitle'];
 $pageheader = $action->title;
+$pageBaseRef = $BASEURL.'/'.$action->_verb.'/';
 include 'theme/pageheader.php';
 include 'theme/contentheader.php';
 
