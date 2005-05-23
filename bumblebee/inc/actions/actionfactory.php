@@ -53,7 +53,7 @@ class ActionFactory {
     $this->actionListing = $list->listing;
     $this->actionTitles = $list->titles;
     $this->_verb = $this->_checkActions();
-    $this->nextaction = $BASEURL.'/'.$this->_verb;  // override this in _makeAction if needed.
+    $this->nextaction = $BASEURL.'/'.$this->_verb.'/';  // override this in _makeAction if needed.
     $this->title = $this->actionTitles[$this->_verb];
     $this->_action = $this->_makeAction();
   }
