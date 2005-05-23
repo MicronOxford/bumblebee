@@ -6,6 +6,7 @@
 include_once 'inc/formslib/checkbox.php';
 include_once 'inc/formslib/checkboxtablelist.php';
 include_once 'inc/formslib/dblist.php';
+include_once 'inc/bb/exporttypes.php';
 include_once 'inc/actions/actionaction.php';
 
 /**
@@ -71,7 +72,8 @@ class ActionEmailList extends ActionAction {
       }
     }
     #echo "Gathering email addresses: $q<br />";
-    $list = new DBList('permissions', 'email', join($where, ' OR '), true);
+    $fields = array(new sqlFieldName('email', 'Email Address'));
+    $list = new DBList('permissions', $fields, join($where, ' OR '), true);
     $list->join[] = (array('table' => 'users', 'condition' => 'users.id=permissions.userid'));
     $list->setFormat('%s', array('email'));
     $list->fill();
