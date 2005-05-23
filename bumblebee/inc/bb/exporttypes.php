@@ -15,6 +15,11 @@ class ExportType {
   var $group;
   var $distinct = 0;
   
+  // rendering options
+  var $omitFields = array();
+  var $breakField;
+  var $header = -1;        // -1 triggers "auto" header generation
+  
   function ExportType($name, $basetable, $description, $limitation) {
     $this->name        = $name;
     $this->basetable   = $basetable;
@@ -78,6 +83,9 @@ class ExportTypeList {
     $type->where[] = 'deleted <> 1';
     $type->where[] = 'bookings.userid <> 0';
     $type->group = array('instrument_name', 'bookwhen', 'user_name', 'project_name');
+    $type->breakField = 'instrument_name';
+    $type->omitFields['instrument_name'] = 1;
+    $type->omitFields['username'] = 1;
     return $type;
   }
   
