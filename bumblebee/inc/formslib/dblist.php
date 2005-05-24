@@ -100,12 +100,7 @@ class DBList {
       }
       $val = $d[$f->alias];
       if (! $isHeader) {
-        switch($f->format) {
-          case EXPORT_HTML_MONEY:
-            $val = sprintf($CONFIG['export']['moneyFormat'], $val);
-            $align='right';
-            break;
-          case EXPORT_HTML_DECIMAL:
+        switch($f->format & EXPORT_HTML_ALIGN) {
           case EXPORT_HTML_CENTRE:
             $align='center';
             break;
@@ -117,6 +112,19 @@ class DBList {
             break;
           default:
             $align='';
+        }
+        switch ($f->format & EXPORT_HTML_NUMBER) {
+          case EXPORT_HTML_MONEY:
+            $val = sprintf($CONFIG['export']['moneyFormat'], $val);
+            break;
+          case EXPORT_HTML_DECIMAL:
+            break;
+          case EXPORT_HTML_DECIMAL_1:
+            $val = sprintf('%.1f', $val);
+            break;
+          case EXPORT_HTML_DECIMAL_2:
+            $val = sprintf('%.2f', $val);
+            break;
         }
         $align = ($align!='' ? 'align='.$align : '');
         $t .= '<td '.$align.'>'.$val.'</td>';

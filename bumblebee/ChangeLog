@@ -1,3 +1,8 @@
+2005-05-24 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* flexibility for footers on checkboxtables  improved, incl built-in js quicklinks 
+	* built special costs manipulation interface 
+	* added more of billing algorithm into SQL 
+
 2005-05-22 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* changed menu creation code to clean up index.php and permit shelling into templates more easily 
 

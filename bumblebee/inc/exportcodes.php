@@ -10,11 +10,21 @@ define('EXPORT_FORMAT_TAB',    4);
 define('EXPORT_FORMAT_PDF',    5);
 
 
-define('EXPORT_HTML_CENTRE',  64);
-define('EXPORT_HTML_RIGHT',   65);
-define('EXPORT_HTML_LEFT',    66);
-define('EXPORT_HTML_DECIMAL', 67);
-define('EXPORT_HTML_MONEY',   68);
+// these are designed to be bitshifted around
+define('EXPORT_HTML_CENTRE',     1);
+define('EXPORT_HTML_RIGHT',      2);
+define('EXPORT_HTML_LEFT',       4);
+define('EXPORT_HTML_ALIGN',      EXPORT_HTML_CENTRE|EXPORT_HTML_RIGHT|EXPORT_HTML_LEFT);
+
+
+define('EXPORT_HTML_MONEY',     32);
+define('EXPORT_HTML_DECIMAL',   64);
+define('EXPORT_HTML_DECIMAL_1', EXPORT_HTML_DECIMAL|128);  // round to 1 sig figs
+define('EXPORT_HTML_DECIMAL_2', EXPORT_HTML_DECIMAL|256);  // round to 2 sig figs
+define('EXPORT_HTML_NUMBER',    EXPORT_HTML_MONEY|EXPORT_HTML_DECIMAL_1|EXPORT_HTML_DECIMAL_2);
+
+
+
 
 function exportStringToCode($s) {
   switch ($s) {

@@ -122,11 +122,6 @@ class ExportTypeList {
                                     'omitFields' => array('instrument_name', 
                                                           'project_name', 'projects_longname'))
                         );
-                                    
-    //$type->group = array('instrument_name', 'project_name');
-    //$type->breakField = 'instrument_title';
-    //$type->omitFields['instrument_name'] = 1;
-    //$type->omitFields['instrument_title'] = 1;
     return $type;
   }
 
@@ -220,36 +215,8 @@ class ExportTypeList {
                                                           'consumable_title'))
                         );
     $type->timewhere = array('usewhen >= ', 'usewhen < ');
-/*    $type->group = array('consumable_name', 'usewhen', 'user_name', 'project_name', 'quantity');
-    $type->breakField = 'consumable_title';
-    $type->omitFields['username'] = 1;
-    $type->omitFields['consumable_name'] = 1;
-    $type->omitFields['consumable_longname'] = 1;
-    $type->omitFields['consumable_title'] = 1;*/
     return $type;
   }
-
-/*  function _createUserConsumable() {
-    $type = new ExportType('userconsumable', 'consumables_use', 'Consumables used, ordered by user', 'users');
-    $type->join[] = array('table' => 'users', 'condition' =>  'users.id=consumables_use.userid');
-    $type->join[] = array('table' => 'consumables', 'condition' =>  'consumables.id=consumables_use.consumable');
-    $type->join[] = array('table' => 'projects', 'condition' =>  'consumables_use.projectid=projects.id');
-    $type->fields = array(
-                      new sqlFieldName('consumables.name', 'Item Code', 'consumable_name'),
-                      new sqlFieldName('consumables.longname', 'Item', 'consumable_longname'),
-                      new sqlFieldName('quantity', 'Quantity', 'quantity'),
-                      new sqlFieldName('usewhen', 'Date'),
-                      new sqlFieldName('username', 'Username'), 
-                      new sqlFieldName('users.name', 'Name', 'user_name'), 
-                      new sqlFieldName('projects.name', 'Project', 'project_name')
-                    );
-    $type->timewhere = array('usewhen >= ', 'usewhen < ');
-    $type->group = array('user_name', 'usewhen', 'consumable_name', 'project_name', 'quantity');
-    $type->breakField = 'user_name';
-    $type->omitFields['username'] = 1;
-    $type->omitFields['user_name'] = 1;
-    return $type;
-  }*/
   
   function _createBilling() {
     $type = new ExportType('billing', 'bookings', 'Billing data: complete', 'instruments');
@@ -308,7 +275,6 @@ class ExportTypeList {
                                                           'consumable_name', 
                                                           'consumable_longname', 'consumable_title'))
                         );
-    //$type->group = array('group_name', 'consumable_name');
     $type->timewhere = array('usewhen >= ', 'usewhen < ');
     return $type;
   }
@@ -323,8 +289,7 @@ class ExportTypeList {
     $type->join[] = array('table' => 'projectrates', 'condition' =>  'projectrates.projectid=bookings.projectid AND projectrates.instrid=bookings.instrument');
     $type->join[] = array('table' => 'costs', 'alias' => 'speccosts', 'condition' =>  'projectrates.rate=speccosts.id');
     
-    $weightDays = 'ROUND('
-                    .'SUM('
+    $weightDays = 'SUM('
                       .'(CASE '
                         .'WHEN TIME_TO_SEC(duration)/60/60 >= instruments.fulldaylength '
                             .'THEN 1 '
@@ -342,25 +307,35 @@ class ExportTypeList {
                                     .'TIME_TO_SEC(duration)/60/60*costs.hourfactor'
                                   .') '
                       .'END)'
-                    .'), '
-                  .'2) ';             //END OF ROUND()
-    $rate = 'COALESCE(speccosts.costfullday,costs.costfullday)';
-    
+                    .') ';
+    $rate          = 'COALESCE(speccosts.costfullday,costs.costfullday)';
+    $dailymarkdown = 'COALESCE(speccosts.dailymarkdown,costs.dailymarkdown)';
+    $discount = 'ROUND(ABS('
+                    .'100*( 1 - '
+                        .'('
+                            .'(1-POW(1-'.$dailymarkdown.'/100,('.$weightDays.')))'
+                            .'/('.$dailymarkdown.'*('.$weightDays.')/100)'
+                        .')'
+                    .')'
+                .'),4)';      // ROUND(a,n)
+    $fullAmount = $weightDays.'*'.$rate;
+    $finalCost  = $fullAmount.'*(1-('.$discount.')/100)';
     $type->fields = array(
                       new sqlFieldName('CONCAT(instruments.name, \': \', instruments.longname)',
                                       'Instrument', 'instrument_title'),
                       new sqlFieldName('instruments.name', 'Instrument', 'instrument_name'), 
                       new sqlFieldName('groups.name', 'Supervisor', 'group_name'),
-                      new sqlFieldName('SUM(ROUND(TIME_TO_SEC(duration)/60/60,2))', 'Total hours', 'total_hours', EXPORT_HTML_DECIMAL),
+                      new sqlFieldName('SUM(ROUND(TIME_TO_SEC(duration)/60/60,2))', 'Total hours', 'total_hours', EXPORT_HTML_DECIMAL_2|EXPORT_HTML_RIGHT),
 /*                    'instruments.fulldaylength AS fulldaylength', 'instruments.halfdaylength AS halfdaylength', 'costs.hourfactor AS hourfactor','costs.halfdayfactor AS halfdayfactor',*/
-                      new sqlFieldName($weightDays, 'Days used', 'weighted_days_used', EXPORT_HTML_DECIMAL),
+                      new sqlFieldName($weightDays, 'Days used', 'weighted_days_used', EXPORT_HTML_DECIMAL_2|EXPORT_HTML_RIGHT),
                       new sqlFieldName('grouppc', 'Share (%)', 'share'),
                       //new sqlFieldName('costs.costfullday', 'Daily rate', 'genrate'),
                       //new sqlFieldName('speccosts.costfullday', 'Daily rate', 'specrate'),
-                      new sqlFieldName($rate, 'Rate', 'rate',  EXPORT_HTML_MONEY),
-                      new sqlFieldName($weightDays.'*'.$rate.'*grouppc/100', 'Cost', 'fullcost',  EXPORT_HTML_MONEY),
-                      //new sqlFieldName('ROUND(,0)', 'Bulk Discount (%)', 'discount',  EXPORT_HTML_DECIMAL),
-                      //new sqlFieldName('FLOOR('.FIXME:$weightDays.'*'.$rate.'*grouppc/100)', 'Cost', 'cost',  EXPORT_HTML_MONEY)
+                      new sqlFieldName($rate, 'Rate', 'rate',  EXPORT_HTML_MONEY|EXPORT_HTML_RIGHT),
+                      //new sqlFieldName('('.$fullAmount.')*grouppc/100', 'Cost', 'fullcost',  EXPORT_HTML_MONEY|EXPORT_HTML_RIGHT),
+                      //new sqlFieldName($dailymarkdown, 'Daily Discount (%)', 'dailydiscount',  EXPORT_HTML_DECIMAL_2|EXPORT_HTML_RIGHT),
+                      new sqlFieldName($discount, 'Bulk Discount (%)', 'discount',  EXPORT_HTML_DECIMAL_2|EXPORT_HTML_RIGHT),
+                      new sqlFieldName('FLOOR(('.$finalCost.')*grouppc/100)', 'Cost', 'cost',  EXPORT_HTML_MONEY)
                    );
     $type->where[] = 'deleted <> 1';
     $type->where[] = 'bookings.userid <> 0';

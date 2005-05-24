@@ -3,13 +3,10 @@ $Id$
 
 * scrap the report action all together?
 
-* where does the 5.5% markdown go?
-
 * permit slot discount ,50% ?
 
 * remove unused tables
 
-include billing calcs in SQL
 matrix report style
 html->pdf conversion
 split multiple tables into multiple pdfs
