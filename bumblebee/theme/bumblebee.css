@@ -130,6 +130,11 @@ td {
   border-top: 1px solid #000000;
 }
 
+li.menusection {
+  font-size: 110%;
+  font-weight: bold;
+}
+
 /* form elements */
 input {
   font-size: 100%;

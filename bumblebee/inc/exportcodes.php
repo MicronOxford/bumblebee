@@ -14,6 +14,7 @@ define('EXPORT_HTML_CENTRE',  64);
 define('EXPORT_HTML_RIGHT',   65);
 define('EXPORT_HTML_LEFT',    66);
 define('EXPORT_HTML_DECIMAL', 67);
+define('EXPORT_HTML_MONEY',   68);
 
 function exportStringToCode($s) {
   switch ($s) {

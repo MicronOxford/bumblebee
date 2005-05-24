@@ -2,6 +2,25 @@
 # $Id$
 #
 
+include_once 'inc/formslib/checkbox.php';
+include_once 'inc/formslib/checkboxtablelist.php';
+include_once 'inc/formslib/datareflector.php';
+include_once 'inc/actions/bufferedaction.php';
+include_once 'inc/bb/exporttypes.php';
+include_once 'inc/exportcodes.php';
+include_once 'inc/formslib/dblist.php';
+
+/**
+ *  Find out what sort of report is required and generate it
+ *
+ */
+
+class ActionBilling extends ActionExport {
+  var $fatal_sql = 1;
+  var $format;
+  var $typelist;
+
+
   function actionBilling()
   {
     if (! isset($_POST['selectinstruments'])) {
@@ -338,4 +357,6 @@
       echo "<input type='hidden' name='$key' value='$supplied' />";
     }
   }
+}
+
 ?> 

@@ -13,7 +13,10 @@ class IdField extends TextField {
 
   function displayInTable($cols) {
     if ($this->value != -1) {
-      return parent::displayInTable($cols);
+      $this->editable = 0;
+      $t = parent::displayInTable($cols);
+      $this->editable = 1;
+      return $t;
     } else {
       return $this->hidden();
     }

@@ -25,6 +25,6 @@ if ($CONFIG['error_handling']['AllWarnings']) {
   ini_set("error_reporting",E_ERROR); #only errors should be echoed
 }
 
-$BUMBLEBEEVERSION = '0.9.5.8';
+$BUMBLEBEEVERSION = '0.9.5.9';
 
 ?> 

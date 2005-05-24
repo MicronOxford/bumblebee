@@ -18,6 +18,7 @@ class CheckBoxTableList extends ChoiceList {
   var $followHiddenField;
   var $hidden;
   var $footer;
+  var $includeSelectAll = false;
 
   function CheckBoxTableList($name, $description='', $numExtraInfoCols=-1) {
     $this->ChoiceList($name, $description);
@@ -41,6 +42,10 @@ class CheckBoxTableList extends ChoiceList {
     $h->hidden = 1;
     $this->followHidden = $h;
     $this->followHiddenField = $follow;
+  }
+
+  function addSelectAllFooter($bool) {
+    $this->includeSelectAll = $bool;
   }
   
   function addFooter($f) {
@@ -124,18 +129,41 @@ class CheckBoxTableList extends ChoiceList {
         $t .= $this->format($this->list->choicelist[$j], $j, $numCols - $totalCols);
       }
     }
-    $t .= '<tr>';
-    for ($i=0; $i<=$this->numExtraInfoCols; $i++) {
-      $t .= '<td></td>';
+    // SelectAll/DeselectAll footer
+    if ($this->includeSelectAll) {
+      $t .= '<tr>';
+      for ($i=0; $i<=$this->numExtraInfoCols; $i++) {
+        $t .= '<td></td>';
+      }
+      for ($i=0; $i<$this->numcols; $i++) {
+          $t .= '<td>'.$this->_getSelectAllFooter($i).'</td>';
+      }
+      for ($i=$totalCols; $i<=$numCols; $i++) {
+        $t .= '<td></td>';
+      }
+      $t .= '</tr>'."\n";    
     }
-    for ($i=0; $i<$this->numcols; $i++) {
-        $t .= '<td>'.sprintf($this->footer, $i, $i).'</td>';
-    }
-    for ($i=$totalCols; $i<=$numCols; $i++) {
-      $t .= '<td></td>';
+    if (is_array($this->footer) && count($this->footer)) {
+      $t .= '<tr>';
+      for ($i=0; $i<=$this->numExtraInfoCols; $i++) {
+        $t .= '<td></td>';
+      }
+      for ($i=0; $i<$this->numcols; $i++) {
+          $t .= '<td>'.sprintf($this->footer[$i], $i,
+                                              $i).'</td>';
+      }
+      for ($i=$totalCols; $i<=$numCols; $i++) {
+        $t .= '<td></td>';
+      }
+      $t .= '</tr>'."\n";    
     }
     return $t;
   }  
+
+  function _getSelectAllFooter($col) {
+    return '(<a href="#" onclick="return deselectsome(\''.$this->name.'-\', '.$col.' ,'.$this->numcols.');">deselect all</a>)<br />'
+        .'(<a href="#" onclick="return selectsome(\''.$this->name.'-\', '.$col.' ,'.$this->numcols.');">select all</a>)';
+  }
   
 } // class CheckBoxTableList
 

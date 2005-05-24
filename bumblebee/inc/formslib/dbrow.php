@@ -236,7 +236,7 @@ class DBRow extends DBO {
         //choose to return nothing here, in which case their entry is
         //not added to the return list for the row
         $this->log('Getting SQL string for '.$this->fields[$k]->name, 8);
-        $sqlval = $this->fields[$k]->sqlSetStr($force);
+        $sqlval = $this->fields[$k]->sqlSetStr('', $force);
         #echo "$k,oob = '".$this->fields[$k]->oob_status."' ";
         $this->oob_status |= $this->fields[$k]->oob_status;
         $this->oob_errorMessage .= $this->fields[$k]->oob_errorMessage;
@@ -289,7 +289,8 @@ class DBRow extends DBO {
   **/
   function fill() {
     global $TABLEPREFIX;
-    if ($this->id != -1 || $this->ignoreId) {
+    //echo "foo:$this->id:bar";
+    if (($this->id !== NULL && $this->id !== '' && $this->id != -1) || $this->ignoreId) {
       //FIXME: can we do this using quickSQLSelect()?
       $where = array();
       if (! $this->ignoreId) {
@@ -303,7 +304,8 @@ class DBRow extends DBO {
       $q = 'SELECT * FROM '
           .$TABLEPREFIX.$this->table .' AS '. $this->table
           .' WHERE '.join($where, ' AND ')
-          .(($this->recStart !== '') && ($this->recNum !== '') ? "LIMIT $this->recStart,$this->recNum" : '');
+          .(($this->recStart !== '') && ($this->recNum !== '') 
+                          ? " LIMIT $this->recStart,$this->recNum" : '');
       $g = db_get_single($q);
       if (is_array($g)) { 
         foreach (array_keys($this->fields) as $k) {

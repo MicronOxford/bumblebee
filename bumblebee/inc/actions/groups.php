@@ -59,8 +59,7 @@ class ActionGroup extends ActionAction  {
     echo $groupselect->display();
   }
 
-  function deletegroup()
-  {
+  function deletegroup() {
     $group = new Group($this->PD['id']);
     echo $this->reportAction($group->delete(), 
               array(

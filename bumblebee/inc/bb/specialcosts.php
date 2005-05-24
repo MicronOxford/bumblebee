@@ -7,148 +7,78 @@ include_once 'inc/formslib/textfield.php';
 
 class SpecialCost extends DBRow {
   
-  function SpecialCost($id) {
+  function SpecialCost($id, $project, $instrument) {
+    //$this->DEBUG=10;
+    $this->DBRow('projectrates', $project, 'projectid');
+    $this->editable = 1;
+    $this->ignoreId = 1;
+    $this->autonumbering = 0;
+    $this->restriction = 'instrid='.qw($instrument).' AND projectid='.qw($project);
+    //$this->use2StepSync = 1;
+    $f = new ReferenceField('projectid', 'Project');
+    $f->extraInfo('projects', 'id', 'name');
+    $f->value = $project;
+    $f->editable = 0;
+    $f->duplicateName = 'project';
+    $this->addElement($f);
+    $f = new ReferenceField('instrid', 'Instrument');
+    $f->extraInfo('instruments', 'id', 'name');
+    $f->value = $instrument;
+    $f->editable = 0;
+    $f->duplicateName = 'instrument';
+    $this->addElement($f);
+
+    $f = new JoinData('costs',
+                      'id', $id,
+                      'costsettings', 'Charging settings:');
+    //$f->protoRow->DEBUG = 10;
+    $f->protoRow->autonumbering = 1;
+    //$f->DEBUG=10;
+    $f->reportFields[] = array('id' => 'rate');
+    
+    $rate = new IdField('id', 'Rate ID', 'Rate ID');
+    $rate->value = $id;
+    $f->addElement($rate);
+    $cost = new TextField('costfullday', 'Full day cost', 
+                          'Cost of instrument use for a full day');
+    $attrs = array('size' => '6');
+    $cost->setAttr($attrs);
+    $f->addElement($cost);
+    $hours= new TextField('hourfactor', 'Hourly rate multiplier', 
+                          'Proportion of daily rate charged per hour');
+    $hours->setAttr($attrs);
+    $f->addElement($hours);
+    $halfs= new TextField('halfdayfactor', 'Half-day rate multiplier', 
+                          'Proportion of daily rate charged per half-day');
+    $halfs->setAttr($attrs);
+    $f->addElement($halfs);
+    $discount= new TextField('dailymarkdown', 'Daily bulk discount %', 
+                          'Discount for each successive day&#39;s booking');
+    $discount->setAttr($attrs);
+    $f->addElement($discount);
+
+    $f->joinSetup('id', array('total' => 1));
+    $f->colspan = 2;
+    
+    $this->addElement($f);
+    
+    $this->fill($id);
+    $this->dumpheader = 'Cost object';
+    $this->insertRow = ($id == -1);
+    #preDump($this);
   }
 
-  
-  function editSpecialCost($proj) {
-    $q = "SELECT projects.name AS projname,longname,"
-               ."userclass.id AS class,userclass.name AS classname "
-               ."FROM projects "
-               ."LEFT JOIN userclass ON projects.defaultclass=userclass.id "
-               ."WHERE projects.id='$proj'";
-    $sql = mysql_query($q);
-    if (! $sql) die (mysql_error());
-    $g = mysql_fetch_array($sql);
-    $class=$g['class'];
-
-    echo "<table>"
-        ."<tr><td>Project:</td><td>".$g['projname']." (".$g['longname'].")</td></tr>";
-    $qc = "SELECT instrumentclass.name AS iname, "
-               ."cost_hour, cost_halfday, cost_fullday "
-               ."FROM costs "
-               ."LEFT JOIN instrumentclass ON costs.instrumentclass=instrumentclass.id "
-               ."WHERE userclass='$class'";
-    $sqlc = mysql_query($qc);
-    if (! $sqlc) die (mysql_error());
-    echo "<tr><th colspan='2'>Default category</th></tr>";
-    echo "<tr><td>Category name</td><td>".$g['classname']."</td></tr>";
-    echo "<tr><th>Instrument class</th>"
-        ."<th>hourly cost</th><th>half-day cost</th><th>full-day cost</th></tr>";
-    while ($gc = mysql_fetch_array($sqlc)) {
-      echo "<tr><td>".$gc['iname']."</td>"
-          ."<td>".$gc['cost_hour']."</td>"
-          ."<td>".$gc['cost_halfday']."</td>"
-          ."<td>".$gc['cost_fullday']."</td>"
-          ."</tr>";
+  function delete() {
+    //delete our association in the costing table first
+    //preDump($this);
+    $result = $this->fields['costsettings']->rows[0]->delete();
+    $this->errorMessage .= $this->fields['costsettings']->rows[0]->errorMessage;
+    if ($result == STATUS_OK) {
+      //then gracefully delete ourselves
+      $result |= parent::delete();
     }
-
-    $qs = "SELECT instruments.name AS iname, instruments.id AS iid, "
-               ."rate, "
-               ."cost_hour, cost_halfday, cost_fullday "
-               ."FROM projectrates "
-               ."LEFT JOIN instruments ON instruments.id=projectrates.instrid "
-               ."LEFT JOIN costs ON costs.id=projectrates.rate "
-               ."WHERE projectrates.projectid='$proj'";
-    $sqls = mysql_query($qs);
-    if (! $sqls) die (mysql_error());
-    echo "<tr><th colspan='2'>Special charging rates</th></tr>";
-    echo "<tr><th>Instrument</th>"
-        ."<th>hourly cost</th><th>half-day cost</th><th>full-day cost</th></tr>";
-    $i=0;
-    while ($gs = mysql_fetch_array($sqls)) {
-      $i++;
-      specialCostListing($i, $gs);
-    }
-    specialCostListing(++$i, array());
-    specialCostListing(++$i, array());
-    echo "</table>";
-
-
-    echo <<<END
-    <tr><td></td>
-    <td>
-      <button name='action' type='submit' value='specialcosts'>
-        Update cost schedules
-      </button>
-      <input type='hidden' name='updatespecialcost' value='$proj' />
-      <input type='hidden' name='project' value='$proj' />
-    </td></tr>
-    </table>
-END;
-    echoSQL($q);
-    echoSQL($qc);
-    echoSQL($qs);
+    return $result;
   }
-
-  function specialCostListing($i, $gs) {
-    echo "<tr><td><select name='cost$i-iid'>".getUserOptions('instruments',$gs['iid'])."</select></td>"
-        ."<td><input type='text' name='cost$i-ch' value='".$gs['cost_hour']."' size='10' /></td>"
-        ."<td><input type='text' name='cost$i-chd' value='".$gs['cost_halfday']."' size='10' /></td>"
-        ."<td><input type='text' name='cost$i-cfd' value='".$gs['cost_fullday']."' size='10' /></td>"
-        ."<input type='hidden' name='cost$i' value='".$gs['rate']."' />"
-        ."</tr>";
-  }
-
-
-  function updateSpecialCost($proj) {
-    for ($j=1; isset($_POST['cost'.$j]); $j++) {
-      if ($_POST['cost'.$j]>0) {
-        updatespecialsinglerate($proj,$j);
-      } elseif ($_POST["cost$j-iid"] > 0) {
-        insertspecialsinglerate($proj,$j);
-      } elseif ($_POST["cost$j"] > 0) {
-        deletespecialsinglerate($proj,$j);
-      }
-    }
-      
-  }
-  
-  function updatespecialsinglerate($proj,$i) {
-    $qc = "UPDATE costs SET "
-        ."cost_hour='".$_POST["cost$i-ch"]."',"
-        ."cost_halfday='".$_POST["cost$i-chd"]."',"
-        ."cost_fullday='".$_POST["cost$i-cfd"]."' "
-        ."WHERE id='".$_POST["cost$i"]."'";
-    $qpr = "REPLACE INTO projectrates SET "
-        ."rate='".$_POST["cost$i"]."', "
-        ."projectid='$proj', "
-        ."instrid='".$_POST["cost$i-iid"]."'";
-        #."WHERE projectid='$proj' AND instrid='".$_POST["cost$i-iid"]."'";
-    if (!mysql_query($qc)) die(mysql_error());
-    echoSQL($qc, 1);
-    if (!mysql_query($qpr)) die(mysql_error());
-    echoSQL($qpr, 1);
-  }
-
-  function insertspecialsinglerate($proj,$i) {
-    $qc = "INSERT INTO costs "
-        ."(cost_hour,cost_halfday,cost_fullday) "
-        ."VALUES "
-        ."("
-        ."'".$_POST["cost$i-ch"]."','".$_POST["cost$i-chd"]."','".$_POST["cost$i-cfd"]."'"
-        .")";
-    if (!mysql_query($qc)) die(mysql_error());
-    echoSQL($qc, 1);
-    $cost=mysql_insert_id();
-    $qpr = "INSERT INTO projectrates SET "
-        ."rate='$cost', "
-        ."projectid='$proj', "
-        ."instrid='".$_POST["cost$i-iid"]."'";
-    if (!mysql_query($qpr)) die(mysql_error());
-    echoSQL($qpr, 1);
-  }
-
-  function deletespecialsinglerate($proj,$i) {
-    $q = "DELETE FROM stdrates WHERE category='$gpid'";
-    if (!mysql_query($q)) die(mysql_error());
-    echoSQL($q, 1);
-  }
-
-
-  
-  
-  
   
   function display() {
     return $this->displayAsTable();

@@ -118,17 +118,35 @@ class ActionExport extends BufferedAction {
   
   function outputSelect() {
     $export = $this->typelist->types[$this->PD['what']];
-    $select = new CheckBoxTableList('limitation', 'Select which detail to view');
-    $hidden = new TextField($export->limitation);
-    $select->addFollowHidden($hidden);
-    $chosen = new CheckBox('selected', 'Selected');
-    $select->addCheckBox($chosen);
-    //$select->numSpareCols = 1;
-    $select->connectDB($export->limitation, array('id', 'name', 'longname'));
-    $select->setFormat('id', '%s', array('name'), " %50.50s", array('longname'));
-    $select->addFooter('(<a href="#" onclick="return deselectsome(%d,1);">deselect all</a>)<br />'.
-                       '(<a href="#" onclick="return selectsome(%d,1);">select all</a>)');
-    echo $select->display();
+    for ($lim = 0; $lim < count($export->limitation); $lim++) {
+      $select = new CheckBoxTableList('limitation-'.$lim, 'Select which detail to view');
+      $hidden = new TextField($export->limitation[$lim]);
+      $select->addFollowHidden($hidden);
+      $chosen = new CheckBox('selected', 'Selected');
+      $select->addCheckBox($chosen);
+      //$select->numSpareCols = 1;
+      if ($export->limitation[$lim] == 'users') {
+        $select->connectDB($export->limitation[$lim], array('id', 'name', 'username'));
+        $select->setFormat('id', '%s', array('name'), " (%s)", array('username'));
+      } else {
+        $select->connectDB($export->limitation[$lim], array('id', 'name', 'longname'));
+        $select->setFormat('id', '%s', array('name'), " %50.50s", array('longname'));
+      }
+      $select->addSelectAllFooter(true);
+      echo $select->display().'<br/>';
+    }
+    if (is_array($export->pivot) && count($export->pivot) > 1) {
+      $views = array();
+      foreach ($export->pivot as $k => $v) {
+        $views[$k] = $v['description'];
+      }
+      $viewselect = new RadioList('pivot', 'Select which data view to export', 1);
+      $viewselect->setValuesArray($views, 'id', 'iv');
+      $viewselect->setFormat('id', '%s', array('iv'));
+      reset($views);
+      $viewselect->setDefault(key($views));
+      echo '<div style="margin: 0em 0 2em 0;">'.$viewselect->display().'</div>';
+    }
     echo '<input type="hidden" name="limitationselected" value="1" />';
     echo '<input type="submit" name="submit" value="Select" />';
   }
@@ -177,19 +195,27 @@ class ActionExport extends BufferedAction {
     $stop  = $this->_daterange->getStop();
     $stop->addDays(1);
     
-    $limitation = array();
-    $namebase = 'limitation-';
-    for ($j=0; isset($this->PD[$namebase.$j.'-row']); $j++) {
-      $item = issetSet($this->PD,$namebase.$j.'-'.$this->_export->limitation);
-      //echo "$j ($instr) => ($unbook, $announce)<br />";
-      if (issetSet($this->PD,$namebase.$j.'-selected')) {
-        $limitation[] = $this->_export->limitation.'.id='.qw($item);
-      }
-    }
     $where = $this->_export->where;
     $where[] = $this->_export->timewhere[0].qw($start->datetimestring);
     $where[] = $this->_export->timewhere[1].qw($stop->datetimestring);
-    $where[] = '('.join($limitation, ' OR ').')';
+    for ($lim = 0; $lim < count($this->_export->limitation); $lim++) {
+      $limitation = array();
+      $namebase = 'limitation-'.$lim.'-';
+      for ($j=0; isset($this->PD[$namebase.$j.'-row']); $j++) {
+        $item = issetSet($this->PD,$namebase.$j.'-'.$this->_export->limitation[$lim]);
+        if (issetSet($this->PD,$namebase.$j.'-selected')) {
+          $limitation[] = $this->_export->limitation[$lim].'.id='.qw($item);
+        }
+      }
+      $where[] = '('.join($limitation, ' OR ').')';
+    }
+    // work out what view/pivot of the data we want to see
+    if (count($this->_export->limitation) > 1 && is_array($this->_export->pivot)) {
+      $pivot = $this->_export->pivot[$this->PD['pivot']];
+      $this->_export->group      = $pivot['group'];
+      $this->_export->omitFields = array_flip($pivot['omitFields']);
+      $this->_export->breakField = $pivot['breakField'];
+    }
     $list = new DBList($this->_export->basetable, $this->_export->fields, join($where, ' AND '));
     $list->join = array_merge($list->join, $this->_export->join);
     $list->group = $this->_export->group;
@@ -245,6 +271,14 @@ class ActionExport extends BufferedAction {
   }  
 
   function _sectionReportHTML($list, &$entry) {
+    if (empty($this->_export->breakField) || ! isset($list->data[$entry][$this->_export->breakField])) {
+      // then there are no fancy options for this export so it can be done very easily and quickly
+      $entry = count($list->formatdata);
+      return '<table class="exportdata">'
+              .'<tr class="header">'.$list->outputHeader().'</tr>'."\n"
+              .'<tr>'.join($list->formatdata,'</tr><tr>').'</tr>'."\n"
+              .'</table>'."\n";
+    }
     $buf = '<div class="exportSectionHeader">'
               .$this->_sectionHeader($list->data[$entry])
             .'</div>';

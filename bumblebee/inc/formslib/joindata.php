@@ -45,13 +45,14 @@ class JoinData extends Field {
   var $colspan;
   var $format;
   var $number = 0;
+  var $reportFields = array();
   var $radioclass = 'item';
   var $groupValidTest;
   var $fatalsql = 0;
 
   function JoinData($joinTable, $jtLeftIDCol, $jtLeftID,
                      $name, $description='') {
-//     $this->DEBUG=10;
+    //$this->DEBUG=10;
     $this->Field($name, '', $description);
     $this->joinTable = $joinTable;
     $this->jtLeftIDCol = $jtLeftIDCol;
@@ -116,6 +117,7 @@ class JoinData extends Field {
       $this->rows[$i]->fill();
       $this->rows[$i]->restriction = $this->jtRightIDCol .'='. qw($this->rows[$i]->fields[$this->jtRightIDCol]->value); 
       $this->rows[$i]->insertRow = ! ($this->rows[$i]->fields[$this->jtRightIDCol]->value > 0);
+      $this->log('This row flagged with insertRow '.$this->rows[$i]->insertRow);
     }
   }
   
@@ -125,7 +127,7 @@ class JoinData extends Field {
     return $this->selectable();
   }
 
-  function selectable() {
+  function selectable($cols=2) {
     $t = '';
     #$errorclass = ($this->isValid ? '' : "class='inputerror'");
     $errorclass = '';
@@ -133,7 +135,11 @@ class JoinData extends Field {
       $t .= "<tr $errorclass><td colspan='$this->colspan'>\n";
       #$t .= "FOO$i";
       $t .= $this->rows[$i]->displayInTable(2);
-      $t .= "</td></tr>\n";
+      $t .= "</td>\n";
+      for ($col=0; $col<$cols-2; $col++) {
+        $t .= '<td></td>';
+      }
+      $t .= "</tr>\n";
     }
     return $t;
   }
@@ -148,18 +154,13 @@ class JoinData extends Field {
     //$cols += $this->colspan;
     $t = "<tr><td colspan='$cols'>$this->description</td></tr>\n";
     if ($this->editable) {
-      $t .= $this->selectable();
+      $t .= $this->selectable($cols);
     } else {
       //preDump($this);
       //preDump(debug_backtrace());
       $t .= $this->selectedValue();
       $t .= "<input type='hidden' name='$this->name' value='$this->value' />";
     }
-    $t .= "</td>\n";
-    for ($i=0; $i<$cols-2; $i++) {
-      $t .= '<td></td>';
-    }
-    $t .= '</tr>';
     return $t;
   }
 
@@ -199,9 +200,25 @@ class JoinData extends Field {
     //$this->DEBUG=10;
     #echo "JoinData::sqlSetStr";
     $this->_joinSync();
-    //We return an empty string as this is only a join table entry,
-    //so it has no representation within the row itself.
-    return '';
+    if (count($this->reportFields) < 1) {
+      //We return an empty string as this is only a join table entry,
+      //so it has no representation within the row itself.
+      return ''; 
+    } else {
+      // then we can return the value of the first row (any more doesn't make sense)
+      $t = array();
+      foreach ($this->reportFields as $f) {
+        if (is_array($f)) {
+          reset($f);
+          $realfield = key($f);
+          $aliasfield = current($f);
+          $t[] = $this->rows[0]->fields[$realfield]->sqlSetStr($aliasfield);
+        } else {
+          $t[] = $this->rows[0]->fields[$f]->sqlSetStr();
+        }
+      }
+      return join(', ',$t);
+    }
   }
 
   /**
@@ -211,8 +228,10 @@ class JoinData extends Field {
     for ($i=0; $i < $this->number; $i++) {
       #echo "before sync row $i oob='".$this->oob_status."' ";
       $this->changed += $this->rows[$i]->changed;
-      if ($this->rows[$i]->fields[$this->jtRightIDCol]->value == 0
-       && $this->rows[$i]->fields[$this->jtRightIDCol]->changed) {
+      //preDump($this->rows[$i]->fields[$this->jtRightIDCol]);
+      if ($this->rows[$i]->fields[$this->jtRightIDCol]->value !== ''   // damned PHP '' == 0 
+          && $this->rows[$i]->fields[$this->jtRightIDCol]->value == 0
+          && $this->rows[$i]->fields[$this->jtRightIDCol]->changed) {
         //then this row is to be deleted...
         $this->oob_status |= $this->rows[$i]->delete();
       } else {
@@ -233,18 +252,26 @@ class JoinData extends Field {
    * cross checks on other fields.
   **/
   function isValid() {
+    $this->log('Check JoinData validity: '.$this->name);
     $this->isValid = 1;
     for ($i=0; $i < $this->number; $i++) {
       #echo "val". $this->rows[$i]->fields[$this->jtRightIDCol]->value.";";
-      if ($this->rows[$i]->fields[$this->jtRightIDCol]->value == 0
-         && $this->rows[$i]->changed) {
+      //$this->log('Row: '.$i);
+      $this->rows[$i]->isValid = 1;
+      if ($this->rows[$i]->fields[$this->jtRightIDCol]->value !== ''   // damned PHP '' == 0 
+          && $this->rows[$i]->fields[$this->jtRightIDCol]->value == 0
+          && $this->rows[$i]->changed) {
+        // this row will be deleted to mark it valid in the mean time
         $this->rows[$i]->isValid = 1;
-      }
-      if ($this->rows[$i]->fields[$this->jtRightIDCol]->value > 0) {
-      #if ($this->rows[$i]->changed) {
+      } elseif ( ($this->rows[$i]->fields[$this->jtRightIDCol]->value == -1 
+                   || $this->rows[$i]->fields[$this->jtRightIDCol]->value > 0)
+                 && $this->rows[$i]->changed) {
+        //this row will be sync'd against the database, so check its validity
+        //$this->log('Checking valid for row: '.$i);
         $this->isValid = $this->rows[$i]->checkValid() && $this->isValid;
       }
-      #echo "JoinData::isValid = '$this->isValid'";
+      //echo "JoinData::isValid = '$this->isValid'";
+      //echo "JoinData::isValid[$i] = '".$this->rows[$i]->isValid."'";
     }
     //now we need to check the validity of sets of data (e.g. sum of the same
     //field across the different rows.
@@ -265,6 +292,7 @@ class JoinData extends Field {
         $this->isValid = $fieldvalid && $this->isValid;
       }
     }
+    //echo "JoinData::isValid = '$this->isValid'";
     return $this->isValid;
   }
   

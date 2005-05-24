@@ -46,7 +46,7 @@ class DBList {
           .join($fields, ', ')
         .' FROM '.$TABLEPREFIX.$this->table.' AS '.$this->table.' ';
     foreach ($this->join as $t) {
-      $q .= ' LEFT JOIN '.$TABLEPREFIX.$t['table'].' AS '.$t['table']
+      $q .= ' LEFT JOIN '.$TABLEPREFIX.$t['table'].' AS '.(isset($t['alias']) ? $t['alias'] : $t['table'])
            .' ON '.$t['condition'];
     }
     $fields = array();
@@ -62,13 +62,14 @@ class DBList {
   }
 
   function formatList() {
+    //preDump($this->omitFields);
     $this->formatdata = array();
     for ($i=0; $i<count($this->data); $i++) {
       $this->formatdata[$i] = $this->format($this->data[$i]);
     }
   }
     
-  function format($data) {
+  function format($data, $isHeader=false) {
     $d = array();
     foreach ($this->returnFields as $f) {
       if (! array_key_exists($f->alias, $this->omitFields)) {
@@ -83,35 +84,45 @@ class DBList {
       case EXPORT_FORMAT_TAB:
         return join(preg_replace("/^(.*\t.*)$/", '"$1"', $d), "\t");
       case EXPORT_FORMAT_HTML:
-        return $this->_formatHTML(array_xssqw($d));
+        return $this->_formatHTML(array_xssqw($d), $isHeader);
       case EXPORT_FORMAT_CUSTOM:
       default:
         return $this->formatter->format($d);
     }
   }
 
-  function _formatHTML($d) {
+  function _formatHTML($d, $isHeader=false) {
+    global $CONFIG;
     $t = '';
     foreach ($this->returnFields as $f) {
       if (array_key_exists($f->alias, $this->omitFields)) {
         continue;
       }
-      switch($f->format) {
-        case EXPORT_HTML_DECIMAL:
-        case EXPORT_HTML_CENTRE:
-          $align='center';
-          break;
-        case EXPORT_HTML_LEFT:
-          $align='left';
-          break;
-        case EXPORT_HTML_RIGHT:
-          $align='center';
-          break;
-        default:
-          $align='';
+      $val = $d[$f->alias];
+      if (! $isHeader) {
+        switch($f->format) {
+          case EXPORT_HTML_MONEY:
+            $val = sprintf($CONFIG['export']['moneyFormat'], $val);
+            $align='right';
+            break;
+          case EXPORT_HTML_DECIMAL:
+          case EXPORT_HTML_CENTRE:
+            $align='center';
+            break;
+          case EXPORT_HTML_LEFT:
+            $align='left';
+            break;
+          case EXPORT_HTML_RIGHT:
+            $align='center';
+            break;
+          default:
+            $align='';
+        }
+        $align = ($align!='' ? 'align='.$align : '');
+        $t .= '<td '.$align.'>'.$val.'</td>';
+      } else {
+        $t .= '<th>'.$val.'</th>';
       }
-      $align = ($align!='' ? 'align='.$align : '');
-      $t .= '<td '.$align.'>'.$d[$f->alias].'</td>';
     }
     return $t;
   }
@@ -121,7 +132,7 @@ class DBList {
     foreach ($this->returnFields as $f) {
       $d[$f->alias] = $f->heading;
     }
-    return $this->format($d);
+    return $this->format($d, true);
   }
 
  /**

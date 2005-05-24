@@ -155,10 +155,13 @@ class DateTimeField extends Field {
    *
    * @return string  in SQL assignable form
    */
-  function sqlSetStr() {
+  function sqlSetStr($name='') {
+    if (empty($name)) {
+      $name = $this->name;
+    }
     if (! $this->sqlHidden) {
       $date = new SimpleDate($this->getValue());
-      return $this->name .'='. qw($date->datetimestring);
+      return $name .'='. qw($date->datetimestring);
     } else {
       return '';
     }

@@ -11,8 +11,8 @@ class UserMenu {
   var $itemStart      = '<li>';
   var $itemStop       = '</li>';
   var $masqDivId      = 'masquerade';
-  var $headerStart    = '<h3>';
-  var $headerStop     = '</h3>';
+  var $headerStart    = '<li class="menuSection">';
+  var $headerStop     = '</li>';
   var $mainMenuHeader = 'Main Menu';
   var $adminHeader    = 'Administration';
   
@@ -86,7 +86,7 @@ class UserMenu {
         array('a'=>'consume',           't'=>'Use consumable'),
         array('a'=>'masquerade',        't'=>'Masquerade'),
         array('a'=>'costs',             't'=>'Edit std costs'),
-      //array('a'=>'specialcosts',      't'=>'Edit special costs'),
+        array('a'=>'specialcosts',      't'=>'Edit special costs'),
         array('a'=>'deletedbookings',   't'=>'Deleted bookings'),
        #array('a'=>'bookmeta',          't'=>'Points system'),
        #array('a'=>'adminconfirm',      't'=>'Confirmations'),

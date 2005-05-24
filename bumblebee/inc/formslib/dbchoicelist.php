@@ -30,6 +30,7 @@ class DBChoiceList extends DBO {
   var $restriction;
   var $order;
   var $limit;
+  var $distinct;
   var $editable = 0;
   var $extendable = 0;
   var $changed = 0;
@@ -55,15 +56,17 @@ class DBChoiceList extends DBO {
    * @param string $idfield  the field that should be used as the uniquely identifying value
    * @param string $limit  any LIMIT clause
    * @param mixed $join  string or array (preferably) that defines the LEFT JOIN
+   * @param boolean $distinct return only DISTINCT rows (default: false)
    */
   function DBChoiceList($table, $fields='', $restriction='',
-                  $order='', $idfield='id', $limit='', $join='') {
+                  $order='', $idfield='id', $limit='', $join='', $distinct=false) {
     $this->DBO($table, '', $idfield);
     $this->fields = (is_array($fields) ? $fields : array($fields));
     $this->restriction = $restriction;
     #$this->idfield = $idfield;
     $this->order = $order;
     $this->limit = $limit;
+    $this->distinct = $distinct;
     if (is_array($join)) {
       $this->join = $join;
     } elseif ($join == '') {
@@ -82,6 +85,7 @@ class DBChoiceList extends DBO {
    * members (->table etc).
    */
   function fill() {
+    //preDump($this);
     global $TABLEPREFIX;
     $fields = $this->fields;
     $fields[] = isset($this->idfieldreal) ? 
@@ -96,8 +100,8 @@ class DBChoiceList extends DBO {
     foreach ($this->join as $k => $v) {
       $joinSyntax .= 'LEFT JOIN '.$TABLEPREFIX.$k.' AS '.$k.' ON '.$v.' ';
     }
-    $q = "SELECT $f "
-        .'FROM '.$TABLEPREFIX.$this->table.' AS '.$this->table.' '
+    $q = 'SELECT '.($this->distinct?'DISTINCT ':'').$f 
+        .' FROM '.$TABLEPREFIX.$this->table.' AS '.$this->table.' '
         #."WHERE $this->restriction "
         #."ORDER BY $this->order "
         .$joinSyntax

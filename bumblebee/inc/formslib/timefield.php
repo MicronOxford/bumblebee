@@ -245,9 +245,12 @@ class TimeField extends Field {
    *
    * @return string  in SQL assignable form
    */
-  function sqlSetStr() {
+  function sqlSetStr($name='') {
+    if (empty($name)) {
+      $name = $this->name;
+    }
     if (! $this->sqlHidden) {
-      return $this->name .'='. qw($this->time->getHMSstring());
+      return $name .'='. qw($this->time->getHMSstring());
     } else {
       return '';
     }

@@ -28,7 +28,7 @@ class ActionCosts extends ActionAction {
     foreach ($_POST as $k => $v) {
       $this->PD[$k] = $v;
     }
-    if (isset($this->PDATA[1])) {
+    if (isset($this->PDATA[1]) && ! empty($this->PDATA[1])) {
       $this->PD['userclass'] = $this->PDATA[1];
     }
     echoData($this->PD, 0);

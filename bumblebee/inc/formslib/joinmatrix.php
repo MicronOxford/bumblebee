@@ -217,7 +217,7 @@ class JoinMatrix extends Field {
     * trip the complex field within us to sync(), which allows us
     * to then know our actual value (at last).
     */
-  function sqlSetStr() {
+  function sqlSetStr($name='') {
     //$this->DEBUG=10;
     #echo "JoinData::sqlSetStr";
     $this->_joinSync();

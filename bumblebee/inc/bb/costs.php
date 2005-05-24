@@ -46,6 +46,10 @@ class ClassCost extends DBRow {
                           'Proportion of daily rate charged per half-day');
     $halfs->setAttr($attrs);
     $f->addElement($halfs);
+    $discount= new TextField('dailymarkdown', 'Daily bulk discount %', 
+                          'Discount for each successive day\'s booking');
+    $discount->setAttr($attrs);
+    $f->addElement($discount);
     $f->colspan = 2;
     $f->editable = 1;
     //$f->joinSetup('instrumentclass', array('minspare' => 0));

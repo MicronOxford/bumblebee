@@ -136,11 +136,15 @@ class Field {
    * return a SQL-injection-cleansed string that can be used in an SQL
    * UPDATE or INSERT statement. i.e. "name='Stuart'".
    *
+   * @param string optional SQL name to use to change the default
    * @return string  in SQL assignable form
    */
-  function sqlSetStr() {
+  function sqlSetStr($name='') {
     if (! $this->sqlHidden) {
-      return $this->name .'='. qw($this->getValue());
+      if (empty($name)) {
+        $name = $this->name;
+      }
+      return $name .'='. qw($this->getValue());
     } else {
       return '';
     }

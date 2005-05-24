@@ -137,6 +137,7 @@ CREATE TABLE costs (
   hourfactor FLOAT(16),
   halfdayfactor FLOAT(16),
   costfullday FLOAT(16),
+  dailymarkdown FLOAT(16) DEFAULT '0' NOT NULL,
   PRIMARY KEY (id)
 );
 
@@ -170,29 +171,29 @@ CREATE TABLE bookings (
   PRIMARY KEY (id)
 );
 
-DROP TABLE IF EXISTS adminconfirm;
-CREATE TABLE adminconfirm (
-  action ENUM ('book', 'unbook'),
-  booking INTEGER UNSIGNED NOT NULL
-);
+-- DROP TABLE IF EXISTS adminconfirm;
+-- CREATE TABLE adminconfirm (
+--   action ENUM ('book', 'unbook'),
+--   booking INTEGER UNSIGNED NOT NULL
+-- );
 
 -- separate this into a different table only so we can implement it later
 --
-DROP TABLE IF EXISTS bookingmeta;
-CREATE TABLE bookingmeta (
-  instrid SMALLINT UNSIGNED NOT NULL,
-  requireapproval BOOL DEFAULT 'FALSE',
-  min_unbook FLOAT(16), -- in hours
-  alert_unbook BOOL DEFAULT 'FALSE',
-  book_future_normal TINYINT UNSIGNED, -- days in advance that users can book
-  book_priority_safe TINYINT UNSIGNED, -- days to protect priority users
-  book_priority_days TINYINT UNSIGNED, -- which days are priority days
-  points_hourly TINYINT UNSIGNED,
-  points_halfday TINYINT UNSIGNED,
-  points_fullday TINYINT UNSIGNED,
-  points_evening TINYINT UNSIGNED,
-  PRIMARY KEY (instrid)
-);
+-- DROP TABLE IF EXISTS bookingmeta;
+-- CREATE TABLE bookingmeta (
+--   instrid SMALLINT UNSIGNED NOT NULL,
+--   requireapproval BOOL DEFAULT 'FALSE',
+--   min_unbook FLOAT(16), -- in hours
+--   alert_unbook BOOL DEFAULT 'FALSE',
+--   book_future_normal TINYINT UNSIGNED, -- days in advance that users can book
+--   book_priority_safe TINYINT UNSIGNED, -- days to protect priority users
+--   book_priority_days TINYINT UNSIGNED, -- which days are priority days
+--   points_hourly TINYINT UNSIGNED,
+--   points_halfday TINYINT UNSIGNED,
+--   points_fullday TINYINT UNSIGNED,
+--   points_evening TINYINT UNSIGNED,
+--   PRIMARY KEY (instrid)
+-- );
 
 DROP TABLE IF EXISTS consumables;
 CREATE TABLE consumables (
@@ -218,13 +219,13 @@ CREATE TABLE consumables_use (
   PRIMARY KEY (id)
 );
 
-DROP TABLE IF EXISTS billing_formats;
-CREATE TABLE billing_formats (
-  id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  name VARCHAR(63),
-  localfile VARCHAR(255),
-  PRIMARY KEY (id)
-);
+-- DROP TABLE IF EXISTS billing_formats;
+-- CREATE TABLE billing_formats (
+--   id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+--   name VARCHAR(63),
+--   localfile VARCHAR(255),
+--   PRIMARY KEY (id)
+-- );
 
 
 --     Create an admin user

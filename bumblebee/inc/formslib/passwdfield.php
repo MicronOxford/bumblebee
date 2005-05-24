@@ -42,7 +42,10 @@ class PasswdField extends TextField {
    *
    * @return string  in SQL assignable form
    */
-  function sqlSetStr() {
+  function sqlSetStr($name='') {
+    if (empty($name)) {
+      $name = $this->name;
+    }
     if (! $this->sqlHidden && $this->value != '') {
       if ($this->crypt_method != '' && is_callable($this->crypt_method)) {
         $crypt_method = $this->crypt_method;
@@ -50,7 +53,7 @@ class PasswdField extends TextField {
       } else {
         $pass = $this->value;
       }
-      return $this->name ."='$pass'";
+      return $name ."='$pass'";
     } else {
       return '';
     }

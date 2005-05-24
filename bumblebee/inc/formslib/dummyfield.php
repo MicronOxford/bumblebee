@@ -29,7 +29,7 @@ class DummyField extends Field {
   function set() {
   }
   
-  function sqlSetStr() {
+  function sqlSetStr($name='') {
     return '';
   }
   

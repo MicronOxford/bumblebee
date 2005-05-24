@@ -43,12 +43,13 @@ class ChoiceList extends Field {
    * @param string $idfield the name of the field that will be used to identify the selected item (value=)
    * @param string $limit limits that will be applied to the query (LIMIT...)
    * @param string $join any tables that should be LEFT JOINed in the query to make sense of it
+   * @param boolean $distinct return only DISTINCT rows (default: false)
    *
    */
   function connectDB($table, $fields='', $restriction='', $order='name',
-                      $idfield='id', $limit='', $join='') {
+                      $idfield='id', $limit='', $join='', $distinct=false) {
     $this->list = new DBChoiceList($table, $fields, $restriction, $order,
-                      $idfield, $limit, $join);
+                      $idfield, $limit, $join, $distinct);
   }
   
   /** 
@@ -193,14 +194,14 @@ class ChoiceList extends Field {
    *                if it would prefer not to
    * @return string name='value' from parent class
    */
-  function sqlSetStr($force) {
+  function sqlSetStr($name, $force) {
     #echo "Choicelist::sqlSetStr";
     $this->oob_status = $this->list->sync();
     //preDump($this->list);
     $this->oob_errorMessage = $this->list->oob_errorMessage;
     $this->value = $this->list->id;
     #preDump($this);
-    return Field::sqlSetStr($force);
+    return Field::sqlSetStr($name, $force);
   }
 
   /**

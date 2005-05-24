@@ -45,8 +45,7 @@ class ActionEmailList extends ActionAction {
     //$select->numSpareCols = 1;
     $select->connectDB('instruments', array('id', 'name', 'longname'));
     $select->setFormat('id', '%s', array('name'), " %50.50s", array('longname'));
-    $select->addFooter('(<a href="#" onclick="return deselectsome(%d,2);">deselect all</a>)<br />'.
-                       '(<a href="#" onclick="return selectsome(%d,2);">select all</a>)');
+    $select->addSelectAllFooter(true);
     $selectRow->addElement($select);
     $separator = new TextField('separator', 'Value separator',
                 'Separates the returned values so you can paste them into your email client');
