@@ -48,7 +48,7 @@ class UserMenu {
       $t .= $this->headerStart.$this->mainMenuHeader.$this->headerStop;
     }
     $t .= $this->itemStart
-          .'<a href="'.$BASEURL.'/">Main</a>'
+          .'<a href="'.$BASEURL.'/view/">Main</a>'
         .$this->itemStop;
     if ($this->_auth->localLogin) {
       $t .= $this->itemStart

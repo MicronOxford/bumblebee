@@ -1,3 +1,7 @@
+2005-05-25 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* extensions to export 
+	* code cleanups and bugfixes throughout 
+
 2005-05-24 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* included bulk-discount model into billing system SQL 
 
