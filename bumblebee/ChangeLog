@@ -1,4 +1,7 @@
 2005-05-24 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* included bulk-discount model into billing system SQL 
+
+2005-05-24 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* flexibility for footers on checkboxtables  improved, incl built-in js quicklinks 
 	* built special costs manipulation interface 
 	* added more of billing algorithm into SQL 

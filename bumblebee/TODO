@@ -4,12 +4,13 @@ $Id$
 * scrap the report action all together?
 
 * permit slot discount ,50% ?
-
-* remove unused tables
+* use discount in calcs
 
 matrix report style
 html->pdf conversion
 split multiple tables into multiple pdfs
+report sums
+
 
 configure exporttypes from files?
 
@@ -29,7 +30,7 @@ configure exporttypes from files?
 * costs
 
 * special costs 
-  - todo *************************** <<<<<<<<<<<<<<<<<<<<<<<<<<<
+  - 
 
 * instruments
   - can we put some better validation on the timeslotrule input? e.g. making sure every hour is accounted for?
@@ -43,7 +44,7 @@ configure exporttypes from files?
   - move bumblebee.ini to a db table? 
 
 * adminmenu 
-  - ooify?
+  - 
   
 * joindata
   - 
@@ -69,27 +70,11 @@ configure exporttypes from files?
 
 create a real db with no bogus booking data and no dodgy invalid users etc
 
-include BILLING algorithm:
-
-settings:  numhoursperhalfday = 5, numhoursperfullday=8, halfdaysperday=0.6
-a) for a 2 hour booking
-b) for a 5 hour booking
-c) for a 10 hour booking
-
-numdays = MIN(                                           a)              b)             c)
-          numhours / hoursperday,                      2/8    = .25   5/8     = 0.625   10/8    = 1.25
-          numhours / hoursperhalfday * halfddaysperday 2/5*.6 = .24   5/5*0.6 = 0.6     10/5*.6 = 1.2
-          1                                            1      = 1     1       = 1       1       = 1
-        )
-
-        calc'd                                         0.25          0.6                 1
-        current                                        0.4           0.6                 1
-        
-
-
 * billing
-  - todo
-  - incl consumables
+  - incl consumables & billing in combined analysis
+  - generate reports for combined analysis for distribution
+  - generate matrix summary
+  - generate sums of columns for reports
 
 
 
