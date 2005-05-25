@@ -64,7 +64,7 @@ class ActionView extends ActionAction {
     foreach ($_POST as $k => $v) {
       $this->PD[$k] = $v;
     }
-    if (isset($this->PDATA[1])) {
+    if (isset($this->PDATA[1]) && $this->PDATA[1] !== '') {
       $this->PD['instrid'] = $this->PDATA[1];
     }
     for ($i=2; isset($this->PDATA[$i]); $i++) {

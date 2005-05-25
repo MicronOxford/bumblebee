@@ -80,6 +80,12 @@ class ActionEmailList extends ActionAction {
       echo '<p>No email addresses found</p>';
     } else {
       $list->formatList();
+      $this->PD['separator'] = stripslashes($this->PD['separator']);
+      if ($this->PD['separator'] == '\n') {
+        $this->PD['separator'] = "\n";
+      } elseif ($this->PD['separator'] == '\t') {
+        $this->PD['separator'] = "\t";
+      }
       echo join($list->formatdata, xssqw($this->PD['separator']).'<br />');
     }
   }

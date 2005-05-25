@@ -215,12 +215,19 @@ class ActionExport extends BufferedAction {
       $this->_export->group      = $pivot['group'];
       $this->_export->omitFields = array_flip($pivot['omitFields']);
       $this->_export->breakField = $pivot['breakField'];
+      if (isset($pivot['fieldOrder']) && is_array($pivot['fieldOrder'])) {
+        $this->_export->fieldOrder = $pivot['fieldOrder'];
+      }
+      if (isset($pivot['extraFields']) && is_array($pivot['extraFields'])) {
+        $this->_export->fields = array_merge($this->_export->fields, $pivot['extraFields']);
+      }
     }
     $list = new DBList($this->_export->basetable, $this->_export->fields, join($where, ' AND '));
     $list->join = array_merge($list->join, $this->_export->join);
     $list->group = $this->_export->group;
     $list->order = $this->_export->order;
     $list->distinct = $this->_export->distinct;
+    $list->fieldOrder = $this->_export->fieldOrder;
     return $list;
   }
 

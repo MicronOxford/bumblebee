@@ -12,6 +12,7 @@ class DBList {
   var $group;
   var $returnFields;
   var $omitFields = array();
+  var $fieldOrder;
   var $formatter;
   var $distinct = 0;
   var $table;
@@ -64,6 +65,12 @@ class DBList {
   function formatList() {
     //preDump($this->omitFields);
     $this->formatdata = array();
+    if (! is_array($this->fieldOrder)) {
+      $this->fieldOrder = array();
+      foreach ($this->returnFields as $f) {
+        $this->fieldOrder[] = $f->alias;
+      }
+    }
     for ($i=0; $i<count($this->data); $i++) {
       $this->formatdata[$i] = $this->format($this->data[$i]);
     }
@@ -71,14 +78,13 @@ class DBList {
     
   function format($data, $isHeader=false) {
     $d = array();
-    foreach ($this->returnFields as $f) {
-      if (! array_key_exists($f->alias, $this->omitFields)) {
-        $d[$f->alias] = $data[$f->alias];
+    foreach ($this->fieldOrder as $f) {
+      if (! array_key_exists($f, $this->omitFields)) {
+        $d[$f] = $data[$f];
       }
     }
     switch ($this->outputFormat) {
       case EXPORT_FORMAT_CSV:
-      // FIXME we will return twice as many elements here due to [1] and [id] from mysql
         return join(preg_replace(array('/"/',     '/^(.*,.*)$/'), 
                                array('\\"',   '"$1"'       ), $d), ',');
       case EXPORT_FORMAT_TAB:
@@ -94,11 +100,10 @@ class DBList {
   function _formatHTML($d, $isHeader=false) {
     global $CONFIG;
     $t = '';
-    foreach ($this->returnFields as $f) {
-      if (array_key_exists($f->alias, $this->omitFields)) {
-        continue;
+    foreach ($d as $alias => $val) {
+      for ($i=0; $i<count($this->returnFields) && $this->returnFields[$i]->alias != $alias; $i++) {
       }
-      $val = $d[$f->alias];
+      $f = $this->returnFields[$i];
       if (! $isHeader) {
         switch($f->format & EXPORT_HTML_ALIGN) {
           case EXPORT_HTML_CENTRE:

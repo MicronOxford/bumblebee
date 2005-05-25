@@ -14,7 +14,6 @@ class SystemStats {
   }
 
   function countEntries($table) {
-    global $TABLEPREFIX;
     $row = quickSQLSelect($table, '', '', 0, 1);
     return $row[0];
   }

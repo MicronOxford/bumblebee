@@ -34,24 +34,25 @@ class TimeSlotRule {
    * <slot;slot;slot> 
    *         around the comma-separated slot specifications for that day. All times from 00:00 to 24:00
    *         must be included in the list
-   * starttime-stoptime/num_slots,comment
+   * starttime-stoptime/num_slots-discount%,comment
    *         HH:MM time slots with the length of each slot.
    *         e.g. 09:00-17:00/1 specifies a slot starting at 9am and finishing 5pm.
    *              both 00:00 and 24:00 are valid, also 32:00 for 8am the next day (o'night)
    *         num_slots is integer, or wildcard of * for freely adjustable time
    *         e.g. 09:00-12:00/3 specifies 3 slots 9-10, 10-11 and 11-12.
-   *         comment  is displayed in vacant or unavailable slots
+   *         discount (optional) is the percentage discount applied to bookings in that slot
+   *         comment  (optional) is displayed in vacant or unavailable slots
    *
    * EXAMPLES:
    *
    * [0-6]<00:00-08:00/*;08:00-13:00/1;13:00-18:00/1;18:00-24:00/*>
    *    Available all days, free booking until 8am and after 6pm, other slots as defined
-   * [0]<00:00-24:00/0>[1-5]<09:00-17:00/01:00>[6]<00:00-24:00/0>
+   * [0]<00:00-24:00/0,Unavailable>[1-5]<09:00-17:00/01:00>[6]<00:00-24:00/0,Unavailable>
    *    Not available Sunday and Saturday. Only available weekdays 9am till 5pm with 1hr booking
-   *    granularity.
-   * [0]<>[1-5]<00:00-09:00/*;09:00-17:00/8;17:00-24:00/*>[6]<>
+   *    granularity. Calendar views of Sat & Sun will see message "Unavailable"
+   * [0]<>[1-5]<00:00-09:00/*;09:00-17:00/8;17:00-24:00/*-50%>[6]<>
    *    Not available Sunday and Saturday. Available weekdays 9am till 5pm with 1hr booking
-   *    granularity, before 9am and after 5pm with no granularity
+   *    granularity, before 9am and after 5pm with no granularity and at a 50% discount.
    * [0]<>[1-5]<09:00-13:00/4;13:00-17:00/2;17:00-33:00/1>[6]<>
    *    Not available Sunday and Saturday. Available weekdays 9am till 5pm with 1hr booking
    *    granularity, before 9am and after 5pm with no granularity
@@ -101,20 +102,28 @@ class TimeSlotRule {
       #echo "found slot=$slot\n";
       #$this->slots[$dow][$i] = array();
       $tmp = array();
-      if (preg_match('/(\d\d:\d\d)-(\d\d:\d\d)\/(\d+|\*)(?:,(.+))?/', $slot, $tmp)) {
-        /* regexp:       HH:MM    -  HH:MM     /n          ,comment
-           group:         1            2        3           4
+      if (preg_match('/(\d\d:\d\d)-(\d\d:\d\d)\/(\d+|\*)(-\d+%)?(?:,(.+))?/', $slot, $tmp)) {
+        /* regexp:       HH:MM    -  HH:MM     /n         -x%       ,comment
+           group:         1            2        3          4          5
            notes:  
               n can be digit or *
+              x is optional and can be one or more digits 
               ,comment is optional and the comma is not included in the captured pattern
               ?: means don't capture the contents of that subpattern () to $tmp
         */
-        $start = $tmp[1];
-        $stop = $tmp[2];
-        $tstart = new SimpleTime($start);
-        $tstop  = new SimpleTime($stop);
+        $start    = $tmp[1];
+        $stop     = $tmp[2];
+        $tstart   = new SimpleTime($start);
+        $tstop    = new SimpleTime($stop);
         $numslots = $tmp[3];
-        $comment = issetSet($tmp, 4);
+        $match = issetSet($tmp,4);
+        if (preg_match('/-(\d+)%/', $match, $val)) {
+          $discount = $val[1];
+          $comment  = issetSet($tmp, 5);
+        } else {
+          $discount = NULL;
+          $comment  = $match;
+        }
         #echo "(start,stop,slots) = ($start,$stop,$numslots)\n";
         if ($numslots != '*' && $numslots != '0') {
           #echo "Trying to interpolate timeslots\n";
@@ -128,6 +137,7 @@ class TimeSlotRule {
             $this->slots[$dow][$i]->numslotsInGroup = 1;
             $this->slots[$dow][$i]->numslotsFollowing = $numslots - $siblingSlot;
             $this->slots[$dow][$i]->comment = $comment;
+            $this->slots[$dow][$i]->discount = $discount;
             if ($time->ticks != $tstart->ticks) {
               $this->slots[$dow][$i-1]->nextSlot = &$this->slots[$dow][$i];
             }
@@ -142,6 +152,7 @@ class TimeSlotRule {
           $this->slots[$dow][$i]->isFreeForm = $numslots == '*';
           $this->slots[$dow][$i]->isAvailable = $numslots != '0';
           $this->slots[$dow][$i]->comment = $comment;
+          $this->slots[$dow][$i]->discount = $discount;
           $i++;
         }
       }

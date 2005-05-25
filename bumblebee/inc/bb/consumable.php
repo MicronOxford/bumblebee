@@ -13,13 +13,13 @@ class Consumable extends DBRow {
     $f = new IdField('id', 'Consumable ID');
     $f->editable = 0;
     $this->addElement($f);
-    $f = new TextField('name', 'Name');
+    $f = new TextField('name', 'Item Code');
     $attrs = array('size' => '48');
     $f->required = 1;
     $f->isValidTest = 'is_nonempty_string';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField('longname', '');
+    $f = new TextField('longname', 'Description');
     $f->required = 1;
     $f->isValidTest = 'is_nonempty_string';
     $f->setAttr($attrs);

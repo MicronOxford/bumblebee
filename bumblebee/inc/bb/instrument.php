@@ -112,7 +112,7 @@ class Instrument extends DBRow {
     // create the timeslot rule information required
     $f = new CommentField('timeslotpicturecomment', 'Instrument timeslots',
                               'These fields describe when the instrument is available. ');
-    $f->value = 'Format: HH:MM-HH:MM/n,comment';
+    $f->value = 'Format: HH:MM-HH:MM/n-x%,comment';
     $this->addElement($f);
     $f = new TextField('timeslotpicture', 'Time slot picture');
     $f->required = 1;
@@ -193,12 +193,12 @@ class Instrument extends DBRow {
       $lines = preg_split('/[\n\r]+/', $this->fields['tsr-'.$day]->value);
       // get rid of blanks
       $lines = preg_grep('/^\s*$/', $lines,PREG_GREP_INVERT);
-      $rejects = preg_grep('{^\d\d:\d\d\-\d\d:\d\d/(\d+|\*)(,.+)?$}', $lines,PREG_GREP_INVERT);
+      $rejects = preg_grep('{^\d\d:\d\d\-\d\d:\d\d/(\d+|\*)(\-\d+%)?(,.+)?$}', $lines,PREG_GREP_INVERT);
       if (count($rejects) > 0) {
         //then this input is invalid
         $this->fields['tsr-'.$day]->isValid = 0;
         $this->isValid = 0;
-        preDump($rejects);
+        //preDump($rejects);
       }
       $newslot .= '['.$day.']<'.join($lines,';').'>';
       $this->log('Calculated picture '. $newslot);

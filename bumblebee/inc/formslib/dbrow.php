@@ -176,7 +176,6 @@ class DBRow extends DBO {
    * Here, we to the 'create temp row' part.
    */
   function _twoStageSync() {
-    global $TABLEPREFIX;
     if ($this->id == -1) {
       $row = new DBRow($this->table, -1, 'id');
       $f = new Field($this->idfield);

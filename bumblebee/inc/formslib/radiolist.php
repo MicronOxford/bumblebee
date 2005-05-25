@@ -26,10 +26,11 @@ class RadioList extends ChoiceList {
     foreach (array_keys($this->formatter) as $k) {
       $t .= $this->formatter[$k]->format($data);
     }
+    $t .= '</label>';
     if (isset($data['_field']) && $data['_field']) {
       $t .= $data['_field']->selectable();
     }
-    return $t.'</label>';
+    return $t;
   }
 
 

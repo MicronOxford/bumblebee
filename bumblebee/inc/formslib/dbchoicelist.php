@@ -266,6 +266,7 @@ class DBChoiceList extends DBO {
    * returns code from statuscodes
    */
   function sync() {
+    global $TABLEPREFIX;
     #preDump($this);
     // If the input isn't valid then bail out straight away
     if (! $this->changed) {

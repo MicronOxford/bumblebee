@@ -21,6 +21,7 @@ class BookingEntry extends DBRow {
   var $euid;
   var $uid;
   var $minunbook;
+  var $isShort = false;
   
   function BookingEntry($id, $auth, $instrumentid, $minunbook='', $ip='', $start='', $duration='', $granlist='') {
     //$this->DEBUG = 10;
@@ -114,6 +115,7 @@ class BookingEntry extends DBRow {
    *
    */
   function _bookingEntryShort($id, $instrumentid) {
+    $this->isShort = true;
     $f = new Field('id');
     $f->value = $id;
     $this->addElement($f);
@@ -163,16 +165,26 @@ class BookingEntry extends DBRow {
     parent::fill();
     // check whether we are allowed to modify time fields: this picks up existing objects immediately
     $this->_checkMinNotice();
+    $this->_setDefaultDiscount();
   }
 
   /** 
    * override the default sync() method with a custom one that allows us to...
-   * - check permissions on whether we should be allowed to change the dates
    */
   function sync() {
     return parent::sync();
   }
 
+  function _setDefaultDiscount() {
+    if (!$this->isShort && ! isset($this->fields['discount']->value)) {
+      $starttime = new SimpleDate($this->fields['bookwhen']->getValue());
+      $slot = $this->slotrules->findSlotByStart($starttime);
+      //preDump($this->slotrules); preDump($slot);
+      $this->fields['discount']->defaultValue = (isset($slot->discount) ? $slot->discount : 0);
+      $this->log('BookingEntry::_setDefaultDiscount '.$starttime->datetimestring.' '.$slot->discount.'%');
+    }
+  }
+  
   function _checkMinNotice() {
   //$this->DEBUG=10;
     // get some cursory checks out of the way to save the expensive checks for later

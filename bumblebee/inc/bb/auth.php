@@ -18,7 +18,7 @@ class BumbleBeeAuth {
   var $_error = '';
   var $table;
   var $localLogin = 0;
-  var $DEBUG = 1;
+  var $DEBUG = 0;
 
   function BumbleBeeAuth($table='users') {
     session_start();

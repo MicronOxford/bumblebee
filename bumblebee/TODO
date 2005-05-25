@@ -2,9 +2,8 @@ $Id$
 
 
 * scrap the report action all together?
+* actionbilling??
 
-* permit slot discount ,50% ?
-* use discount in calcs
 
 matrix report style
 html->pdf conversion
@@ -17,9 +16,7 @@ configure exporttypes from files?
 * db structure:
   - SMALLINT is max 32767. Is this a limitation (e.g. number bookings!)?
   - permit table prefix:
-    - billing
-    - emaillist
-    - specialcosts
+    - actionbilling
 
 * bookings
   - 
