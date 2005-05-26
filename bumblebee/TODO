@@ -4,6 +4,7 @@ $Id$
 * scrap the report action all together?
 * actionbilling??
 
+HTML open window export: HTML template option for this.
 
 matrix report style
 html->pdf conversion

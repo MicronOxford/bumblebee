@@ -6,7 +6,6 @@
 include_once 'inc/formslib/checkbox.php';
 include_once 'inc/formslib/checkboxtablelist.php';
 include_once 'inc/formslib/dblist.php';
-include_once 'inc/bb/exporttypes.php';
 include_once 'inc/actions/actionaction.php';
 
 /**

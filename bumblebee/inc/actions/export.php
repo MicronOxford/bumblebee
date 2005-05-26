@@ -6,8 +6,10 @@ include_once 'inc/formslib/checkbox.php';
 include_once 'inc/formslib/checkboxtablelist.php';
 include_once 'inc/formslib/datareflector.php';
 include_once 'inc/actions/bufferedaction.php';
-include_once 'inc/bb/exporttypes.php';
 include_once 'inc/exportcodes.php';
+include_once 'inc/export/exporttypes.php';
+include_once 'inc/export/arrayexport.php';
+include_once 'inc/export/htmlexport.php';
 include_once 'inc/formslib/dblist.php';
 
 /**
@@ -98,9 +100,10 @@ class ActionExport extends BufferedAction {
 
   function formatSelect() {
     global $CONFIG;
-    $formatlist = array(EXPORT_FORMAT_HTML  => 'View in web browser', 
-                        EXPORT_FORMAT_CSV   => 'Save as comma separated variable (csv)', 
-                        EXPORT_FORMAT_TAB   => 'Save as tab separated variable (txt)');
+    $formatlist = array(EXPORT_FORMAT_VIEW     => 'View in web browser', 
+                        EXPORT_FORMAT_VIEWOPEN => 'View in web browser (new window)', 
+                        EXPORT_FORMAT_CSV      => 'Save as comma separated variable (csv)', 
+                        EXPORT_FORMAT_TAB      => 'Save as tab separated variable (txt)');
     if ($CONFIG['export']['enablePDF']) {
       $formatlist[EXPORT_FORMAT_PDF] = 'Save as pdf report';
     }
@@ -160,32 +163,42 @@ class ActionExport extends BufferedAction {
       return $this->unbufferForError('<p>No data found for those criteria</p>');
     }      
     // start rendering the data
-    if ($this->format == EXPORT_FORMAT_HTML || $this->format == EXPORT_FORMAT_PDF) {
-      $list->outputFormat = EXPORT_FORMAT_HTML;
+    $list->outputFormat = $this->format;
+    if ($this->format & EXPORT_FORMAT_USEARRAY) {
       $list->omitFields = $this->_export->omitFields;
-      $list->formatList();   
-      $htmlBuffer = $this->_formatDataHTML($list);
-    } else {
-      $list->outputFormat = $this->format;
-      $list->formatList();   
+    }
+    $list->formatList();   
+    if ($this->format & EXPORT_FORMAT_USEARRAY) {
+      $exportArray = new ArrayExport($list, $this->_export->breakField);
+      $exportArray->header = $this->_reportHeader();
+      $exportArray->makeExportArray();
+      //preDump($exportArray->export);
+    }
+    if ($this->format & EXPORT_FORMAT_USEHTML) {
+      $htmlExport = new HTMLExport($exportArray);
+      $htmlExport->makeHTMLBuffer();
     }
     
     //finally, direct the data towards its output
     if ($this->format == EXPORT_FORMAT_PDF){ 
       // construct the PDF from $htmlbuffer
-      $pdfbuffer = '';
+      $pdfExport = $this->_preparePDFExport($exportArray);
+      $pdfExport->makePDFBuffer();
       $this->_getFilename();
-      $this->bufferedStream = $pdfbuffer;
+      $this->bufferedStream =& $pdfExport->export;
       // the data itself will be dumped later by the action driver (index.php)
-    } elseif ($this->format == EXPORT_FORMAT_CSV || $this->format == EXPORT_FORMAT_TAB) {
+    } elseif ($this->format & EXPORT_FORMAT_DELIMITED) {
       $this->_getFilename();
       $this->bufferedStream = '"'.$this->_reportHeader().'"'
                                .$list->outputHeader()."\n"
                                .join($list->formatdata, "\n");
       // the data itself will be dumped later by the action driver (index.php)
+    } elseif ($this->format == EXPORT_FORMAT_VIEWOPEN) {
+      $this->unbuffer();
+      echo $htmlExport->wrapHTMLBuffer();
     } else {
       $this->unbuffer();
-      echo $htmlBuffer;
+      echo $htmlExport->export;
     }
   }
   
@@ -232,7 +245,7 @@ class ActionExport extends BufferedAction {
   }
 
   function _getFilename() {
-    switch ($this->format) {
+    switch ($this->format & EXPORT_FORMAT_DELIMITED_MASK) {
       case EXPORT_FORMAT_CSV:
         $ext = 'csv';
         $type = 'text/csv';
@@ -253,96 +266,19 @@ class ActionExport extends BufferedAction {
     $this->filename = parent::getFilename('export', $this->PD['what'], $ext);
     $this->mimetype = $type;
   }
-
-  function _formatDataHTML($list) {
-    $buf = '<div id="bumblebeeExport">';
-    $buf .= '<div class="exportHeader">'.$this->_reportHeader().'</div>';
-    $entry = 0;
-    while ($entry < count($list->formatdata)) {
-      $buf .= $this->_sectionReportHTML($list, $entry);
-    }
-    $buf .= '</div>';
-    return $buf;
-  }
   
+  function _preparePDFExport(&$exportArray) {
+    require('inc/export/pdfexport.php');
+    $pdf = new PDFExport($exportArray);
+    return $pdf;
+  }
+
   function _reportHeader() {
     $start = $this->_daterange->getStart();
     $stop  = $this->_daterange->getStop();
     $s = $this->_export->description .' for '. $start->datestring .' - '. $stop->datestring;
     return $s;
   }  
-
-  function _sectionHeader($row) {
-    $s = $row[$this->_export->breakField];
-    return $s;
-  }  
-
-  function _sectionReportHTML($list, &$entry) {
-    if (empty($this->_export->breakField) || ! isset($list->data[$entry][$this->_export->breakField])) {
-      // then there are no fancy options for this export so it can be done very easily and quickly
-      $entry = count($list->formatdata);
-      return '<table class="exportdata">'
-              .'<tr class="header">'.$list->outputHeader().'</tr>'."\n"
-              .'<tr>'.join($list->formatdata,'</tr><tr>').'</tr>'."\n"
-              .'</table>'."\n";
-    }
-    $buf = '<div class="exportSectionHeader">'
-              .$this->_sectionHeader($list->data[$entry])
-            .'</div>';
-    $buf .= '<table class="exportdata">'
-           .'<tr class="header">'.$list->outputHeader().'</tr>'."\n";
-    $initial = $list->data[$entry][$this->_export->breakField];
-    while ($entry < count($list->formatdata) 
-               && $initial == $list->data[$entry][$this->_export->breakField]) {
-      $buf .= '<tr>'.$list->formatdata[$entry].'</tr>'."\n";
-      $entry++;
-    }
-    $buf .= '</table>'."\n";
-    return $buf;
-  }
-//     $q = "SELECT "
-//         ."bookings.id AS bookingid,"
-//         ."users.id AS userid,"
-//         ."users.username AS username,"
-//         ."instruments.name AS instrumentname,"
-//         ."instrumentclass.name AS instrumentclassname,"
-//         ."projects.id AS projectid,"
-//         ."projects.name AS projectname,"
-//         ."projectgroups.grouppc AS pc,"
-//         #."groups.id AS groupid,"
-//         #."groups.name AS groupname,"
-//         #."stoptime,"
-//         #."starttime,"
-//         #."(stoptime-starttime) AS usetime, " #this is a dodge (only works for whole hours, minutes broken)
-//         #."SUBTIME(stoptime,starttime), "
-//         # SUBTIME(t1,t2) and TIMEDIFF(t1,t2) were only added in MySQL v4.1.1
-//         ."bookwhen AS starttime, "
-//         ."DATE_ADD(bookwhen, INTERVAL duration HOUR_SECOND) AS stoptime, "
-//         ."duration,"
-//         ."ishalfday,"
-//         ."isfullday, "
-//         #."costs.name AS costcategory,"
-//         ."userclass.name AS userclassname,"
-// 
-//         ."groups.* "
-//         ."FROM bookings "
-//         ."LEFT JOIN users ON users.id=bookings.userid "
-//         ."LEFT JOIN instruments ON instruments.id=bookings.instrument "
-//         ."LEFT JOIN instrumentclass ON instrumentclass.id=instruments.class "
-//         ."LEFT JOIN projects ON bookings.projectid=projects.id "
-//         ."LEFT JOIN userclass ON userclass.id=projects.defaultclass "
-//         ."LEFT JOIN projectgroups ON projectgroups.projectid=bookings.projectid "
-//         ."LEFT JOIN groups ON groups.id=projectgroups.groupid "
-//         ."LEFT JOIN projectrates ON (projects.id=projectrates.projectid AND bookings.instrument=projectrates.instrid) "
-//         ."LEFT JOIN costs AS dc ON (instruments.class=dc.instrumentclass AND projects.defaultclass=dc.userclass) "
-//         ."LEFT JOIN costs AS sc ON (projectrates.rate=sc.id) "
-//         ."WHERE (bookings.bookwhen>='$startdate' "
-//         ."AND bookings.bookwhen<='$stopdate') ";
-// 
-//   
-  
-  
-  
 
 }  //ActionExport
 ?> 

@@ -76,68 +76,22 @@ class DBList {
     }
   }
     
-  function format($data, $isHeader=false) {
+  function format($data) {
     $d = array();
     foreach ($this->fieldOrder as $f) {
       if (! array_key_exists($f, $this->omitFields)) {
         $d[$f] = $data[$f];
       }
     }
-    switch ($this->outputFormat) {
-      case EXPORT_FORMAT_CSV:
-        return join(preg_replace(array('/"/',     '/^(.*,.*)$/'), 
+    if (EXPORT_FORMAT_CSV & $this->outputFormat) 
+      return join(preg_replace(array('/"/',     '/^(.*,.*)$/'), 
                                array('\\"',   '"$1"'       ), $d), ',');
-      case EXPORT_FORMAT_TAB:
+    if (EXPORT_FORMAT_TAB & $this->outputFormat) 
         return join(preg_replace("/^(.*\t.*)$/", '"$1"', $d), "\t");
-      case EXPORT_FORMAT_HTML:
-        return $this->_formatHTML(array_xssqw($d), $isHeader);
-      case EXPORT_FORMAT_CUSTOM:
-      default:
-        return $this->formatter->format($d);
-    }
-  }
-
-  function _formatHTML($d, $isHeader=false) {
-    global $CONFIG;
-    $t = '';
-    foreach ($d as $alias => $val) {
-      for ($i=0; $i<count($this->returnFields) && $this->returnFields[$i]->alias != $alias; $i++) {
-      }
-      $f = $this->returnFields[$i];
-      if (! $isHeader) {
-        switch($f->format & EXPORT_HTML_ALIGN) {
-          case EXPORT_HTML_CENTRE:
-            $align='center';
-            break;
-          case EXPORT_HTML_LEFT:
-            $align='left';
-            break;
-          case EXPORT_HTML_RIGHT:
-            $align='center';
-            break;
-          default:
-            $align='';
-        }
-        switch ($f->format & EXPORT_HTML_NUMBER) {
-          case EXPORT_HTML_MONEY:
-            $val = sprintf($CONFIG['export']['moneyFormat'], $val);
-            break;
-          case EXPORT_HTML_DECIMAL:
-            break;
-          case EXPORT_HTML_DECIMAL_1:
-            $val = sprintf('%.1f', $val);
-            break;
-          case EXPORT_HTML_DECIMAL_2:
-            $val = sprintf('%.2f', $val);
-            break;
-        }
-        $align = ($align!='' ? 'align='.$align : '');
-        $t .= '<td '.$align.'>'.$val.'</td>';
-      } else {
-        $t .= '<th>'.$val.'</th>';
-      }
-    }
-    return $t;
+    if (EXPORT_FORMAT_USEARRAY & $this->outputFormat) 
+        return $this->_makeArray(array_xssqw($d));
+        
+    return $this->formatter->format($d);
   }
     
   function outputHeader() {
@@ -145,9 +99,23 @@ class DBList {
     foreach ($this->returnFields as $f) {
       $d[$f->alias] = $f->heading;
     }
-    return $this->format($d, true);
+    return $this->format($d);
   }
 
+  function _makeArray($d) {
+    $row = array();
+    foreach ($d as $alias => $val) {
+      for ($i=0; $i<count($this->returnFields) && $this->returnFields[$i]->alias != $alias; $i++) {
+      }
+      $f = $this->returnFields[$i];
+      $cell = array();
+      $cell['value'] = $val;
+      $cell['format'] = $f->format;
+      $row[] = $cell;
+    }
+    return $row;
+  }
+  
  /**
    * Create a set of OutputFormatter objects to handle the display of this
    * object. 

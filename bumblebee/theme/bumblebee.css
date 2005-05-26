@@ -483,14 +483,15 @@ input.radioitem {
 
 #bumblebeeExport .exportdata {
   width: 100%;
-  border: 1px solid black;
+/*   border: 1px solid black; */
   margin: 1em;
   border-collapse: collapse;
   page-break-after: always;
 }
 
 #bumblebeeExport .exportdata tr {
-  border-bottom: 1px solid black;
+  border: 1px solid black;
+  border-top: none:
 }
 
 #bumblebeeExport .exportdata tr.header {
@@ -511,6 +512,15 @@ input.radioitem {
 
 #bumblebeeExport .exportSectionHeader {
   margin-top: 2em;
+  font-size: 110%;
+  font-weight: bold;
+}
+
+#bumblebeeExport td.exportSectionHeader, #bumblebeeExport tr.exportSectionHeader { 
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  padding-top: 2em;
   font-size: 110%;
   font-weight: bold;
 }
