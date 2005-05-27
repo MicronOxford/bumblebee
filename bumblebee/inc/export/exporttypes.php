@@ -37,15 +37,17 @@ class sqlFieldName {
   var $alias;
   var $heading;
   var $format;
+  var $width;
   
-  function sqlFieldName($name, $heading=NULL, $alias=NULL, $format=NULL) {
+  function sqlFieldName($name, $heading=NULL, $alias=NULL, $format=NULL, $width=NULL) {
     $this->name = $name;
     $this->heading = (isset($heading) ? $heading : $name);
-    if ($alias===NULL && strpos($name, '.')!== NULL) {
+    if (($alias===NULL || $alias==='') && strpos($name, '.')!== NULL) {
       $alias = strtr($name, '.', '_');
     }
-    $this->alias = (isset($alias) ? $alias : $name);
+    $this->alias = (isset($alias) && $alias != '' ? $alias : $name);
     $this->format = $format;
+    $this->width = $width;
   }
 } //sqlFieldName
 
@@ -76,16 +78,16 @@ class ExportTypeList {
     $type->join[] = array('table' => 'instruments', 'condition' =>  'instruments.id=bookings.instrument');
     $type->join[] = array('table' => 'projects', 'condition' =>  'bookings.projectid=projects.id');
     $type->fields = array(
-                      new sqlFieldName('bookwhen', 'Date/Time'), 
-                      new sqlFieldName('duration', 'Length'),
-                      new sqlFieldName('username', 'Username'), 
-                      new sqlFieldName('users.name', 'Name', 'user_name'), 
+                      new sqlFieldName('bookwhen', 'Date/Time', '', EXPORT_HTML_LEFT, '*'), 
+                      new sqlFieldName('duration', 'Length', '', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('username', 'Username', '', EXPORT_HTML_LEFT, '*'), 
+                      new sqlFieldName('users.name', 'Name', 'user_name', EXPORT_HTML_LEFT, '*'), 
                       new sqlFieldName('instruments.name', 'Instrument', 'instrument_name'), 
                       new sqlFieldName('CONCAT(instruments.name, \': \', instruments.longname)',
-                                      'Instrument Title', 'instrument_title'),
-                      new sqlFieldName('projects.name', 'Project name', 'project_name'), 
-                      new sqlFieldName('comments', 'User comments'),
-                      new sqlFieldName('log', 'Log entry')
+                                      'Instrument Title', 'instrument_title', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('projects.name', 'Project name', 'project_name', EXPORT_HTML_LEFT, '*'), 
+                      new sqlFieldName('comments', 'User comments', '', EXPORT_HTML_LEFT, 10),
+                      new sqlFieldName('log', 'Log entry', '', EXPORT_HTML_LEFT, 30)
                     );
     $type->where[] = 'deleted <> 1';
     $type->where[] = 'bookings.userid <> 0';
@@ -102,13 +104,13 @@ class ExportTypeList {
     $type->join[] = array('table' => 'instruments', 'condition' =>  'instruments.id=bookings.instrument');
     $type->join[] = array('table' => 'projects', 'condition' =>  'bookings.projectid=projects.id');
     $type->fields = array(
-                      new sqlFieldName('instruments.name', 'Instrument', 'instrument_name'),
+                      new sqlFieldName('instruments.name', 'Instrument', 'instrument_name', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('CONCAT(instruments.name, \': \', instruments.longname)',
-                                      'Instrument', 'instrument_title'),
-                      new sqlFieldName('projects.name', 'Project', 'project_name'),
-                      new sqlFieldName('projects.longname', 'Description'),
+                                      'Instrument', 'instrument_title', EXPORT_HTML_LEFT, 30),
+                      new sqlFieldName('projects.name', 'Project', 'project_name', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('projects.longname', 'Description', '', EXPORT_HTML_LEFT, 10),
                       new sqlFieldName('ROUND(SUM(TIME_TO_SEC(duration))/60/60,2)', 'Hours used',
-                                                                    'hours_used')
+                                                           'hours_used', EXPORT_HTML_RIGHT, '*')
                     );
     $type->where[] = 'deleted <> 1';
     $type->where[] = 'bookings.userid <> 0';
@@ -135,17 +137,17 @@ class ExportTypeList {
     $type->join[] = array('table' => 'groups', 'condition' =>  'groups.id=projectgroups.groupid');
     $type->join[] = array('table' => 'users', 'condition' =>  'users.id=bookings.userid');
     $type->fields = array(
-                      new sqlFieldName('instruments.name', 'Instrument', 'instrument_name'),
+                      new sqlFieldName('instruments.name', 'Instrument', 'instrument_name', EXPORT_HTML_LEFT, 10),
                       new sqlFieldName('CONCAT(instruments.name, \': \', instruments.longname)',
-                                      'Instrument', 'instrument_title'),
-                      new sqlFieldName('groups.name', 'Supervisor', 'group_name'),
-                      new sqlFieldName('groups.longname', 'Group', 'group_longname'),
-                      new sqlFieldName('projects.name', 'Project', 'project_name'),
+                                      'Instrument', 'instrument_title', EXPORT_HTML_LEFT, 20),
+                      new sqlFieldName('groups.name', 'Supervisor', 'group_name', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('groups.longname', 'Group', 'group_longname', EXPORT_HTML_LEFT, 20),
+                      new sqlFieldName('projects.name', 'Project', 'project_name', EXPORT_HTML_LEFT, 20),
                       new sqlFieldName('ROUND('
                                           .'SUM(TIME_TO_SEC(duration)*grouppc)/60/60/100,'
                                         .'2) ', 
-                                      'Weighted hours used',
-                                      'weighted_hours_used')
+                                      'Hours used',
+                                      'weighted_hours_used', EXPORT_HTML_RIGHT, '*')
                    );
     $type->where[] = 'deleted <> 1';
     $type->where[] = 'bookings.userid <> 0';
@@ -166,7 +168,7 @@ class ExportTypeList {
                                     'breakField' => 'group_name',
                                     'omitFields' => array('instrument_name', 
                                                           'group_name', 'group_longname'),
-                                    'extraFields'=> array (new sqlFieldName('users.name', 'Name', 'user_name')),
+                                    'extraFields'=> array (new sqlFieldName('users.name', 'Name', 'user_name', EXPORT_HTML_LEFT, '*')),
                                     'fieldOrder' => array('user_name', 'project_name', 'instrument_title', 'weighted_hours_used') )
                         );
     return $type;
@@ -177,16 +179,16 @@ class ExportTypeList {
     $type->join[] = array('table' => 'users', 'condition' =>  'users.id=bookings.userid');
     $type->join[] = array('table' => 'instruments', 'condition' =>  'instruments.id=bookings.instrument');
     $type->fields = array(
-                      new sqlFieldName('username', 'Username'), 
-                      new sqlFieldName('users.name', 'Name', 'user_name'), 
-                      new sqlFieldName('instruments.name', 'Instrument', 'instrument_name'), 
+                      new sqlFieldName('username', 'Username', '', EXPORT_HTML_LEFT, '*'), 
+                      new sqlFieldName('users.name', 'Name', 'user_name', EXPORT_HTML_LEFT, '*'), 
+                      new sqlFieldName('instruments.name', 'Instrument', 'instrument_name', EXPORT_HTML_LEFT, '*'), 
                       new sqlFieldName('CONCAT(instruments.name, \': \', instruments.longname)',
-                                      'Instrument Title', 'instrument_title'),
+                                      'Instrument Title', 'instrument_title', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('ROUND('
                                           .'SUM(TIME_TO_SEC(duration))/60/60,'
                                         .'2) ', 
                                       'Hours used',
-                                      'hours_used')
+                                      'hours_used', EXPORT_HTML_RIGHT, '*')
                     );
     $type->where[] = 'deleted <> 1';
     $type->where[] = 'bookings.userid <> 0';
@@ -203,15 +205,15 @@ class ExportTypeList {
     $type->join[] = array('table' => 'consumables', 'condition' =>  'consumables.id=consumables_use.consumable');
     $type->join[] = array('table' => 'projects', 'condition' =>  'consumables_use.projectid=projects.id');
     $type->fields = array(
-                      new sqlFieldName('consumables.name', 'Item Code', 'consumable_name'),
-                      new sqlFieldName('consumables.longname', 'Item Name', 'consumable_longname'),
+                      new sqlFieldName('consumables.name', 'Item Code', 'consumable_name', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('consumables.longname', 'Item Name', 'consumable_longname', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('CONCAT(consumables.name, \': \', consumables.longname)',
-                                      'Item Title', 'consumable_title'),
-                      new sqlFieldName('usewhen', 'Date'),
-                      new sqlFieldName('username', 'Username'), 
-                      new sqlFieldName('users.name', 'Name', 'user_name'), 
-                      new sqlFieldName('projects.name', 'Project', 'project_name'),
-                      new sqlFieldName('quantity', 'Quantity', 'quantity')
+                                      'Item Title', 'consumable_title', EXPORT_HTML_LEFT, 20),
+                      new sqlFieldName('usewhen', 'Date', '', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('username', 'Username', '', EXPORT_HTML_LEFT, '*'), 
+                      new sqlFieldName('users.name', 'Name', 'user_name', EXPORT_HTML_LEFT, '*'), 
+                      new sqlFieldName('projects.name', 'Project', 'project_name', EXPORT_HTML_LEFT, 10),
+                      new sqlFieldName('quantity', 'Quantity', 'quantity', EXPORT_HTML_RIGHT, '*')
                     );
     $type->pivot = array('consumables' => 
                               array('description'=> 'Group results by consumable',
@@ -238,15 +240,15 @@ class ExportTypeList {
     $type->join[] = array('table' => 'projectgroups', 'condition' =>  'projectgroups.projectid=consumables_use.projectid');
     $type->join[] = array('table' => 'groups', 'condition' =>  'groups.id=projectgroups.groupid');
     $type->fields = array(
-                      new sqlFieldName('consumables.name', 'Item Code', 'consumable_name'),
-                      new sqlFieldName('consumables.longname', 'Item Name', 'consumable_longname'),
+                      new sqlFieldName('consumables.name', 'Item Code', 'consumable_name', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('consumables.longname', 'Item Name', 'consumable_longname', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('CONCAT(consumables.name, \': \', consumables.longname)',
-                                      'Item Title', 'consumable_title'),
-                      new sqlFieldName('groups.name', 'Supervisor', 'group_name'),
-                      new sqlFieldName('groups.longname', 'Group', 'group_longname'),
-                      new sqlFieldName('projects.name', 'Project', 'project_name'),
-                      new sqlFieldName('quantity', 'Quantity', 'quantity'),
-                      new sqlFieldName('grouppc', 'Share (%)', 'share')
+                                      'Item Title', 'consumable_title', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('groups.name', 'Supervisor', 'group_name', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('groups.longname', 'Group', 'group_longname', EXPORT_HTML_LEFT, 20),
+                      new sqlFieldName('projects.name', 'Project', 'project_name', EXPORT_HTML_LEFT, 10),
+                      new sqlFieldName('quantity', 'Quantity', 'quantity', EXPORT_HTML_RIGHT, '*'),
+                      new sqlFieldName('grouppc', 'Share (%)', 'share', EXPORT_HTML_RIGHT, '*')
                     );
     $type->pivot = array('consumables' => 
                               array('description'=> 'Group results by consumables',
@@ -265,7 +267,7 @@ class ExportTypeList {
                                     'breakField' => 'group_name',
                                     'omitFields' => array('consumable_name', 
                                                           'group_name', 'group_longname'),
-                                    'extraFields'=> array (new sqlFieldName('users.name', 'Name', 'user_name')),
+                                    'extraFields'=> array (new sqlFieldName('users.name', 'Name', 'user_name', EXPORT_HTML_LEFT, '*')),
                                     'fieldOrder' => array('user_name', 'project_name', 'consumable_title', 'quantity', 'share') )
 
                         );
@@ -301,19 +303,19 @@ class ExportTypeList {
     $type->join[] = array('table' => 'projectgroups', 'condition' =>  'projectgroups.projectid=consumables_use.projectid');
     $type->join[] = array('table' => 'groups', 'condition' =>  'groups.id=projectgroups.groupid');
     $type->fields = array(
-                      new sqlFieldName('groups.name', 'Supervisor', 'group_name'),
-                      new sqlFieldName('groups.longname', 'Group'),
+                      new sqlFieldName('groups.name', 'Supervisor', 'group_name', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('groups.longname', 'Group', '', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('CONCAT(groups.name, \' (\', groups.longname, \')\')',
-                                      'Group Title', 'group_title'),
+                                      'Group Title', 'group_title', EXPORT_HTML_LEFT, 10),
                       new sqlFieldName('CONCAT(consumables.name, \': \', consumables.longname)',
-                                      'Item Title', 'consumable_title'),
-                      new sqlFieldName('consumables.name', 'Item', 'consumable_name'),
-                      new sqlFieldName('consumables.longname', 'Description', 'consumable_longname'),
-                      new sqlFieldName('consumables.cost', 'Unit cost', 'unitcost', EXPORT_HTML_MONEY),
-                      new sqlFieldName('grouppc', 'Share (%)'),
-                      new sqlFieldName('SUM(consumables_use.quantity)', 'Quantity', 'totquantity'),
+                                      'Item Title', 'consumable_title', EXPORT_HTML_LEFT, 10),
+                      new sqlFieldName('consumables.name', 'Item', 'consumable_name', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('consumables.longname', 'Description', 'consumable_longname', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('consumables.cost', 'Unit cost', 'unitcost', EXPORT_HTML_RIGHT|EXPORT_HTML_MONEY, '*'),
+                      new sqlFieldName('grouppc', 'Share (%)', '', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('SUM(consumables_use.quantity)', 'Quantity', 'totquantity', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('ROUND((consumables.cost*grouppc/100) *SUM(consumables_use.quantity),2)',
-                                          'Cost to group', 'cost_to_group', EXPORT_HTML_MONEY)
+                                          'Cost to group', 'cost_to_group', EXPORT_HTML_RIGHT|EXPORT_HTML_MONEY, '*')
                     );
     $type->pivot = array('groups' =>
                               array('description'=> 'Group results by research group',
@@ -346,19 +348,19 @@ class ExportTypeList {
     
     $type->fields = array(
                       new sqlFieldName('CONCAT(instruments.name, \': \', instruments.longname)',
-                                      'Instrument', 'instrument_title'),
-                      new sqlFieldName('instruments.name', 'Instrument', 'instrument_name'), 
-                      new sqlFieldName('groups.name', 'Supervisor', 'group_name'),
-                      new sqlFieldName('SUM(ROUND(TIME_TO_SEC(duration)/60/60,2))', 'Total hours', 'total_hours', EXPORT_HTML_DECIMAL_2|EXPORT_HTML_RIGHT),
-                      new sqlFieldName($this->_formula['weightDays'], 'Days used', 'weighted_days_used', EXPORT_HTML_DECIMAL_2|EXPORT_HTML_RIGHT),
-                      new sqlFieldName('grouppc', 'Share (%)', 'share'),
+                                      'Instrument', 'instrument_title', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('instruments.name', 'Instrument', 'instrument_name', EXPORT_HTML_LEFT, '*'), 
+                      new sqlFieldName('groups.name', 'Supervisor', 'group_name', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('SUM(ROUND(TIME_TO_SEC(duration)/60/60,2))', 'Total hours', 'total_hours', EXPORT_HTML_DECIMAL_2|EXPORT_HTML_RIGHT, '*'),
+                      new sqlFieldName($this->_formula['weightDays'], 'Days used', 'weighted_days_used', EXPORT_HTML_DECIMAL_2|EXPORT_HTML_RIGHT, '*'),
+                      new sqlFieldName('grouppc', 'Share (%)', 'share', EXPORT_HTML_RIGHT, '*'),
                       //new sqlFieldName('costs.costfullday', 'Daily rate', 'genrate'),
                       //new sqlFieldName('speccosts.costfullday', 'Daily rate', 'specrate'),
-                      new sqlFieldName($this->_formula['rate'], 'Rate', 'rate',  EXPORT_HTML_MONEY|EXPORT_HTML_RIGHT),
+                      new sqlFieldName($this->_formula['rate'], 'Rate', 'rate',  EXPORT_HTML_MONEY|EXPORT_HTML_RIGHT, '*'),
                       //new sqlFieldName('('.$this->_formula['fullAmount'].')*grouppc/100', 'Cost', 'fullcost',  EXPORT_HTML_MONEY|EXPORT_HTML_RIGHT),
                       //new sqlFieldName($this->_formula['dailymarkdown'], 'Daily Discount (%)', 'dailydiscount',  EXPORT_HTML_DECIMAL_2|EXPORT_HTML_RIGHT),
-                      new sqlFieldName($this->_formula['discount'], 'Bulk Discount (%)', 'discount',  EXPORT_HTML_DECIMAL_2|EXPORT_HTML_RIGHT),
-                      new sqlFieldName('FLOOR(('.$this->_formula['finalCost'].')*grouppc/100)', 'Cost', 'cost',  EXPORT_HTML_MONEY)
+                      new sqlFieldName($this->_formula['discount'], 'Bulk Discount (%)', 'discount',  EXPORT_HTML_DECIMAL_2|EXPORT_HTML_RIGHT, '*'),
+                      new sqlFieldName('FLOOR(('.$this->_formula['finalCost'].')*grouppc/100)', 'Cost', 'cost',  EXPORT_HTML_RIGHT|EXPORT_HTML_MONEY, '*')
                    );
     $type->where[] = 'deleted <> 1';
     $type->where[] = 'bookings.userid <> 0';

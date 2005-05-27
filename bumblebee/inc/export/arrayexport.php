@@ -14,6 +14,10 @@ class ArrayExport {
   var $exporter;
   var $export;
   var $header;
+  var $author = 'BumbleBee';
+  var $creator = 'BumbleBee Instrument Management System : bumblebeeman.sf.net';
+  var $subject = 'Instrument and consumable usage report';
+  var $keywords = 'instruments, consumables, usage, report, billing, invoicing';
 
   function ArrayExport(&$dblist, $breakfield) {
     $this->dblist   =& $dblist;
@@ -45,7 +49,7 @@ class ArrayExport {
       $ea[] = array('type' => EXPORT_REPORT_TABLE_END,   'data' => '');
     }  
     $ea[] = array('type' => EXPORT_REPORT_END,  'data' => '');
-    $ea['metadata'] = array('numcols'=>$numcols);
+    $ea['metadata'] = $this->_getMetaData($numcols);
     //preDump($ea);
     $this->export =& $ea;
   }
@@ -55,8 +59,21 @@ class ArrayExport {
     return $s;
   }  
   
-  
-
+  function _getMetaData($numcols) {
+    $columns = array();
+    foreach ($this->dblist->formatdata[0] as $f) {
+      $columns[] = $f['width'];
+    }
+    return array(
+                  'numcols' => $numcols,
+                  'author'  => $this->author,
+                  'creator' => $this->creator,
+                  'title'   => $this->header,
+                  'keywords' => $this->keywords,
+                  'subject' => $this->subject,
+                  'colwidths' => $columns
+                );
+  }
 
 } // class ArrayExport
 

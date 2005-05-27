@@ -15,7 +15,7 @@ class BookingEntryRO {
   }
 
   function _fill() {
-    $bookdata = new BookingData(array('id' => $this->id));
+    $bookdata = new BookingData(array('id' => $this->id), true);
     $this->data = $bookdata->dataEntry();
   }
 

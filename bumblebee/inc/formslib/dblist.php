@@ -76,7 +76,7 @@ class DBList {
     }
   }
     
-  function format($data) {
+  function format($data, $isHeader=false) {
     $d = array();
     foreach ($this->fieldOrder as $f) {
       if (! array_key_exists($f, $this->omitFields)) {
@@ -89,7 +89,7 @@ class DBList {
     if (EXPORT_FORMAT_TAB & $this->outputFormat) 
         return join(preg_replace("/^(.*\t.*)$/", '"$1"', $d), "\t");
     if (EXPORT_FORMAT_USEARRAY & $this->outputFormat) 
-        return $this->_makeArray(array_xssqw($d));
+        return $this->_makeArray($d, $isHeader);
         
     return $this->formatter->format($d);
   }
@@ -99,23 +99,44 @@ class DBList {
     foreach ($this->returnFields as $f) {
       $d[$f->alias] = $f->heading;
     }
-    return $this->format($d);
+    return $this->format($d, true);
   }
 
-  function _makeArray($d) {
+  function _makeArray($d, $isHeader=false) {
     $row = array();
     foreach ($d as $alias => $val) {
       for ($i=0; $i<count($this->returnFields) && $this->returnFields[$i]->alias != $alias; $i++) {
       }
       $f = $this->returnFields[$i];
       $cell = array();
-      $cell['value'] = $val;
+      $cell['value'] = $this->formatVal($val, $f->format, $isHeader);
       $cell['format'] = $f->format;
+      $cell['width'] =  isset($f->width) ? $f->width : 10;
       $row[] = $cell;
     }
     return $row;
   }
-  
+
+  function formatVal($val, $format, $isHeader=false) {
+    global $CONFIG;
+    if ($isHeader)
+      return $val;
+    switch ($format & EXPORT_HTML_NUMBER_MASK) {
+      case EXPORT_HTML_MONEY:
+        $val = sprintf($CONFIG['export']['moneyFormat'], $val);
+        break;
+      case EXPORT_HTML_DECIMAL_1:
+        $val = sprintf('%.1f', $val);
+        break;
+      case EXPORT_HTML_DECIMAL_2:
+        $val = sprintf('%.2f', $val);
+        break;
+      default:
+        //echo ($format& EXPORT_HTML_NUMBER_MASK).'<br/>';
+    }
+    return $val;
+  }
+    
  /**
    * Create a set of OutputFormatter objects to handle the display of this
    * object. 

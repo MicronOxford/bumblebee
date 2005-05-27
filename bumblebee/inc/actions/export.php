@@ -171,6 +171,7 @@ class ActionExport extends BufferedAction {
     if ($this->format & EXPORT_FORMAT_USEARRAY) {
       $exportArray = new ArrayExport($list, $this->_export->breakField);
       $exportArray->header = $this->_reportHeader();
+      $exportArray->author = $this->auth->name;
       $exportArray->makeExportArray();
       //preDump($exportArray->export);
     }
@@ -184,6 +185,9 @@ class ActionExport extends BufferedAction {
       // construct the PDF from $htmlbuffer
       $pdfExport = $this->_preparePDFExport($exportArray);
       $pdfExport->makePDFBuffer();
+      
+      //$this->unbuffer();
+      
       $this->_getFilename();
       $this->bufferedStream =& $pdfExport->export;
       // the data itself will be dumped later by the action driver (index.php)
@@ -245,7 +249,7 @@ class ActionExport extends BufferedAction {
   }
 
   function _getFilename() {
-    switch ($this->format & EXPORT_FORMAT_DELIMITED_MASK) {
+    switch ($this->format & EXPORT_FORMAT_MASK) {
       case EXPORT_FORMAT_CSV:
         $ext = 'csv';
         $type = 'text/csv';

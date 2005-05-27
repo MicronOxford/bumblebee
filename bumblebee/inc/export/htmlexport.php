@@ -28,9 +28,6 @@ class HTMLExport {
     unset($ea['metadata']);
     $buf = '';
     for ($i=0; $i<count($ea); $i++) {
-      if (! isset($ea[$i]['type'])) {
-        echo $i.'<br/>';
-      }
       if (! $this->bigtable) {
         switch ($ea[$i]['type']) {
           case EXPORT_REPORT_START:
@@ -126,7 +123,6 @@ class HTMLExport {
   }
 
   function _formatCellHTML($d, $isHeader) {
-    global $CONFIG;
     $t = '';
     $val = $d['value'];
     if (! $isHeader) {
@@ -138,39 +134,37 @@ class HTMLExport {
           $align='left';
           break;
         case EXPORT_HTML_RIGHT:
-          $align='center';
+          $align='right';
           break;
         default:
           $align='';
       }
-      switch ($d['format'] & EXPORT_HTML_NUMBER_MASK) {
-        case EXPORT_HTML_MONEY:
-          $val = sprintf($CONFIG['export']['moneyFormat'], $val);
-          break;
-        case EXPORT_HTML_DECIMAL_1:
-          $val = sprintf('%.1f', $val);
-          break;
-        case EXPORT_HTML_DECIMAL_2:
-          $val = sprintf('%.2f', $val);
-          break;
-      }
       $align = ($align!='' ? 'align='.$align : '');
-      $t .= '<td '.$align.'>'.$val.'</td>';
+      $t .= '<td '.$align.'>'.htmlentities($val).'</td>';
     } else {
-      $t .= '<th>'.$val.'</th>';
+      $t .= '<th>'.htmlentities($val).'</th>';
     }
     return $t;
   }
   
-  //FIXME: this should read in a config file etc
   function wrapHTMLBuffer() {
-/*    $filename = $CONFIG['export']['htmlWrapperFile'];
-    $fd = fopen ($filename, 'r');
-    $contents = fread ($fd, filesize ($filename));
-    fclose ($fd);  */
+    global $CONFIG;
+    global $BASEPATH;
+    $filename = $CONFIG['export']['htmlWrapperFile'];
+    $fd = fopen($filename, 'r');
+    $contents = fread($fd, filesize ($filename));
+    fclose($fd); 
     $title = 'Data export';
-    $enchtml = rawurlencode('<html><head><title>'.$this->header.'</title></head>'
-        .'<body>'.$this->export.'</body></html>');
+    $table = preg_replace('/\$/', '&#'.ord('$').';', $this->export);
+    $contents = preg_replace('/__TITLE__/', $title, $contents);
+    $contents = preg_replace('/__BASEPATH__/', $BASEPATH, $contents);
+    //return $contents;
+    //preDump($contents);
+    $contents = preg_replace('/__CONTENTS__/', $table, $contents);
+    //encode the HTML so that it doesn't get interpreted by the browser and cause big problems
+    //the PHP function rawurlencode() can be reversed by the JavaScript function unescape()
+    //which is then a convenient pairing to use rather than replacing everything manually.
+    $enchtml = rawurlencode($contents);
     $jsbuf = '<script type="text/javascript">
 <!--
   function BBwriteAll(data) {
