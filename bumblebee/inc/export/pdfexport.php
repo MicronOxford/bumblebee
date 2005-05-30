@@ -101,7 +101,25 @@ class PDFExport {
   }
   
   function _getColWidth($col) {
-    //FIXME: is this radom thing good enough? what about fitting in the header?
+    //why are we doing lots of calls into the pdf here? is it bad encapsulation?
+    //We have to have a font chosen within FPDF to perform these length calculations
+    $this->pdf->_setTableFont();
+    $ea =& $this->ea->export;
+    $i=0;
+    $width = 0;
+    for ($key=1; $key<count($ea)-1; $key++) {
+      $newWidth = $this->pdf->GetStringWidth($ea[$key]['data'][$col]['value']);
+      if ($ea[$key]['type'] == EXPORT_REPORT_TABLE_HEADER)
+        $newWidth *= 1.1;     //FIXME: we should do this calculation properly!
+      //echo "VAL=".$ea[$key]['data'][$col]['value'].", WIDTH=$newWidth/$width.<br/>";
+      $width = max($width, $newWidth);
+    }
+    //echo "WIDTH=$width.<br/>";
+    return $width + $this->minAutoMargin;
+  }
+
+  function _getColWidthRand($col) {
+    //FIXME: is this random thing good enough? what about fitting in the header?
     //why are we doing lots of calls into the pdf here? is it bad encapsulation?
     //We have to have a font chosen within FPDF to perform these length calculations
     $this->pdf->_setTableFont();
@@ -126,7 +144,7 @@ class PDFExport {
     //echo "WIDTH=$width.<br/>";
     return $width + $this->minAutoMargin;
   }
-
+  
   function _parseArray() {
     //$this->log('Making HTML representation of data');
     $ea =& $this->ea->export;
@@ -159,6 +177,9 @@ class PDFExport {
         case EXPORT_REPORT_TABLE_HEADER:
           $this->pdf->tableHeader($this->_formatRow($ea[$i]['data'], true));
           break;
+        case EXPORT_REPORT_TABLE_TOTAL:
+          $this->pdf->tableTotal($this->_formatRow($ea[$i]['data'], false, 'TT'));
+          break;
         case EXPORT_REPORT_TABLE_FOOTER:
           $this->pdf->tableFooter($this->_formatRow($ea[$i]['data']));
           break;
@@ -170,15 +191,15 @@ class PDFExport {
     }      
   }
    
-  function _formatRow($row, $isHeader=false) {
+  function _formatRow($row, $isHeader=false, $border=NULL) {
     $rowpdf = array();
     for ($j=0; $j<count($row); $j++) {
-      $rowpdf[] = $this->_formatCell($row[$j], $j, $isHeader);
+      $rowpdf[] = $this->_formatCell($row[$j], $j, $isHeader, $border);
     }
     return $rowpdf;
   }
 
-  function _formatCell($d, $col, $isHeader) {
+  function _formatCell($d, $col, $isHeader, $setborder) {
     $val = $d['value'];
     if (! $isHeader) {
       switch($d['format'] & EXPORT_HTML_ALIGN_MASK) {
@@ -199,6 +220,9 @@ class PDFExport {
       $fill = 1;
       $border = $this->headerLines;
     }
+    if (isset($setborder)) {
+      $border = $setborder;
+    }
     return array('align'=>$align, 'value'=>$val, 'fill'=>$fill, 'border'=>$border);
   }
 
@@ -214,7 +238,7 @@ class BrandedPDF extends FPDF {
     
   function Header() {
     //Logo
-    $this->Image('theme/images/pfpc.png',10,8,33);
+    $this->Image('theme/export/logo.png',10,8,33);
     //Arial bold 15
     $this->SetFont('Arial','B',15);
     //Move to the right
@@ -253,7 +277,11 @@ class TabularPDF extends BrandedPDF {
   var $normalLineHeight = 5;
   var $headerLineHeight = 6;
   var $footerLineHeight = 4;
+  var $doubleLineWidth  = 0.2;
+  var $singleLineWidth  = 0.3;
   var $sectionHeaderLineHeight = 8;
+  var $cellTopMargin;
+  var $singleCellTopMargin    = 1;
   
   function PDF($orientation, $measure, $format) {
     parent::FPDF($orientation, $measure, $format);
@@ -263,10 +291,11 @@ class TabularPDF extends BrandedPDF {
   function _setTableFont() {
     $this->SetFont('Arial','',12);
     $this->SetDrawColor(0,0,0);
-    $this->SetLineWidth(.3);
+    $this->SetLineWidth($this->singleLineWidth);
     $this->SetFillColor(224,235,255);
     $this->SetTextColor(0);
     $this->lineHeight = $this->normalLineHeight;
+    $this->cellTopMargin = $this->singleCellTopMargin;
   }
   
   function _setSectionHeaderFont() {
@@ -287,6 +316,13 @@ class TabularPDF extends BrandedPDF {
     $this->SetTextColor(0, 0, 0);
     $this->SetFont('','B', '9');
     $this->lineHeight = $this->footerLineHeight;
+  }
+  
+  function _setTableTotalFont() {
+    $this->SetTextColor(0, 0, 0);
+    $this->SetLineWidth($this->doubleLineWidth);
+    $this->lineHeight = $this->normalLineHeight; //+ 4*$this->doubleLineWidth;
+    $this->cellTopMargin = $this->singleCellTopMargin + 4*$this->doubleLineWidth;
   }
   
   function sectionHeader($header, $skipAddPage=false) {
@@ -334,6 +370,12 @@ class TabularPDF extends BrandedPDF {
     $this->_setTableFont();
   }
   
+  function tableTotal($data) {
+    $this->_setTableTotalFont();
+    $this->_row($data);
+    $this->_setTableFont();
+  }
+  
   function tableEnd() {
     $this->_preventNewPage = true;
     $currHeight = $this->lineHeight;
@@ -360,41 +402,49 @@ class TabularPDF extends BrandedPDF {
     $nb=0;
     for($i=0; $i<count($data); $i++)
         $nb=max($nb, $this->NbLines($widths[$i], $data[$i]['value']));
-    $rowHeight = $this->lineHeight*$nb; 
+    $rowHeight = $this->lineHeight*$nb + $this->cellTopMargin; 
     //Issue a page break first if needed
     $this->CheckPageBreak($rowHeight);
+    $y0bg  = $this->GetY();
+    $y0txt = $y0bg + $this->cellTopMargin;
     //Draw the cells of the row
+    $this->SetY($y0txt);
     for($i=0; $i<count($data); $i++) {
       $align=isset($data[$i]['align']) ? $data[$i]['align'] : 'L';
       //Save the current position
       $x = $this->GetX();
-      $y = $this->GetY();
+      //$y = $this->GetY();
       //Draw the background of the cell if appropriate
       if ($data[$i]['fill'])
-        $this->Rect($x, $y, $widths[$i], $rowHeight, 'F');
+        $this->Rect($x, $y0bg, $widths[$i], $rowHeight+$this->cellTopMargin, 'F');
       //Draw the borders requested
       if ($data[$i]['border']) {
         if (strpos($data[$i]['border'], 'B') !== false) {
           //echo 'B';
-          $this->line($x,             $y+$rowHeight, $x+$widths[$i], $y+$rowHeight);
+          $this->line($x,             $y0txt+$rowHeight, $x+$widths[$i], $y0txt+$rowHeight);
         }
         if (strpos($data[$i]['border'], 'T') !== false) {
           //echo 'T';
-          $this->line($x,             $y,            $x+$widths[$i], $y);
+          $this->line($x,             $y0bg,            $x+$widths[$i], $y0bg);
+        }
+        if (strpos($data[$i]['border'], 'TT') !== false) {
+          //double line on the top of the cell
+          $dy=$this->doubleLineWidth*3; //mm
+          $this->line($x,             $y0bg+$dy,        $x+$widths[$i], $y0bg+$dy);
         }
         if (strpos($data[$i]['border'], 'L') !== false) {
           //echo 'L';
-          $this->line($x,             $y,            $x,             $y+$rowHeight);
+          $this->line($x,             $y0bg,            $x,             $y0txt+$rowHeight);
         }
         if (strpos($data[$i]['border'], 'R') !== false) {
           //echo 'R';
-          $this->line($x+$widths[$i], $y,            $x+$widths[$i], $y+$rowHeight);
+          $this->line($x+$widths[$i], $y0bg,            $x+$widths[$i], $y0txt+$rowHeight);
         }
       }
       //Print the text
       $this->MultiCell($widths[$i], $this->lineHeight, $data[$i]['value'], '', $align, 0);
       //Put the position to the right of the cell
-      $this->SetXY($x+$widths[$i],$y);
+      $this->SetXY($x+$widths[$i],$y0txt);
     }
     //Go to the next line
     $this->Ln($rowHeight);

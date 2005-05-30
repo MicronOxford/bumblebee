@@ -54,6 +54,11 @@ class HTMLExport {
                         .$this->_formatRowHTML($ea[$i]['data'], true)
                     .'</tr>'.$eol;
             break;
+          case EXPORT_REPORT_TABLE_TOTAL:
+            $buf .= '<tr class="totals">'
+                        .$this->_formatRowHTML($ea[$i]['data'])
+                    .'</tr>'.$eol;
+            break;
           case EXPORT_REPORT_TABLE_FOOTER:
             $buf .= '<tr class="footer">'
                         .$this->_formatRowHTML($ea[$i]['data'])
@@ -88,6 +93,11 @@ class HTMLExport {
             break;
           case EXPORT_REPORT_TABLE_FOOTER:
             $buf .= '<tr class="footer">'
+                        .$this->_formatRowHTML($ea[$i]['data'])
+                    .'</tr>'.$eol;
+            break;
+          case EXPORT_REPORT_TABLE_TOTAL:
+            $buf .= '<tr class="totals">'
                         .$this->_formatRowHTML($ea[$i]['data'])
                     .'</tr>'.$eol;
             break;

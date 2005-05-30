@@ -1,3 +1,13 @@
+2005-05-30 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* PDF export improvements  
+	* inclusion of the SUM of a column in the export 
+	* allow the SQL to be a UNION between different queries  
+	* instrument use+consumable combined data export implemented 
+
+2005-05-28 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* working PDF export of tablular data with pretty-table, multiline-cells etc 
+	* customisation of PDF export not possible yet: fixed fonts, sizes, colours, header image 
+
 2005-05-26 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* clean-up of export interfaces, split into multiple classes etc 
 	* introduced intermediate array format for producing HTML to permit BigTable export and facilitate PDF generation 

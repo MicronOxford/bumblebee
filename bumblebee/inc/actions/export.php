@@ -211,40 +211,58 @@ class ActionExport extends BufferedAction {
     $start = $this->_daterange->getStart();
     $stop  = $this->_daterange->getStop();
     $stop->addDays(1);
-    
-    $where = $this->_export->where;
-    $where[] = $this->_export->timewhere[0].qw($start->datetimestring);
-    $where[] = $this->_export->timewhere[1].qw($stop->datetimestring);
-    for ($lim = 0; $lim < count($this->_export->limitation); $lim++) {
+
+    if (is_array($this->_export->union) && count($this->_export->union)) {
+      $union = array();
+      $limitsOffset = 0;
+      foreach ($this->_export->union as $export) {
+        $union[] = $this->_getBDListFromExport($export, $start, $stop, $limitsOffset);
+        $limitsOffset += count($export->limitation);
+      }
+      $list = $this->_getBDListFromExport($this->_export, $start, $stop);
+      $list->union = $union;
+    } else {
+      $list = $this->_getBDListFromExport($this->_export, $start, $stop);
+    }
+    return $list;
+  }
+  
+  function _getBDListFromExport(&$export, $start, $stop, $limitsOffset=0) {
+    $where = $export->where;
+    $where[] = $export->timewhere[0].qw($start->datetimestring);
+    $where[] = $export->timewhere[1].qw($stop->datetimestring);
+    for ($lim = 0; $lim < count($export->limitation); $lim++) {
       $limitation = array();
-      $namebase = 'limitation-'.$lim.'-';
+      $namebase = 'limitation-'.($limitsOffset+$lim).'-';
       for ($j=0; isset($this->PD[$namebase.$j.'-row']); $j++) {
-        $item = issetSet($this->PD,$namebase.$j.'-'.$this->_export->limitation[$lim]);
+        $item = issetSet($this->PD,$namebase.$j.'-'.$export->limitation[$lim]);
         if (issetSet($this->PD,$namebase.$j.'-selected')) {
-          $limitation[] = $this->_export->limitation[$lim].'.id='.qw($item);
+          $limitation[] = $export->limitation[$lim].'.id='.qw($item);
         }
       }
-      $where[] = '('.join($limitation, ' OR ').')';
+      if (count($limitation)) {
+        $where[] = '('.join($limitation, ' OR ').')';
+      }
     }
     // work out what view/pivot of the data we want to see
-    if (count($this->_export->limitation) > 1 && is_array($this->_export->pivot)) {
-      $pivot = $this->_export->pivot[$this->PD['pivot']];
-      $this->_export->group      = $pivot['group'];
-      $this->_export->omitFields = array_flip($pivot['omitFields']);
-      $this->_export->breakField = $pivot['breakField'];
+    if (count($export->limitation) > 1 && is_array($export->pivot)) {
+      $pivot = $export->pivot[$this->PD['pivot']];
+      $export->group      = $pivot['group'];
+      $export->omitFields = array_flip($pivot['omitFields']);
+      $export->breakField = $pivot['breakField'];
       if (isset($pivot['fieldOrder']) && is_array($pivot['fieldOrder'])) {
-        $this->_export->fieldOrder = $pivot['fieldOrder'];
+        $export->fieldOrder = $pivot['fieldOrder'];
       }
       if (isset($pivot['extraFields']) && is_array($pivot['extraFields'])) {
-        $this->_export->fields = array_merge($this->_export->fields, $pivot['extraFields']);
+        $export->fields = array_merge($export->fields, $pivot['extraFields']);
       }
     }
-    $list = new DBList($this->_export->basetable, $this->_export->fields, join($where, ' AND '));
-    $list->join = array_merge($list->join, $this->_export->join);
-    $list->group = $this->_export->group;
-    $list->order = $this->_export->order;
-    $list->distinct = $this->_export->distinct;
-    $list->fieldOrder = $this->_export->fieldOrder;
+    $list = new DBList($export->basetable, $export->fields, join($where, ' AND '));
+    $list->join = array_merge($list->join, $export->join);
+    $list->group = $export->group;
+    $list->order = $export->order;
+    $list->distinct = $export->distinct;
+    $list->fieldOrder = $export->fieldOrder;
     return $list;
   }
 

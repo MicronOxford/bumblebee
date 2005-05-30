@@ -524,3 +524,8 @@ input.radioitem {
   font-size: 110%;
   font-weight: bold;
 }
+
+#bumblebeeExport tr.totals {
+  padding-top: 0.5em;
+  border-top: 3px double black;
+}

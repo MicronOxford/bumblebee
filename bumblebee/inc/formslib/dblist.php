@@ -10,6 +10,7 @@ class DBList {
   var $join = array();
   var $order;
   var $group;
+  var $union;
   var $returnFields;
   var $omitFields = array();
   var $fieldOrder;
@@ -37,8 +38,28 @@ class DBList {
   }
 
   function fill() {
+    // construct the query
+    if (is_array($this->union) && count($this->union)) {
+      $union = array();
+      foreach ($this->union as $u) {
+        $union[] = $u->_getSQLsyntax();
+      }
+      $q = '('.join($union, ') UNION (').')';
+      $q .= (is_array($this->order) ? ' ORDER BY '.join($this->order,', ') : '');
+      $q .= (is_array($this->group) ? ' GROUP BY '.join($this->group,', ') : '');
+    } else {
+      $q = $this->_getSQLsyntax();
+    }
+    $sql = db_get($q, $this->fatal_sql);
+    $this->data = array();
+    // FIXME: mysql specific functions
+    while ($g = mysql_fetch_array($sql)) {
+      $this->data[] = $g;
+    }
+  }
+  
+  function _getSQLsyntax() {
     global $TABLEPREFIX;
-    // start constructing the query
     $fields = array();
     foreach ($this->returnFields as $v) {
       $fields[] = $v->name .(isset($v->alias) ? ' AS '.$v->alias : '');
@@ -50,16 +71,10 @@ class DBList {
       $q .= ' LEFT JOIN '.$TABLEPREFIX.$t['table'].' AS '.(isset($t['alias']) ? $t['alias'] : $t['table'])
            .' ON '.$t['condition'];
     }
-    $fields = array();
     $q .= ' WHERE '. join($this->restriction, ' AND ');
     $q .= (is_array($this->order) ? ' ORDER BY '.join($this->order,', ') : '');
     $q .= (is_array($this->group) ? ' GROUP BY '.join($this->group,', ') : '');
-    $sql = db_get($q, $this->fatal_sql);
-    $this->data = array();
-    // FIXME: mysql specific functions
-    while ($g = mysql_fetch_array($sql)) {
-      $this->data[] = $g;
-    }
+    return $q;
   }
 
   function formatList() {
@@ -76,7 +91,7 @@ class DBList {
     }
   }
     
-  function format($data, $isHeader=false) {
+  function format($data/*, $isHeader=false*/) {
     $d = array();
     foreach ($this->fieldOrder as $f) {
       if (! array_key_exists($f, $this->omitFields)) {
@@ -89,7 +104,7 @@ class DBList {
     if (EXPORT_FORMAT_TAB & $this->outputFormat) 
         return join(preg_replace("/^(.*\t.*)$/", '"$1"', $d), "\t");
     if (EXPORT_FORMAT_USEARRAY & $this->outputFormat) 
-        return $this->_makeArray($d, $isHeader);
+        return $this->_makeArray($d/*, $isHeader*/);
         
     return $this->formatter->format($d);
   }
@@ -99,17 +114,18 @@ class DBList {
     foreach ($this->returnFields as $f) {
       $d[$f->alias] = $f->heading;
     }
-    return $this->format($d, true);
+    return $this->format($d/*, true*/);
   }
 
-  function _makeArray($d, $isHeader=false) {
+  function _makeArray($d/*, $isHeader=false*/) {
     $row = array();
     foreach ($d as $alias => $val) {
       for ($i=0; $i<count($this->returnFields) && $this->returnFields[$i]->alias != $alias; $i++) {
       }
       $f = $this->returnFields[$i];
       $cell = array();
-      $cell['value'] = $this->formatVal($val, $f->format, $isHeader);
+      //$cell['value'] = $this->formatVal($val, $f->format, $isHeader);
+      $cell['value'] = $val;
       $cell['format'] = $f->format;
       $cell['width'] =  isset($f->width) ? $f->width : 10;
       $row[] = $cell;
@@ -117,7 +133,7 @@ class DBList {
     return $row;
   }
 
-  function formatVal($val, $format, $isHeader=false) {
+/*  function formatVal($val, $format, $isHeader=false) {
     global $CONFIG;
     if ($isHeader)
       return $val;
@@ -135,7 +151,7 @@ class DBList {
         //echo ($format& EXPORT_HTML_NUMBER_MASK).'<br/>';
     }
     return $val;
-  }
+  }*/
     
  /**
    * Create a set of OutputFormatter objects to handle the display of this

@@ -225,3 +225,7 @@ tr.itemrow:hover {
 
 #bumblebeeExport .exportSectionHeader {
 }
+
+#bumblebeeExport tr.totals {
+  background-color: #f0f0ff;
+}

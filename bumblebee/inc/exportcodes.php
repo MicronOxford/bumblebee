@@ -28,8 +28,9 @@ define('EXPORT_REPORT_SECTION_HEADER',     4);
 define('EXPORT_REPORT_TABLE_START',        5);
 define('EXPORT_REPORT_TABLE_HEADER',       6);
 define('EXPORT_REPORT_TABLE_ROW',          7);
-define('EXPORT_REPORT_TABLE_FOOTER',       8);
-define('EXPORT_REPORT_TABLE_END',          9);
+define('EXPORT_REPORT_TABLE_TOTAL',        8);
+define('EXPORT_REPORT_TABLE_FOOTER',       9);
+define('EXPORT_REPORT_TABLE_END',         10);
   
                                           
                                             
@@ -48,7 +49,7 @@ define('EXPORT_HTML_DECIMAL_2',    EXPORT_HTML_NUMBER|256);  // round to 2 sig f
 define('EXPORT_HTML_DECIMAL_MASK', EXPORT_HTML_DECIMAL_1|EXPORT_HTML_DECIMAL_2);
 define('EXPORT_HTML_NUMBER_MASK',  EXPORT_HTML_MONEY|EXPORT_HTML_DECIMAL_MASK);
 
-
+define('EXPORT_CALC_TOTAL',        2048);
 
 
 function exportStringToCode($s) {
