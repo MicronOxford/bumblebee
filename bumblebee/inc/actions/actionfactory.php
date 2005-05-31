@@ -23,11 +23,12 @@ include_once 'deletedbookings.php';
 include_once 'masquerade.php';
 include_once 'costs.php';
 include_once 'specialcosts.php';
+include_once 'instrumentclass.php';
 //include_once 'adminconfirm.php';
 include_once 'emaillist.php';
 include_once 'report.php';
 include_once 'export.php';
-//include_once 'billing.php';
+include_once 'billing.php';
 include_once 'backupdatabase.php';
 
 include_once 'unknownaction.php';
@@ -178,6 +179,8 @@ class ActionFactory {
         return new ActionCosts($this->_auth, $this->PDATA);
       case $act['specialcosts']:
         return new ActionSpecialCosts($this->_auth, $this->PDATA);
+      case $act['instrumentclass']:
+        return new ActionInstrumentClass($this->_auth, $this->PDATA);
       /*case $act['bookmeta']:
         return new ActionBookmeta();
       case $act['adminconfirm']:

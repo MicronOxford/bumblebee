@@ -41,7 +41,8 @@ class ArrayExport {
       $this->_resetTotals();
       if ($breakReport) {
         $ea[] = array('type' => EXPORT_REPORT_SECTION_HEADER, 
-                      'data' => $this->_sectionHeader($this->dblist->data[$entry]));;
+                      'data' => $this->_sectionHeader($this->dblist->data[$entry]),
+                      'metadata' => $this->_getColWidths($numcols, $entry));
         $initial = $this->dblist->data[$entry][$breakfield];
       }
       $ea[] = array('type' => EXPORT_REPORT_TABLE_START,  
@@ -65,7 +66,7 @@ class ArrayExport {
     }  
     $ea[] = array('type' => EXPORT_REPORT_END,  
                   'data' => '');
-    $ea['metadata'] = $this->_getMetaData($numcols);
+    $ea['metadata'] = $this->_getMetaData();
     //preDump($ea);
     $this->export =& $ea;
   }
@@ -75,19 +76,24 @@ class ArrayExport {
     return $s;
   }  
   
-  function _getMetaData($numcols) {
+  function _getColWidths($numcols, $entry) {
     $columns = array();
-    foreach ($this->dblist->formatdata[0] as $f) {
+    foreach ($this->dblist->formatdata[$entry] as $f) {
       $columns[] = $f['width'];
     }
     return array(
                   'numcols' => $numcols,
+                  'colwidths' => $columns
+                );
+  }
+
+  function _getMetaData() {
+    return array(
                   'author'  => $this->author,
                   'creator' => $this->creator,
                   'title'   => $this->header,
                   'keywords' => $this->keywords,
-                  'subject' => $this->subject,
-                  'colwidths' => $columns
+                  'subject' => $this->subject
                 );
   }
 
@@ -149,6 +155,9 @@ class ArrayExport {
     return $val;
   }
   
+  function appendEA(&$ea) {
+    $this->export = array_merge($this->export, $ea);
+  }
   
       
 } // class ArrayExport

@@ -20,7 +20,9 @@ class ActionCosts extends ActionAction {
     } else {
       $this->editCost();
     }
-    echo "<br /><br /><a href='$BASEURL/costs'>Return to costs list</a>";
+    echo "<br /><br /><a href='$BASEURL/costs/'>Return to costs list</a>";
+    echo "<br /><br /><a href='$BASEURL/specialcosts/'>Edit special costs</a>";
+    echo "<br /><br /><a href='$BASEURL/instrumentclass/'>Edit instrument classes</a>";
   }
   
   function mungePathData() {

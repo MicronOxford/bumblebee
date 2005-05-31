@@ -24,7 +24,6 @@ class HTMLExport {
     $ea =& $this->ea->export;
     $eol = "\n";
     $metaData = $ea['metadata'];
-    $numcols = $metaData['numcols'];
     unset($ea['metadata']);
     $buf = '';
     for ($i=0; $i<count($ea); $i++) {
@@ -44,6 +43,8 @@ class HTMLExport {
             $buf .= '<div class="exportSectionHeader">'.$ea[$i]['data'].'</div>'.$eol;
             break;
           case EXPORT_REPORT_TABLE_START:
+            $tableMetaData = $ea[$i]['metadata'];
+            $numcols = $tableMetaData['numcols'];
             $buf .= '<table class="exportdata">'.$eol;
             break;
           case EXPORT_REPORT_TABLE_END:
@@ -83,8 +84,14 @@ class HTMLExport {
             $buf .= '<table class="exportdata">'.$eol;
             break;
           case EXPORT_REPORT_SECTION_HEADER:
+            $tableMetaData = $ea[$i]['metadata'];
+            $numcols = $tableMetaData['numcols'];
             $buf .= '<tr class="exportSectionHeader"><td colspan="'.$numcols.'" class="exportSectionHeader">'
                         .$ea[$i]['data'].'</td></tr>'.$eol;
+            break;
+          case EXPORT_REPORT_TABLE_START:
+            break;
+          case EXPORT_REPORT_TABLE_END:
             break;
           case EXPORT_REPORT_TABLE_HEADER:
             $buf .= '<tr class="header">'

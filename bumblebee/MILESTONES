@@ -5,14 +5,22 @@
  * full, user-configurable billing support included
  * can export invoices or statements of usage
  * can email invoices or statements of usage to groups
- 
-
-1.5
- * 
-
  * unbooking an instrument causes an email to be sent to admin for some timeslots
  * unbooking an instrument causes an email to be sent to the unbook list for some timeslots
+
  
+ 
+ 
+ .
+ .
+ .
+ .
+ .
+ 
+ 
+ 
+ 
+  
 1.1
  * permit export of billing data to other external program
 

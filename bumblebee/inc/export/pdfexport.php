@@ -34,6 +34,8 @@ class PDFExport {
   var $colStart = array();
   var $tableRow = 0;
   
+  var $useBigTable = true;
+  
   function PDFExport(&$exportArray) {
     $this->ea = $exportArray;
   }
@@ -55,7 +57,7 @@ class PDFExport {
   }
 
   function Output() {
-    //return $this->pdf->Output('/tmp/bbtest.pdf', 'F');
+    return $this->pdf->Output('/tmp/bbtest.pdf', 'F');
     return $this->pdf->Output('', 'S');
   } 
 
@@ -67,24 +69,28 @@ class PDFExport {
     $this->pdf->SetSubject($metaData['subject']);
     $this->pdf->SetTitle($metaData['title']);
     $this->pdf->title = $metaData['title'];
-    
-    $this->_calcColWidths($metaData['colwidths']);
-    $this->pdf->cols = $this->cols;
-    $this->pdf->colStart = $this->colStart;
   }
   
   function _setPageMargins() {
     $this->pdf->SetMargins($this->leftMargin, $this->topMargin, $this->rightMargin);
     $this->pdf->SetAutoPageBreak(true, $this->bottomMargin);
+    $this->pdf->pageWidth   = $this->pageWidth;
+    $this->pdf->pageHeight  = $this->pageHeight;
+    $this->pdf->leftMargin  = $this->leftMargin;
+    $this->pdf->rightMargin = $this->rightMargin;
+    $this->pdf->topMargin   = $this->topMargin;
+    $this->pdf->bottomMargin= $this->bottomMargin;
+    
   }
   
-  function _calcColWidths($widths) {
+  function _calcColWidths($widths, $entry) {
+    if ($this->useBigTable && count($this->cols)) return;
     //preDump($widths);
     $sum = 0;
     $this->cols = array();
     for ($col = 0; $col<count($widths); $col++) {
       if ($widths[$col] == '*') {
-        $this->cols[$col] = $this->_getColWidth($col);
+        $this->cols[$col] = $this->_getColWidth($col, $entry);
       } else {
         $sum += $widths[$col];
       }
@@ -98,16 +104,19 @@ class PDFExport {
                   / $sum*($this->pageWidth-$this->leftMargin-$this->rightMargin-$taken);
       }
     }
+    $this->pdf->cols = $this->cols;
   }
   
-  function _getColWidth($col) {
+  function _getColWidth($col, $entry) {
     //why are we doing lots of calls into the pdf here? is it bad encapsulation?
     //We have to have a font chosen within FPDF to perform these length calculations
     $this->pdf->_setTableFont();
     $ea =& $this->ea->export;
     $i=0;
     $width = 0;
-    for ($key=1; $key<count($ea)-1; $key++) {
+    for ($key=$entry; 
+      $key<count($ea)-1 && ($this->useBigTable || $ea[$key]['type'] != EXPORT_REPORT_TABLE_END);
+      $key++) {
       $newWidth = $this->pdf->GetStringWidth($ea[$key]['data'][$col]['value']);
       if ($ea[$key]['type'] == EXPORT_REPORT_TABLE_HEADER)
         $newWidth *= 1.1;     //FIXME: we should do this calculation properly!
@@ -150,7 +159,6 @@ class PDFExport {
     $ea =& $this->ea->export;
     $eol = "\n";
     $metaData = $ea['metadata'];
-    $numcols = $metaData['numcols'];
     unset($ea['metadata']);
     $buf = '';
     for ($i=0; $i<count($ea); $i++) {
@@ -165,6 +173,7 @@ class PDFExport {
           $this->pdf->reportHeader($ea[$i]['data']);
           break;
         case EXPORT_REPORT_SECTION_HEADER:
+          $this->_calcColWidths($ea[$i]['metadata']['colwidths'], $i);
           $this->pdf->sectionHeader($ea[$i]['data']);
           break;
         case EXPORT_REPORT_TABLE_START:
@@ -231,6 +240,12 @@ class PDFExport {
 
 class BrandedPDF extends FPDF {
   var $title = 'BumbleBee Report';
+  var $pageWidth   = 297;   // mm
+  var $pageHeight  = 210;   // mm
+  var $leftMargin  = 15;    // mm
+  var $rightMargin = 15;    // mm
+  var $topMargin   = 15;    // mm
+  var $bottomMargin= 15;    // mm
   
   function PDF($orientation, $measure, $format) {
     parent::FPDF($orientation, $measure, $format);
@@ -359,6 +374,7 @@ class TabularPDF extends BrandedPDF {
   
   function tableHeader($data) {
     $this->_setTableHeaderFont();
+    $data[0]['fullWidth'] = 1;
     $this->_row($data);
     $this->_last_tableHeader = $data;
     $this->_setTableFont();
@@ -380,7 +396,7 @@ class TabularPDF extends BrandedPDF {
     $this->_preventNewPage = true;
     $currHeight = $this->lineHeight;
     $this->lineHeight = 0.1;
-    $this->_row(array(array('value'=>'','border'=>'T','fill'=>false)));
+    $this->_row(array(array('value'=>'','border'=>'T','fill'=>false,'fullWidth'=>0)));
     $this->lineHeight = $currHeight;
     $this->_preventNewPage = false;
   } 
@@ -391,11 +407,11 @@ class TabularPDF extends BrandedPDF {
 
   function _row($data) {
     $widths = array();
-    if (count($data) == 1) {
-      $span = 1;
+    if (count($data) == 1 && isset($data[0]['fullWidth']) && $data[0]['fullWidth'] == 1) {
+      $widths[0] = $this->pageWidth - $this->leftMargin - $this->rightMargin;
+    } elseif (count($data) == 1) {
       $widths[0] = array_sum($this->cols);
     } else {
-      $span = 0;
       $widths = $this->cols;
     }
     //Calculate the height of the row

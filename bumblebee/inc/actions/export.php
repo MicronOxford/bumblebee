@@ -23,6 +23,7 @@ class ActionExport extends BufferedAction {
   var $typelist;
   var $_export;  // ExportType format description
   var $_daterange;
+  var $_verb = 'export';
 
   function ActionExport($auth, $pdata) {
     parent::BufferedAction($auth, $pdata);
@@ -93,7 +94,7 @@ class ActionExport extends BufferedAction {
     }
     $select = new AnchorTableList('datasource', 'Select which data to export', 1);
     $select->setValuesArray($reportlist, 'id', 'iv');
-    $select->hrefbase = $BASEURL.'/export/';
+    $select->hrefbase = $BASEURL.'/'.$this->_verb.'/';
     $select->setFormat('id', '%s', array('iv'));
     echo $select->display();
   }
@@ -157,7 +158,7 @@ class ActionExport extends BufferedAction {
   
     
   function returnExport() {
-    $list = $this->_getDataList();
+    $list = $this->_getDataList($this->PD['what']);
     $list->fill();
     if (count($list->data) == 0) {
       return $this->unbufferForError('<p>No data found for those criteria</p>');
@@ -186,10 +187,10 @@ class ActionExport extends BufferedAction {
       $pdfExport = $this->_preparePDFExport($exportArray);
       $pdfExport->makePDFBuffer();
       
-      //$this->unbuffer();
+      $this->unbuffer();
       
-      $this->_getFilename();
-      $this->bufferedStream =& $pdfExport->export;
+//       $this->_getFilename();
+//       $this->bufferedStream =& $pdfExport->export;
       // the data itself will be dumped later by the action driver (index.php)
     } elseif ($this->format & EXPORT_FORMAT_DELIMITED) {
       $this->_getFilename();
@@ -206,8 +207,8 @@ class ActionExport extends BufferedAction {
     }
   }
   
-  function _getDataList() {
-    $this->_export = $this->typelist->types[$this->PD['what']];
+  function _getDataList($report) {
+    $this->_export = $this->typelist->types[$report];
     $start = $this->_daterange->getStart();
     $stop  = $this->_daterange->getStop();
     $stop->addDays(1);
@@ -216,18 +217,18 @@ class ActionExport extends BufferedAction {
       $union = array();
       $limitsOffset = 0;
       foreach ($this->_export->union as $export) {
-        $union[] = $this->_getBDListFromExport($export, $start, $stop, $limitsOffset);
+        $union[] = $this->_getDBListFromExport($export, $start, $stop, $limitsOffset);
         $limitsOffset += count($export->limitation);
       }
-      $list = $this->_getBDListFromExport($this->_export, $start, $stop);
+      $list = $this->_getDBListFromExport($this->_export, $start, $stop);
       $list->union = $union;
     } else {
-      $list = $this->_getBDListFromExport($this->_export, $start, $stop);
+      $list = $this->_getDBListFromExport($this->_export, $start, $stop);
     }
     return $list;
   }
   
-  function _getBDListFromExport(&$export, $start, $stop, $limitsOffset=0) {
+  function _getDBListFromExport(&$export, $start, $stop, $limitsOffset=0) {
     $where = $export->where;
     $where[] = $export->timewhere[0].qw($start->datetimestring);
     $where[] = $export->timewhere[1].qw($stop->datetimestring);
@@ -290,7 +291,7 @@ class ActionExport extends BufferedAction {
   }
   
   function _preparePDFExport(&$exportArray) {
-    require('inc/export/pdfexport.php');
+    require_once('inc/export/pdfexport.php');
     $pdf = new PDFExport($exportArray);
     return $pdf;
   }

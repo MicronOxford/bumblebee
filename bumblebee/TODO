@@ -1,5 +1,7 @@
 $Id$
 
+* no GUI to delete a userclass or instrumentclass 
+ -- need to be able to change name of instrumentclass!
 
 * billing
   - PDF export configured somehow - header, font sizes etc

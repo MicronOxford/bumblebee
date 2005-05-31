@@ -405,7 +405,7 @@ class ExportTypeList {
 
 
 
-    $type = new ExportType('billing', '', 'Billing data: complete', array('instruments','consumables'));
+    $type = new ExportType('billing', '', 'Billing data: complete', array('instruments', 'consumables', 'groups'));
     $type->fields = array(
                       new sqlFieldName('', 'Item',   'title', EXPORT_HTML_LEFT, 10),
                       new sqlFieldName('', 'Group',  'group_title', EXPORT_HTML_LEFT, '*'),

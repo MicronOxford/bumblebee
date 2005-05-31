@@ -31,7 +31,7 @@ class ActionEmailList extends ActionAction {
   }
 
   function selectLists() {
-    global $BASEURL;
+    //global $BASEURL;
     $selectRow = new nonDBRow('listselect', 'Select email lists', 
               'Select which email lists you want to return');
     $select = new CheckBoxTableList('Instrument', 'Select which instrument to view');

@@ -40,6 +40,7 @@ class ActionListing {
       'consume=Record consumable usage',
       'costs=Edit standard costs',
       'specialcosts=Edit or create special charges',
+      'instrumentclass=Edit or create instrument class',
       'deletedbookings=View deleted bookings',
       'report=Report usage',
       #'bookmeta=Points system and booking controls',
