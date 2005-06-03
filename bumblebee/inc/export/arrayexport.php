@@ -36,13 +36,14 @@ class ArrayExport {
     $numcols = count($this->dblist->formatdata[0]);
     $breakfield = $this->breakfield;
     $breakReport = (!empty($breakfield) && isset($this->dblist->data[$entry][$breakfield]));
+    //echo $breakReport ? 'Breaking' : 'Not breaking';
     while ($entry < count($this->dblist->formatdata)) {
       //$this->log('Row: '.$entry);
       $this->_resetTotals();
+      $ea[] = array('type' => EXPORT_REPORT_SECTION_HEADER, 
+                    'data' => $this->_sectionHeader($this->dblist->data[$entry]),
+                    'metadata' => $this->_getColWidths($numcols, $entry));
       if ($breakReport) {
-        $ea[] = array('type' => EXPORT_REPORT_SECTION_HEADER, 
-                      'data' => $this->_sectionHeader($this->dblist->data[$entry]),
-                      'metadata' => $this->_getColWidths($numcols, $entry));
         $initial = $this->dblist->data[$entry][$breakfield];
       }
       $ea[] = array('type' => EXPORT_REPORT_TABLE_START,  
@@ -72,7 +73,12 @@ class ArrayExport {
   }
   
   function _sectionHeader($row) {
-    $s = $row[$this->breakfield];
+    $s = '';
+    if (empty($this->breakfield)) {
+      $s .= $this->header;
+    } else {
+      $s .= $row[$this->breakfield];
+    }
     return $s;
   }  
   
@@ -156,7 +162,7 @@ class ArrayExport {
   }
   
   function appendEA(&$ea) {
-    $this->export = array_merge($this->export, $ea);
+    $this->export = array_merge($this->export, $ea->export);
   }
   
       

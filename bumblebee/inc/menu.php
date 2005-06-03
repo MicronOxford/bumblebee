@@ -93,7 +93,7 @@ class UserMenu {
         array('a'=>'emaillist',        't'=>'Email lists'),
       //array('a'=>'report',            't'=>'Report usage'),
         array('a'=>'export',            't'=>'Export data'),
-      //array('a'=>'billing',           't'=>'Billing'),
+        array('a'=>'billing',           't'=>'Billing reports'),
         array('a'=>'backupdb',          't'=>'Backup database')
     );
     $t = '';

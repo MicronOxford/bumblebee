@@ -27,7 +27,6 @@ class ActionExport extends BufferedAction {
 
   function ActionExport($auth, $pdata) {
     parent::BufferedAction($auth, $pdata);
-    $this->mungePathData();
   }
 
   function go() {
@@ -68,6 +67,8 @@ class ActionExport extends BufferedAction {
               array(STATUS_ERR =>  'Error exporting data: '.$this->errorMessage
                    )
              );
+      } else {
+        $this->_goButton();
       }
     }
   }
@@ -152,10 +153,13 @@ class ActionExport extends BufferedAction {
       echo '<div style="margin: 0em 0 2em 0;">'.$viewselect->display().'</div>';
     }
     echo '<input type="hidden" name="limitationselected" value="1" />';
-    echo '<input type="submit" name="submit" value="Select" />';
   }
 
-  
+  function _goButton() {
+    echo '<input type="submit" name="submit" value="Select" />';
+  }
+      
+    
     
   function returnExport() {
     $list = $this->_getDataList($this->PD['what']);
@@ -170,7 +174,7 @@ class ActionExport extends BufferedAction {
     }
     $list->formatList();   
     if ($this->format & EXPORT_FORMAT_USEARRAY) {
-      $exportArray = new ArrayExport($list, $this->_export->breakField);
+      $exportArray = new ArrayExport($list, $list->breakfield);
       $exportArray->header = $this->_reportHeader();
       $exportArray->author = $this->auth->name;
       $exportArray->makeExportArray();
@@ -187,11 +191,13 @@ class ActionExport extends BufferedAction {
       $pdfExport = $this->_preparePDFExport($exportArray);
       $pdfExport->makePDFBuffer();
       
-      $this->unbuffer();
-      
-//       $this->_getFilename();
-//       $this->bufferedStream =& $pdfExport->export;
-      // the data itself will be dumped later by the action driver (index.php)
+      if ($pdfExport->writeToFile) {
+        $this->unbuffer();
+      } else {
+        $this->_getFilename();
+        $this->bufferedStream =& $pdfExport->export;
+        // the data itself will be dumped later by the action driver (index.php)
+      }
     } elseif ($this->format & EXPORT_FORMAT_DELIMITED) {
       $this->_getFilename();
       $this->bufferedStream = '"'.$this->_reportHeader().'"'
@@ -232,19 +238,20 @@ class ActionExport extends BufferedAction {
     $where = $export->where;
     $where[] = $export->timewhere[0].qw($start->datetimestring);
     $where[] = $export->timewhere[1].qw($stop->datetimestring);
-    for ($lim = 0; $lim < count($export->limitation); $lim++) {
-      $limitation = array();
-      $namebase = 'limitation-'.($limitsOffset+$lim).'-';
-      for ($j=0; isset($this->PD[$namebase.$j.'-row']); $j++) {
-        $item = issetSet($this->PD,$namebase.$j.'-'.$export->limitation[$lim]);
-        if (issetSet($this->PD,$namebase.$j.'-selected')) {
-          $limitation[] = $export->limitation[$lim].'.id='.qw($item);
-        }
-      }
-      if (count($limitation)) {
-        $where[] = '('.join($limitation, ' OR ').')';
-      }
-    }
+//     for ($lim = 0; $lim < count($export->limitation); $lim++) {
+//       $limitation = array();
+//       $namebase = 'limitation-'.($limitsOffset+$lim).'-';
+//       for ($j=0; isset($this->PD[$namebase.$j.'-row']); $j++) {
+//         $item = issetSet($this->PD,$namebase.$j.'-'.$export->limitation[$lim]);
+//         if (issetSet($this->PD,$namebase.$j.'-selected')) {
+//           $limitation[] = $export->limitation[$lim].'.id='.qw($item);
+//         }
+//       }
+//       if (count($limitation)) {
+//         $where[] = '('.join($limitation, ' OR ').')';
+//       }
+//     }
+    $where = array_merge($where, $this->_limitationSet($export->limitation, $limitsOffset));
     // work out what view/pivot of the data we want to see
     if (count($export->limitation) > 1 && is_array($export->pivot)) {
       $pivot = $export->pivot[$this->PD['pivot']];
@@ -264,9 +271,62 @@ class ActionExport extends BufferedAction {
     $list->order = $export->order;
     $list->distinct = $export->distinct;
     $list->fieldOrder = $export->fieldOrder;
+    $list->breakfield = $export->breakField;
     return $list;
   }
 
+  function _limitationSet($fields, $limitsOffset, $makeSQL=true) {
+    $sets = array();
+    for ($lim = 0; $lim < count($fields); $lim++) {
+      $limitation = array();
+      $fieldpattern = '/^limitation\-(\d+)\-(\d+)\-'.$fields[$lim].'$/';
+      $selected = array_values(preg_grep($fieldpattern, array_keys($this->PD)));
+      #preDump($selected);
+      for ($j=0; $j < count($selected); $j++) {
+        $ids = array();
+        preg_match($fieldpattern, $selected[$j], $ids);
+        $item = issetSet($this->PD,$selected[$j]);
+        if (issetSet($this->PD,'limitation-'.$ids[1].'-'.$ids[2].'-selected') && $item !== NULL) {
+          $limitation[] = /*$export->limitation[$lim].'.id='.*/qw($item);
+        }
+        //echo $namebase.':'.$j.':'.$lim.':'.$fields[$lim].':'.$item.'<br/>';
+      }
+      if (count($limitation)) {
+        if ($makeSQL) {
+          $sets[] = $fields[$lim].'.id IN ('.join($limitation, ', ').')';
+        } else {
+          $sets[$fields[$lim]] = $limitation;
+        }
+      }
+      //preDump($limitation);
+    }
+    return $sets;
+  }
+  
+  function _limitationSetRIGID($fields, $limitsOffset, $makeSQL=true) {
+    $sets = array();
+    for ($lim = 0; $lim < count($fields); $lim++) {
+      $limitation = array();
+      $namebase = 'limitation-'.($limitsOffset+$lim).'-';
+      for ($j=0; isset($this->PD[$namebase.$j.'-row']); $j++) {
+        $item = issetSet($this->PD,$namebase.$j.'-'.$fields[$lim]);
+        if (issetSet($this->PD,$namebase.$j.'-selected') && $item !== NULL) {
+          $limitation[] = /*$export->limitation[$lim].'.id='.*/qw($item);
+        }
+        echo $namebase.':'.$j.':'.$lim.':'.$fields[$lim].':'.$item.'<br/>';
+      }
+      if (count($limitation)) {
+        if ($makeSQL) {
+          $sets[] = $fields[$lim].'.id IN ('.join($limitation, ', ').')';
+        } else {
+          $sets[$fields[$lim]] = $limitation;
+        }
+      }
+      //preDump($limitation);
+    }
+    return $sets;
+  }
+  
   function _getFilename() {
     switch ($this->format & EXPORT_FORMAT_MASK) {
       case EXPORT_FORMAT_CSV:

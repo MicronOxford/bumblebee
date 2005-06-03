@@ -41,6 +41,13 @@ function qw($v) {
   return "'".$v."'";
 }
 
+function unqw($v) {
+  if (preg_match("/'(.+)'/", $v, $match)) {
+    $v = $match[1];
+  }
+  return stripslashes($v);
+}
+
 /**
  * xssqw -- quote words against XSS attacks
  * replace some bad HTML characters with entities to protext against 

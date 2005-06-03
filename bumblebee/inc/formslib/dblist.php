@@ -7,6 +7,7 @@ include_once 'inc/exportcodes.php';
 
 class DBList {
   var $restriction;
+  var $unionrestriction;
   var $join = array();
   var $order;
   var $group;
@@ -20,6 +21,7 @@ class DBList {
   var $data;
   var $formatdata;
   var $outputFormat = EXPORT_FORMAT_CUSTOM;
+  var $breakfield;
   var $fatal_sql = 1;
   
   function DBList($table, $returnFields, $restriction, $distinct=false) {
@@ -42,6 +44,7 @@ class DBList {
     if (is_array($this->union) && count($this->union)) {
       $union = array();
       foreach ($this->union as $u) {
+        $u->restriction = array_merge($u->restriction, $this->unionrestriction);
         $union[] = $u->_getSQLsyntax();
       }
       $q = '('.join($union, ') UNION (').')';

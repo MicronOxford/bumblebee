@@ -1,3 +1,11 @@
+2005-06-04 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* combined report format as PDF 
+	* email PDF reports to either logged in user or to supervisor 
+
+2005-05-31 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* added ability to edit instrument class name, add / delete classes 
+	* start of invoicing export functions 
+
 2005-05-30 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* PDF export improvements  
 	* inclusion of the SUM of a column in the export 

@@ -1,17 +1,12 @@
 $Id$
 
-* no GUI to delete a userclass or instrumentclass 
- -- need to be able to change name of instrumentclass!
+* no GUI to delete a userclass
 
 * billing
   - PDF export configured somehow - header, font sizes etc
   - generate reports for combined analysis for distribution
   - generate matrix summary
-  - split multiple tables into multiple pdfs
 
-
-* scrap the report action all together?
-* actionbilling??
 
 
 configure exporttypes from files?

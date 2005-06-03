@@ -9,6 +9,7 @@ class BumbleBeeAuth {
   var $uid;    //user id from table
   var $username;
   var $name;
+  var $email;
   var $isadmin;
   var $euid;            //permit user masquerading like su. Effective UID
   var $ename;           //effective name
@@ -61,10 +62,11 @@ class BumbleBeeAuth {
   }
 
   function _createSession($row) {
-    $_SESSION['uid'] = $this->uid = $row['id'];
-    $_SESSION['username'] = $this->username = $row['username'];
-    $_SESSION['name'] = $this->name = $row['name'];
-    $_SESSION['isadmin'] = $this->isadmin = $row['isadmin'];
+    $_SESSION['uid']        = $this->uid        = $row['id'];
+    $_SESSION['username']   = $this->username   = $row['username'];
+    $_SESSION['name']       = $this->name       = $row['name'];
+    $_SESSION['email']      = $this->email      = $row['email'];
+    $_SESSION['isadmin']    = $this->isadmin    = $row['isadmin'];
     $_SESSION['localLogin'] = $this->localLogin = $this->localLogin;
   }
   
@@ -73,13 +75,14 @@ class BumbleBeeAuth {
     $uid = $_SESSION['uid'];
     $row = $this->_retrieveUserInfo($uid, 0);
     //preDump($row);
-    if ($row['username'] == $_SESSION['username'] && 
-        $row['name'] == $_SESSION['name'] && 
-        $row['isadmin'] == $_SESSION['isadmin']) {
-      $this->uid = $uid;
-      $this->username = $_SESSION['username'];
-      $this->name = $_SESSION['name'];
-      $this->isadmin = $_SESSION['isadmin'];
+    if ($row['username']  == $_SESSION['username'] && 
+        $row['name']      == $_SESSION['name'] && 
+        $row['isadmin']   == $_SESSION['isadmin']) {
+      $this->uid        = $uid;
+      $this->username   = $_SESSION['username'];
+      $this->name       = $_SESSION['name'];
+      $this->email      = $_SESSION['email'];
+      $this->isadmin    = $_SESSION['isadmin'];
       $this->localLogin = $_SESSION['localLogin'];
       return 1;
     } else {
@@ -95,8 +98,8 @@ class BumbleBeeAuth {
   **/
   function _checkMasq() {
     if ($this->masqPermitted() && isset($_SESSION['euid'])) {
-      $this->euid = $_SESSION['euid'];
-      $this->ename = $_SESSION['ename'];
+      $this->euid      = $_SESSION['euid'];
+      $this->ename     = $_SESSION['ename'];
       $this->eusername = $_SESSION['eusername'];
     }
     return 1;
@@ -259,9 +262,9 @@ class BumbleBeeAuth {
     if ($this->masqPermitted()) {
       //masquerade permitted
       $row = $this->_retrieveUserInfo($id, 0);
-      $_SESSION['euid'] = $this->euid = $row['id'];
+      $_SESSION['euid']      = $this->euid      = $row['id'];
       $_SESSION['eusername'] = $this->eusername = $row['username'];
-      $_SESSION['ename'] = $this->ename = $row['name'];
+      $_SESSION['ename']     = $this->ename     = $row['name'];
       return $row;
     } else {
       // masquerade not permitted
@@ -273,9 +276,9 @@ class BumbleBeeAuth {
    * stop masquerading as another user
   **/
   function removeMasq() {
-    $_SESSION['euid'] = $this->euid = null;
+    $_SESSION['euid']      = $this->euid      = null;
     $_SESSION['eusername'] = $this->eusername = null;
-    $_SESSION['ename'] = $this->ename = null;
+    $_SESSION['ename']     = $this->ename     = null;
   }
   
   function isMe($id) {
