@@ -9,27 +9,28 @@ include_once 'login.php';
 include_once 'logout.php';
 include_once 'view.php';
 include_once 'password.php';
-#include_once 'book.php';
 
-//admin functions
-//FIXME: can thesee be selectively included?
-include_once 'groups.php';
-include_once 'projects.php';
-include_once 'users.php';
-include_once 'instruments.php';
-include_once 'consumables.php';
-include_once 'consume.php';
-include_once 'deletedbookings.php';
-include_once 'masquerade.php';
-include_once 'costs.php';
-include_once 'specialcosts.php';
-include_once 'instrumentclass.php';
-//include_once 'adminconfirm.php';
-include_once 'emaillist.php';
-include_once 'report.php';
-include_once 'export.php';
-include_once 'billing.php';
-include_once 'backupdatabase.php';
+//admin functions: only include these files if they are necessary (security + efficiency)
+if ($auth->isadmin) {
+  include_once 'groups.php';
+  include_once 'projects.php';
+  include_once 'users.php';
+  include_once 'instruments.php';
+  include_once 'consumables.php';
+  include_once 'consume.php';
+  include_once 'deletedbookings.php';
+  include_once 'masquerade.php';
+  include_once 'costs.php';
+  include_once 'specialcosts.php';
+  include_once 'userclass.php';
+  include_once 'instrumentclass.php';
+  //include_once 'adminconfirm.php';
+  include_once 'emaillist.php';
+  // include_once 'report.php';
+  include_once 'export.php';
+  include_once 'billing.php';
+  include_once 'backupdatabase.php';
+}
 
 include_once 'unknownaction.php';
 include_once 'inc/typeinfo.php';
@@ -181,6 +182,8 @@ class ActionFactory {
         return new ActionSpecialCosts($this->_auth, $this->PDATA);
       case $act['instrumentclass']:
         return new ActionInstrumentClass($this->_auth, $this->PDATA);
+      case $act['userclass']:
+        return new ActionUserClass($this->_auth, $this->PDATA);
       /*case $act['bookmeta']:
         return new ActionBookmeta();
       case $act['adminconfirm']:

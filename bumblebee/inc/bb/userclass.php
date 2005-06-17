@@ -6,23 +6,23 @@ include_once 'inc/formslib/dbrow.php';
 include_once 'inc/formslib/textfield.php';
 include_once 'inc/formslib/idfield.php';
 
-class InstrumentClass extends DBRow {
+class UserClass extends DBRow {
   
-  function InstrumentClass($id) {
+  function UserClass($id) {
     //$this->DEBUG=10;
-    $this->DBRow('instrumentclass', $id);
+    $this->DBRow('userclass', $id);
     $this->editable = 1;
     $f = new IdField('id', 'Class ID');
     $f->editable = 0;
     $this->addElement($f);
-    $f = new TextField('name', 'Instrument Class name');
+    $f = new TextField('name', 'User Class name');
     $attrs = array('size' => '24');
     $f->setAttr($attrs);
     $f->required = 1;
     $f->isValidTest = 'is_nonempty_string';
     $this->addElement($f);
     $this->fill($id);
-    $this->dumpheader = 'InstrumentClass object';
+    $this->dumpheader = 'UserClass object';
   }
 
   function display() {
