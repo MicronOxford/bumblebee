@@ -1,5 +1,9 @@
 $Id$
 
+
+
+
+
 * billing
   - PDF export configured somehow - header, font sizes etc
   - generate reports for combined analysis for distribution
@@ -11,8 +15,6 @@ configure exporttypes from files?
 
 * db structure:
   - SMALLINT is max 32767. Is this a limitation (e.g. number bookings!)?
-  - permit table prefix:
-    - actionbilling
 
 * instruments
   - can we put some better validation on the timeslotrule input? e.g. making sure every hour is accounted for?
@@ -45,7 +47,7 @@ document radius install and config
 * theme
   - design new theme, bg etc (not NANO, PFPC, UoM)
   - clean up CSS, images etc for theme
-  - icon location
+  - icon location, also for export
 
 * clean up action functions.
   - should groups, projects, users actions etc be invocations of the *same* obj?
@@ -95,12 +97,6 @@ Billing SQL notes:
 
 for billing analysis, write a smart parser that scans the template for keys to write the SQL. May need to do some clever parsing too.
 
-reporting: 
-subqueries for "FROM" don't work with current version of MySQL (4.0)
-TIMEDIFF and SUBTIME don't work with current MySQL.
-maybe use a CREATE...SELECT statement into a temporary table. (how?)
-CEIL(x) or CEILING(x) can be used to round up to nearest integer for num hours
-
 
 
 
@@ -126,5 +122,19 @@ mysql_query ("$contents");
 
 LIMITATIONS
 ===========
-no GUI to delete a userclass or instrumentclass 
 records are not locked while edited (update is atomic, but last-submitted changes win)
+
+
+
+
+
+-----------
+
+HISTORY
+=======
+
+BB0970: 2005-06-17
+Released on instruments.c.u.e.a for testing
+
+BB0959: 2005-05-25
+Released on instruments.c.u.e.a for testing

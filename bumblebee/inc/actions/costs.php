@@ -39,11 +39,11 @@ class ActionCosts extends ActionAction {
 
   function selectUserClass() {
     global $BASEURL;
-    $select = new AnchorTableList("Cost", "Select which user class to view usage costs", 1);
-    $select->connectDB("userclass", array("id", "name"));
-    $select->list->prepend(array("-1","Create new user class"));
+    $select = new AnchorTableList('Cost', 'Select which user class to view usage costs', 1);
+    $select->connectDB('userclass', array('id', 'name'));
+    //$select->list->prepend(array("-1","Create new user class"));
     $select->hrefbase = "$BASEURL/costs/";
-    $select->setFormat("id", "%s", array("name"));
+    $select->setFormat('id', '%s', array('name'));
     //echo $select->list->text_dump();
     echo $select->display();
   }

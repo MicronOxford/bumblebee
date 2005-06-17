@@ -169,9 +169,6 @@ class ActionExport extends BufferedAction {
     }      
     // start rendering the data
     $list->outputFormat = $this->format;
-    if ($this->format & EXPORT_FORMAT_USEARRAY) {
-      $list->omitFields = $this->_export->omitFields;
-    }
     $list->formatList();   
     if ($this->format & EXPORT_FORMAT_USEARRAY) {
       $exportArray = new ArrayExport($list, $list->breakfield);
@@ -200,7 +197,7 @@ class ActionExport extends BufferedAction {
       }
     } elseif ($this->format & EXPORT_FORMAT_DELIMITED) {
       $this->_getFilename();
-      $this->bufferedStream = '"'.$this->_reportHeader().'"'
+      $this->bufferedStream = '"'.$this->_reportHeader().'"'."\n"
                                .$list->outputHeader()."\n"
                                .join($list->formatdata, "\n");
       // the data itself will be dumped later by the action driver (index.php)
@@ -272,6 +269,9 @@ class ActionExport extends BufferedAction {
     $list->distinct = $export->distinct;
     $list->fieldOrder = $export->fieldOrder;
     $list->breakfield = $export->breakField;
+    if ($this->format & EXPORT_FORMAT_USEARRAY) {
+      $list->omitFields = $export->omitFields;
+    }
     return $list;
   }
 

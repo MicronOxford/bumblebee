@@ -99,7 +99,8 @@ class JoinMatrix extends Field {
     global $TABLEPREFIX;
     $this->table2All = array();
     $q = 'SELECT '.$this->table2IdCol.', '.$this->key2->name
-        .' FROM '.$TABLEPREFIX.$this->table2.' AS '.$this->table2;
+        .' FROM '.$TABLEPREFIX.$this->table2.' AS '.$this->table2
+        .' ORDER BY '.$this->key2->name;
     $sql = db_get($q, $this->fatal_sql);
     // FIXME: mysql specific functions
     if (mysql_num_rows($sql)==0) {

@@ -85,7 +85,7 @@ class ExportTypeList {
                       new sqlFieldName('users.name', 'Name', 'user_name', EXPORT_HTML_LEFT, '*'), 
                       new sqlFieldName('instruments.name', 'Instrument', 'instrument_name'), 
                       new sqlFieldName('CONCAT(instruments.name, \': \', instruments.longname)',
-                                      'Instrument Title', 'instrument_title', EXPORT_HTML_LEFT, '*'),
+                                      'Instrument', 'instrument_title', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('projects.name', 'Project name', 'project_name', EXPORT_HTML_LEFT, '*'), 
                       new sqlFieldName('comments', 'User comments', '', EXPORT_HTML_LEFT, 10),
                       new sqlFieldName('log', 'Log entry', '', EXPORT_HTML_LEFT, 30)
@@ -142,14 +142,19 @@ class ExportTypeList {
                       new sqlFieldName('CONCAT(instruments.name, \': \', instruments.longname)',
                                       'Instrument', 'instrument_title', EXPORT_HTML_LEFT, 20),
                       new sqlFieldName('CONCAT(groups.name, \' (\', groups.longname, \')\')',
-                                      'Group Title', 'group_title', EXPORT_HTML_LEFT, 10),
+                                      'Group', 'group_title', EXPORT_HTML_LEFT, 10),
                       new sqlFieldName('groups.name', 'Supervisor', 'group_name', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('groups.longname', 'Group', 'group_longname', EXPORT_HTML_LEFT, 20),
                       new sqlFieldName('projects.name', 'Project', 'project_name', EXPORT_HTML_LEFT, 20),
                       new sqlFieldName('ROUND('
-                                          .'SUM(TIME_TO_SEC(duration)*grouppc)/60/60/100,'
+                                          .'SUM(TIME_TO_SEC(duration))/60/60,'
                                         .'2) ', 
                                       'Hours used',
+                                      'hours_used', EXPORT_HTML_DECIMAL_2|EXPORT_HTML_RIGHT|EXPORT_CALC_TOTAL, '*'),
+                      new sqlFieldName('ROUND('
+                                          .'SUM(TIME_TO_SEC(duration)*grouppc)/60/60/100,'
+                                        .'2) ', 
+                                      'Share',
                                       'weighted_hours_used', EXPORT_HTML_DECIMAL_2|EXPORT_HTML_RIGHT|EXPORT_CALC_TOTAL, '*')
                    );
     $type->where[] = 'deleted <> 1';
@@ -173,7 +178,7 @@ class ExportTypeList {
                                     'omitFields' => array('instrument_name', 'group_title',
                                                           'group_name', 'group_longname'),
                                     'extraFields'=> array (new sqlFieldName('users.name', 'Name', 'user_name', EXPORT_HTML_LEFT, '*')),
-                                    'fieldOrder' => array('user_name', 'project_name', 'instrument_title', 'weighted_hours_used') )
+                                    'fieldOrder' => array('user_name', 'project_name', 'instrument_title', 'hours_used', 'weighted_hours_used') )
                         );
     return $type;
   }
@@ -187,7 +192,7 @@ class ExportTypeList {
                       new sqlFieldName('users.name', 'Name', 'user_name', EXPORT_HTML_LEFT, '*'), 
                       new sqlFieldName('instruments.name', 'Instrument', 'instrument_name', EXPORT_HTML_LEFT, '*'), 
                       new sqlFieldName('CONCAT(instruments.name, \': \', instruments.longname)',
-                                      'Instrument Title', 'instrument_title', EXPORT_HTML_LEFT, '*'),
+                                      'Instrument', 'instrument_title', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('ROUND('
                                           .'SUM(TIME_TO_SEC(duration))/60/60,'
                                         .'2) ', 
@@ -212,7 +217,7 @@ class ExportTypeList {
                       new sqlFieldName('consumables.name', 'Item Code', 'consumable_name', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('consumables.longname', 'Item Name', 'consumable_longname', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('CONCAT(consumables.name, \': \', consumables.longname)',
-                                      'Item Title', 'consumable_title', EXPORT_HTML_LEFT, 20),
+                                      'Item', 'consumable_title', EXPORT_HTML_LEFT, 20),
                       new sqlFieldName('usewhen', 'Date', '', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('username', 'Username', '', EXPORT_HTML_LEFT, '*'), 
                       new sqlFieldName('users.name', 'Name', 'user_name', EXPORT_HTML_LEFT, '*'), 
@@ -249,21 +254,22 @@ class ExportTypeList {
                       new sqlFieldName('consumables.name', 'Item Code', 'consumable_name', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('consumables.longname', 'Item Name', 'consumable_longname', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('CONCAT(consumables.name, \': \', consumables.longname)',
-                                      'Item Title', 'consumable_title', EXPORT_HTML_LEFT, '*'),
+                                      'Item', 'consumable_title', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('groups.name', 'Supervisor', 'group_name', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('groups.longname', 'Group', 'group_longname', EXPORT_HTML_LEFT, 20),
                       new sqlFieldName('CONCAT(groups.name, \' (\', groups.longname, \')\')',
-                                      'Group Title', 'group_title', EXPORT_HTML_LEFT, 10),
+                                      'Group', 'group_title', EXPORT_HTML_LEFT, 10),
                       new sqlFieldName('projects.name', 'Project', 'project_name', EXPORT_HTML_LEFT, 10),
-                      new sqlFieldName('quantity', 'Quantity', 'quantity', EXPORT_HTML_RIGHT, '*'),
-                      new sqlFieldName('grouppc', 'Share (%)', 'share', EXPORT_HTML_RIGHT, '*')
+                      new sqlFieldName('SUM(quantity)', 'Quantity', 'quantity', EXPORT_HTML_RIGHT, '*'),
+                      new sqlFieldName('SUM(quantity*grouppc/100)', 'Share', 'share', EXPORT_HTML_RIGHT, '*')
+                      //new sqlFieldName('grouppc', 'Share (%)', 'share', EXPORT_HTML_RIGHT, '*')
                     );
     $type->pivot = array('consumables' => 
                               array('description'=> 'Group results by consumables',
                                     'group' => array('consumable_name', 'group_name', 'project_name'),
                                     'breakField' => 'consumable_title',
                                     'omitFields' => array('consumable_name', 'group_title', 'consumable_longname', 'consumable_title', 'quantity'),
-                                    'extraFields'=> array (new sqlFieldName('quantity', 'Quantity', 'quantity_total', EXPORT_HTML_RIGHT|EXPORT_CALC_TOTAL, '*'))),
+                                    'extraFields'=> array (new sqlFieldName('SUM(quantity*grouppc/100)', 'Quantity', 'quantity_total', EXPORT_HTML_RIGHT|EXPORT_CALC_TOTAL, '*'))),
                          'groups' =>
                               array('description'=> 'Group results by research group',
                                     'group' => array('group_name', 'project_name', 'consumable_name'),
@@ -293,16 +299,17 @@ class ExportTypeList {
                       new sqlFieldName('groups.name', 'Supervisor', 'group_name', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('groups.longname', 'Group', '', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('CONCAT(groups.name, \' (\', groups.longname, \')\')',
-                                      'Group Title', 'group_title', EXPORT_HTML_LEFT, 10),
+                                      'Group', 'group_title', EXPORT_HTML_LEFT, 10),
                       new sqlFieldName('CONCAT(consumables.name, \': \', consumables.longname)',
-                                      'Item Title', 'consumable_title', EXPORT_HTML_LEFT, 10),
+                                      'Item', 'consumable_title', EXPORT_HTML_LEFT, 10),
                       new sqlFieldName('consumables.name', 'Item', 'consumable_name', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('consumables.longname', 'Description', 'consumable_longname', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('consumables.cost', 'Unit cost', 'unitcost', EXPORT_HTML_RIGHT|EXPORT_HTML_MONEY, '*'),
-                      new sqlFieldName('grouppc', 'Share (%)', '', EXPORT_HTML_RIGHT, '*'),
-                      new sqlFieldName('SUM(consumables_use.quantity)', 'Quantity', 'totquantity', EXPORT_HTML_RIGHT, '*'),
-                      new sqlFieldName('ROUND((consumables.cost*grouppc/100) *SUM(consumables_use.quantity),2)',
-                                          'Cost to group', 'cost_to_group', EXPORT_CALC_TOTAL|EXPORT_HTML_RIGHT|EXPORT_HTML_MONEY, '*')
+                      //new sqlFieldName('grouppc', 'Share (%)', '', EXPORT_HTML_RIGHT, '*'),
+                      new sqlFieldName('SUM(consumables_use.quantity)', 'Quantity', 'quantity', EXPORT_HTML_RIGHT, '*'),
+                      new sqlFieldName('ROUND(SUM(grouppc/100*consumables_use.quantity),2)', 'Share', 'totquantity', EXPORT_HTML_RIGHT, '*'),
+                      new sqlFieldName('ROUND(SUM(consumables.cost*grouppc/100*consumables_use.quantity),2)',
+                                          'Cost', 'cost_to_group', EXPORT_CALC_TOTAL|EXPORT_HTML_RIGHT|EXPORT_HTML_MONEY, '*')
                     );
     $type->pivot = array('groups' =>
                               array('description'=> 'Group results by research group',
@@ -338,9 +345,9 @@ class ExportTypeList {
                                       'Instrument', 'instrument_title', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('instruments.name', 'Instrument', 'instrument_name', EXPORT_HTML_LEFT, '*'), 
                       new sqlFieldName('CONCAT(groups.name, \' (\', groups.longname, \')\')',
-                                      'Group Title', 'group_title', EXPORT_HTML_LEFT, 10),
+                                      'Group', 'group_title', EXPORT_HTML_LEFT, 10),
                       new sqlFieldName('groups.name', 'Supervisor', 'group_name', EXPORT_HTML_LEFT, '*'),
-                      new sqlFieldName('SUM(ROUND(TIME_TO_SEC(duration)/60/60,2))', 'Total hours', 'total_hours', EXPORT_HTML_DECIMAL_2|EXPORT_HTML_RIGHT|EXPORT_CALC_TOTAL, '*'),
+                      //new sqlFieldName('SUM(ROUND(TIME_TO_SEC(duration)/60/60,2))', 'Total hours', 'total_hours', EXPORT_HTML_DECIMAL_2|EXPORT_HTML_RIGHT|EXPORT_CALC_TOTAL, '*'),
                       new sqlFieldName($this->_formula['weightDays'], 'Days used', 'weighted_days_used', EXPORT_HTML_DECIMAL_2|EXPORT_HTML_RIGHT|EXPORT_CALC_TOTAL, '*'),
                       new sqlFieldName('grouppc', 'Share (%)', 'share', EXPORT_HTML_RIGHT, '*'),
                       //new sqlFieldName('costs.costfullday', 'Daily rate', 'genrate'),
@@ -385,7 +392,9 @@ class ExportTypeList {
                       new sqlFieldName('CONCAT(instruments.name, \': \', instruments.longname)',
                                       'Instrument', 'title', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('CONCAT(groups.name, \' (\', groups.longname, \')\')',
-                                      'Group Title', 'group_title', EXPORT_HTML_LEFT, 10),
+                                      'Group', 'group_title', EXPORT_HTML_LEFT, 10),
+                      new sqlFieldName($this->_formula['finalCost'].'/'.$this->_formula['rate'].'*grouppc/100', 'Quantity', 'quantity', EXPORT_HTML_DECIMAL_2|EXPORT_HTML_RIGHT|EXPORT_CALC_TOTAL, '*'),
+                      new sqlFieldName($this->_formula['rate'], 'Unit cost', 'unitcost',  EXPORT_HTML_MONEY|EXPORT_HTML_RIGHT, '*'),
                       new sqlFieldName('FLOOR(('.$this->_formula['finalCost'].')*grouppc/100)', 'Cost', 'cost',  EXPORT_HTML_RIGHT|EXPORT_HTML_MONEY|EXPORT_CALC_TOTAL, '*')
                    );
     $itype->where[] = 'deleted <> 1';
@@ -399,10 +408,13 @@ class ExportTypeList {
     $ctype->join[] = array('table' => 'groups', 'condition' =>  'groups.id=projectgroups.groupid');
     $ctype->fields = array(
                       new sqlFieldName('CONCAT(consumables.name, \': \', consumables.longname)',
-                                      'Item Title', 'title', EXPORT_HTML_LEFT, 10),
+                                      'Item', 'title', EXPORT_HTML_LEFT, 10),
                       new sqlFieldName('CONCAT(groups.name, \' (\', groups.longname, \')\')',
-                                      'Group Title', 'group_title', EXPORT_HTML_LEFT, 10),
-                      new sqlFieldName('ROUND((consumables.cost*grouppc/100) *SUM(consumables_use.quantity),2)',
+                                      'Group', 'group_title', EXPORT_HTML_LEFT, 10),
+                      new sqlFieldName('ROUND(SUM(grouppc/100*consumables_use.quantity),2)', 'Share', 'quantity', EXPORT_HTML_RIGHT, '*'),
+                      new sqlFieldName('consumables.cost', 'Unit cost', 'unitcost', EXPORT_HTML_RIGHT|EXPORT_HTML_MONEY, '*'),
+                      //new sqlFieldName('grouppc', 'Share (%)', '', EXPORT_HTML_RIGHT, '*'),
+                      new sqlFieldName('ROUND(SUM(consumables.cost*grouppc/100*consumables_use.quantity),2)',
                                           'Cost to group', 'cost', EXPORT_CALC_TOTAL|EXPORT_HTML_RIGHT|EXPORT_HTML_MONEY, '*')
                     );
     $ctype->group = array('groups.name', 'consumables.name');
@@ -414,6 +426,8 @@ class ExportTypeList {
     $type->fields = array(
                       new sqlFieldName('', 'Item',   'title', EXPORT_HTML_LEFT, 10),
                       new sqlFieldName('', 'Group',  'group_title', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('', 'Quantity',  'quantity', EXPORT_HTML_RIGHT|EXPORT_HTML_DECIMAL_2, '*'),
+                      new sqlFieldName('', 'Unit cost',  'unitcost', EXPORT_HTML_RIGHT|EXPORT_HTML_MONEY, '*'),
                       new sqlFieldName('', 'Amount', 'cost', EXPORT_CALC_TOTAL|EXPORT_HTML_RIGHT|EXPORT_HTML_MONEY, '*')
                     );
     $type->order = array('group_title');

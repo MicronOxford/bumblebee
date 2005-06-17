@@ -15,7 +15,8 @@ include_once 'inc/formslib/dblist.php';
 class ActionBilling extends ActionExport {
 
   var $emailIndividuals = false;
-
+  var $DEBUG_PDF = false;
+  
   function ActionBilling($auth, $pdata) {
     parent::ActionExport($auth, $pdata);
     //$this->format = EXPORT_FORMAT_VIEW;
@@ -23,6 +24,7 @@ class ActionBilling extends ActionExport {
     $this->_verb = 'billing';
     $this->PD['what'] = 'billing';
     $this->reportSet = array('group' => 'users', 
+                             'bookingbilling' => 'groups',
                              'consumablegroup' => 'users',
                              'billing' => '');
   }
@@ -100,7 +102,6 @@ class ActionBilling extends ActionExport {
         if (count($l->data)) {
           // start rendering the data
           $l->outputFormat = $this->format;
-          $l->omitFields = $this->_export->omitFields;          //FIXME
           $l->formatList();   
           $this->log('Creating new AE');
           //preDump($lists[$r]);
@@ -120,9 +121,11 @@ class ActionBilling extends ActionExport {
         $pdfExport = $this->_preparePDFExport($exportArray);
         $pdfExport->filename = $filename;
         $pdfExport->useBigTable = false;
-        // FIXME WRITE FILE TO FILESYSTEM
-        $pdfExport->writeToFile = true;
-        $pdfExport->writeToFile = false;
+        if ($this->DEBUG_PDF) {
+          $pdfExport->writeToFile = true;
+        } else {
+          $pdfExport->writeToFile = false;
+        }
         $pdfExport->makePDFBuffer();
         $pdfs[] = array('filename'  => $filename, 
                         'mimetype'  => $this->mimetype, 
