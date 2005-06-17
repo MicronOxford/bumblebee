@@ -1,3 +1,6 @@
+2005-06-17 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* create interface to allow userclass name to be edited by admin 
+
 2005-06-04 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* combined report format as PDF 
 	* email PDF reports to either logged in user or to supervisor 

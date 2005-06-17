@@ -1,7 +1,5 @@
 $Id$
 
-* no GUI to delete a userclass
-
 * billing
   - PDF export configured somehow - header, font sizes etc
   - generate reports for combined analysis for distribution

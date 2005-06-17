@@ -28,6 +28,6 @@ if (!empty($CONFIG['main']['ExtraIncludePath'])) {
   set_include_path($CONFIG['main']['ExtraIncludePath'].':'.get_include_path());
 }
 
-$BUMBLEBEEVERSION = '0.9.6.0';
+$BUMBLEBEEVERSION = '0.9.7.0';
 
 ?> 
