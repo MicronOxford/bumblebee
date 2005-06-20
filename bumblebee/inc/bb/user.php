@@ -44,7 +44,13 @@ class User extends DBRow {
     $f->isValidTest = 'is_empty_string';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new CheckBox('suspended', 'Suspended');
+    
+    if (! $passwdOnly) {
+      $f = new CheckBox('suspended', 'Suspended');
+      $this->addElement($f);
+      $f = new CheckBox('isadmin', 'System Administrator');
+      $this->addElement($f);
+    }
     
     // association of user with an authentication method
     $this->_findAuthMethods();

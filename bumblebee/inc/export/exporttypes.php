@@ -15,6 +15,8 @@ class ExportType {
   var $timewhere = array('bookwhen >= ', 'bookwhen < ');
   var $order;
   var $group;
+  var $manualGroup;
+  var $manualSum;
   var $distinct = 0;
   var $union ='';
   
@@ -67,6 +69,7 @@ class ExportTypeList {
     $this->_addType($this->_createBillingConsumable());
     $this->_addType($this->_createBillingGroups());
     $this->_addType($this->_createBilling());
+    $this->_addType($this->_createBillingSummary());
   }
   
   function _addType($type) {
@@ -435,6 +438,84 @@ class ExportTypeList {
     $type->omitFields['group_title'] = 1;
     
     $type->union = array($itype, $ctype);
+    
+    return $type;
+  }
+  
+  function _createBillingSummary() {
+    $itype = new ExportType('billing-instruments', 'bookings', 'Billing data: summary: instruments', 'instruments');
+    $itype->join[] = array('table' => 'instruments', 'condition' =>  'instruments.id=bookings.instrument');
+    $itype->join[] = array('table' => 'projects', 'condition' =>  'bookings.projectid=projects.id');
+    $itype->join[] = array('table' => 'projectgroups', 'condition' =>  'projectgroups.projectid=bookings.projectid');
+    $itype->join[] = array('table' => 'groups', 'condition' =>  'groups.id=projectgroups.groupid');
+    $itype->join[] = array('table' => 'costs', 'condition' =>  'costs.userclass=projects.defaultclass AND costs.instrumentclass=instruments.class');
+    $itype->join[] = array('table' => 'projectrates', 'condition' =>  'projectrates.projectid=bookings.projectid AND projectrates.instrid=bookings.instrument');
+    $itype->join[] = array('table' => 'costs', 'alias' => 'speccosts', 'condition' =>  'projectrates.rate=speccosts.id');
+    
+    $itype->fields = array(
+                      new sqlFieldName('groups.name', 'Supervisor',  'group_name', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('groups.longname', 'Group',  'group_longname', EXPORT_HTML_LEFT, 10),
+                      new sqlFieldName('groups.addr1', 'Address 1',  'addr1', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('groups.addr2', 'Address 2',  'addr2', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('groups.suburb', 'Suburb',  'suburb', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('groups.state', 'State',  'state', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('groups.code', 'Postal code',  'code', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('groups.country', 'Country',  'country', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('groups.email', 'Email',  'email', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('groups.fax', 'Fax',  'fax', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('groups.account', 'Account',  'account', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('FLOOR(('.$this->_formula['finalCost'].')*grouppc/100)', 'Cost', 'cost',  EXPORT_HTML_RIGHT|EXPORT_HTML_MONEY|EXPORT_CALC_TOTAL, '*')
+                   );
+    $itype->where[] = 'deleted <> 1';
+    $itype->where[] = 'bookings.userid <> 0';
+    $itype->group = array('groups.name', 'instruments.name');
+
+    
+    $ctype = new ExportType('billing-consumable', 'consumables_use', 'Billing data: summary: consumable usage', 'consumables');
+    $ctype->join[] = array('table' => 'consumables', 'condition' =>  'consumables.id=consumables_use.consumable');
+    $ctype->join[] = array('table' => 'projectgroups', 'condition' =>  'projectgroups.projectid=consumables_use.projectid');
+    $ctype->join[] = array('table' => 'groups', 'condition' =>  'groups.id=projectgroups.groupid');
+    $ctype->fields = array(
+                      new sqlFieldName('groups.name', 'Supervisor',  'group_name', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('groups.longname', 'Group',  'group_longname', EXPORT_HTML_LEFT, 10),
+                      new sqlFieldName('groups.addr1', 'Address 1',  'addr1', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('groups.addr2', 'Address 2',  'addr2', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('groups.suburb', 'Suburb',  'suburb', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('groups.state', 'State',  'state', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('groups.code', 'Postal code',  'code', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('groups.country', 'Country',  'country', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('groups.email', 'Email',  'email', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('groups.fax', 'Fax',  'fax', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('groups.account', 'Account',  'account', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('ROUND(SUM(consumables.cost*grouppc/100*consumables_use.quantity),2)',
+                                          'Cost to group', 'cost', EXPORT_CALC_TOTAL|EXPORT_HTML_RIGHT|EXPORT_HTML_MONEY, '*')
+                    );
+    $ctype->group = array('groups.name', 'consumables.name');
+    $ctype->timewhere = array('usewhen >= ', 'usewhen < ');          
+
+
+
+    $type = new ExportType('billingsummary', '', 'Billing data: summary', array('instruments', 'consumables', 'groups'));
+    $type->fields = array(
+                      new sqlFieldName('', 'Supervisor',  'group_name', EXPORT_HTML_LEFT, 10),
+                      new sqlFieldName('', 'Group',  'group_longname', EXPORT_HTML_LEFT, 15),
+                      new sqlFieldName('', 'Address',  'addr1', EXPORT_HTML_LEFT, 15),
+                      new sqlFieldName('', '',  'addr2', EXPORT_HTML_LEFT, 10),
+                      new sqlFieldName('', '',  'suburb', EXPORT_HTML_LEFT, 5),
+                      new sqlFieldName('', '',  'state', EXPORT_HTML_LEFT, 2),
+                      new sqlFieldName('', '',  'code', EXPORT_HTML_LEFT, 2),
+                      new sqlFieldName('', '',  'country', EXPORT_HTML_LEFT, 5),
+                      new sqlFieldName('', 'Email',  'email', EXPORT_HTML_LEFT, 10),
+                      new sqlFieldName('', 'Fax',  'fax', EXPORT_HTML_LEFT, 8),
+                      new sqlFieldName('', 'Account',  'account', EXPORT_HTML_LEFT, 15),
+                      new sqlFieldName('', 'Amount', 'cost', EXPORT_HTML_RIGHT|EXPORT_HTML_MONEY, '*')
+                    );
+    $type->order = array('group_name');
+    
+    $type->union = array($itype, $ctype);
+    // under MySQL 4.0 we can't GROUP BY with a SUM() over a UNION as a subquery. 
+    $type->manualGroup = 'group_name';
+    $type->manualSum = array('cost');
     
     return $type;
   }

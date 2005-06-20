@@ -54,10 +54,35 @@ class DBList {
       $q = $this->_getSQLsyntax();
     }
     $sql = db_get($q, $this->fatal_sql);
-    $this->data = array();
+    $data = array();
     // FIXME: mysql specific functions
     while ($g = mysql_fetch_array($sql)) {
-      $this->data[] = $g;
+      $data[] = $g;
+    }
+    if (isset($this->manualGroup) && $this->manualGroup != '') {
+      $sumdata = array();
+      $row=0; 
+      while ($row < count($data)) {
+        $current = $data[$row][$this->manualGroup];
+        $currentRow = $data[$row];
+        $sums = array();
+        foreach ($this->manualSum as $col) {
+          $sums[$col] = 0;
+        }
+        while ($row < count($data) && $data[$row][$this->manualGroup] == $current) {
+          foreach ($this->manualSum as $col) {
+            $sums[$col] += $data[$row][$col];
+          }
+          $row++;
+        }
+        foreach ($this->manualSum as $col) {
+          $currentRow[$col] = $sums[$col];
+        }
+        $sumdata[] = $currentRow;
+      }
+      $this->data = $sumdata;
+    } else {
+      $this->data = $data;
     }
   }
   

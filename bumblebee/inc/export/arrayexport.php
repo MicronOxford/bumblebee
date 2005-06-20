@@ -75,7 +75,7 @@ class ArrayExport {
   function _sectionHeader($row) {
     $s = '';
     if (empty($this->breakfield)) {
-      $s .= $this->header;
+      //$s .= $this->header;
     } else {
       $s .= $row[$this->breakfield];
     }

@@ -1,10 +1,9 @@
 /* $Id$ */
 
 body {
-  background: #fafafa url("/theme/images/nanobg.png");
+  background: #fafafa url("/theme/images/logo.png");
   background-repeat: repeat-y;
   background-position: right;
-  font-family: "Bitstream Vera Sans", Verdana, Helvetica, Arial, sans-serif; 
 }
 
 #header {

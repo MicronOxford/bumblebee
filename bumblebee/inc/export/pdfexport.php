@@ -7,7 +7,7 @@ require_once 'fpdf/fpdf.php';
 
 
 /**
- *  A PDF exporter
+ *  A PDF exporter class 
  *
  */
 

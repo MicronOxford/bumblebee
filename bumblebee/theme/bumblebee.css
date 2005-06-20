@@ -12,6 +12,10 @@ a {
   text-decoration: underline;
 }
 
+body {
+  font-family: "Bitstream Vera Sans", Verdana, Helvetica, Arial, sans-serif; 
+}
+
 #bumblebeecontent a:hover {
   text-decoration: none;
   background-color: #ffff99;

@@ -235,19 +235,6 @@ class ActionExport extends BufferedAction {
     $where = $export->where;
     $where[] = $export->timewhere[0].qw($start->datetimestring);
     $where[] = $export->timewhere[1].qw($stop->datetimestring);
-//     for ($lim = 0; $lim < count($export->limitation); $lim++) {
-//       $limitation = array();
-//       $namebase = 'limitation-'.($limitsOffset+$lim).'-';
-//       for ($j=0; isset($this->PD[$namebase.$j.'-row']); $j++) {
-//         $item = issetSet($this->PD,$namebase.$j.'-'.$export->limitation[$lim]);
-//         if (issetSet($this->PD,$namebase.$j.'-selected')) {
-//           $limitation[] = $export->limitation[$lim].'.id='.qw($item);
-//         }
-//       }
-//       if (count($limitation)) {
-//         $where[] = '('.join($limitation, ' OR ').')';
-//       }
-//     }
     $where = array_merge($where, $this->_limitationSet($export->limitation, $limitsOffset));
     // work out what view/pivot of the data we want to see
     if (count($export->limitation) > 1 && is_array($export->pivot)) {
@@ -263,12 +250,14 @@ class ActionExport extends BufferedAction {
       }
     }
     $list = new DBList($export->basetable, $export->fields, join($where, ' AND '));
-    $list->join = array_merge($list->join, $export->join);
-    $list->group = $export->group;
-    $list->order = $export->order;
-    $list->distinct = $export->distinct;
-    $list->fieldOrder = $export->fieldOrder;
-    $list->breakfield = $export->breakField;
+    $list->join        = array_merge($list->join, $export->join);
+    $list->group       = $export->group;
+    $list->manualGroup = $export->manualGroup;
+    $list->manualSum   = $export->manualSum;
+    $list->order       = $export->order;
+    $list->distinct    = $export->distinct;
+    $list->fieldOrder  = $export->fieldOrder;
+    $list->breakfield  = $export->breakField;
     if ($this->format & EXPORT_FORMAT_USEARRAY) {
       $list->omitFields = $export->omitFields;
     }
@@ -303,6 +292,9 @@ class ActionExport extends BufferedAction {
     return $sets;
   }
   
+  /**
+   *    this function is no longer used
+   */
   function _limitationSetRIGID($fields, $limitsOffset, $makeSQL=true) {
     $sets = array();
     for ($lim = 0; $lim < count($fields); $lim++) {

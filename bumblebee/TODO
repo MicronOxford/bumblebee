@@ -1,12 +1,7 @@
 $Id$
 
 
-
-
-
 * billing
-  - PDF export configured somehow - header, font sizes etc
-  - generate reports for combined analysis for distribution
   - generate matrix summary
 
 
