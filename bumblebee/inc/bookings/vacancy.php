@@ -57,6 +57,7 @@ class Vacancy extends TimeSlot {
               .'</a>'
             .'</div>';
     }
+    //echo 'Comment: '.$this->slotRule->comment.'<br/>';
     if ($this->slotRule->comment) {
       $t .= '<div class="calcomment" title="'.xssqw($this->slotRule->comment).'">'
                 //.xssqw(sprintf('%20.20s',$this->slotRule->comment))
