@@ -161,12 +161,12 @@ class Instrument extends DBRow {
   function sync() {
     //first construct a timeslot field from the submitted data, then do the sync
     $newslotrule = $this->_calcNewSlotRule();
-    if ($this->fields['timeslotpicture']->value != $newslotrule && $this->id > -1) {
+    if ($this->fields['timeslotpicture']->value != $newslotrule /*&& $this->id > -1*/) {
       $this->log('Instrument::sync(): indulging in timeslotrule munging: <br />'. 
                     $newslotrule .'<br/>'.$this->fields['timeslotpicture']->value);
       $this->fields['timeslotpicture']->set($newslotrule);
       $this->fields['timeslotpicture']->changed = 1;
-      $this->changed = 1;
+      $this->changed = $this->changed || ($this->id > -1);
       // reflect back the data, this is good for checking that it's right, as TimeSlotRule
       // will drop bits it doesn't understand or doesn't like.
       //$this->_calcSlotRepresentation();
