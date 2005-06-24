@@ -1,3 +1,8 @@
+2005-06-24 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* create instrument supervisors 
+	* include instrument supervisor (link to email) on the calendar page 
+	* send booking to supervisor when booking is made or changed 
+
 2005-06-23 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* fix (again) comments in booking slots 
 

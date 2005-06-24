@@ -118,14 +118,6 @@ class TimeSlotRule {
         $numslots = $tmp[3];
         $discount = issetSet($tmp,4);
         $comment  = issetSet($tmp,5);
-/*         $match = issetSet($tmp,4);
-          if (preg_match('/-(\d+)%/', $match, $val)) {
-          $discount = $val[1];
-          $comment  = issetSet($tmp, 5);
-        } else {
-          $discount = NULL;
-          $comment  = $match;
-        }*/
         #echo "(start,stop,slots) = ($start,$stop,$numslots)\n";
         if ($numslots != '*' && $numslots != '0') {
           #echo "Trying to interpolate timeslots\n";

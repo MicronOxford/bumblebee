@@ -170,9 +170,14 @@ class BookingEntry extends DBRow {
 
   /** 
    * override the default sync() method with a custom one that allows us to...
+   * - send a booking confirmation email to the instrument supervisors
    */
   function sync() {
-    return parent::sync();
+    $status = parent::sync();
+    if ($status & STATUS_OK) {
+      $this->_sendBookingEmail();
+    }
+    return $status;
   }
 
   function _setDefaultDiscount() {
@@ -208,6 +213,72 @@ class BookingEntry extends DBRow {
     } else {
       $this->log('Booking changes not limited by time restrictions.',9);
     }
+  }
+  
+  /**
+   *  if appropriate, send an email to the instrument supervisors to let them know that the
+   *  booking has been made
+   */
+  function _sendBookingEmail() {
+    global $CONFIG;
+    global $ADMINEMAIL;
+    //preDump($this->fields['instrument']);
+    $instrument = quickSQLSelect('instruments', 'id', $this->fields['instrument']->getValue());
+    if (! $instrument['emailonbooking']) {
+      return;
+    }
+    $emails = array();
+    foreach(preg_split('/,\s*/', $instrument['supervisors']) as $username) {
+      $user = quickSQLSelect('users', 'username', $username);
+      $emails[] = $user['email'];
+    }
+    $bookinguser = quickSQLSelect('users', 'id', $this->fields['userid']->value);
+    $eol = "\r\n";
+    $from = $CONFIG['billing']['emailFromName'].' <'.$ADMINEMAIL.'>';
+    $to   = join($emails, ',');
+    srand(time());
+    $id   = '<bumblebee-'.time().'-'.rand().'@'.$_SERVER['SERVER_NAME'].'>';
+    
+    $headers  = 'From: '.$from .$eol;
+    $headers .= 'Message-id: ' .$id .$eol;
+    $subject = ($CONFIG['instruments']['emailSubject'] 
+                    ? $CONFIG['instruments']['emailSubject'] : 'Instrument booking notification');
+    $message = $this->_getEmailText($instrument, $bookinguser);
+
+    // Send the message
+    #preDump($to);
+    #preDump($subject);
+    #preDump($headers);
+    #preDump($message);
+    $ok = @mail($to, $subject, $message, $headers);
+    return $ok;
+
+  }
+  
+  /**
+   *   get the email text from the configured template with standard substitutions
+   */
+  function _getEmailText($instrument, $user) {
+    global $CONFIG;
+    global $BASEURL;
+    $fh = fopen($CONFIG['instruments']['emailTemplate'], 'r');
+    $txt = fread($fh, filesize($CONFIG['instruments']['emailTemplate']));
+    fclose($fh);
+    $start = new SimpleDate($this->fields['bookwhen']->getValue());
+    $duration = new SimpleTime($this->fields['duration']->getValue());
+    $replace = array(
+            '/__instrumentname__/'      => $instrument['name'],
+            '/__instrumentlongname__/'  => $instrument['longname'],
+            '/__start__/'               => $start->datetimestring,
+            '/__duration__/'            => $duration->timestring,
+            '/__name__/'                => $user['name'],
+            '/__username__/'            => $user['username'],
+            '/__host__/'      => 'http://'.$_SERVER['SERVER_NAME'].$BASEURL
+                    );
+    $txt = preg_replace(array_keys($replace),
+                        array_values($replace),
+                        $txt);
+    return $txt;
   }
   
   /** 

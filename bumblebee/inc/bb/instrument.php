@@ -139,6 +139,14 @@ class Instrument extends DBRow {
     $f->isValidTest = 'is_number';
     $f->setAttr($attrs);
     $this->addElement($f);
+    $f = new TextField('supervisors', 'Instrument supervisors', 'comma separated list of usernames');
+    $f->required = 0;
+    $f->setAttr($attrs);
+    $this->addElement($f);
+    $f = new CheckBox('emailonbooking', 'Email supervisors when booking');
+    $f->defaultValue = 0;
+    $f->setAttr($attrs);
+    $this->addElement($f);
     
     $this->fill();
     $this->dumpheader = 'Instrument object';

@@ -1,15 +1,22 @@
 $Id$
 
 
+* instruments
+  - does not apply timeslot rule on create?  
+  
+* confirmation
+  - emails to an instrument mother?
+  - require confirmation for some instruments?
+
+
+
+
+
+
+
 * billing
-  - generate matrix summary
-
-
 
 configure exporttypes from files?
-
-* db structure:
-  - SMALLINT is max 32767. Is this a limitation (e.g. number bookings!)?
 
 * instruments
   - can we put some better validation on the timeslotrule input? e.g. making sure every hour is accounted for?

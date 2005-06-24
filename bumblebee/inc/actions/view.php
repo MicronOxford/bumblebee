@@ -312,6 +312,15 @@ class ActionView extends ActionAction {
       $t = '<h3 style="padding-top: 2em;">Notes</h3>'
          .'<p>'.preg_replace("/\n+/", '</p><p>', $row['calendarcomment']).'</p>';
     }
+    if ($row['supervisors']) {
+      $t .= '<h3>Instrument supervisors</h3>';
+      $t .= '<ul>';
+      foreach(preg_split('/,\s*/', $row['supervisors']) as $username) {
+        $user = quickSQLSelect('users', 'username', $username);
+        $t .= '<li><a href="mailto:'. $user['email'] .'">'. $user['name'] .'</a></li>';
+      }
+      $t .= '</ul>';
+    }
     return $t;
   }
 

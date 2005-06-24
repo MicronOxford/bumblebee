@@ -25,7 +25,7 @@ USE bumblebeedb;
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
   id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  username VARCHAR(15) NOT NULL,
+  username VARCHAR(63) NOT NULL,
   name VARCHAR(63) NOT NULL,
   passwd CHAR(32) NOT NULL,
   email VARCHAR(63),
@@ -65,15 +65,15 @@ CREATE TABLE groups (
 
 DROP TABLE IF EXISTS userprojects;
 CREATE TABLE userprojects (
-  userid INTEGER UNSIGNED NOT NULL,
-  projectid INTEGER UNSIGNED NOT NULL,
+  userid SMALLINT UNSIGNED NOT NULL,
+  projectid SMALLINT UNSIGNED NOT NULL,
   isdefault BOOL DEFAULT 'FALSE'
 );
 
 DROP TABLE IF EXISTS projectgroups;
 CREATE TABLE projectgroups (
-  projectid INTEGER UNSIGNED NOT NULL,
-  groupid INTEGER UNSIGNED NOT NULL,
+  projectid SMALLINT UNSIGNED NOT NULL,
+  groupid SMALLINT UNSIGNED NOT NULL,
   grouppc FLOAT(16)
 );
 
@@ -95,6 +95,8 @@ CREATE TABLE instruments (
   fulldaylength FLOAT(16) NOT NULL,
   mindatechange FLOAT(16) NOT NULL,
   calendarcomment TEXT NOT NULL,
+  supervisors VARCHAR(255),
+  emailonbooking BOOL DEFAULT 'FALSE',
   PRIMARY KEY (id)
 );
 
@@ -111,9 +113,9 @@ CREATE TABLE permissions (
 );
 -- announce: receive announcement emails
 -- unbook: receive unbook announcement emails
--- haspriority: is a priority user 
--- points: current points balance
--- pointsrecharge: how many points added per cycle 
+-- haspriority: is a priority user  (unused)
+-- points: current points balance  (unused)
+-- pointsrecharge: how many points added per cycle  (unused) 
 
 DROP TABLE IF EXISTS instrumentclass;
 CREATE TABLE instrumentclass (
