@@ -1,3 +1,9 @@
+2005-06-27 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* 0.9.9.0-1.0rc1
+
+2005-06-24 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* bugfix: instrument time slot rule didn't stick on instrument creation 
+
 2005-06-24 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* create instrument supervisors 
 	* include instrument supervisor (link to email) on the calendar page 
