@@ -193,15 +193,17 @@ class ActionBilling extends ActionExport {
 
   function _sendPDFbyEmail($toName, $toEmail, $group, $data) {
     global $CONFIG;
-    global $ADMINEMAIL;
     $eol = "\r\n";
-    $from = $CONFIG['billing']['emailFromName'].' <'.$ADMINEMAIL.'>';
+    $from = $CONFIG['billing']['emailFromName']
+            .' <'.$CONFIG['main']['SystemEmail'].'>';
+    $replyto = $this->auth->name.' <'.$this->auth->email.'>';
     $to   = $toName.' <'.$toEmail.'>';
     srand(time());
     $id   = '<bumblebee-'.time().'-'.rand().'@'.$_SERVER['SERVER_NAME'].'>';
     
     $headers  = 'From: '.$from .$eol;
     //$headers .= 'To: '.$to .$eol;    // automatically added by mail()
+    $headers .= 'Reply-To: '.$replyto.$eol;
     $headers .= 'Message-id: ' .$id .$eol;
 
     $start = $this->_daterange->getStart();

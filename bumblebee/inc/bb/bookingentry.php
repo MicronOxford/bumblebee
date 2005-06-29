@@ -234,14 +234,17 @@ class BookingEntry extends DBRow {
     }
     $bookinguser = quickSQLSelect('users', 'id', $this->fields['userid']->value);
     $eol = "\r\n";
-    $from = $CONFIG['billing']['emailFromName'].' <'.$ADMINEMAIL.'>';
+    $from = $instrument['name'].' '.$CONFIG['instruments']['emailFromName']
+            .' <'.$CONFIG['main']['SystemEmail'].'>';
+    $replyto = $bookinguser['name'].' <'.$bookinguser['email'].'>';
     $to   = join($emails, ',');
     srand(time());
     $id   = '<bumblebee-'.time().'-'.rand().'@'.$_SERVER['SERVER_NAME'].'>';
     
     $headers  = 'From: '.$from .$eol;
+    $headers .= 'Reply-To: '.$replyto.$eol;
     $headers .= 'Message-id: ' .$id .$eol;
-    $subject = ($CONFIG['instruments']['emailSubject'] 
+    $subject = $instrument['name']. ': '. ($CONFIG['instruments']['emailSubject'] 
                     ? $CONFIG['instruments']['emailSubject'] : 'Instrument booking notification');
     $message = $this->_getEmailText($instrument, $bookinguser);
 
