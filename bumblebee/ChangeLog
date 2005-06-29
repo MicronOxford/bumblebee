@@ -1,3 +1,6 @@
+2005-06-29 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* change email functions to use the From address of the server and a reply-to of the user that triggered the email to be sent. 
+
 2005-06-27 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* 0.9.9.0-1.0rc1
 
