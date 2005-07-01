@@ -147,7 +147,8 @@ class ActionView extends ActionAction {
     $day = date('w', $start->ticks); // the day of the week, 0=Sun, 6=Sat
     $start->addDays(1-7*$row['calhistory']-$day);
     $stop = $start;
-    $stop->addDays(7*$row['callength']);
+    $callength = 7*$row['callength'];
+    $stop->addDays($callength);
     
     $cal = new Calendar($start, $stop, $this->PD['instrid']);
 
@@ -165,16 +166,22 @@ class ActionView extends ActionAction {
     $cal->setOutputStyles('', $CONFIG['calendar']['todaystyle'], 
                 preg_split('{/}',$CONFIG['calendar']['monthstyle']), 'm');
     echo $this->displayInstrumentHeader($row);
-    echo $this->_linksForwardBack($href,'/o='.($offset-28),'','/o='.($offset+28));
+    echo $this->_linksForwardBack($href,'/o='.($offset-$callength),
+                                  '','/o='.($offset+$callength),
+                                  $row['calfuture']-$callength+7*$row['calhistory'] > $offset);
     echo $cal->displayMonthAsTable($daystart,$daystop,$granularity,$timelines);
     echo $this->displayInstrumentFooter($row);
   }
 
-  function _linksForwardBack($href, $back, $today, $forward) {
+  function _linksForwardBack($href, $back, $today, $forward, $showForward=true) {
     return '<div style="text-align:center">'
         .'<a href="'.$href.$back.'">&laquo; earlier</a> | '
-        .'<a href="'.$href.$today.'">today</a> | '
-        .'<a href="'.$href.$forward.'">later &raquo;</a>'
+        .'<a href="'.$href.$today.'">today</a> '
+        .($showForward ? 
+                ' | '
+                .'<a href="'.$href.$forward.'">later &raquo;</a>'
+                : ''
+          )
         .'</div>';
   }
 
@@ -196,13 +203,15 @@ class ActionView extends ActionAction {
     $cal->setTimeSlotPicture($row['timeslotpicture']);
     $granularity = $row['calprecision'];
     $timelines   = $row['caltimemarks'];
+    $totaloffset = $start->daysBetween($today);
     #echo $cal->display();
     $href=$BASEURL.'/view/'.$this->PD['instrid'];
     $cal->href=$href;
     $cal->isAdminView = $this->auth->isSystemAdmin() || $this->auth->isInstrumentAdmin($this->PD['instrid']);
     $cal->setOutputStyles('', 'caltoday', array('monodd', 'moneven'), 'm');
     echo $this->displayInstrumentHeader($row);
-    echo $this->_linksForwardBack($href.'/', $start->datestring.'/o=-1', $today->datestring, $start->datestring.'/o=1');
+    echo $this->_linksForwardBack($href.'/', $start->datestring.'/o=-1', $today->datestring,
+                                $start->datestring.'/o=1', $row['calfuture'] > $totaloffset);
     echo $cal->displayDayAsTable($daystart,$daystop,$granularity,$timelines);
     echo $this->displayInstrumentFooter($row);
   }

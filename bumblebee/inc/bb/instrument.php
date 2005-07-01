@@ -74,6 +74,12 @@ class Instrument extends DBRow {
     $f->isValidTest = 'is_number';
     $f->setAttr($attrs);
     $this->addElement($f);
+    $f = new TextField('calfuture', 'Number of days into the future');
+    $f->required = 1;
+    $f->defaultValue = $CONFIG['instruments']['usualcalfuture'];
+    $f->isValidTest = 'is_number';
+    $f->setAttr($attrs);
+    $this->addElement($f);
     $f = new TextArea('calendarcomment', 'Advisory text', 'Displayed at the bottom of instrument calendar and on booking form. HTML permitted.');
     $f->setAttr(array('rows' =>5, 'cols' => 30));
     $f->required = 0;

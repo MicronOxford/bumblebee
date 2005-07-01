@@ -1,3 +1,6 @@
+2005-07-01 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* enabled a maximum number of days into the future that calendars are displayed for 
+
 2005-06-29 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* change email functions to use the From address of the server and a reply-to of the user that triggered the email to be sent. 
 

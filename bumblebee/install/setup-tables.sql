@@ -90,6 +90,7 @@ CREATE TABLE instruments (
   caltimemarks SMALLINT UNSIGNED NOT NULL,
   callength SMALLINT UNSIGNED NOT NULL,
   calhistory SMALLINT UNSIGNED NOT NULL,
+  calfuture SMALLINT UNSIGNED DEFAULT '365' NOT NULL,
   timeslotpicture TEXT NOT NULL,
   halfdaylength FLOAT(16) NOT NULL,
   fulldaylength FLOAT(16) NOT NULL,
