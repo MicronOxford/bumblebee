@@ -59,7 +59,7 @@ class BookingMatrix {
           //adjust the duration
           $rowstop = $this->numRows;
         }
-        $rowspan = $rowstop - $rowstart;
+        $rowspan = round($rowstop - $rowstart);
 
         $cell = new BookingCell($this->bookings[$k],$this->bookings[$k]->isStart,$rowspan);
         $this->rows[$rowstart] = $cell;//new BookingCell($this->bookings[$k],1,$rowspan);

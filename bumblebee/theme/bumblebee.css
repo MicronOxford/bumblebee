@@ -340,7 +340,7 @@ a.but {
   white-space: normal;
   overflow: hidden;
   height: 2.4em;
-  width: 100%;
+/*   width: 100%; */
   line-height: 90%;
 }
 
