@@ -98,6 +98,7 @@ class User extends DBRow {
       $instrfield->setFormat('id', '%s', array('name'), ' (%25.25s)', array('longname'));
       $f->addElement($instrfield);
       $subscribeAnnounce = new CheckBox('announce', 'Subscribe: announce');
+      $subscribeAnnounce->defaultValue = 1;
       $f->addElement($subscribeAnnounce);
       $unbookAnnounce = new CheckBox('unbook', 'Subscribe: unbook');
       $f->addElement($unbookAnnounce);

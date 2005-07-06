@@ -158,13 +158,10 @@ class SimpleDate {
   }
 
   function setTime($s) {
-//     echo $this->dump().$s.'<br/>';
+    //echo $this->dump().$s.'<br/>';
     $this->dayRound();
-//     echo $this->dump().'<br/>';
     $time = new SimpleTime($s);
-//     echo $time->dump().'<br/>';
     $this->addTimeParts($time->part('s'), $time->part('i'), $time->part('H'), 0,0,0);
-//     echo $this->dump().'<br/>';
     return $this;
   }  
     
@@ -284,7 +281,7 @@ class SimpleTime {
   }
 
   function _setStr() {
-    $this->timestring = sprintf('%02d:%02d', $this->ticks/3600, $this->ticks%3600);
+    $this->timestring = sprintf('%02d:%02d', $this->ticks/3600, ($this->ticks%3600)/60);
   }
 
   function setTicks($t) {
@@ -327,7 +324,7 @@ class SimpleTime {
   }
 
   function getHMSstring() {
-    return sprintf('%02d:%02d:%02d', $this->ticks/3600, $this->ticks%3600, $this->ticks%60);
+    return sprintf('%02d:%02d:%02d', $this->ticks/3600, ($this->ticks%3600)/60, $this->ticks%60);
   }
 
 
@@ -356,9 +353,9 @@ class SimpleTime {
       //let's just allow 'm' to give minutes as well, as it's easier
       case 'i':
       case 'm':
-        return floor(($this->ticks/60) % 60);
+        return floor(($this->ticks%3600) / 60);
       case 's':
-        return floor($this->ticks % (60*60));
+        return floor($this->ticks % 60);
     }
     //we can't use this as we're not actually using the underlying date-time types here.
     //return date($s, $this->ticks);

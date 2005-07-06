@@ -144,10 +144,27 @@ class ActionView extends ActionAction {
     $now->dayRound();
     $start = $now;
     $start->addDays($offset);
-    $day = date('w', $start->ticks); // the day of the week, 0=Sun, 6=Sat
-    $start->addDays(1-7*$row['calhistory']-$day);
-    $stop = $start;
+    
+    // check to see if this is an allowable calendar view (not too far into the future)
     $callength = 7*$row['callength'];
+    $totaloffset = $offset + $callength - 7*$row['calhistory'] - $start->dow();
+    $this->log("Found total offset of $totaloffset, ".$row['calfuture']);
+    
+    //admin users are allowed to see further into the future.
+    $this->_checkBookingAuth(-1);
+    if ($totaloffset > $row['calfuture'] && !$this->_isAdminView) {
+      #echo "Found total offset of $totaloffset, but only ".$row['calfuture']." is permitted. ";
+      $start = $now;
+      $offset = $row['calfuture'] - $callength + 7*$row['calhistory'] + 7;
+      $start->addDays($offset);
+      #echo $start->datetimestring;
+    }
+    
+    // jump backwards to the start of that week.
+    $day = $start->dow(); // the day of the week, 0=Sun, 6=Sat
+    $start->addDays(1-7*$row['calhistory']-$day);
+        
+    $stop = $start;
     $stop->addDays($callength);
     
     $cal = new Calendar($start, $stop, $this->PD['instrid']);
@@ -162,13 +179,13 @@ class ActionView extends ActionAction {
 //     echo $cal->display();
     $href=$BASEURL.'/view/'.$this->PD['instrid'];
     $cal->href=$href;
-    $cal->isAdminView = $this->auth->isSystemAdmin() || $this->auth->isInstrumentAdmin($this->PD['instrid']);
+    $cal->isAdminView = $this->_isAdminView;
     $cal->setOutputStyles('', $CONFIG['calendar']['todaystyle'], 
                 preg_split('{/}',$CONFIG['calendar']['monthstyle']), 'm');
     echo $this->displayInstrumentHeader($row);
     echo $this->_linksForwardBack($href,'/o='.($offset-$callength),
                                   '','/o='.($offset+$callength),
-                                  $row['calfuture']-$callength+7*$row['calhistory'] > $offset);
+                                  $totaloffset <= $row['calfuture'] || $this->_isAdminView);
     echo $cal->displayMonthAsTable($daystart,$daystop,$granularity,$timelines);
     echo $this->displayInstrumentFooter($row);
   }
@@ -187,31 +204,44 @@ class ActionView extends ActionAction {
 
   function instrumentDay() {
     global $BASEURL;
-    $start = new SimpleDate($this->PD['isodate'],1);
+    $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
+    $granularity = $row['calprecision'];
+    $timelines   = $row['caltimemarks'];
+    
+    $today = new SimpleDate(time());
+    $today->dayRound();
+    $start = new SimpleDate($this->PD['isodate']);
     $start->dayRound();
     $offset = issetSet($this->PD, 'caloffset');
     $start->addDays($offset);
+    $totaloffset = $start->daysBetween($today);
+    $maxfuture = $row['calfuture'] + 7 - $today->dow();
+    //admin users are allowed to see further into the future.
+    $this->_checkBookingAuth(-1);
+    $this->log("Found total offset of $totaloffset, $maxfuture");
+    if ($totaloffset > $maxfuture && !$this->_isAdminView) {
+      #echo "Found total offset of $totaloffset, but only ".$row['calfuture']." is permitted. ";
+      $delta = $maxfuture-$totaloffset;
+      #echo "Changing offset by $delta\n";
+      $start->addDays($delta);
+    }
     $stop = $start;
     $stop->addDays(1);
-    $today = new SimpleDate(time());
     $cal = new Calendar($start, $stop, $this->PD['instrid']);
+    $cal->setTimeSlotPicture($row['timeslotpicture']);
 
     # FIXME: get this from the instrument table?
-    $daystart    = new SimpleTime('00:00:00',1);
-    $daystop     = new SimpleTime('23:59:59',1);
-    $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
-    $cal->setTimeSlotPicture($row['timeslotpicture']);
-    $granularity = $row['calprecision'];
-    $timelines   = $row['caltimemarks'];
-    $totaloffset = $start->daysBetween($today);
+    $daystart    = new SimpleTime('00:00:00');
+    $daystop     = new SimpleTime('23:59:59');
     #echo $cal->display();
     $href=$BASEURL.'/view/'.$this->PD['instrid'];
     $cal->href=$href;
-    $cal->isAdminView = $this->auth->isSystemAdmin() || $this->auth->isInstrumentAdmin($this->PD['instrid']);
+    $cal->isAdminView = $this->_isAdminView;
     $cal->setOutputStyles('', 'caltoday', array('monodd', 'moneven'), 'm');
     echo $this->displayInstrumentHeader($row);
     echo $this->_linksForwardBack($href.'/', $start->datestring.'/o=-1', $today->datestring,
-                                $start->datestring.'/o=1', $row['calfuture'] > $totaloffset);
+                                $start->datestring.'/o=1', 
+                                $maxfuture > $totaloffset || $this->_isAdminView);
     echo $cal->displayDayAsTable($daystart,$daystop,$granularity,$timelines);
     echo $this->displayInstrumentFooter($row);
   }

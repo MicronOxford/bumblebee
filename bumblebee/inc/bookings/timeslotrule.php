@@ -251,7 +251,7 @@ class TimeSlotRule {
    * that is the appropriate slot.
    */
   function _findSlot($date, $match, $datetime=0) {
-    //$this->DEBUG=10;
+    #$this->DEBUG=10;
     //$this->log("TimeSlotRule::_findSlot:($date->datetimestring, $match, $datetime)", 10);
     //preDump(debug_backtrace());
     if ($datetime == 0) {
@@ -269,14 +269,23 @@ class TimeSlotRule {
     if ($match == TSWITHIN) $timecmp = TSSTOP;
     if ($match == TSNEXT)   $timecmp = TSSTART;
     $startvar = TSSTART;
-    //preDump($this->slots[$dow][0]);
+    $stopvar  = TSSTOP;
+    #preDump($this->slots[$dow]);
     $this->log("TimeSlotRule::_findSlot:($time->timestring, ".$this->slots[$dow][0]->$startvar->ticks.", $time->ticks, $dow)", 10);
-    if ($time->ticks < $this->slots[$dow][0]->$startvar->ticks) {
+    if ($time->ticks < $this->slots[$dow][0]->$startvar->ticks 
+        || $match ==  TSSTOP && $time->ticks <= $this->slots[$dow][0]->$startvar->ticks) {
       $dow = ($dow+6)%7;
       $day->addDays(-1);
       $time->addSecs(24*60*60);
-      //echo "Stepped back a day ";
+      $this->log("Stepped back a day to do the comparison");
     }
+/*    $this->log("TimeSlotRule::_findSlot:($time->timestring, ".$this->slots[$dow][0]->$stopvar->ticks.", $time->ticks, $dow)", 10);
+    if ($time->ticks > $this->slots[$dow][count($this->slots[$dow])-1-TSARRAYMIN]->$stopvar->ticks) {
+      $dow = ($dow+1)%7;
+      $day->addDays(1);
+      $time->addSecs(-24*60*60);
+      $this->log("Stepped forward a day to do the comparison");
+    }*/
     $this->log("Asking for ($dow, $slot, $timecmp, $match)", 10);
     //preDump($this->slots[$dow]);
     while(
@@ -287,8 +296,8 @@ class TimeSlotRule {
       //echo $slot .'#'.(count($this->slots[$dow])-TSARRAYMIN)."\n";
       $slot++;
     }
-    //echo count($this->slots[$dow])-TSARRAYMIN."/";
-    //echo $time->ticks .', '. $this->slots[$dow][$slot-1]->$timecmp->ticks."\n";
+    #echo count($this->slots[$dow])-TSARRAYMIN."/";
+    #echo $time->ticks .', '. $this->slots[$dow][$slot-1]->$timecmp->ticks."\n";
     $this->log("Final ($dow, $slot, $match)",10);
     if ($match == TSSTART || $match == TSSTOP) {
       $slot--;
@@ -325,9 +334,9 @@ class TimeSlotRule {
       $finalslot==0;
     }
     $returnSlot = $this->slots[$dow][$finalslot];
-//     preDump($returnSlot);
+    //preDump($returnSlot);
     $returnSlot->setDate($day);
-//     preDump($returnSlot->dump());
+//    preDump($returnSlot->dump());
     return $returnSlot;
   }
   

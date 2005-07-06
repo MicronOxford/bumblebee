@@ -28,10 +28,16 @@ class BookingMatrix {
     #echo "Preparing matrix with $this->numRows rows for date "
         #.$this->day->datestring."<br/>\n";
 
+    $foundFlag = false;
     foreach ($this->bookings as $k => $b) {
+      #echo "Booking $k, ".$b->start->datetimestring." - ".$b->stop->datetimestring."<br />";
       $bookDay = $b->start;
       $bookDay->dayRound();
+      $bookStopDay = $b->stop;
+      $bookStopDay->dayRound();
+      #echo "Checking eligibility for booking: ".$this->day->ticks .'='.$bookDay->ticks.'||'.$bookStopDay->ticks.'<br />';
       if ($bookDay->ticks == $this->day->ticks) {
+        $foundFlag = true;
         $bookDayStart = $bookDay;
         $mystart = isset($b->displayStart) ? $b->displayStart : $b->start;
         $mystop  = isset($b->displayStop)  ? $b->displayStop  : $b->stop;
@@ -64,7 +70,13 @@ class BookingMatrix {
         $cell = new BookingCell($this->bookings[$k],$this->bookings[$k]->isStart,$rowspan);
         $this->rows[$rowstart] = $cell;//new BookingCell($this->bookings[$k],1,$rowspan);
         #echo "Allocated $rowstart-$rowstop = $rowstart, $rowspan to booking starting on "
-            #." (".$b->start->datetimestring.")<br/>\n";
+        #    ." (".$b->start->datetimestring.")<br/>\n".($this->bookings[$k]->isStart?'ISSTART':'NOTSTART');
+      } else {
+        // since the list of bookings should be in date order, once we get a negative match
+        // we can return
+        if ($foundFlag) {
+          return;
+        }
       }
     }
   }

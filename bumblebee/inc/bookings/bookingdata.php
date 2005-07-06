@@ -27,7 +27,6 @@ class BookingData {
     global $TABLEPREFIX;
     $q = 'SELECT bookings.id AS bookid,bookwhen,duration,'
         .'DATE_ADD(bookwhen, INTERVAL duration HOUR_SECOND) AS stoptime,'
-        /*.'ishalfday,isfullday,'*/
         .'discount,log,comments,projectid,'
         .'userid,'
         .'users.name AS name, '
@@ -50,9 +49,10 @@ class BookingData {
       $q .= 'bookings.id='.qw($this->id);
     } else {
       $q .= 'bookings.userid<>0 AND bookings.instrument='.qw($this->instrument).' '
-           .'AND bookwhen BETWEEN '.qw($this->start)
-                            .' AND '.qw($this->stop).' '
-           .'ORDER BY bookwhen';
+            .'HAVING (bookwhen <= '.qw($this->start).' AND stoptime > '.qw($this->start).') '
+            .'OR (bookwhen < '.qw($this->stop).' AND stoptime >= '.qw($this->stop).') '
+            .'OR (bookwhen >= '.qw($this->start).' AND stoptime <= '.qw($this->stop).')'
+           .' ORDER BY bookwhen';
     }
     
     if ($this->id) {

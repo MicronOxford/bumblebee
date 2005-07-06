@@ -139,7 +139,7 @@ class Instrument extends DBRow {
       $this->addElement($f);
     }
     
-    $f = new TextField('mindatechange', 'Minimum notice for booking change');
+    $f = new TextField('mindatechange', 'Minimum notice for booking change (hours)');
     $f->required = 1;
     $f->defaultValue = $CONFIG['instruments']['usualmindatechange'];
     $f->isValidTest = 'is_number';

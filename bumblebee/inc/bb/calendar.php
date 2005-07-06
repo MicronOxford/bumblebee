@@ -10,6 +10,10 @@ include_once 'inc/bookings/matrix.php';
 include_once 'inc/bookings/bookingdata.php';
 include_once 'inc/bookings/timeslotrule.php';
 
+define('CAL_TIME_SLOTRULE',    1);
+define('CAL_TIME_SLOT',        2);
+define('CAL_TIME_ORIGINAL',    3);
+
 class Calendar {
   var $start;
   var $stop;
@@ -42,7 +46,6 @@ class Calendar {
     $this->log('Creating calendar from '.$start->datestring.' to '.$stop->datestring, 5);
     $this->_fill();
     $this->_insertVacancies();
-    $this->_breakAcrossDays();
   }
 
   /**
@@ -69,7 +72,7 @@ class Calendar {
     $this->timeslots = new TimeSlotRule($pic);
     //break bookings over the predefined pictures
     $this->log('Breaking up bookings according to defined rules');
-    $this->_breakAccordingToList($this->timeslots);
+    $this->_breakAccordingToList($this->timeslots, CAL_TIME_SLOTRULE, CAL_TIME_ORIGINAL);
   }
 
   /**
@@ -159,14 +162,15 @@ class Calendar {
     $this->log('Breaking up bookings across days');
     //break bookings over day boundaries
     $daylist = new TimeSlotRule('[0-6]<00:00-24:00/*>');
-    $this->_breakAccordingToList($daylist, false);
+    $this->_breakAccordingToList($daylist, CAL_TIME_ORIGINAL, CAL_TIME_ORIGINAL);
   }    
     
   /**
    * Break up bookings that span elements of a defined list (e.g. allowable times or 
    * days). A TimeSlotRule ($list) is used to define how the times should be broken up
    */
-  function _breakAccordingToList($list, $keepTimes=true) {
+  function _breakAccordingToList($list, 
+                  $keepTimesVacant=CAL_TIME_ORIGINAL, $keepTimesBook=CAL_TIME_ORIGINAL) {
     $bl = $this->bookinglist;
     $this->bookinglist = array();
     $this->log('Breaking up bookings according to list');
@@ -177,7 +181,7 @@ class Calendar {
                       .$bl[$bv]->start->datetimestring.' - '.$bl[$bv]->stop->datetimestring, 8);
       $cbook = $bl[$bv];
       $cbook->original = $cbook;
-      $isStart = 1;
+      $isStart = START_BOOKING;
       $slot = $list->findSlotFromWithin($bl[$bv]->start);  
       #$start = $list->findSlotStart($bl[$bv]->start);
       if ($slot == 0) {
@@ -192,13 +196,18 @@ class Calendar {
               .' cstop='.$slot->stop->datetimestring, 10);
         $this->bookinglist[$booking] = $cbook;
         $this->bookinglist[$booking]->isStart = $isStart;
-        $isStart = 0;
+        $realStart = isset($this->bookinglist[$booking]->displayStart) ? $this->bookinglist[$booking]->displayStart : $this->bookinglist[$booking]->start;
+        if ($isStart == MIDDLE_BOOKING && $slot->start->dow() != $realStart->dow()) {
+          $this->bookinglist[$booking]->isStart |= START_BOOKING_DAY;
+        }
+        $isStart = MIDDLE_BOOKING;
         
         // while PHP's handling of methods is broken, we have to this as a two-step operation:
         // all we want to do is:
         //    $this->bookinglist[$booking]->start->max($slot->start);
         // but that causes the start property to change from and Object to an &Object (see a var_dump)
         // see http://bugs.php.net/bug.php?id=24485 and http://bugs.php.net/bug.php?id=30787
+        // Note that PHP 4.4.x claims to have fixed this bug.
         $newstart = $this->bookinglist[$booking]->start;
         $newstart->max($slot->start);
         $this->bookinglist[$booking]->start = $newstart;
@@ -209,41 +218,66 @@ class Calendar {
         $newstop->min($stop);
         $this->bookinglist[$booking]->stop = $newstop;
         
-        $this->bookinglist[$booking]->slotRule = $slot;
         
-        if ($keepTimes && $booking<=0) {
-          $this->bookinglist[$booking]->displayStart = $slot->start;
-        }
+        $nextstart = $slot->start;
+        //$this->log('rstart='.$this->bookinglist[$booking]->original->displayStart->datetimestring
+        //      .' rstop='.$this->bookinglist[$booking]->original->displayStop->datetimestring, 10);
         if (! $this->bookinglist[$booking]->isVacant) {
-          if (isset($this->bookinglist[$booking]->displayStop)) {
-            $this->bookinglist[$booking]->displayStop = $this->bookinglist[$booking]->displayStop;
-          } else {
-            $this->bookinglist[$booking]->displayStop = $this->bookinglist[$booking]->original->stop;
+          switch ($keepTimesBook) {
+            case CAL_TIME_SLOTRULE:
+              $this->bookinglist[$booking]->displayStart = $slot->start;
+              $this->bookinglist[$booking]->displayStop  = $slot->stop;
+              $this->bookinglist[$booking]->slotRule = $slot;
+              break;
+            case CAL_TIME_SLOT:
+              $this->bookinglist[$booking]->displayStart = $this->bookinglist[$booking]->start;
+              $this->bookinglist[$booking]->displayStop  = $this->bookinglist[$booking]->stop;
+              break;
+            case CAL_TIME_ORIGINAL:
+              if (! isset($this->bookinglist[$booking]->displayStart)) {
+                $this->bookinglist[$booking]->displayStart = $this->bookinglist[$booking]->original->start;
+              }
+              if (! isset($this->bookinglist[$booking]->displayStop)) {
+                $this->bookinglist[$booking]->displayStop = $this->bookinglist[$booking]->original->stop;
+              }
+              break;
+          }
+        } else {
+          switch ($keepTimesVacant) {
+            case CAL_TIME_SLOTRULE:
+              $this->bookinglist[$booking]->displayStart = $slot->start;
+              $this->bookinglist[$booking]->displayStop  = $slot->stop;
+              $this->bookinglist[$booking]->isDisabled = ! $slot->isAvailable;
+              $this->bookinglist[$booking]->slotRule = $slot;
+              break;
+            case CAL_TIME_SLOT:
+              $this->bookinglist[$booking]->displayStart = $this->bookinglist[$booking]->start;
+              $this->bookinglist[$booking]->displayStop  = $this->bookinglist[$booking]->stop;
+              break;
+            case CAL_TIME_ORIGINAL:
+              if (! isset($this->bookinglist[$booking]->displayStart)) {
+                $this->bookinglist[$booking]->displayStart = $this->bookinglist[$booking]->original->start;
+              }
+              if (! isset($this->bookinglist[$booking]->displayStop)) {
+                $this->bookinglist[$booking]->displayStop = $this->bookinglist[$booking]->original->stop;
+              }
+              break;
           }
         }
         
-        $this->bookinglist[$booking]->isDisabled = ! $slot->isAvailable;
+        $nextslot = $list->findNextSlot($nextstart);
         
+        $this->log('dstart='.$this->bookinglist[$booking]->displayStart->datetimestring
+              .' dstop='.$this->bookinglist[$booking]->displayStop->datetimestring, 10);
         $this->log('sstart='.$this->bookinglist[$booking]->start->datetimestring
               .' sstop='.$this->bookinglist[$booking]->stop->datetimestring, 10);
-        $nextstart = $slot->start;
-        //$nextstart->addSecs(1);
-        $slot = $list->findNextSlot($nextstart);
+        $slot = $nextslot;
         $booking++;
-        $this->log('oticks='.$this->bookinglist[$booking-1]->original->stop->ticks
-                   .'nticks='.$slot->start->ticks,10);
+        //$this->log('oticks='.$this->bookinglist[$booking-1]->original->stop->ticks
+        //           .'nticks='.$slot->start->ticks,10);
         $this->log('nextstart='.$slot->start->datetimestring,10);
         $this->log('');
-/*        if ($slot->start->datetimestring == '2005-04-29 00:00:00') {
-          $next++;
-          if ($next > 10) {
-            exit;
-          }
-        }*/
       } while ($this->bookinglist[$booking-1]->original->stop->ticks > $slot->start->ticks);
-    }
-    if ($keepTimes && $this->bookinglist[$booking-1]->isVacant) {
-      $this->bookinglist[$booking-1]->displayStop = $this->bookinglist[$booking-1]->slotRule->stop;
     }
   }
 
@@ -295,6 +329,7 @@ class Calendar {
   function displayMonthAsTable($daystart, $daystop, $granularity, 
                                     $reportPeriod) {
     global $BASEPATH;
+    $this->_breakAcrossDays();
     $matrix = $this->_collectMatrix($daystart, $daystop, $granularity);
     $numRowsPerDay =  $daystop->subtract($daystart) / $granularity;
     $numRows = ceil($this->numDays/7) * $numRowsPerDay;
@@ -383,6 +418,7 @@ class Calendar {
   function displayDayAsTable($daystart, $daystop, $granularity, 
                                     $reportPeriod) {
     global $BASEPATH;
+    $this->_breakAcrossDays();
     $matrix = $this->_collectMatrix($daystart, $daystop, $granularity);
     $numRowsPerDay =  ceil($daystop->subtract($daystart) / $granularity);
     $numRows = $numRowsPerDay;

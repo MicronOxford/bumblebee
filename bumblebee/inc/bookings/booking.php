@@ -7,8 +7,6 @@ include_once 'timeslot.php';
 
 class Booking extends TimeSlot {
   var $id;
-      /*$ishalfday,
-      $isfullday,*/
   var $discount;
   var $log;
   var $comments;
@@ -26,8 +24,6 @@ class Booking extends TimeSlot {
     $this->TimeSlot($arr['bookwhen'], $arr['stoptime'], $arr['duration']);
     $isVacant = false;
     $this->id = $arr['bookid'];
-    /*$this->ishalfday = $arr['ishalfday'];
-    $this->isfullday = $arr['isfullday'];*/
     $this->discount = $arr['discount'];
     $this->log = $arr['log'];
     $this->comments = $arr['comments'];
@@ -50,12 +46,6 @@ class Booking extends TimeSlot {
   }
   
   function displayInTable($cols, $displayAdmin, $displayOwner) {
-    /*
-    $bookinglength = "";
-    if ($isInstrAdmin || $isSystemAdmin || $isOwnBooking) {
-      $bookinglength = ($this->ishalfday ? " (half day)" : "");
-      $bookinglength = ($this->isfullday ? " (full day)" : "");
-    }*/
     $t = '<tr><td>Booking ID</td><td>'.$this->id.'</td></tr>'."\n"
        . '<tr><td>Start</td><td>'.$this->start->datetimestring.'</td></tr>'."\n"
        . '<tr><td>Stop</td><td>'.$this->stop->datetimestring.'</td></tr>'."\n"
@@ -101,8 +91,10 @@ class Booking extends TimeSlot {
   }
 
   function generateBookingTitle() {
-    return 'Booking from '. $this->original->start->datetimestring
-         .' - '. $this->original->stop->datetimestring;
+    $start = isset($this->displayStart) ? $this->displayStart : $this->original->start;
+    $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->original->stop;
+    return 'Booking from '. $start->datetimestring
+         .' - '. $stop->datetimestring;
   }
 
 } //class Booking

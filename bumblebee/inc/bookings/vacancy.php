@@ -39,6 +39,7 @@ class Vacancy extends TimeSlot {
 //     preDump($this);
     global $BASEPATH;
     $t = '';
+    #echo $this->isDisabled ? 'disabled ' : 'active ';
     if ($isadmin || ! $this->isDisabled) {
       $start = isset($this->displayStart) ? $this->displayStart : $this->start;
       $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
@@ -70,13 +71,15 @@ class Vacancy extends TimeSlot {
   }
 
   function generateBookingTitle() {
+    $start = isset($this->displayStart) ? $this->displayStart : $this->original->start;
+    $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->original->stop;
     $t = '';
     if ($this->isDisabled) {
       $t .= 'Unavailable from ';
     } else {
       $t .= 'Vacancy from ';
     }
-    $t .= $this->start->datetimestring .' - '. $this->stop->datetimestring;
+    $t .= $start->datetimestring .' - '. $stop->datetimestring;
     return $t;
   }
 

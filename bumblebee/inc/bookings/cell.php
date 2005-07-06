@@ -2,14 +2,20 @@
 # $Id$
 # Booking cell object for display in a table
 
+define('MIDDLE_BOOKING',    1);
+define('START_BOOKING',     2);
+define('START_BOOKING_DAY', 4);
+
 class BookingCell {
   var $booking;
   var $isStart;
+  var $isStartDay;
   var $rows;
   
-  function BookingCell(&$book, $start=1, $rows=1) {
+  function BookingCell(&$book, $start=START_BOOKING, $rows=1) {
     $this->booking = $book;
-    $this->isStart = $start;
+    $this->isStart    = $start & START_BOOKING;
+    $this->isStartDay = $start & START_BOOKING_DAY;
     $this->rows    = $rows;
   }
 
@@ -23,17 +29,8 @@ class BookingCell {
   }
 
   function display($class, $href, $isadmin=0) {
-    #preDump(debug_backtrace());
     $t = '';
-    #$class = $this->class;
-    #$rota = date($this->roton, $this->booking->start->ticks);
-    #$class .= ' '.$this->class[$rota%count($this->rotaClass)];
-    #$today = new SimpleDate(time());
-    #if ($today->datestring==$this->booking->start->datestring) {
-      #$class .= ' '.$this->todayClass;
-    #}
-    //echo $this->booking->isVacant;
-    if ($this->isStart || $this->booking->isVacant) {
+    if ($this->isStart || $this->isStartDay) {
       $class .= ' '.$this->booking->baseclass;
       $t .= '<td rowspan="'.$this->rows.'" class="'.$class.'" '
            .'title="'.$this->booking->generateBookingTitle().'">';

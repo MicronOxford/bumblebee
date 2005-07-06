@@ -45,7 +45,7 @@ class CheckBox extends Field {
   function selectable() {
     $t  = "<input type='checkbox' name='$this->namebase$this->name' "
          ."value='1' ";
-    $t .= (($this->value) ? 'checked="1"' : '');
+    $t .= (($this->getValue()) ? 'checked="1"' : '');
     $t .= '/>';
     return $t;
   }
