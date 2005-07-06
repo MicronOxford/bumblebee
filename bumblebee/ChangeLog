@@ -1,3 +1,11 @@
+2005-07-06 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* 0.9.9.2-1.0rc3
+	* bugfix: max days in future settings on calendar and day views now do as intended 
+	* feature: max days in future now enforced on calendars not just optional, admin override 
+	* bugfix: time handling now correct for times less than one hour (SimpleDate/Time -> TimeSlotRule) 
+	* bugfix: overnight bookings now appear at end of day and beginning of next day on calendar view (change order of booking normalisation to do TimeSlotsRule first then BreakByDay) 
+	* feature: make subscribe-announce on by default in the forms 
+
 2005-07-01 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* 0.9.9.1-1.0rc2
 	* enabled a maximum number of days into the future that calendars are displayed for 
