@@ -25,7 +25,7 @@ class TimeField extends Field {
     parent::Field($name, $longname, $description);
     $this->time = new SimpleTime(0);
     $this->slotStart = new SimpleDate(0);
-    //$this->DEBUG=10;
+    #$this->DEBUG=10;
   }
 
   function displayInTable($cols) {
@@ -99,6 +99,7 @@ class TimeField extends Field {
     //preDump($this);
     $this->_findExactSlot();
     if (! isset($this->slot) && $this->slot != 0) {
+      $this->log('No slot found, TF_FIXED');
       $this->representation = TF_FIXED;
       return;
     }
@@ -110,6 +111,12 @@ class TimeField extends Field {
     } elseif ($this->slot->isFreeForm) {
       $this->representation = TF_FREE;
     } elseif ($this->isStart || $this->slot->numslotsFollowing < 1) {
+      $this->log('Starting slot or none following, TF_FIXED');
+      $this->representation = TF_FIXED;
+    } elseif (($duration = new SimpleTime($this->getValue())) 
+              && $this->slot->start->ticks + $duration->ticks != $this->slot->stop->ticks) {
+      //$this->log($this->slot->start->ticks.' + '.$duration->ticks.' != '.$this->slot->stop->ticks);
+      $this->log('Not exactly following slots, TF_FIXED');
       $this->representation = TF_FIXED;
     } elseif ($this->_fixedTimeSlots()) {
       $this->representation = TF_DROP;
@@ -225,9 +232,14 @@ class TimeField extends Field {
   function _findExactSlot() {
     $this->log('Looking for slot starting at '.$this->slotStart->datetimestring, 10);
     $this->slot = $this->list->findSlotByStart($this->slotStart);
-    if ($this->slot == '0') {
+    if (! $this->slot) {
       $this->slot = $this->list->findSlotFromWithin($this->slotStart);
     }
+    $this->log('Found slot start '.$this->slot->start->datetimestring, 10);
+    $this->log('Found slot stop '.$this->slot->stop->datetimestring, 10);
+/*    if ($this->slot == '0') {
+      $this->slot = $this->list->findSlotFromWithin($this->slotStart);
+    }*/
   }
 
   /**

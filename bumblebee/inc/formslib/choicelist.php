@@ -213,7 +213,9 @@ class ChoiceList extends Field {
     // templist is a horrible hack around a PHP 4.3 bug
     // This is all we want to do:
     //    $this->list->prepend($a);
-    // but that causes $this->list to suddenly become a reference!
+    // but that causes $this->list to suddenly become a reference: Object not &Object (see a var_dump)
+    // see http://bugs.php.net/bug.php?id=24485 and http://bugs.php.net/bug.php?id=30787
+    // Note that PHP 4.4.x claims to have fixed this bug. (although 4.4.0 does not)
     $templist = $this->list;
     $templist->prepend($a);
     $this->list = $templist;
@@ -225,20 +227,18 @@ class ChoiceList extends Field {
    * @param array $a see DBChoiceList for details
    */
   function append($a) {
-    // templist is a horrible hack around a PHP 4.3 bug
+    // templist is a horrible hack around a PHP 4.3 bug, see above
     // This is all we want to do:
     //    $this->list->append($a);
-    // but that causes $this->list to suddenly become a reference!
     $templist = $this->list;
     $templist->append($a);
     $this->list = $templist;
   }
 
   function setDefault($val) {
-    // templist is a horrible hack around a PHP 4.3 bug
+    // templist is a horrible hack around a PHP 4.3 bug, see above
     // This is all we want to do:
     //    $this->list->append($a);
-    // but that causes $this->list to suddenly become a reference!
     $this->defaultValue = $val;
     $templist = $this->list;
     $templist->setDefault($val);

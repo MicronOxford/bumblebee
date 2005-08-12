@@ -172,14 +172,12 @@ class BumbleBeeAuth {
                                   ),
                 "authtype" => $RADIUSCONFIG['authtype']
                 );
-    $a = new Auth("RADIUS", $params);
+    // start the PEAR::Auth system using RADIUS authentication with the parameters 
+    // we have defined here for this config. Do not display a login box on error.
+    $a = new Auth("RADIUS", $params, '', false); 
     $a->username = $username;
     $a->password = $password;
-    // the PEAR::Auth classes throw up a "login" dialogue automatically, and we don't want it
-    // discard it using output buffering.
-    ob_start();
     $a->start();
-    ob_end_clean();
     $auth = $a->getAuth();
     if (! $auth) {
       $this->_error = 'Login failed: radius auth failed';

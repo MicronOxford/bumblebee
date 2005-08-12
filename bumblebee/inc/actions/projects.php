@@ -66,5 +66,7 @@ class ActionProjects extends ActionAction {
               )
             );  
   }
+
 }
-?> 
+
+?>

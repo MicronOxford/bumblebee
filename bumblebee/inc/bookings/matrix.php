@@ -67,10 +67,13 @@ class BookingMatrix {
         }
         $rowspan = round($rowstop - $rowstart);
 
-        $cell = new BookingCell($this->bookings[$k],$this->bookings[$k]->isStart,$rowspan);
-        $this->rows[$rowstart] = $cell;//new BookingCell($this->bookings[$k],1,$rowspan);
-        #echo "Allocated $rowstart-$rowstop = $rowstart, $rowspan to booking starting on "
-        #    ." (".$b->start->datetimestring.")<br/>\n".($this->bookings[$k]->isStart?'ISSTART':'NOTSTART');
+        // Only add the cell to the matrix if the cell doesn't already have an entry in it.
+        // Otherwise, the second part of a booking that is split across multiple slots would
+        // overwrite the earlier part.
+        if (! isset($this->rows[$rowstart])) {
+          $cell = new BookingCell($this->bookings[$k],$this->bookings[$k]->isStart,$rowspan);
+          $this->rows[$rowstart] = $cell;
+        }
       } else {
         // since the list of bookings should be in date order, once we get a negative match
         // we can return

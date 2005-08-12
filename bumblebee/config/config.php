@@ -25,7 +25,7 @@ if ($CONFIG['error_handling']['AllWarnings']) {
   ini_set("error_reporting",E_ERROR); #only errors should be echoed
 }
 if (!empty($CONFIG['main']['ExtraIncludePath'])) {
-  set_include_path($CONFIG['main']['ExtraIncludePath'].':'.get_include_path());
+  set_include_path($CONFIG['main']['ExtraIncludePath'].PATH_SEPARATOR.get_include_path());
 }
 
 $BUMBLEBEEVERSION = '0.9.9.2-1.0rc3';

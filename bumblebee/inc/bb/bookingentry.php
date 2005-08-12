@@ -376,7 +376,7 @@ class BookingEntry extends DBRow {
    * Ensure that the entered data fits the granularity criteria specified for this instrument
    */
   function _legalSlot() {
-    //$this->DEBUG=10;
+    #$this->DEBUG=10;
     $starttime = new SimpleDate($this->fields['bookwhen']->getValue());
     $stoptime = $starttime;
     $stoptime->addTime(new SimpleTime($this->fields['duration']->getValue()));
@@ -385,11 +385,36 @@ class BookingEntry extends DBRow {
     $validslot = $this->slotrules->isValidSlot($starttime, $stoptime);
     if (! $validslot) {
       $this->log('This slot isn\'t legal so far... perhaps it is FreeForm?');
-      $startslot = $this->slotrules->findSlotFromWithin($starttime);
+      $startslot = $this->slotrules->findSlotByStart($starttime);
+      if (! $startslot) {
+        $startslot = $this->slotrules->findSlotFromWithin($starttime);
+      }
       //echo "now stop";
-      $stopslot  = $this->slotrules->findSlotFromWithin($stoptime);
+      $stopslot  = $this->slotrules->findSlotByStop($stoptime);
+      if (! $stopslot) {
+        $stopslot = $this->slotrules->findSlotFromWithin($stoptime);
+      }
+      #echo $startslot->start->dump();
+      #echo $starttime->dump();
+      #echo $stopslot->stop->dump();
+      #echo $stoptime->dump();
       $validslot = $startslot->isFreeForm && $stopslot->isFreeForm;
       $this->log('It '.($validslot ? 'is' : 'is not').'!');
+      if (! $validslot) {
+        $this->log('Perhaps it is adjoining another booking with funny times?');
+        $startok = ($startslot->start->ticks == $starttime->ticks);
+        if (! $startok) {
+          $this->log('Checking start time for adjoining stop');
+          $startvalid = $this->_checkTimesAdjoining('stoptime', $starttime);
+        }
+        $stopok  = ($stopslot->stop->ticks  == $stoptime->ticks);
+        if (! $stopok) {
+          $this->log('Checking stop time for adjoining start');
+          $stopvalid  = $this->_checkTimesAdjoining('bookwhen', $stoptime);
+        }
+        $validslot = ($startok || $startvalid) && ($stopok || $stopvalid);
+        $this->log('It '.($validslot ? 'is' : 'is not').'!');
+      }
     }
     if (! $validslot) {
       $this->errorMessage .= 'Sorry, the timeslot you have selected is not valid, '
@@ -398,6 +423,26 @@ class BookingEntry extends DBRow {
     return $validslot;
   }
 
+  /** 
+   * check if this booking is adjoining existing bookings -- it can explain why the booking 
+   * is at funny times.
+   */
+  function _checkTimesAdjoining($field, $checktime) {
+      global $TABLEPREFIX;
+      $instrument = $this->fields['instrument']->getValue();
+      $time = $checktime->datetimestring;
+      $q = 'SELECT bookings.id AS bookid, bookwhen, duration, '
+          .'DATE_ADD( bookwhen, INTERVAL duration HOUR_SECOND ) AS stoptime '
+          .'FROM '.$TABLEPREFIX.'bookings AS bookings '
+          .'WHERE instrument='.qw($instrument).' '
+          .'AND userid<>0 '
+          .'AND deleted<>1 '        // old version of MySQL cannot handle true, use 1 instead
+          .'HAVING '.$field.' = '.qw($time);
+      $row = db_get_single($q, $this->fatal_sql);
+      $this->log(is_array($row) ? 'Found a matching booking' : 'No matching booking');
+      return (is_array($row));
+  }  
+  
   /** 
    * make a temporary booking for this slot to eliminate race conditions for this booking
    */

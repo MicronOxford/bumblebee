@@ -91,8 +91,8 @@ class Booking extends TimeSlot {
   }
 
   function generateBookingTitle() {
-    $start = isset($this->displayStart) ? $this->displayStart : $this->original->start;
-    $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->original->stop;
+    $start = isset($this->displayStart) ? $this->displayStart : $this->start;
+    $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
     return 'Booking from '. $start->datetimestring
          .' - '. $stop->datetimestring;
   }

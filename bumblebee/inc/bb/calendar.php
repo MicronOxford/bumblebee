@@ -11,8 +11,7 @@ include_once 'inc/bookings/bookingdata.php';
 include_once 'inc/bookings/timeslotrule.php';
 
 define('CAL_TIME_SLOTRULE',    1);
-define('CAL_TIME_SLOT',        2);
-define('CAL_TIME_ORIGINAL',    3);
+define('CAL_TIME_BOOKING',     2);
 
 class Calendar {
   var $start;
@@ -72,7 +71,7 @@ class Calendar {
     $this->timeslots = new TimeSlotRule($pic);
     //break bookings over the predefined pictures
     $this->log('Breaking up bookings according to defined rules');
-    $this->_breakAccordingToList($this->timeslots, CAL_TIME_SLOTRULE, CAL_TIME_ORIGINAL);
+    $this->_breakAccordingToList($this->timeslots, CAL_TIME_SLOTRULE, CAL_TIME_SLOTRULE);
   }
 
   /**
@@ -144,6 +143,8 @@ class Calendar {
       }
     }
     $this->bookinglist = $bvlist;
+    $this->bookinglist[0]->arb_start = true;
+    $this->bookinglist[count($bvlist)-1]->arb_stop = true;
   }
     
   /**
@@ -162,15 +163,33 @@ class Calendar {
     $this->log('Breaking up bookings across days');
     //break bookings over day boundaries
     $daylist = new TimeSlotRule('[0-6]<00:00-24:00/*>');
-    $this->_breakAccordingToList($daylist, CAL_TIME_ORIGINAL, CAL_TIME_ORIGINAL);
+    $this->_breakAccordingToList($daylist, CAL_TIME_BOOKING, CAL_TIME_BOOKING);
   }    
     
   /**
    * Break up bookings that span elements of a defined list (e.g. allowable times or 
    * days). A TimeSlotRule ($list) is used to define how the times should be broken up
+   *
+   * @param $list TimeSlotRule Object   set of rules used to break up booking stream
+   * @param $keepTimesVacant enum       how should the display(Start|Stop) and (start|stop) 
+   * @param $keepTimesBook   enum       .. variables be set for Vacancy and Booking slots
+   *
+   * $keepTimes(Vacant|Book) are set to CAL_TIME_BOOKING, CAL_TIME_SLOTRULE
+   *
+   * CAL_TIME_BOOKING:
+   *   start|stop are set according to the timeslotrule and will be used to
+   *      display the timeslot in a graphica display (i.e. calculating height of boxes)
+   *    display(Start|Stop) are set to the values of the original vacancy or booking being examined.
+   *
+   * CAL_TIME_SLOTRULE:
+   *   display(Start|Stop) variables are set to the values of the timeslot rule that breaks up the slots 
+   *      with the exception of slots that overlap a booking, where min() or max() is used
+   *   start|stop are set to the same as the start/stop vars
+   *   Note: vacancies that are at the start or end of the booking list are a corner case 
+   *   that is handled respectively as: start = slotrule->stop and stop = slotrule->stop
+   *
    */
-  function _breakAccordingToList($list, 
-                  $keepTimesVacant=CAL_TIME_ORIGINAL, $keepTimesBook=CAL_TIME_ORIGINAL) {
+  function _breakAccordingToList($list, $keepTimesVacant, $keepTimesBook) {
     $bl = $this->bookinglist;
     $this->bookinglist = array();
     $this->log('Breaking up bookings according to list');
@@ -182,106 +201,96 @@ class Calendar {
       $cbook = $bl[$bv];
       $cbook->original = $cbook;
       $isStart = START_BOOKING;
-      $slot = $list->findSlotFromWithin($bl[$bv]->start);  
+      $slotrule = $list->findSlotFromWithin($bl[$bv]->start);  
       #$start = $list->findSlotStart($bl[$bv]->start);
-      if ($slot == 0) {
+      if ($slotrule == 0) {
         // then the original start time must be outside the proper limits
-        $slot = $list->findNextSlot($bl[$bv]->start);
+        $slotrule = $list->findNextSlot($bl[$bv]->start);
       }
       do {  //until the current booking has been broken up across list boundaries
-        $this->log('ostart='.$bl[$bv]->start->datetimestring 
-              .' ostop='.$bl[$bv]->stop->datetimestring, 10);
-        $stop  = $slot->stop;
-        $this->log('cstart='.$slot->start->datetimestring
-              .' cstop='.$slot->stop->datetimestring, 10);
+        $this->timelog('bookingo', $bl[$bv]);
+        $this->timelog('timeslot', $slotrule);
+        // push the new booking onto the stack; record if it's the start of a booking or not
         $this->bookinglist[$booking] = $cbook;
-        $this->bookinglist[$booking]->isStart = $isStart;
         $realStart = isset($this->bookinglist[$booking]->displayStart) ? $this->bookinglist[$booking]->displayStart : $this->bookinglist[$booking]->start;
-        if ($isStart == MIDDLE_BOOKING && $slot->start->dow() != $realStart->dow()) {
+        if ($isStart == MIDDLE_BOOKING && $slotrule->start->dow() != $realStart->dow()) {
           $this->bookinglist[$booking]->isStart |= START_BOOKING_DAY;
         }
-        $isStart = MIDDLE_BOOKING;
+        $next_isStart = MIDDLE_BOOKING;
         
-        // while PHP's handling of methods is broken, we have to this as a two-step operation:
-        // all we want to do is:
-        //    $this->bookinglist[$booking]->start->max($slot->start);
-        // but that causes the start property to change from and Object to an &Object (see a var_dump)
-        // see http://bugs.php.net/bug.php?id=24485 and http://bugs.php.net/bug.php?id=30787
-        // Note that PHP 4.4.x claims to have fixed this bug.
         $newstart = $this->bookinglist[$booking]->start;
-        $newstart->max($slot->start);
-        $this->bookinglist[$booking]->start = $newstart;
-
-        //...and again:          
-        //$this->bookinglist[$booking]->stop->min($stop);
+        $newstart->max($slotrule->start);
         $newstop = $this->bookinglist[$booking]->stop;
-        $newstop->min($stop);
-        $this->bookinglist[$booking]->stop = $newstop;
+        $newstop->min($slotrule->stop);
         
-        
-        $nextstart = $slot->start;
-        //$this->log('rstart='.$this->bookinglist[$booking]->original->displayStart->datetimestring
-        //      .' rstop='.$this->bookinglist[$booking]->original->displayStop->datetimestring, 10);
         if (! $this->bookinglist[$booking]->isVacant) {
           switch ($keepTimesBook) {
-            case CAL_TIME_SLOTRULE:
-              $this->bookinglist[$booking]->displayStart = $slot->start;
-              $this->bookinglist[$booking]->displayStop  = $slot->stop;
-              $this->bookinglist[$booking]->slotRule = $slot;
-              break;
-            case CAL_TIME_SLOT:
-              $this->bookinglist[$booking]->displayStart = $this->bookinglist[$booking]->start;
-              $this->bookinglist[$booking]->displayStop  = $this->bookinglist[$booking]->stop;
-              break;
-            case CAL_TIME_ORIGINAL:
-              if (! isset($this->bookinglist[$booking]->displayStart)) {
-                $this->bookinglist[$booking]->displayStart = $this->bookinglist[$booking]->original->start;
+            case CAL_TIME_SLOTRULE:   // for bookings
+              if ($this->bookinglist[$booking]->arb_start) {
+                $newstart = $this->bookinglist[$booking]->start;
               }
-              if (! isset($this->bookinglist[$booking]->displayStop)) {
-                $this->bookinglist[$booking]->displayStop = $this->bookinglist[$booking]->original->stop;
+              if ($this->bookinglist[$booking]->arb_stop) {
+                $newstop = $this->bookinglist[$booking]->stop;
               }
+              $this->bookinglist[$booking]->displayStart = $this->bookinglist[$booking]->original->start;
+              $this->bookinglist[$booking]->displayStop  = $this->bookinglist[$booking]->original->stop;
+              $this->bookinglist[$booking]->start = $newstart;
+              $this->bookinglist[$booking]->stop  = $newstop;
+/*              $this->bookinglist[$booking]->displayStart = $newstart;
+              $this->bookinglist[$booking]->displayStop  = $newstop;*/
+              $this->bookinglist[$booking]->slotRule = $slotrule;
+              $this->bookinglist[$booking]->isStart |= $isStart;
+              break;
+            case CAL_TIME_BOOKING:
+              $this->bookinglist[$booking]->start = $newstart;
+              $this->bookinglist[$booking]->stop  = $newstop;
+//               $this->bookinglist[$booking]->displayStart = $this->bookinglist[$booking]->original->start;
+//               $this->bookinglist[$booking]->displayStop  = $this->bookinglist[$booking]->original->stop;
               break;
           }
         } else {
           switch ($keepTimesVacant) {
-            case CAL_TIME_SLOTRULE:
-              $this->bookinglist[$booking]->displayStart = $slot->start;
-              $this->bookinglist[$booking]->displayStop  = $slot->stop;
-              $this->bookinglist[$booking]->isDisabled = ! $slot->isAvailable;
-              $this->bookinglist[$booking]->slotRule = $slot;
-              break;
-            case CAL_TIME_SLOT:
-              $this->bookinglist[$booking]->displayStart = $this->bookinglist[$booking]->start;
-              $this->bookinglist[$booking]->displayStop  = $this->bookinglist[$booking]->stop;
-              break;
-            case CAL_TIME_ORIGINAL:
-              if (! isset($this->bookinglist[$booking]->displayStart)) {
-                $this->bookinglist[$booking]->displayStart = $this->bookinglist[$booking]->original->start;
+            case CAL_TIME_SLOTRULE:  // for vacancies
+              if ($this->bookinglist[$booking]->arb_start) {
+                $newstart = $slotrule->start;
               }
-              if (! isset($this->bookinglist[$booking]->displayStop)) {
-                $this->bookinglist[$booking]->displayStop = $this->bookinglist[$booking]->original->stop;
+              if ($this->bookinglist[$booking]->arb_stop) {
+                $newstop = $slotrule->stop;
               }
+              $this->bookinglist[$booking]->start = $newstart;
+              $this->bookinglist[$booking]->stop  = $newstop;
+              $this->bookinglist[$booking]->displayStart = $newstart;
+              $this->bookinglist[$booking]->displayStop  = $newstop;
+              $this->bookinglist[$booking]->isDisabled = ! $slotrule->isAvailable;
+              $this->bookinglist[$booking]->slotRule = $slotrule;
+              $this->bookinglist[$booking]->isStart |= $isStart;
+              break;
+            case CAL_TIME_BOOKING:
+              $this->bookinglist[$booking]->start = $newstart;
+              $this->bookinglist[$booking]->stop  = $newstop;
+              $this->bookinglist[$booking]->displayStart = $this->bookinglist[$booking]->original->start;
+              $this->bookinglist[$booking]->displayStop  = $this->bookinglist[$booking]->original->stop;
+              $this->bookinglist[$booking]->isStart |= $isStart;
               break;
           }
         }
         
-        $nextslot = $list->findNextSlot($nextstart);
-        
-        $this->log('dstart='.$this->bookinglist[$booking]->displayStart->datetimestring
-              .' dstop='.$this->bookinglist[$booking]->displayStop->datetimestring, 10);
-        $this->log('sstart='.$this->bookinglist[$booking]->start->datetimestring
-              .' sstop='.$this->bookinglist[$booking]->stop->datetimestring, 10);
-        $slot = $nextslot;
+        // find the next TimeSlotRule to work out how to chop this booking up again (or how
+        // to chop up the next booking)
+        $nextslotrule = $list->findNextSlot($slotrule->start);
+        $isStart = $next_isStart;
+        $this->timelog('displayv',$this->bookinglist[$booking], true);
+        $this->timelog('realvalu',$this->bookinglist[$booking]);
+        $slotrule = $nextslotrule;
         $booking++;
         //$this->log('oticks='.$this->bookinglist[$booking-1]->original->stop->ticks
-        //           .'nticks='.$slot->start->ticks,10);
-        $this->log('nextstart='.$slot->start->datetimestring,10);
+        //           .'nticks='.$slotrule->start->ticks,10);
+        $this->log('nextstart='.$slotrule->start->datetimestring,10);
         $this->log('');
-      } while ($this->bookinglist[$booking-1]->original->stop->ticks > $slot->start->ticks);
+      } while ($this->bookinglist[$booking-1]->original->stop->ticks > $slotrule->start->ticks);
     }
   }
 
-  
   /**
    * Generate a booking matrix for all the days we are interested in
   **/
@@ -330,6 +339,7 @@ class Calendar {
                                     $reportPeriod) {
     global $BASEPATH;
     $this->_breakAcrossDays();
+//     echo $this->display();
     $matrix = $this->_collectMatrix($daystart, $daystop, $granularity);
     $numRowsPerDay =  $daystop->subtract($daystart) / $granularity;
     $numRows = ceil($this->numDays/7) * $numRowsPerDay;
@@ -377,8 +387,8 @@ class Calendar {
         }
         $t .= '</tr>';
       }
-      //$t .= '<tr>';
       $t .= '<tr><td class="dummy"></td>';
+      //$t .= '<tr><td class="dummy"><img src="/1x1.png" height="5" width="1" alt="" /></td>';
       if ($dayRow % $reportPeriod == 0) {
         //$t .= '<td colspan="2" rowspan="'.$reportPeriod.'">';
         $t .= '<td rowspan="'.$reportPeriod.'" class="timemark">';
@@ -419,6 +429,7 @@ class Calendar {
                                     $reportPeriod) {
     global $BASEPATH;
     $this->_breakAcrossDays();
+//     echo $this->display();
     $matrix = $this->_collectMatrix($daystart, $daystop, $granularity);
     $numRowsPerDay =  ceil($daystop->subtract($daystart) / $granularity);
     $numRows = $numRowsPerDay;
@@ -433,8 +444,8 @@ class Calendar {
 
     $today = new SimpleDate(time());
     
-    $t = '<table class="tabularobject calendar">';
-    $t .= '<tr><th></th>';
+    $t = '<table class="tabularobject calendar" summary="Day view of instrument bookings">';
+    $t .= '<tr><td class="dummy"></td><th></th>';
     $t .= '<td class="caldayzoom">';
     $t .= '<div class="caldate">' . strftime('%e', $this->start->ticks);
     $t .= '<span class="calmonth '
@@ -446,7 +457,7 @@ class Calendar {
     $t .= '</td>';
     $t .= '</tr>';
     for ($row = 0; $row < $numRows; $row++) {
-      $t .= '<tr>';
+      $t .= '<tr><td class="dummy"></td>';
       if ($row % $reportPeriod == 0) {
         $t .= '<td rowspan="'.$reportPeriod.'">';
         $t .= $timecolumn[$row]->timestring;
@@ -479,5 +490,24 @@ class Calendar {
       echo $string.'<br />'."\n";
     }
   }
+  
+  /** 
+   * time logging function -- logs the start and stop time of a booking or slot
+   *
+   * @param string $string  prefix to text to be logged
+   * @param object $slot    the slot whose start/stop is to be logged
+   *
+   * The higher $prio, the more verbose (in the debugging sense) the output.
+   */
+  function timelog ($string, &$slot, $display=false) {
+    if ($display) {
+      $this->log($string.':start='.$slot->displayStart->datetimestring 
+            .' '.$string.':stop='.$slot->displayStop->datetimestring, 10);
+    } else {
+      $this->log($string.':start='.$slot->start->datetimestring 
+            .' '.$string.':stop='.$slot->stop->datetimestring, 10);
+    }
+  }
 
+    
 } //class Calendar

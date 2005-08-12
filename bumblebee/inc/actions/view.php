@@ -114,14 +114,14 @@ class ActionView extends ActionAction {
                       
   function selectInstrument() {
     global $BASEURL;
-    $instrselect = new AnchorTableList('Instrument', 'Select which instrument to view');
+    $instrselect = new AnchorTableList('Instrument', 'Select which instrument to view', 3);
     if ($this->auth->isSystemAdmin()) {
       $instrselect->connectDB('instruments', 
-                            array('id', 'name', 'longname')
+                            array('id', 'name', 'longname', 'location')
                             );
     } else {                        
       $instrselect->connectDB('instruments', 
-                            array('id', 'name', 'longname'),
+                            array('id', 'name', 'longname', 'location'),
                             'userid='.qw($this->auth->getEUID()),
                             'name', 
                             'id', 
@@ -129,7 +129,7 @@ class ActionView extends ActionAction {
                             array('permissions'=>'instrid=id'));
     }
     $instrselect->hrefbase = $BASEURL.'/view/';
-    $instrselect->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'));
+    $instrselect->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'), ' %20.20s', array('location'));
     echo $instrselect->display();
   }
 
@@ -233,7 +233,7 @@ class ActionView extends ActionAction {
     # FIXME: get this from the instrument table?
     $daystart    = new SimpleTime('00:00:00');
     $daystop     = new SimpleTime('23:59:59');
-    #echo $cal->display();
+//     echo $cal->display();
     $href=$BASEURL.'/view/'.$this->PD['instrid'];
     $cal->href=$href;
     $cal->isAdminView = $this->_isAdminView;
