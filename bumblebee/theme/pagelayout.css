@@ -1,26 +1,28 @@
 /* $Id$ */
 
 body {
-  background: #fafafa url("/theme/images/logo.png");
-  background-repeat: repeat-y;
-  background-position: right;
+  background: #fafafa url("/bumblebee/theme/images/background.png");
+  background-repeat: repeat;
+/*   background-repeat: repeat-y; */
+/*   background-position: right; */
 }
 
 #header {
   position: relative;
   border-bottom: 3px solid #0000cc;
   margin-bottom: 1em;
+  background: white;
 }
 
 #headerLeft {
-  height: 70px; 
+  height: 75px; 
   width: 90px;
 }
 
 #headerRight {
-  margin-left: 2em;
+  margin-left: 1em;
   position: absolute;
-  left: 90px;
+  left: 100px;
   top: 0px;
 }
 

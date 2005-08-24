@@ -11,12 +11,12 @@ USE mysql;
 
 DELETE FROM user WHERE User='bumblebee';
 INSERT INTO user (Host,User,Password,Reload_priv) VALUES ('localhost','bumblebee',PASSWORD('bumblebeepass'),'N');
-
+FLUSH PRIVILEGES;
 --REVOKE ALL PRIVILEGES ON *.* FROM bumblebee;
 --REVOKE GRANT OPTION ON *.* FROM bumblebee;
 --REVOKE ALL ON bumblebeedb.* FROM bumblebee;
-GRANT SELECT,INSERT,UPDATE,DELETE ON bumblebeedb.localhost TO bumblebee;
-
+GRANT SELECT,INSERT,UPDATE,DELETE ON bumblebeedb.* TO bumblebee@localhost;
+FLUSH PRIVILEGES;
 USE bumblebeedb;
 
 -- Table users

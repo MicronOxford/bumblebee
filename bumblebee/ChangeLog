@@ -1,3 +1,9 @@
+2005-08-12 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* Fix calendar display so that out-of-slot bookings made by admin don't break grid pattern 
+	* Fix booking validation so that non-admin users can make bookings that start or stop at non-slot times if those times but up against another out-of-slot booking 
+	* Change CSS to reduce problems of half-hour table cells being given zero-height and rounded back to previous hour 
+	* include location of instruments in the view instrument list 
+
 2005-07-06 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* 0.9.9.2-1.0rc3
 	* bugfix: max days in future settings on calendar and day views now do as intended 

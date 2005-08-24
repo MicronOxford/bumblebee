@@ -67,15 +67,15 @@ function constructSQL($source, $replacements) {
   $sql = preg_replace("/(INSERT INTO user .+)'$sqlDefaultHost','$sqlDefaultUser',\s*PASS.+\)(.+);/",
                       "$1'$sqlHost','$sqlUser',PASSWORD('$sqlPass')\$2;", $sql);
   // GRANT OR REVOKE PRIVS
-  $sql = preg_replace("/(.+ ON) $sqlDefaultDB\.$sqlDefaultHost (TO|FROM) $sqlDefaultUser;/",
-                      "\$1 $sqlDB.$sqlHost \$2 $sqlUser;", $sql);
+  $sql = preg_replace("/(.+ ON) $sqlDefaultDB\.\* (TO|FROM) $sqlDefaultUser@$sqlDefaultHost;/",
+                      "\$1 $sqlDB.* \$2 $sqlUser@$sqlHost;", $sql);
   // REVOKE ALL PRIVILEGES ON *.* FROM bumblebee;
   // REVOKE GRANT OPTION ON *.* FROM bumblebee;
   $sql = preg_replace("/(REVOKE .+ FROM) $sqlDefaultUser;/",
                       "\$1 $sqlUser;", $sql);
   // CREATE OR DROP DATABASE                     
-  $sql = preg_replace("/^(.+) DATABASE $sqlDefaultDB;/",
-                      "\$1 DATABASE $sqlDB;", $sql);
+  $sql = preg_replace("/^(.+) DATABASE(.*) $sqlDefaultDB;/",
+                      "\$1 DATABASE \$2 $sqlDB;", $sql);
   $sql = preg_replace("/USE $sqlDefaultDB;/",
                       "USE $sqlDB;", $sql);
   $sql = preg_replace("/DROP TABLE IF EXISTS (.+)?;/",

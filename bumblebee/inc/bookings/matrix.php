@@ -70,7 +70,7 @@ class BookingMatrix {
         // Only add the cell to the matrix if the cell doesn't already have an entry in it.
         // Otherwise, the second part of a booking that is split across multiple slots would
         // overwrite the earlier part.
-        if (! isset($this->rows[$rowstart])) {
+        if (! isset($this->rows[$rowstart]) && $rowspan > 0) {
           $cell = new BookingCell($this->bookings[$k],$this->bookings[$k]->isStart,$rowspan);
           $this->rows[$rowstart] = $cell;
         }
@@ -85,3 +85,4 @@ class BookingMatrix {
   }
 
 } //class BookingMatrix
+?>

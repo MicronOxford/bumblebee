@@ -16,7 +16,7 @@
 <div id='bumblebeefooter'>
   <p>
     System managed by 
-    <a href="http://www.nanonanonano.net/projects/bumblebee/">BumbleBee</a> version
+    <a href="http://bumblebeeman.sf.net/">BumbleBee</a> version
     <?php echo $BUMBLEBEEVERSION ?>,
     released under the 
     <a href="http://www.gnu.org/licenses/gpl.html">GNU GPL</a>.

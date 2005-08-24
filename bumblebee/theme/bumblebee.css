@@ -170,6 +170,7 @@ table.calendar, table.calendarzoom {
 }
 
 table.calendar {
+  background: white;
 }
 
 .calendar tr, .calendar td {
@@ -497,7 +498,7 @@ input.radioitem {
 
 #bumblebeeExport .exportdata tr {
   border: 1px solid black;
-  border-top: none:
+  border-top: none;
 }
 
 #bumblebeeExport .exportdata tr.header {

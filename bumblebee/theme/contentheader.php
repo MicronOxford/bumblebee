@@ -11,12 +11,12 @@
 
 <div id="header">
   <div id="headerLeft">
-    <a href='http://www.pfpc.unimelb.edu.au/' title="PFPC">
-      <img src='<?php echo $BASEPATH ?>/theme/images/pfpc.png' alt="PFPC logo" />
+    <a href='http://bumblebeeman.sf.net/' title="Bumblebee">
+      <img src='<?php echo $BASEPATH ?>/theme/images/logo.png' alt="Bumblebee logo" />
     </a>
   </div>
   <div id="headerRight">
-    <h1>PFPC Instrument Bookings</h1>
+    <h1>Bumblebee Instrument Bookings</h1>
   </div>
 </div>
 
