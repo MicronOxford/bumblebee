@@ -1,3 +1,7 @@
+2005-08-25 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* allowed user-specified path to mysqldump + options 
+	* deletion of objects no longer deletes from database instead uses deleted flag 
+
 2005-08-12 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* Fix calendar display so that out-of-slot bookings made by admin don't break grid pattern 
 	* Fix booking validation so that non-admin users can make bookings that start or stop at non-slot times if those times but up against another out-of-slot booking 
