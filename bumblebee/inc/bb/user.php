@@ -19,6 +19,7 @@ class User extends DBRow {
     $this->DBRow('users', $id);
     $this->editable = ! $passwdOnly;
     $this->use2StepSync = 1;
+    $this->deleteFromTable = 0;
     $f = new IdField('id', 'UserID');
     $f->editable = 0;
     $this->addElement($f);
@@ -187,6 +188,15 @@ class User extends DBRow {
       }
     }
     return parent::sync();
+  }
+  
+  /**
+   *  Suspend the user as well as deleting it.
+   *
+   *  Returns from statuscodes
+   */
+  function delete() {
+    return parent::delete("suspended='1'");
   }
   
   function display() {

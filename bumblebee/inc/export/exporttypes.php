@@ -93,7 +93,7 @@ class ExportTypeList {
                       new sqlFieldName('comments', 'User comments', '', EXPORT_HTML_LEFT, 10),
                       new sqlFieldName('log', 'Log entry', '', EXPORT_HTML_LEFT, 30)
                     );
-    $type->where[] = 'deleted <> 1';
+    $type->where[] = 'bookings.deleted <> 1';
     $type->where[] = 'bookings.userid <> 0';
     $type->group = array('instrument_name', 'bookwhen', 'user_name', 'project_name');
     $type->breakField = 'instrument_title';
@@ -116,7 +116,7 @@ class ExportTypeList {
                       new sqlFieldName('ROUND(SUM(TIME_TO_SEC(duration))/60/60,2)', 'Hours used',
                                                            'hours_used', EXPORT_HTML_DECIMAL_2|EXPORT_HTML_RIGHT|EXPORT_CALC_TOTAL, '*')
                     );
-    $type->where[] = 'deleted <> 1';
+    $type->where[] = 'bookings.deleted <> 1';
     $type->where[] = 'bookings.userid <> 0';
     $type->pivot = array('instruments' => 
                               array('description'=> 'Group results by instrument',
@@ -160,7 +160,7 @@ class ExportTypeList {
                                       'Share',
                                       'weighted_hours_used', EXPORT_HTML_DECIMAL_2|EXPORT_HTML_RIGHT|EXPORT_CALC_TOTAL, '*')
                    );
-    $type->where[] = 'deleted <> 1';
+    $type->where[] = 'bookings.deleted <> 1';
     $type->where[] = 'bookings.userid <> 0';
     $type->pivot = array('instruments' => 
                               array('description'=> 'Group results by instrument',
@@ -202,7 +202,7 @@ class ExportTypeList {
                                       'Hours used',
                                       'hours_used', EXPORT_HTML_DECIMAL_2|EXPORT_HTML_RIGHT|EXPORT_CALC_TOTAL, '*')
                     );
-    $type->where[] = 'deleted <> 1';
+    $type->where[] = 'bookings.deleted <> 1';
     $type->where[] = 'bookings.userid <> 0';
     $type->group = array('instrument_name', 'user_name');
     $type->breakField = 'instrument_title';
@@ -361,7 +361,7 @@ class ExportTypeList {
                       new sqlFieldName($this->_formula['discount'], 'Bulk Discount (%)', 'discount',  EXPORT_HTML_DECIMAL_2|EXPORT_HTML_RIGHT, '*'),
                       new sqlFieldName('FLOOR(('.$this->_formula['finalCost'].')*grouppc/100)', 'Cost', 'cost',  EXPORT_HTML_RIGHT|EXPORT_HTML_MONEY|EXPORT_CALC_TOTAL, '*')
                    );
-    $type->where[] = 'deleted <> 1';
+    $type->where[] = 'bookings.deleted <> 1';
     $type->where[] = 'bookings.userid <> 0';
     //$type->group = '';
     //$type->group = array('instrument_name', 'group_name');
@@ -400,7 +400,7 @@ class ExportTypeList {
                       new sqlFieldName($this->_formula['rate'], 'Unit cost', 'unitcost',  EXPORT_HTML_MONEY|EXPORT_HTML_RIGHT, '*'),
                       new sqlFieldName('FLOOR(('.$this->_formula['finalCost'].')*grouppc/100)', 'Cost', 'cost',  EXPORT_HTML_RIGHT|EXPORT_HTML_MONEY|EXPORT_CALC_TOTAL, '*')
                    );
-    $itype->where[] = 'deleted <> 1';
+    $itype->where[] = 'bookings.deleted <> 1';
     $itype->where[] = 'bookings.userid <> 0';
     $itype->group = array('groups.name', 'instruments.name');
 
@@ -466,7 +466,7 @@ class ExportTypeList {
                       new sqlFieldName('groups.account', 'Account',  'account', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('FLOOR(('.$this->_formula['finalCost'].')*grouppc/100)', 'Cost', 'cost',  EXPORT_HTML_RIGHT|EXPORT_HTML_MONEY|EXPORT_CALC_TOTAL, '*')
                    );
-    $itype->where[] = 'deleted <> 1';
+    $itype->where[] = 'bookings.deleted <> 1';
     $itype->where[] = 'bookings.userid <> 0';
     $itype->group = array('groups.name', 'instruments.name');
 

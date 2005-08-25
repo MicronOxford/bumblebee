@@ -16,7 +16,7 @@ class ActionConsumables extends ActionAction {
   function go() {
     global $BASEURL;
     if (! isset($this->PD['id'])) {
-      $this->selectConsumables();
+      $this->selectConsumables(issetSet($this->PD, 'showdeleted', false));
     } elseif (isset($this->PD['delete'])) {
       $this->deleteConsumables($PD['id']);
     } else {
@@ -25,14 +25,16 @@ class ActionConsumables extends ActionAction {
     echo "<br /><br /><a href='$BASEURL/consumables'>Return to consumables list</a>";
   }
 
-  function selectConsumables() {
+  function selectConsumables($deleted=false) {
     global $BASEURL;
-    $projectselect = new AnchorTableList('Consumables', 'Select which Consumables to view');
-    $projectselect->connectDB('consumables', array('id', 'name', 'longname'));
-    $projectselect->list->prepend(array('-1','Create new consumable'));
-    $projectselect->hrefbase = $BASEURL.'/consumables/';
-    $projectselect->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'));
-    echo $projectselect->display();
+    $select = new AnchorTableList('Consumables', 'Select which Consumables to view');
+    $select->deleted = $deleted;
+    $select->connectDB('consumables', array('id', 'name', 'longname'));
+    $select->list->prepend(array('-1','Create new consumable'));
+    $select->list->append(array('showdeleted','Show deleted consumables'));
+    $select->hrefbase = $BASEURL.'/consumables/';
+    $select->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'));
+    echo $select->display();
   }
 
   function editConsumables() {
@@ -52,7 +54,7 @@ class ActionConsumables extends ActionAction {
       $delete = '0';
     } else {
       $submit = 'Update entry';
-      $delete = 'Delete entry';
+      $delete = $consumable->isDeleted ? 'Undelete entry' : 'Delete entry';
     }
     echo "<input type='submit' name='submit' value='$submit' />";
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
@@ -65,7 +67,7 @@ class ActionConsumables extends ActionAction {
     $consumable = new Consumable($this->PD['id']);
     echo $this->reportAction($consumable->delete(), 
               array(
-                  STATUS_OK =>   'Consumable deleted',
+                  STATUS_OK =>   $consumables->isDeleted ? 'Consumable undeleted' : 'Consumable deleted',
                   STATUS_ERR =>  'Consumable could not be deleted:<br/><br/>'.$consumable->errorMessage
               )
             );  

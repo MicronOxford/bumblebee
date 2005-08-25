@@ -71,7 +71,8 @@ class ActionEmailList extends ActionAction {
     }
     #echo "Gathering email addresses: $q<br />";
     $fields = array(new sqlFieldName('email', 'Email Address'));
-    $list = new DBList('permissions', $fields, join($where, ' OR '), true);
+    $restriction = 'users.deleted<>1 AND (' .join($where, ' OR '). ')';  //don't return deleted users
+    $list = new DBList('permissions', $fields, $restriction, true);
     $list->join[] = (array('table' => 'users', 'condition' => 'users.id=permissions.userid'));
     $list->setFormat('%s', array('email'));
     $list->fill();

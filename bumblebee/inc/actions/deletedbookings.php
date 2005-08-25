@@ -69,11 +69,11 @@ class ActionDeletedBookings extends ActionAction {
     $bookings = new AnchorTableList('Bookings', 'Select deleted bookings');
     $bookings->setTableHeadings(array('Date', 'Duration', 'User', 'Log Entry'));
     $bookings->numcols = 4;
+    $bookings->deleted = true;
     $bookings->connectDB('bookings', 
                             array('bookings.id', 'username', 'bookwhen', 'duration','log'),
-                            'deleted = 1'
-                              .' AND bookwhen >= '.qw($start->datetimestring)
-                              .' AND bookwhen < '.qw($stop->datetimestring)
+                                    'bookwhen >= '.qw($start->datetimestring)
+                              .' AND bookwhen < ' .qw($stop->datetimestring)
                               .' AND instrument = '.qw($instrument),
                             'bookwhen', 
                             'bookings.id', 

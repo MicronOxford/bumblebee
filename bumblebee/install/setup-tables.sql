@@ -32,6 +32,7 @@ CREATE TABLE users (
   phone VARCHAR(20),
   suspended BOOL DEFAULT 'FALSE',
   isadmin BOOL DEFAULT 'FALSE',
+  deleted BOOL DEFAULT 'FALSE',
   PRIMARY KEY (id),
   UNIQUE KEY username (username)
 );
@@ -43,6 +44,7 @@ CREATE TABLE projects (
   name VARCHAR(31) NOT NULL,
   longname VARCHAR(255) NOT NULL,
   defaultclass SMALLINT UNSIGNED NOT NULL,
+  deleted BOOL DEFAULT 'FALSE',
   PRIMARY KEY (id)
 );
 
@@ -60,6 +62,7 @@ CREATE TABLE groups (
   email VARCHAR(63),
   fax VARCHAR(20),
   account VARCHAR(255),
+  deleted BOOL DEFAULT 'FALSE',
   PRIMARY KEY (id)
 );
 
@@ -98,6 +101,7 @@ CREATE TABLE instruments (
   calendarcomment TEXT NOT NULL,
   supervisors VARCHAR(255),
   emailonbooking BOOL DEFAULT 'FALSE',
+  deleted BOOL DEFAULT 'FALSE',
   PRIMARY KEY (id)
 );
 
@@ -122,6 +126,7 @@ DROP TABLE IF EXISTS instrumentclass;
 CREATE TABLE instrumentclass (
   id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(63) NOT NULL,
+  deleted BOOL DEFAULT 'FALSE',
   PRIMARY KEY (id)
 );
 
@@ -129,6 +134,7 @@ DROP TABLE IF EXISTS userclass;
 CREATE TABLE userclass (
   id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(63) NOT NULL,
+  deleted BOOL DEFAULT 'FALSE',
   PRIMARY KEY (id)
 );
 
@@ -204,6 +210,7 @@ CREATE TABLE consumables (
   name VARCHAR(31) NOT NULL,
   longname VARCHAR(255) NOT NULL,
   cost FLOAT(16) NOT NULL,
+  deleted BOOL DEFAULT 'FALSE',
   PRIMARY KEY (id)
 );
 

@@ -16,7 +16,7 @@ class ActionProjects extends ActionAction {
   function go() {
     global $BASEURL;
     if (! isset($this->PD['id'])) {
-      $this->selectProject();
+      $this->selectProject(issetSet($this->PD, 'showdeleted', false));
     } elseif (isset($this->PD['delete'])) {
       $this->deleteProject();
     } else {
@@ -25,14 +25,16 @@ class ActionProjects extends ActionAction {
     echo "<br /><br /><a href='$BASEURL/projects'>Return to project list</a>";
   }
 
-  function selectProject() {
+  function selectProject($deleted=false) {
     global $BASEURL;
-    $projectselect = new AnchorTableList('Projects', 'Select which project to view');
-    $projectselect->connectDB('projects', array('id', 'name', 'longname'));
-    $projectselect->list->prepend(array('-1','Create new project'));
-    $projectselect->hrefbase = $BASEURL.'/projects/';
-    $projectselect->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'));
-    echo $projectselect->display();
+    $select = new AnchorTableList('Projects', 'Select which project to view');
+    $select->deleted = $deleted;
+    $select->connectDB('projects', array('id', 'name', 'longname'));
+    $select->list->prepend(array('-1','Create new project'));
+    $select->list->append(array('showdeleted','Show deleted projects'));
+    $select->hrefbase = $BASEURL.'/projects/';
+    $select->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'));
+    echo $select->display();
   }
 
   function editProject() {
@@ -51,7 +53,7 @@ class ActionProjects extends ActionAction {
       $delete = '0';
     } else {
       $submit = 'Update entry';
-      $delete = 'Delete entry';
+      $delete = $project->isDeleted ? 'Undelete entry' : 'Delete entry';
     }
     echo "<input type='submit' name='submit' value='$submit' />";
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
@@ -61,7 +63,7 @@ class ActionProjects extends ActionAction {
     $project = new Project($this->PD['id']);
     echo $this->reportAction($project->delete(), 
               array(
-                  STATUS_OK =>   'Project deleted',
+                  STATUS_OK =>   $project->isDeleted ? 'Project undeleted' : 'Project deleted',
                   STATUS_ERR =>  'Project could not be deleted:<br/><br/>'.$project->errorMessage
               )
             );  

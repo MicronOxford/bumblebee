@@ -31,7 +31,11 @@ class ActionAction {
       $this->PD[$k] = $v;
     }
     if (isset($this->PDATA[1]) && $this->PDATA[1] !== '') {
-      $this->PD['id'] = $this->PDATA[1];
+      if ($this->PDATA[1] != 'showdeleted') {
+        $this->PD['id'] = $this->PDATA[1];
+      } else {
+        $this->PD['showdeleted'] = true;
+      }
     }
     #$PD['defaultclass'] = 12;
     echoData($this->PD);

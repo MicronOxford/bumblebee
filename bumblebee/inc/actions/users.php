@@ -12,11 +12,11 @@ class ActionUsers extends ActionAction {
     parent::ActionAction($auth, $pdata);
     $this->mungePathData();
   }
-
+  
   function go() {
     global $BASEURL;
     if (! isset($this->PD['id'])) {
-      $this->selectUser();
+      $this->selectUser(issetSet($this->PD, 'showdeleted', false));
     } elseif (isset($this->PD['delete'])) {
       $this->deleteUser();
     } else {
@@ -25,11 +25,13 @@ class ActionUsers extends ActionAction {
     echo "<br /><br /><a href='$BASEURL/users'>Return to user list</a>";
   }
 
-  function selectUser() {
+  function selectUser($deleted=false) {
     global $BASEURL;
     $select = new AnchorTableList('Users', 'Select which user to view');
+    $select->deleted = $deleted;
     $select->connectDB('users', array('id', 'name', 'username'));
     $select->list->prepend(array('-1','Create new user'));
+    $select->list->append(array('showdeleted','Show deleted users'));
     $select->hrefbase = $BASEURL.'/users/';
     $select->setFormat('id', '%s', array('name'), ' %s', array('username'));
     echo $select->display();
@@ -52,7 +54,7 @@ class ActionUsers extends ActionAction {
       $delete = '0';
     } else {
       $submit = 'Update entry';
-      $delete = 'Delete entry';
+      $delete = $user->isDeleted ? 'Undelete entry' : 'Delete entry';
     }
     echo "<input type='submit' name='submit' value='$submit' />";
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
@@ -62,7 +64,7 @@ class ActionUsers extends ActionAction {
     $user = new User($this->PD['id']);
     echo $this->reportAction($user->delete(), 
               array(
-                  STATUS_OK =>   'User deleted',
+                  STATUS_OK =>   $user->isDeleted ? 'User undeleted' : 'User deleted',
                   STATUS_ERR =>  'User could not be deleted:<br/><br/>'.$user->errorMessage
               )
             );  

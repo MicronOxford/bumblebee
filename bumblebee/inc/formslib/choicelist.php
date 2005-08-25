@@ -21,6 +21,7 @@ class ChoiceList extends Field {
   var $formatter;
   var $formatid;
   var $extendable = 0;
+  var $deleted=false; //deleted=true/false in SQL; NULL means don't restrict
 
   function ChoiceList($name, $description='') {
     parent::Field($name, '', $description);
@@ -49,7 +50,7 @@ class ChoiceList extends Field {
   function connectDB($table, $fields='', $restriction='', $order='name',
                       $idfield='id', $limit='', $join='', $distinct=false) {
     $this->list = new DBChoiceList($table, $fields, $restriction, $order,
-                      $idfield, $limit, $join, $distinct);
+                      $idfield, $limit, $join, $distinct, $this->deleted);
   }
   
   /** 

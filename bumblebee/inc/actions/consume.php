@@ -111,6 +111,7 @@ class ActionConsume extends ActionAction {
       $listpath = $BASEURL.'/consume/'.$extrapath.'list';
     }
     $consumableselect = new AnchorTableList('Consumables', 'Select which Consumables to use');
+    $consumableselect->deleted = NULL;
     $consumableselect->connectDB('consumables', array('id', 'name', 'longname'));
     $consumableselect->hrefbase = "$BASEURL/consume/${extrapath}consumable/";
     $consumableselect->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'));

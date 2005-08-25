@@ -2,8 +2,8 @@
 # $Id$
 # functions for handling types, comparisons, conversions etc
 
-function issetSet(&$a, $k) {
-  return (isset($a[$k]) ? $a[$k] : NULL);
+function issetSet(&$a, $k, $default=NULL) {
+  return (isset($a[$k]) ? $a[$k] : $default);
 }
 
 function preDump($v) {

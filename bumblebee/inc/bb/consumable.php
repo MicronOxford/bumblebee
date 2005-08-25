@@ -10,6 +10,7 @@ class Consumable extends DBRow {
   function Consumable($id) {
     $this->DBRow('consumables', $id);
     $this->editable = 1;
+    $this->deleteFromTable = 0;
     $f = new IdField('id', 'Consumable ID');
     $f->editable = 0;
     $this->addElement($f);

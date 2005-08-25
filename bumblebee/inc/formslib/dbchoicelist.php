@@ -34,6 +34,7 @@ class DBChoiceList extends DBO {
   var $editable = 0;
   var $extendable = 0;
   var $changed = 0;
+  var $deleted;
   var $choicelist;
   var $length;
   var $appendedfields;
@@ -57,9 +58,10 @@ class DBChoiceList extends DBO {
    * @param string $limit  any LIMIT clause
    * @param mixed $join  string or array (preferably) that defines the LEFT JOIN
    * @param boolean $distinct return only DISTINCT rows (default: false)
+   * @param mixed $deleted deleted=true/false in SQL; NULL means don't restrict
    */
   function DBChoiceList($table, $fields='', $restriction='',
-                  $order='', $idfield='id', $limit='', $join='', $distinct=false) {
+                  $order='', $idfield='id', $limit='', $join='', $distinct=false, $deleted=NULL) {
     $this->DBO($table, '', $idfield);
     $this->fields = (is_array($fields) ? $fields : array($fields));
     $this->restriction = $restriction;
@@ -67,6 +69,7 @@ class DBChoiceList extends DBO {
     $this->order = $order;
     $this->limit = $limit;
     $this->distinct = $distinct;
+    $this->deleted = $deleted;
     if (is_array($join)) {
       $this->join = $join;
     } elseif ($join == '') {
@@ -100,12 +103,20 @@ class DBChoiceList extends DBO {
     foreach ($this->join as $k => $v) {
       $joinSyntax .= 'LEFT JOIN '.$TABLEPREFIX.$k.' AS '.$k.' ON '.$v.' ';
     }
+    $restrictions = $this->restriction;
+    if ($this->deleted !== NULL) {
+      if ($this->deleted) {
+        $restrictions = ($restrictions ? $restrictions.' AND ' : '') . $this->table.'.deleted=1 ';
+      } else {
+        $restrictions = ($restrictions ? $restrictions.' AND ' : '') . $this->table.'.deleted<>1 ';
+      }
+    }
     $q = 'SELECT '.($this->distinct?'DISTINCT ':'').$f 
         .' FROM '.$TABLEPREFIX.$this->table.' AS '.$this->table.' '
         #."WHERE $this->restriction "
         #."ORDER BY $this->order "
         .$joinSyntax
-        .($this->restriction != '' ? "WHERE $this->restriction " : '')
+        .($restrictions != '' ? "WHERE $restrictions " : '')
         .($this->order != '' ? "ORDER BY $this->order " : '')
         .($this->limit != '' ? "LIMIT $this->limit " : '');
     $sql = db_get($q, $this->fatal_sql);

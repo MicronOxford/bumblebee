@@ -19,6 +19,7 @@ class Instrument extends DBRow {
     //$this->DEBUG=10;
     $this->DBRow('instruments', $id);
     $this->editable = 1;
+    $this->deleteFromTable = 0;
     $f = new IdField('id', 'Instrument ID');
     $f->editable = 0;
     $this->addElement($f);

@@ -20,12 +20,14 @@ class BookingEntry extends DBRow {
   var $_isadmin = 0;
   var $euid;
   var $uid;
+  var $_auth;
   var $minunbook;
   var $isShort = false;
   
   function BookingEntry($id, $auth, $instrumentid, $minunbook='', $ip='', $start='', $duration='', $granlist='') {
     //$this->DEBUG = 10;
     $this->DBRow('bookings', $id);
+    $this->deleteFromTable = 0;
     $this->_checkAuth($auth, $instrumentid);
     $this->minunbook = $minunbook;
     if ($ip=='' && $start=='' && $duration=='' && $granlist=='') {
@@ -136,6 +138,7 @@ class BookingEntry extends DBRow {
    *  check our admin status
    */
   function _checkAuth($auth, $instrumentid) {
+    $this->_auth = $auth;
     $this->_isadmin = $auth->isSystemAdmin() || $auth->isInstrumentAdmin($instrumentid);
     $this->uid = $auth->uid;
     if ($this->id > 0 && $this->_isadmin) {
@@ -342,7 +345,7 @@ class BookingEntry extends DBRow {
         .'AND bookings.id<>'.qw($this->id).' '
         .'AND bookings.id<>'.qw($tmpid).' '
         .'AND userid<>0 '
-        .'AND deleted<>1 '        // old version of MySQL cannot handle true, use 1 instead
+        .'AND bookings.deleted<>1 '        // old version of MySQL cannot handle true, use 1 instead
         .'HAVING (bookwhen <= '.qw($start).' AND stoptime > '.qw($start).') '
         .'OR (bookwhen < '.qw($stop).' AND stoptime >= '.qw($stop).') '
         .'OR (bookwhen >= '.qw($start).' AND stoptime <= '.qw($stop).')';
@@ -436,7 +439,7 @@ class BookingEntry extends DBRow {
           .'FROM '.$TABLEPREFIX.'bookings AS bookings '
           .'WHERE instrument='.qw($instrument).' '
           .'AND userid<>0 '
-          .'AND deleted<>1 '        // old version of MySQL cannot handle true, use 1 instead
+          .'AND bookings.deleted<>1 '        // old version of MySQL cannot handle true, use 1 instead
           .'HAVING '.$field.' = '.qw($time);
       $row = db_get_single($q, $this->fatal_sql);
       $this->log(is_array($row) ? 'Found a matching booking' : 'No matching booking');
@@ -482,7 +485,6 @@ class BookingEntry extends DBRow {
    *  Returns from statuscodes
    */
   function delete() {
-    global $TABLEPREFIX;
     $this->_checkMinNotice();
     if (! $this->deletable && ! $this->_isadmin) {
       // we're not allowed to do so 
@@ -492,14 +494,9 @@ class BookingEntry extends DBRow {
     $sql_result = -1;
     $today = new SimpleDate(time());
     $newlog = $this->fields['log']->value
-                  .'Booking deleted by user #'.$this->uid.' on '.$today->datetimestring.'.';
-    $q = 'UPDATE '.$TABLEPREFIX.$this->table
-        .' SET deleted=1,'       // old MySQL cannot handle true, use 1 instead
-        .' log='.qw($newlog)
-        .' WHERE '.$this->idfield.'='.qw($this->id)
-        .' LIMIT 1';
-    $sql_result = db_quiet($q, $this->fatal_sql);
-    return $sql_result;
+                  .'Booking deleted by '.$this->_auth->username
+                  .' (user #'.$this->uid.') on '.$today->datetimestring.'.';
+    return parent::delete('log='.qw($newlog));
   }
   
   

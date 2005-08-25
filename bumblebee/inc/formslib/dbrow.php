@@ -32,6 +32,8 @@ class DBRow extends DBO {
   var $recNum   = '';
   var $use2StepSync;
   var $extrarows;
+  var $isDeleted = false;
+  var $deleteFromTable = 1;   //boolean: delete method calls SQL DELETE
     
   function DBRow($table, $id, $idfield='id') {
     $this->DBO($table, $id, $idfield);
@@ -204,7 +206,7 @@ class DBRow extends DBO {
    *
    * Returns from statuscodes
   **/
-  function delete() {
+  function delete($extraUpdates=NULL) {
     global $TABLEPREFIX;
     if ($this->id == -1) {
       // nothing to do
@@ -217,10 +219,26 @@ class DBRow extends DBO {
       return STATUS_FORBIDDEN;
     }  
     $sql_result = -1;
-    $q = 'DELETE FROM '.$TABLEPREFIX.$this->table 
-        .' WHERE '.$this->idfield.'='.qw($this->id)
-        .(($this->restriction !== '') ? ' AND '.$this->restriction : '')
-        .' LIMIT 1';
+    if ($this->deleteFromTable) {
+      $q = 'DELETE FROM '.$TABLEPREFIX.$this->table 
+          .' WHERE '.$this->idfield.'='.qw($this->id)
+          .(($this->restriction !== '') ? ' AND '.$this->restriction : '')
+          .' LIMIT 1';
+    } else {
+      $updates = array();
+      if (is_array($extraUpdates)) {
+        $updates = array_merge($updates, $extraUpdates);
+      } elseif ($extraUpdates !== NULL) {
+        $updates[] = $extraUpdates;
+      } 
+      // toggle the deleted state
+      $updates[] = 'deleted='.($this->isDeleted?0:1); // old MySQL cannot handle true, use 0,1 instead
+      $q = 'UPDATE '.$TABLEPREFIX.$this->table
+          .' SET '.join($updates, ', ')
+          .' WHERE '.$this->idfield.'='.qw($this->id)
+          .(($this->restriction !== '') ? ' AND '.$this->restriction : '')
+          .' LIMIT 1';
+    }
     #$this->log($q);
     $sql_result = db_quiet($q, $this->fatal_sql);
     return $sql_result;
@@ -313,6 +331,7 @@ class DBRow extends DBO {
             $this->fields[$k]->set($val);
           }
         }
+        $this->isDeleted = issetSet($g, 'deleted', false);
       } else {
         $this->insertRow = $this->ignoreId;
       }

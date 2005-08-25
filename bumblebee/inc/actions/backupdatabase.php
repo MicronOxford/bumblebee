@@ -23,14 +23,9 @@ class ActionBackupDB extends BufferedAction {
 
   
   function makeDump() {
-    global $CONFIG;
     // get a MySQL dump of the database
     $output = array();
-    $retstring = exec('mysqldump -h '.escapeshellarg($CONFIG['database']['dbhost'])
-                .' --user='.escapeshellarg($CONFIG['database']['dbusername'])
-                .' --password='.escapeshellarg($CONFIG['database']['dbpasswd'])
-                .' '.escapeshellarg($CONFIG['database']['dbname'])
-                .' 2>&1',
+    $retstring = exec($this->_mysqldump_invocation() .' 2>&1',
                 $output,
                 $returnError);
     $dump = join($output, "\n");
@@ -47,12 +42,21 @@ class ActionBackupDB extends BufferedAction {
 
   function godirect() {
     $this->startOutputTextFile($filename);
-    system('mysqldump -h localhost --user='.escapeshellarg($CONFIG['database']['dbusername'])
-                .' --password='.escapeshellarg($CONFIG['database']['dbpasswd'])
-                .' '.escapeshellarg($CONFIG['database']['dbname']),
+    system($this->_mysqldump_invocation(),
                 $returnError);
   }
   
+  
+  function _mysqldump_invocation() {
+    global $CONFIG;
+    return $CONFIG['sqldump']['mysqldump'].' '
+                .$CONFIG['sqldump']['options']
+                .' --host='.escapeshellarg($CONFIG['database']['dbhost'])
+                .' --user='.escapeshellarg($CONFIG['database']['dbusername'])
+                .' --password='.escapeshellarg($CONFIG['database']['dbpasswd'])
+                .' '.escapeshellarg($CONFIG['database']['dbname'])
+            ;
+  }
 }
 
 ?> 
