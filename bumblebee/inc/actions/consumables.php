@@ -16,16 +16,16 @@ class ActionConsumables extends ActionAction {
   function go() {
     global $BASEURL;
     if (! isset($this->PD['id'])) {
-      $this->selectConsumables(issetSet($this->PD, 'showdeleted', false));
+      $this->selectConsumable(issetSet($this->PD, 'showdeleted', false));
     } elseif (isset($this->PD['delete'])) {
-      $this->deleteConsumables($PD['id']);
+      $this->deleteConsumable($PD['id']);
     } else {
-      $this->editConsumables();
+      $this->editConsumable();
     }
     echo "<br /><br /><a href='$BASEURL/consumables'>Return to consumables list</a>";
   }
 
-  function selectConsumables($deleted=false) {
+  function selectConsumable($deleted=false) {
     global $BASEURL;
     $select = new AnchorTableList('Consumables', 'Select which Consumables to view');
     $select->deleted = $deleted;
@@ -37,7 +37,7 @@ class ActionConsumables extends ActionAction {
     echo $select->display();
   }
 
-  function editConsumables() {
+  function editConsumable() {
     global $BASEURL;
     $consumable = new Consumable($this->PD['id']);
     $consumable->update($this->PD);
@@ -67,7 +67,7 @@ class ActionConsumables extends ActionAction {
     $consumable = new Consumable($this->PD['id']);
     echo $this->reportAction($consumable->delete(), 
               array(
-                  STATUS_OK =>   $consumables->isDeleted ? 'Consumable undeleted' : 'Consumable deleted',
+                  STATUS_OK =>   $consumable->isDeleted ? 'Consumable undeleted' : 'Consumable deleted',
                   STATUS_ERR =>  'Consumable could not be deleted:<br/><br/>'.$consumable->errorMessage
               )
             );  

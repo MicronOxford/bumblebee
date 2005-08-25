@@ -16,16 +16,16 @@ class ActionInstruments extends ActionAction {
   function go() {
     global $BASEURL;
     if (! isset($this->PD['id'])) {
-      $this->selectInstruments(issetSet($this->PD, 'showdeleted', false));
+      $this->selectInstrument(issetSet($this->PD, 'showdeleted', false));
     } elseif (isset($this->PD['delete'])) {
-      $this->deleteInstruments();
+      $this->deleteInstrument();
     } else {
-      $this->editInstruments();
+      $this->editInstrument();
     }
     echo "<br /><br /><a href='$BASEURL/instruments'>Return to instruments list</a>";
   }
 
-  function selectInstruments($deleted=false) {
+  function selectInstrument($deleted=false) {
     global $BASEURL;
     $select = new AnchorTableList('Instrument', 'Select which instrument to view');
     $select->deleted = $deleted;
@@ -38,7 +38,7 @@ class ActionInstruments extends ActionAction {
     echo $select->display();
   }
 
-  function editInstruments() {
+  function editInstrument() {
     $instrument = new Instrument($this->PD['id']);
     $instrument->update($this->PD);
     $instrument->checkValid();
@@ -61,7 +61,7 @@ class ActionInstruments extends ActionAction {
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
   }
 
-  function deleteInstruments()   {
+  function deleteInstrument()   {
     $instrument = new Instrument($this->PD['id']);
     echo $this->reportAction($instrument->delete(), 
               array(

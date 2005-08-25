@@ -24,6 +24,7 @@ class ActionBackupDB extends BufferedAction {
   
   function makeDump() {
     // get a MySQL dump of the database
+    global $CONFIG;
     $output = array();
     $retstring = exec($this->_mysqldump_invocation() .' 2>&1',
                 $output,
