@@ -7,8 +7,9 @@ class UserMenu {
   var $menuEpilogue   = '';
   var $menuDivId      = 'menulist';
   var $menuStart      = '<ul>';
-  var $menuStop       = '<li class="last"><a href="http://bumblebeeman.sf.net/docs">Help</a></li></ul>';
-  #var $menuStop       = '<li class="last"><a href="/docs">Help</a></li></ul>';
+  #var $menuHelp       = '<li class="last"><a href="http://bumblebeeman.sf.net/docs?section=__section__&amp;version=__version__">Help</a></li>';
+  var $menuHelp       = '<li class="last"><a href="/docs?section=__section__&amp;version=__version__">Help</a></li>';
+  var $menuStop       = '</ul>';
   var $itemStart      = '<li>';
   var $itemStop       = '</li>';
   var $masqDivId      = 'masquerade';
@@ -37,6 +38,7 @@ class UserMenu {
           $menu .= $this->_getAdminMenu();
     if ($this->_auth->amMasqed() && $this->_verb != 'masquerade') 
           $menu .= $this->_getMasqAlert();
+    $menu .= $this->_getHelpMenu();
     $menu .= $this->menuStop;
     $menu .= '</div>';
     return $menu;
@@ -109,6 +111,14 @@ class UserMenu {
     return $t;
   }
   
+  function _getHelpMenu() {
+    global $BUMBLEBEEVERSION;
+    $help = $this->menuHelp;
+    $help = preg_replace(array('/__version__/',   '/__section__/'), 
+                         array($BUMBLEBEEVERSION, $this->_verb), 
+                         $help);
+    return $help;
+  }
   
 } // class UserMenu
 ?> 

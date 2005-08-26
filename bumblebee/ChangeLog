@@ -1,5 +1,6 @@
 2005-08-25 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* tagged as 0.9.9.4-1.0rc4 
+	* help system on sf.net activated
 	* allowed user-specified path to mysqldump + options 
 	* deletion of objects no longer deletes from database instead uses deleted flag 
 
