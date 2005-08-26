@@ -7,8 +7,8 @@ class UserMenu {
   var $menuEpilogue   = '';
   var $menuDivId      = 'menulist';
   var $menuStart      = '<ul>';
-  #var $menuHelp       = '<li class="last"><a href="http://bumblebeeman.sf.net/docs?section=__section__&amp;version=__version__">Help</a></li>';
-  var $menuHelp       = '<li class="last"><a href="/docs?section=__section__&amp;version=__version__">Help</a></li>';
+  var $menuHelp       = '<li class="last"><a href="http://bumblebeeman.sf.net/docs?section=__section__&amp;version=__version__">Help</a></li>';
+  #var $menuHelp       = '<li class="last"><a href="/docs?section=__section__&amp;version=__version__">Help</a></li>';
   var $menuStop       = '</ul>';
   var $itemStart      = '<li>';
   var $itemStop       = '</li>';
