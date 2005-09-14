@@ -48,11 +48,13 @@ function echoSQL($echo, $success=0) {
 
 function echoSQLerror($echo, $fatal=0) {
   global $VERBOSESQL;
+  global $ADMINEMAIL;
   if ($echo != '' && $echo) {
     if ($VERBOSESQL) {
       echo "<div class='sql error'>$echo</div>";
     }
    if ($fatal) {
+      echo "<div class='sql error'>Ooops. Something went very wrong. Please send the following log information to <a href='mailto:$ADMINEMAIL'>your Bumblebee Administrator</a> along with a description of what you were doing and ask them to pass it on to the Bumblebee developers. Thanks!</div>";
       preDump(debug_backtrace());
       die("<b>Fatal SQL error. Aborting.</b>");
     }

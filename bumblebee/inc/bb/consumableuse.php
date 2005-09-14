@@ -15,6 +15,7 @@ class ConsumableUse extends DBRow {
     $f->editable = 0;
     $this->addElement($f);
     if ($userid!='' && $consumableid!='' && $uid!='' && $ip!='' && $today!='') {
+      $userid = $this->_checkUserID($userid);
       $f = new ReferenceField('userid', 'User');
       $f->extraInfo('users', 'id', 'name');
       $f->defaultValue = $userid;
@@ -69,6 +70,17 @@ class ConsumableUse extends DBRow {
     $this->dumpheader = 'Consumables object';
   }
 
+  /**
+   *  check who we are recording if not set
+   */
+  function _checkUserID($userid) {
+    if ($userid > 0) {
+      return $userid;
+    }
+    $row = quickSQLSelect('consumables_use', 'id', $this->id);
+    return $row['userid'];
+  }
+  
   function display() {
     return $this->displayAsTable();
   }

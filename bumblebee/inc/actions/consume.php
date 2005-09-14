@@ -173,6 +173,7 @@ class ActionConsume extends ActionAction {
     echo '<p>Consumption records for '
         .$consumable->fields['name']->value."</p>\n";
     $recselect = new AnchorTableList('Consumption Record', 'Select the consumption record to view',3);
+    $recselect->deleted = NULL;
     $recselect->setTableHeadings(array('Date', 'User','Quantity'));
     $recselect->connectDB('consumables_use',
                           array(array('consumables_use.id','conid'), 'consumable', 'usewhen', 'username', 'name', 'quantity'),
@@ -201,6 +202,7 @@ class ActionConsume extends ActionAction {
         .$user->fields['username']->value
         .' ('.$user->fields['name']->value.")</p>\n";
     $recselect = new AnchorTableList('Consumption Record', 'Select the consumption record to view',3);
+    $recselect->deleted = NULL;
     $recselect->setTableHeadings(array('Date', 'Item','Quantity'));
     $recselect->connectDB('consumables_use',
                           array(array('consumables_use.id','conid'), 'consumable', 'usewhen', 'name', 'longname', 'quantity'),
