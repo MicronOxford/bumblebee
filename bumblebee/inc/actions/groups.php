@@ -1,11 +1,23 @@
 <?php
-# $Id$
-# edit the groups
+/**
+* Interface for editing details of groups
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Actions
+*/
 
 include_once 'inc/bb/group.php';
 include_once 'inc/formslib/anchortablelist.php';
 include_once 'inc/actions/actionaction.php';
 
+/**
+* Interface for editing details of groups
+*
+*/
 class ActionGroup extends ActionAction  {
 
   function ActionGroup($auth, $pdata) {
@@ -16,16 +28,16 @@ class ActionGroup extends ActionAction  {
   function go() {
     global $BASEURL;
     if (! isset($this->PD['id'])) {
-      $this->selectgroup(issetSet($this->PD, 'showdeleted', false));
+      $this->select(issetSet($this->PD, 'showdeleted', false));
     } elseif (isset($this->PD['delete'])) {
-      $this->deleteGroup();
+      $this->delete();
     } else {
-      $this->editGroup();
+      $this->edit();
     }
     echo "<br /><br /><a href='$BASEURL/groups'>Return to group list</a>";
   }
 
-  function selectgroup($deleted=false) {
+  function select($deleted=false) {
     global $BASEURL;
     $select = new AnchorTableList('Group', 'Select which group to view');
     $select->deleted = $deleted;
@@ -38,7 +50,7 @@ class ActionGroup extends ActionAction  {
     echo $select->display();
   }
   
-  function editGroup() {
+  function edit() {
     $group = new Group($this->PD['id']);
     $group->update($this->PD);
     $group->checkValid();
@@ -61,7 +73,7 @@ class ActionGroup extends ActionAction  {
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
   }
 
-  function deletegroup() {
+  function delete() {
     $group = new Group($this->PD['id']);
     echo $this->reportAction($group->delete(), 
               array(

@@ -1,6 +1,14 @@
 <?php
-# $Id$
-#
+/**
+* Send billing data by email
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Actions
+*/
 
 include_once 'inc/actions/export.php';
 include_once 'inc/export/exporttypes.php';
@@ -8,13 +16,21 @@ include_once 'inc/exportcodes.php';
 include_once 'inc/formslib/dblist.php';
 
 /**
- *  Find out what sort of report is required and generate it
- *
- */
+* Send billing data by email
+*
+*  Find out what sort of report is required and generate it
+*/
 
 class ActionBilling extends ActionExport {
-
+  /**
+  * should all group leaders be send the email or just the logged in user
+  * @var boolean
+  */
   var $emailIndividuals = false;
+  /**
+  * enable additional debugging information for PDF generation
+  * @var boolean
+  */
   var $DEBUG_PDF = false;
   
   function ActionBilling($auth, $pdata) {
@@ -34,7 +50,10 @@ class ActionBilling extends ActionExport {
     //echo $this->emailIndividuals ? 'true' : 'false';
     parent::mungePathData();
   }
-  
+
+  /**
+  * convenience function to generate a submit button
+  */  
   function _goButton() {
     echo '<label>'
           .'<input type="radio" name="emailToGroups" value="0" checked="checked" />'
@@ -47,31 +66,9 @@ class ActionBilling extends ActionExport {
     parent::_goButton();
   }
   
-
-//   function selectExport() {
-//     $reportlist = array();
-//     foreach ($this->typelist->types as $type) {
-//       $reportlist[$type->name] = $type->description;
-//     }
-//     
-//     $selectRow = new nonDBRow('listselect', 'Select reports', 
-//               'Select which reports you want to return');
-//     $select = new CheckBoxTableList('reports', 'Select which reports to generate');
-//     $hidden = new TextField('what');
-//     $select->addFollowHidden($hidden);
-//     $report = new CheckBox('return', 'Return');
-//     $select->addCheckBox($report);
-//     $select->setValuesArray($reportlist, 'id', 'iv');
-//     $select->setFormat('id', '%s', array('iv'));
-//     $select->addSelectAllFooter(true);
-//     $selectRow->addElement($select);
-//     
-//     echo $selectRow->displayInTable(4);
-//     echo '<input type="hidden" name="what" value="1" />';
-//     echo '<input type="submit" name="submit" value="Select" />';
-//   }
-// 
-//   
+  /**
+  * get all the data and send it back to the user
+  */
   function returnExport() {
     //$this->DEBUG=10;
     $lists = array();
@@ -181,6 +178,9 @@ class ActionBilling extends ActionExport {
     }
   }
   
+  /**
+  * obtain an appropriate filename for the data export
+  */
   function _getFilename($who) {
     global $CONFIG;
     $name = $CONFIG['billing']['filename'];
@@ -191,6 +191,15 @@ class ActionBilling extends ActionExport {
     return $name;
   }
 
+  /**
+  * send the PDF to the appropriate person by email
+  * the logged in user is always included in the To list for their records
+  *
+  * @param string $toName  name of the person to receive the email
+  * @param string $toEmail  email addr of recipient
+  * @param string $group   name of the group for which this report is being generated
+  * @param string $data    PDF data to be sent
+  */
   function _sendPDFbyEmail($toName, $toEmail, $group, $data) {
     global $CONFIG;
     $eol = "\r\n";
@@ -261,6 +270,13 @@ class ActionBilling extends ActionExport {
     return $ok;
   }
   
+  /**
+  * Reads the boilerplate text for the email and customise it for this email
+  *
+  * @param string $group   name of the group for which this report is being generated
+  * @param string $start   the start date for the report
+  * @param string $stop    the stop date for the report
+  */
   function _getEmailText($group, $start, $stop) {
     global $CONFIG;
     global $BASEURL;

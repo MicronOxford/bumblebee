@@ -1,11 +1,23 @@
 <?php
-# $Id$
-# edit the groups
+/**
+* Edit/create/delete instrument class details
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Actions
+*/
 
 include_once 'inc/bb/instrumentclass.php';
 include_once 'inc/formslib/anchortablelist.php';
 include_once 'inc/actions/actionaction.php';
 
+/**
+* Edit/create/delete instrument classes
+*  
+*/
 class ActionInstrumentClass extends ActionAction  {
 
   function ActionInstrumentClass($auth, $pdata) {
@@ -16,16 +28,16 @@ class ActionInstrumentClass extends ActionAction  {
   function go() {
     global $BASEURL;
     if (! isset($this->PD['id'])) {
-      $this->selectInstrumentClass();
+      $this->select();
     } elseif (isset($this->PD['delete'])) {
-      $this->deleteInstrumentClass();
+      $this->delete();
     } else {
-      $this->editInstrumentClass();
+      $this->edit();
     }
     echo "<br /><br /><a href='$BASEURL/instrumentclass/'>Return to instrument class list</a>";
   }
 
-  function editInstrumentClass() {
+  function edit() {
     $class = new InstrumentClass($this->PD['id']);
     $class->update($this->PD);
     $class->checkValid();
@@ -48,7 +60,7 @@ class ActionInstrumentClass extends ActionAction  {
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
   }
 
-  function selectInstrumentClass() {
+  function select() {
     global $BASEURL;
     $select = new AnchorTableList('InstrumentClass', 'Select which instrument class to view');
     $select->connectDB('instrumentclass', array('id', 'name'));
@@ -60,7 +72,7 @@ class ActionInstrumentClass extends ActionAction  {
     echo $select->display();
   }
 
-  function deleteInstrumentClass() {
+  function delete() {
     $class = new InstrumentClass($this->PD['id']);
     echo $this->reportAction($class->delete(), 
               array(

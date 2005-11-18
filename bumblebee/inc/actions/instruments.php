@@ -1,11 +1,22 @@
 <?php
-# $Id$
-# edit/create instruments
+/**
+* Edit/create/delete instruments
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Actions
+*/
 
 include_once 'inc/bb/instrument.php';
 include_once 'inc/formslib/anchortablelist.php';
 include_once 'inc/actions/actionaction.php';
 
+/**
+* Edit/create/delete instruments
+*/
 class ActionInstruments extends ActionAction {
 
   function ActionInstruments($auth, $pdata) {
@@ -16,16 +27,16 @@ class ActionInstruments extends ActionAction {
   function go() {
     global $BASEURL;
     if (! isset($this->PD['id'])) {
-      $this->selectInstrument(issetSet($this->PD, 'showdeleted', false));
+      $this->select(issetSet($this->PD, 'showdeleted', false));
     } elseif (isset($this->PD['delete'])) {
-      $this->deleteInstrument();
+      $this->delete();
     } else {
-      $this->editInstrument();
+      $this->edit();
     }
     echo "<br /><br /><a href='$BASEURL/instruments'>Return to instruments list</a>";
   }
 
-  function selectInstrument($deleted=false) {
+  function select($deleted=false) {
     global $BASEURL;
     $select = new AnchorTableList('Instrument', 'Select which instrument to view');
     $select->deleted = $deleted;
@@ -38,7 +49,7 @@ class ActionInstruments extends ActionAction {
     echo $select->display();
   }
 
-  function editInstrument() {
+  function edit() {
     $instrument = new Instrument($this->PD['id']);
     $instrument->update($this->PD);
     $instrument->checkValid();
@@ -61,7 +72,7 @@ class ActionInstruments extends ActionAction {
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
   }
 
-  function deleteInstrument()   {
+  function delete()   {
     $instrument = new Instrument($this->PD['id']);
     echo $this->reportAction($instrument->delete(), 
               array(

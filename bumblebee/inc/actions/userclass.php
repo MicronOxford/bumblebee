@@ -1,11 +1,22 @@
 <?php
-# $Id$
-# edit the groups
+/**
+* Edit/create/delete userclass details
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Actions
+*/
 
 include_once 'inc/bb/userclass.php';
 include_once 'inc/formslib/anchortablelist.php';
 include_once 'inc/actions/actionaction.php';
 
+/**
+* Edit/create/delete userclass details
+*/
 class ActionUserClass extends ActionAction  {
 
   function ActionUserClass($auth, $pdata) {
@@ -16,16 +27,16 @@ class ActionUserClass extends ActionAction  {
   function go() {
     global $BASEURL;
     if (! isset($this->PD['id'])) {
-      $this->selectClass();
+      $this->select();
     } elseif (isset($this->PD['delete'])) {
-      $this->deleteClass();
+      $this->delete();
     } else {
-      $this->editClass();
+      $this->edit();
     }
     echo "<br /><br /><a href='$BASEURL/userclass/'>Return to user class list</a>";
   }
 
-  function editClass() {
+  function edit() {
     $class = new UserClass($this->PD['id']);
     $class->update($this->PD);
     $class->checkValid();
@@ -48,7 +59,7 @@ class ActionUserClass extends ActionAction  {
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
   }
 
-  function selectClass() {
+  function select() {
     global $BASEURL;
     $select = new AnchorTableList('UserClass', 'Select which user class to view');
     $select->connectDB('userclass', array('id', 'name'));
@@ -60,7 +71,7 @@ class ActionUserClass extends ActionAction  {
     echo $select->display();
   }
 
-  function deleteClass() {
+  function delete() {
     $class = new UserClass($this->PD['id']);
     echo $this->reportAction($class->delete(), 
               array(

@@ -1,10 +1,21 @@
 <?php
-# $Id$
-# edit the user details, project associations and permissions
+/**
+* Permit a local user to change their password
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Actions
+*/
 
 include_once 'inc/actions/actionaction.php';
 include_once 'inc/bb/user.php';
 
+/**
+* Permit a local user to change their password
+*/
 class ActionPassword extends ActionAction {
 
   function ActionPassword($auth, $pdata) {
@@ -14,11 +25,11 @@ class ActionPassword extends ActionAction {
 
   function go() {
     global $BASEURL;
-    $this->editUser();
+    $this->edit();
     echo "<br /><br /><a href='$BASEURL/'>Return to main menu</a>";
   }
 
-  function editUser() {
+  function edit() {
     $user = new User($this->auth->uid, true);
     $user->update($this->PD);
     #$project->fields['defaultclass']->invalid = 1;

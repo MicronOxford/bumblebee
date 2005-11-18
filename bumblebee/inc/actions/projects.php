@@ -1,11 +1,23 @@
 <?php
-# $Id$
-# edit the projects
+/**
+* Edit/create/delete projects
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Actions
+*/
 
 include_once 'inc/bb/project.php';
 include_once 'inc/formslib/anchortablelist.php';
 include_once 'inc/actions/actionaction.php';
 
+/**
+* Edit/create/delete projects
+*
+*/
 class ActionProjects extends ActionAction {
 
   function ActionProjects($auth, $pdata) {
@@ -16,16 +28,16 @@ class ActionProjects extends ActionAction {
   function go() {
     global $BASEURL;
     if (! isset($this->PD['id'])) {
-      $this->selectProject(issetSet($this->PD, 'showdeleted', false));
+      $this->select(issetSet($this->PD, 'showdeleted', false));
     } elseif (isset($this->PD['delete'])) {
-      $this->deleteProject();
+      $this->delete();
     } else {
-      $this->editProject();
+      $this->edit();
     }
     echo "<br /><br /><a href='$BASEURL/projects'>Return to project list</a>";
   }
 
-  function selectProject($deleted=false) {
+  function select($deleted=false) {
     global $BASEURL;
     $select = new AnchorTableList('Projects', 'Select which project to view');
     $select->deleted = $deleted;
@@ -37,7 +49,7 @@ class ActionProjects extends ActionAction {
     echo $select->display();
   }
 
-  function editProject() {
+  function edit() {
     $project = new Project($this->PD['id']);
     $project->update($this->PD);
     $project->checkValid();
@@ -59,7 +71,7 @@ class ActionProjects extends ActionAction {
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
   }
 
-  function deleteProject() {
+  function delete() {
     $project = new Project($this->PD['id']);
     echo $this->reportAction($project->delete(), 
               array(

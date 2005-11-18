@@ -1,6 +1,14 @@
 <?php
-# $Id$
-# view a bookings calendar
+/**
+* View a list of deleted bookings for an instrument over a given time period
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Actions
+*/
 
 include_once 'inc/formslib/anchortablelist.php';
 include_once 'inc/formslib/datefield.php';
@@ -8,6 +16,9 @@ include_once 'inc/date.php';
 include_once 'inc/bb/daterange.php';
 include_once 'inc/actions/actionaction.php';
 
+/**
+* View a list of deleted bookings for an instrument over a given time period
+*/
 class ActionDeletedBookings extends ActionAction {
     
   function ActionDeletedBookings($auth, $PDATA) {
@@ -49,6 +60,9 @@ class ActionDeletedBookings extends ActionAction {
     echoData($this->PD, 0);
   }
   
+  /**
+  * Select which instrument the listing should be generated for
+  */
   function selectInstrument() {
     global $BASEURL;
     $instrselect = new AnchorTableList('Instrument', 'Select which instrument to view');
@@ -60,6 +74,9 @@ class ActionDeletedBookings extends ActionAction {
     echo $instrselect->display();
   }
 
+  /**
+  * Display the deleted bookings
+  */
   function showDeleted($daterange) {
     global $BASEURL;
     $start = $daterange->getStart();

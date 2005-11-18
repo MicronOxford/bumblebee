@@ -1,9 +1,20 @@
 <?php
-# $Id$
-# an unknown action... ERROR!
+/**
+* Error handling class for unknown actions
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Actions
+*/
 
 include_once 'inc/actions/actionaction.php';
 
+/**
+* Error handling class for unknown actions
+*/
 class ActionUnknown extends ActionAction {
   var $action;
   var $forbiden;

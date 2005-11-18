@@ -1,11 +1,22 @@
 <?php
-# $Id$
-# edit the user details, project associations and permissions
+/**
+* Edit/create/delete users, their project associations and permissions
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Actions
+*/
 
 include_once 'inc/bb/user.php';
 include_once 'inc/formslib/anchortablelist.php';
 include_once 'inc/actions/actionaction.php';
 
+/**
+* Edit/create/delete users, their project associations and permissions
+*/
 class ActionUsers extends ActionAction {
 
   function ActionUsers($auth, $pdata) {
@@ -16,16 +27,16 @@ class ActionUsers extends ActionAction {
   function go() {
     global $BASEURL;
     if (! isset($this->PD['id'])) {
-      $this->selectUser(issetSet($this->PD, 'showdeleted', false));
+      $this->select(issetSet($this->PD, 'showdeleted', false));
     } elseif (isset($this->PD['delete'])) {
-      $this->deleteUser();
+      $this->delete();
     } else {
-      $this->editUser();
+      $this->edit();
     }
     echo "<br /><br /><a href='$BASEURL/users'>Return to user list</a>";
   }
 
-  function selectUser($deleted=false) {
+  function select($deleted=false) {
     global $BASEURL;
     $select = new AnchorTableList('Users', 'Select which user to view');
     $select->deleted = $deleted;
@@ -37,7 +48,7 @@ class ActionUsers extends ActionAction {
     echo $select->display();
   }
 
-  function editUser() {
+  function edit() {
     $user = new User($this->PD['id']);
     $user->update($this->PD);
     #$project->fields['defaultclass']->invalid = 1;
@@ -60,7 +71,7 @@ class ActionUsers extends ActionAction {
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
   }
 
-  function deleteUser() {
+  function delete() {
     $user = new User($this->PD['id']);
     echo $this->reportAction($user->delete(), 
               array(

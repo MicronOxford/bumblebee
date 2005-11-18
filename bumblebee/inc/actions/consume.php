@@ -1,6 +1,14 @@
 <?php
-# $Id$
-# record consumables usage on a per-use basis
+/**
+* Edit/create/delete consumables records
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Actions
+*/
 
 include_once 'inc/bb/consumableuse.php';
 include_once 'inc/bb/consumable.php';
@@ -10,6 +18,9 @@ include_once 'inc/date.php';
 include_once 'inc/formslib/anchortablelist.php';
 include_once 'inc/actions/actionaction.php';
 
+/**
+* Edit/create/delete consumables records
+*/
 class ActionConsume extends ActionAction {
 
   function ActionConsume($auth, $pdata) {
@@ -33,7 +44,7 @@ class ActionConsume extends ActionAction {
         $this->listConsumeUser($this->PD['user'], $daterange);
       }
     } elseif (isset($this->PD['delete'])) {
-      $this->deleteConsumeRecord();
+      $this->delete();
     } elseif (  
                 (! isset($this->PD['id'])) && 
                 ( 
@@ -47,7 +58,7 @@ class ActionConsume extends ActionAction {
         $this->selectConsumeConsumable();
       }
     } else {
-      $this->editConsumeRecord();
+      $this->edit();
     }
     echo "<br /><br /><a href='$BASEURL/consume'>Return to consumable use list</a>";
   }
@@ -80,6 +91,9 @@ class ActionConsume extends ActionAction {
     echoData($this->PD, 0);
   }
 
+  /**
+  * Select which user is consuming the item
+  */
   function selectConsumeUser() {
     global $BASEURL;
     $extrapath = '';
@@ -103,6 +117,9 @@ class ActionConsume extends ActionAction {
     echo '<br />';
   }
 
+  /**
+  * Select what item is being consumed
+  */
   function selectConsumeConsumable() {
     global $BASEURL;
     $extrapath = '';
@@ -124,7 +141,7 @@ class ActionConsume extends ActionAction {
     echo $consumableselect->display();
   }
 
-  function editConsumeRecord() {
+  function edit() {
     $recordid = isset($this->PD['id']) ? $this->PD['id'] : -1;
     $userid   = isset($this->PD['user']) ? $this->PD['user'] : -1;
     $consumableid = isset($this->PD['consumableid']) ? $this->PD['consumableid'] : -1;
@@ -153,7 +170,7 @@ class ActionConsume extends ActionAction {
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
   }
 
-  function deleteConsumeRecord() {
+  function delete() {
     $rec = new ConsumableUse($this->PD['id']);
     echo $this->reportAction($rec->delete(), 
               array(
@@ -163,6 +180,9 @@ class ActionConsume extends ActionAction {
             );  
   }
 
+  /**
+  * list the available consumables
+  */
   function listConsumeConsumable($consumableID, $daterange) {
     global $BASEURL;
     $extrapath = '';
@@ -191,6 +211,9 @@ class ActionConsume extends ActionAction {
     echo $recselect->display();
   }
 
+  /**
+  * list the available users
+  */
   function listConsumeUser($userID, $daterange) {
     global $BASEURL;
     $extrapath = '';

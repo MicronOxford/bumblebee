@@ -1,9 +1,22 @@
 <?php
-# $Id$
-# print out a login form
+/**
+* Print a polite login form
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Actions
+*/
 
 include_once 'inc/actions/actionaction.php';
 
+/**
+* Print a polite login form
+*  
+* Authentication is undertaken by the class BumbleBeeAuth
+*/
 class ActionPrintLoginForm extends ActionAction {
   
   function ActionPrintLoginForm() {

@@ -1,6 +1,14 @@
 <?php
-# $Id$
-# view a bookings calendar
+/**
+* View a bookings calendar and make bookings
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Actions
+*/
 
 include_once 'inc/bb/calendar.php';
 include_once 'inc/bb/bookingentry.php';
@@ -9,6 +17,9 @@ include_once 'inc/formslib/anchortablelist.php';
 include_once 'inc/date.php';
 include_once 'inc/actions/actionaction.php';
 
+/**
+* View a bookings calendar and make bookings
+*/
 class ActionView extends ActionAction {
     
   var $_isOwnBooking    = false;
@@ -89,9 +100,12 @@ class ActionView extends ActionAction {
   }
   
   /**
-   * calculates the number of days between the current date and the last date that was selected
-   * by the user (in making a booking etc)
-   */
+  * Calculate calendar offset in days
+  *
+  * calculates the number of days between the current date and the last date that was selected
+  * by the user (in making a booking etc)
+  * @return string URL string for inclusion in href (examples: 'o=28' 'o=-14')
+  */
   function _offset() {
     $now = new SimpleDate(time());
     if (isset($this->PD['isodate'])) {
@@ -106,12 +120,20 @@ class ActionView extends ActionAction {
     }
   }
     
+  /**
+  * Makes a link back to the current calendar
+  *
+  * @return string URL string for link back to calendar view
+  */
   function _calendarViewLink($instrument) {
     global $BASEURL;
     return '<br /><br /><a href="'.$BASEURL.'/view/'.$instrument.'/'
                       .$this->_offset().'">Return to calendar view</a>';
   }
                       
+  /**
+  * Select which instrument for which the calendar should be displayed
+  */
   function selectInstrument() {
     global $BASEURL;
     $instrselect = new AnchorTableList('Instrument', 'Select which instrument to view', 3);
@@ -133,6 +155,9 @@ class ActionView extends ActionAction {
     echo $instrselect->display();
   }
 
+  /**
+  * Display the monthly calendar for the selected instrument
+  */
   function instrumentMonth() {
     global $BASEURL;
     global $CONFIG;
@@ -190,6 +215,10 @@ class ActionView extends ActionAction {
     echo $this->displayInstrumentFooter($row);
   }
 
+  /**
+  * Generate back | today | forward links for the calendar
+  * @return string html for links
+  */
   function _linksForwardBack($href, $back, $today, $forward, $showForward=true) {
     return '<div style="text-align:center">'
         .'<a href="'.$href.$back.'">&laquo; earlier</a> | '
@@ -202,6 +231,9 @@ class ActionView extends ActionAction {
         .'</div>';
   }
 
+  /**
+  * Display a single day's calendar for the selected instrument
+  */
   function instrumentDay() {
     global $BASEURL;
     $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
@@ -246,19 +278,28 @@ class ActionView extends ActionAction {
     echo $this->displayInstrumentFooter($row);
   }
 
+  /**
+  * Make a new booking
+  */
   function createBooking() {
     $start = new SimpleDate(issetSet($this->PD, 'startticks'));
     $stop  = new SimpleDate(issetSet($this->PD, 'stopticks'));
     $duration = new SimpleTime($stop->subtract($start));
     $this->log($start->datetimestring.', '.$duration->timestring.', '.$start->dow());
-    $this->editCreateBooking(-1, $start->datetimestring, $duration->timestring);
+    $this->_editCreateBooking(-1, $start->datetimestring, $duration->timestring);
   }
 
+  /**
+  * Editing an existing booking
+  */
   function editBooking() {
-    $this->editCreateBooking($this->PD['bookid'], -1, -1);
+    $this->_editCreateBooking($this->PD['bookid'], -1, -1);
   }
 
-  function editCreateBooking($bookid, $start, $duration) {
+  /**
+  * Do the hard work to edit or create the booking
+  */
+  function _editCreateBooking($bookid, $start, $duration) {
     global $BASEURL;
     $ip = $this->auth->getRemoteIP();
     //echo $ip;
@@ -286,6 +327,9 @@ class ActionView extends ActionAction {
     echo $this->displayInstrumentFooter($row);
   }
 
+  /**
+  * Display a booking in read-only format (i.e. not in a form to allow it to be edited)
+  */
   function booking() {
     global $BASEURL;
     $booking = new BookingEntryRO($this->PD['bookid']);
@@ -300,6 +344,9 @@ class ActionView extends ActionAction {
     }
   }
   
+  /**
+  * Delete a booking
+  */
   function deleteBooking() {
     global $BASEURL;
     $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
@@ -317,6 +364,10 @@ class ActionView extends ActionAction {
             );  
   }
 
+  /**
+  * Set flags according to the permissions of the logged in user
+  * @todo replace with new permissions system
+  */
   function _checkBookingAuth($userid) {
     $this->_isOwnBooking = $this->auth->isMe($userid);
     $this->_isAdminView = $this->auth->isSystemAdmin() 
@@ -324,6 +375,9 @@ class ActionView extends ActionAction {
     $this->_haveWriteAccess = $this->_isOwnBooking || $this->_isAdminView;
   }
 
+  /**
+  * Polite "go away" message if someone tries to delete a booking that they can't
+  */
   function _forbiddenError($msg) {
     $this->log('Action forbidden: '.$msg);
     echo $this->reportAction(STATUS_FORBIDDEN, 
@@ -334,6 +388,9 @@ class ActionView extends ActionAction {
     return STATUS_FORBIDDEN;
   }
     
+  /**
+  * Display a heading on the page with the instrument name and location
+  */
   function displayInstrumentHeader($row) {
     $t = '<h2 class="instrumentname">'
         //.$row['name']
@@ -345,6 +402,9 @@ class ActionView extends ActionAction {
     return $t;
   }
   
+  /**
+  * Display a footer for the page with the instrument comments and who looks after the instrument
+  */
   function displayInstrumentFooter($row) {
     $t = '';
     if ($row['calendarcomment']) {

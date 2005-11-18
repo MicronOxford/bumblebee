@@ -1,20 +1,35 @@
 <?php
-# $Id$
-# return a list of the email addresses depending on what we've been asked
-# for... e.g. per instrument for the "announce" list.
+/**
+* email lists for instrument users
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Actions
+*/
 
 include_once 'inc/formslib/checkbox.php';
 include_once 'inc/formslib/checkboxtablelist.php';
 include_once 'inc/formslib/dblist.php';
 include_once 'inc/actions/actionaction.php';
 
-/**
- *  Find out what instruments the lists should be prepared for and then return the email list.
- *
- *   Perhaps, this class should be split some more, with some of the details abstracted?
- */
 
+/**
+* Generate a list of email addresses for users of particular instruments
+*  
+* An Action to find out what instruments the lists should be prepared for 
+* and then return the email list.
+* Designed to be use as a per instrument "announce" list.
+*
+* @todo should this class should be split some more, with some of the details abstracted?
+*/
 class ActionEmailList extends ActionAction {
+  /**
+  * forces SQL errors to be fatal
+  * @var    boolean
+  */
   var $fatal_sql = 1;
 
   function ActionEmailList($auth, $pdata) {
@@ -30,6 +45,14 @@ class ActionEmailList extends ActionAction {
     }
   }
 
+  /**
+  * Generate an HTML form for the user to select which email lists should be used
+  *
+  * - do DB look-ups on what instruments exist
+  * - construct a table of checkboxes to allow the user to select the lists
+  * 
+  * @return void nothing
+  */
   function selectLists() {
     //global $BASEURL;
     $selectRow = new nonDBRow('listselect', 'Select email lists', 
@@ -56,6 +79,16 @@ class ActionEmailList extends ActionAction {
     echo '<input type="submit" name="submit" value="Select" />';
   }
 
+
+  /**
+  * Generate the email lists
+  *
+  * - work out which instruments the user has requested for inclusion
+  * - construct an SQL query to get the email list
+  * - return the formatted data to the user
+  * 
+  * @return void nothing
+  */  
   function returnLists() {
     $where = array('0');  //start the WHERE with 0 in case nothing was selected (always get valid SQL)
     $namebase = 'Instrument-';

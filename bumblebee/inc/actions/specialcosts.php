@@ -1,10 +1,23 @@
 <?php
-# $Id$
+/**
+* Edit/create/delete special instrument usage costs 
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Actions
+*/
   
 include_once 'inc/bb/specialcosts.php';
 include_once 'inc/formslib/anchortablelist.php';
 include_once 'inc/actions/actionaction.php';
 
+/**
+* Edit/create/delete special instrument usage costs 
+*
+*/
 class ActionSpecialCosts extends ActionAction {
 
   function ActionSpecialCosts($auth, $pdata) {
@@ -27,9 +40,9 @@ class ActionSpecialCosts extends ActionAction {
         $this->selectInstrument();
       }
     } elseif (isset($this->PD['delete']) && $this->PD['delete'] == 1) {
-      $this->deleteCost();
+      $this->delete();
     } else {
-      $this->editCost();
+      $this->edit();
     }
     echo "<br /><br /><a href='$BASEURL/specialcosts/'>Return to special costs list</a>";
   }
@@ -60,6 +73,10 @@ class ActionSpecialCosts extends ActionAction {
     echoData($this->PD, 0);
   }
 
+  /**
+  * Select for which project the special costs should be displayed
+  *
+  */
   function selectProject() {
     global $BASEURL;
     $select = new AnchorTableList('Projects', 'Select project to rates to view');
@@ -75,6 +92,10 @@ class ActionSpecialCosts extends ActionAction {
     echo $select->display();
   }
 
+  /**
+  * Select for which project a special cost should be created
+  *
+  */
   function selectProjectCreate() {
     global $BASEURL;
     $select = new AnchorTableList('Projects', 'Select project to create rate');
@@ -84,6 +105,10 @@ class ActionSpecialCosts extends ActionAction {
     echo $select->display();
   }
 
+  /**
+  * Select for which instrument the special costs should be displayed
+  *
+  */
   function selectInstrument() {
     global $BASEURL;
     $select = new AnchorTableList('Instruments', 'Select instrument to view rates');
@@ -101,6 +126,10 @@ class ActionSpecialCosts extends ActionAction {
     echo $select->display();
   }
 
+  /**
+  * Select for which instrument a special cost should be created
+  *
+  */
   function selectInstrumentCreate() {
     global $BASEURL;
     $select = new AnchorTableList('Instruments', 'Select instrument to create rate');
@@ -115,8 +144,7 @@ class ActionSpecialCosts extends ActionAction {
     echo $select->display();
   }
 
-  
-  function editCost() {
+  function edit() {
     list($id, $specCost) = $this->_getCostObject();
     $specCost->update($this->PD);
     $specCost->checkValid();
@@ -140,7 +168,7 @@ class ActionSpecialCosts extends ActionAction {
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
   }
 
-  function deleteCost() {
+  function delete() {
     list($id, $cost) = $this->_getCostObject();
     echo $this->reportAction($cost->delete(), 
               array(
@@ -150,6 +178,11 @@ class ActionSpecialCosts extends ActionAction {
             );  
   }
 
+  /**
+  * Create a SpecialCost object 
+  *
+  * @return array ($id, $special_cost) 
+  */
   function _getCostObject() {    
     if ($this->PD['createnew']) {
       $id = -1;

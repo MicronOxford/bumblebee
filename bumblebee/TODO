@@ -4,8 +4,26 @@ $Id$
 ------------
 Bugs:  
   book dropdown on 10:00-16:00/6 includes times that would overlap bookings
+
+
+* 1.2 series
+------------
+Code documentation:
+  real phpdoc format and publish 
+Features:
+  * heirarchical+fine-grained permission system 
+  * longer bookings
+  * IE5Mac compatability?
+  * groups of instruments
+  
+* Later
+------------
+  * in-place booking (js mouse commands, DOM+js/ajax?)
   
 
+  
+  
+  
 
 * a much more sophisticated permissions system that gives fine grained
  control over what users can do

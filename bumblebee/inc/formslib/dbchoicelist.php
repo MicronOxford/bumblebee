@@ -1,10 +1,20 @@
 <?php
-# $Id$
-# a choice list based on an SQL statement, live db object to add extra entries
+/**
+* A choice list based on an SQL statement
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Forms library
+*/
 
 include_once 'dbobject.php';
 
 /**
+ * A choice list based on an SQL statement.
+ *
  * Primitive class on which selection lists can be built from the
  * results of an SQL query. This may be used to determine the choices
  * that a user is permitted to select (e.g. dropdown list or radio buttons)
@@ -17,13 +27,15 @@ include_once 'dbobject.php';
  * so it would usually be inherited and the descendent class used.
  *
  * Typical usage:
- *   $f = new RadioList("myfield", "Field name");
- *   $f->connectDB("mytable", array("id", "name"));
- *   $f->setFormat("id", "%s", array("name"));
- *   $newentryfield = new TextField("name","");
- *   $newentryfield->namebase = "newentry-";
- *   $newentryfield->suppressValidation = 0;
- *   $f->list->append(array("-1","Create new: "), $newentryfield);
+ * <code>
+ * $f = new RadioList("myfield", "Field name");
+ * $f->connectDB("mytable", array("id", "name"));
+ * $f->setFormat("id", "%s", array("name"));
+ * $newentryfield = new TextField("name","");
+ * $newentryfield->namebase = "newentry-";
+ * $newentryfield->suppressValidation = 0;
+ * $f->list->append(array("-1","Create new: "), $newentryfield);
+ *  </code>
  */
 class DBChoiceList extends DBO {
   var $join;
@@ -41,14 +53,16 @@ class DBChoiceList extends DBO {
   var $prependedfields;
 
   /** 
+   * Construct the DBlist object.
+   *
    * Construct a new DBList object based on:
-   *     * database table ($table)
-   *     * calling for the fields in the array (or scalar) $fields
-   *     * with an SQL restriction (WHERE clause) $restriction
-   *     * ordering the listing by $order
-   *     * using the field $idfield as the control variable in the list
+   *     - database table ($table)
+   *     - calling for the fields in the array (or scalar) $fields
+   *     - with an SQL restriction (WHERE clause) $restriction
+   *     - ordering the listing by $order
+   *     - using the field $idfield as the control variable in the list
    *       (i.e. the value='' in a radio list etc)
-   *     * with an SQL LIMIT statement of $limit
+   *     - with an SQL LIMIT statement of $limit
    *
    * @param string $table  the table to be queried for filling
    * @param mixed $fields  string for the field or array of field names
@@ -58,7 +72,7 @@ class DBChoiceList extends DBO {
    * @param string $limit  any LIMIT clause
    * @param mixed $join  string or array (preferably) that defines the LEFT JOIN
    * @param boolean $distinct return only DISTINCT rows (default: false)
-   * @param mixed $deleted deleted=true/false in SQL; NULL means don't restrict
+   * @param boolean $deleted deleted=true/false in SQL; NULL means don't restrict
    */
   function DBChoiceList($table, $fields='', $restriction='',
                   $order='', $idfield='id', $limit='', $join='', $distinct=false, $deleted=NULL) {
@@ -138,6 +152,9 @@ class DBChoiceList extends DBO {
     return 1;
   }
   
+  /**
+   * ?????? FIXME
+   */
   function _mkaddedarray($values, $field='') {
     $a = array();
     for ($i=0; $i < count($values); $i++) {
@@ -150,7 +167,7 @@ class DBChoiceList extends DBO {
   /**
    * append (or prepend) a special field (such as "Create new:") to the choicelist
    *
-   * @param string $values ???
+   * @param array $values list of values to be displayed
    * @param Field $field (optional) a field class object to be placed next to this entry, if possible
    *
    * Keep a copy of the field so it can be added again later if
@@ -320,6 +337,9 @@ class DBChoiceList extends DBO {
     return join(",",$vals);
   }
 
+  /**
+   * determine whih values are selected and return them
+   */
   function selectedValue($returnArray=0) {
     $val = array();
     foreach ($this->choicelist as $v) {
@@ -334,6 +354,9 @@ class DBChoiceList extends DBO {
     return ($returnArray ? $val : implode(' ', $val));
   }
 
+  /**
+   * set which option in the selection list is the default option
+   */
   function setDefault($val) {
     //echo "DBChoiceList::setDefault: $val";
     if (isset($this->id) || $this->id < 0) {

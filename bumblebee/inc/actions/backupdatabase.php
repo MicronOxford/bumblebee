@@ -1,10 +1,21 @@
 <?php
-# $Id$
-# print out a login form
+/**
+* Create a dump of the database for backup purposes
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Actions
+*/
 
 include_once 'inc/actions/bufferedaction.php';
 include_once 'inc/statuscodes.php';
 
+/**
+* Create a dump of the database for backup purposes
+*/
 class ActionBackupDB extends BufferedAction {
   
   function ActionBackupDB($auth, $pdata) {
@@ -21,7 +32,9 @@ class ActionBackupDB extends BufferedAction {
                );
   }
 
-  
+  /**
+  * Make the sql dump and save it to memory for output later
+  */
   function makeDump() {
     // get a MySQL dump of the database
     global $CONFIG;
@@ -41,13 +54,20 @@ class ActionBackupDB extends BufferedAction {
     }
   }
 
+
+  /**
+  * Send the sql dump to the browser immediately
+  * (can't be used if you have heavy HTML templates)
+  */
   function godirect() {
     $this->startOutputTextFile($filename);
     system($this->_mysqldump_invocation(),
                 $returnError);
   }
   
-  
+  /**
+  * Obtain the correct mysqldump command line to make the backup
+  */  
   function _mysqldump_invocation() {
     global $CONFIG;
     return $CONFIG['sqldump']['mysqldump'].' '

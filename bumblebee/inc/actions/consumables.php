@@ -1,11 +1,22 @@
 <?php
-# $Id$
-# edit consumables
+/**
+* Edit/create/delete consumables
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Actions
+*/
 
 include_once 'inc/bb/consumable.php';
 include_once 'inc/formslib/anchortablelist.php';
 include_once 'inc/actions/actionaction.php';
 
+/**
+* Edit/create/delete consumables
+*/
 class ActionConsumables extends ActionAction {
 
   function ActionConsumables($auth, $PDATA) {
@@ -16,16 +27,16 @@ class ActionConsumables extends ActionAction {
   function go() {
     global $BASEURL;
     if (! isset($this->PD['id'])) {
-      $this->selectConsumable(issetSet($this->PD, 'showdeleted', false));
+      $this->select(issetSet($this->PD, 'showdeleted', false));
     } elseif (isset($this->PD['delete'])) {
-      $this->deleteConsumable();
+      $this->delete();
     } else {
-      $this->editConsumable();
+      $this->edit();
     }
     echo "<br /><br /><a href='$BASEURL/consumables'>Return to consumables list</a>";
   }
 
-  function selectConsumable($deleted=false) {
+  function select($deleted=false) {
     global $BASEURL;
     $select = new AnchorTableList('Consumables', 'Select which Consumables to view');
     $select->deleted = $deleted;
@@ -37,7 +48,7 @@ class ActionConsumables extends ActionAction {
     echo $select->display();
   }
 
-  function editConsumable() {
+  function edit() {
     global $BASEURL;
     $consumable = new Consumable($this->PD['id']);
     $consumable->update($this->PD);
@@ -63,7 +74,7 @@ class ActionConsumables extends ActionAction {
         ."for this consumable</p>\n";
   }
 
-  function deleteConsumable() {
+  function delete() {
     $consumable = new Consumable($this->PD['id']);
     echo $this->reportAction($consumable->delete(), 
               array(

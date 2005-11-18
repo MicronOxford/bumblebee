@@ -1,12 +1,23 @@
 <?php
-# $Id$
-# allow the admin user to masquerade as another user to make some 
-# bookings. A bit like "su".
+/**
+* Allow the admin user to masquerade as another user to make some bookings. A bit like "su".
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Actions
+*/
 
 include_once 'inc/bb/user.php';
 include_once 'inc/formslib/anchortablelist.php';
 include_once 'inc/actions/actionaction.php';
 
+/**
+* Allow the admin user to masquerade as another user to make some bookings. A bit like "su".
+*  
+*/
 class ActionMasquerade extends ActionAction {
 
   function ActionMasquerade($auth, $pdata) {
@@ -26,6 +37,10 @@ class ActionMasquerade extends ActionAction {
     echo "<br /><br /><a href='$BASEURL/masquerade'>Return to user list</a>";
   }
 
+  /**
+  * Print an HTML list of users to allow the user to masquerade as for making bookings
+  *  
+  */
   function selectUser() {
     global $BASEURL;
     $select = new AnchorTableList('Users', 'Select which user to masquerade as');
@@ -41,6 +56,10 @@ class ActionMasquerade extends ActionAction {
     echo $select->display();
   }
 
+  /**
+  * Put on the selected mask 
+  *  
+  */
   function assumeMasquerade() {
     if ($row = $this->auth->assumeMasq($this->PD['id'])) {
       echo '<h3>Masquerade started</h3>'
@@ -60,6 +79,10 @@ class ActionMasquerade extends ActionAction {
     }
   }
   
+  /**
+  * Remove the mask 
+  *  
+  */
   function removeMasquerade() {
     $this->auth->removeMasq();
     echo '<h3>Masquerade finished</h3>'

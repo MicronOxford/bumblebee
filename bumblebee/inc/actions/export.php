@@ -1,6 +1,15 @@
 <?php
-# $Id$
-# return a billing summary 
+/**
+* Export various views of the booking data in numerous formats
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Actions
+* @subpackage Data Export
+*/
 
 include_once 'inc/formslib/checkbox.php';
 include_once 'inc/formslib/checkboxtablelist.php';
@@ -13,16 +22,44 @@ include_once 'inc/export/htmlexport.php';
 include_once 'inc/formslib/dblist.php';
 
 /**
- *  Find out what sort of report is required and generate it
- *
- */
-
+* Export various views of the booking data in numerous formats
+*  
+* A number of different data views can be created (see exporttypes.php)
+* and the data can be exported in various formats (see htmlexport.php and arrayexport.php)
+*
+* This class is inherited by other exporters
+*/
 class ActionExport extends BufferedAction {
+  /**
+  * forces SQL errors to be fatal
+  * @var    boolean
+  */
   var $fatal_sql = 1;
+  /**
+  * name of the export format to be used
+  * @var    string
+  */
   var $format;
+  /**
+  * object containing export SQL and formatting instructions
+  * @var    ExportTypeList
+  */
   var $typelist;
+  /**
+  * the specific ExportType to be used in this data export
+  * @var    ExportType
+  */
   var $_export;  // ExportType format description
+  /**
+  * The data range to be used for data export
+  * @var    DateRange
+  */
   var $_daterange;
+  /**
+  * The original action word (verb!) that instantiated this class (not its descendants)
+  * Allows HTML links back to this class to be easily made.
+  * @var    string
+  */
   var $_verb = 'export';
 
   function ActionExport($auth, $pdata) {
@@ -87,6 +124,11 @@ class ActionExport extends BufferedAction {
     echoData($this->PD, 0);
   }
 
+  /**
+  * Generate HTML list for user to select which data export should be used
+  *
+  * @return void nothing
+  */  
   function selectExport() {
     global $BASEURL;
     $reportlist = array();
@@ -100,6 +142,11 @@ class ActionExport extends BufferedAction {
     echo $select->display();
   }
 
+  /**
+  * Generate HTML list for user to select which data format should be used
+  *
+  * @return void nothing
+  */  
   function formatSelect() {
     global $CONFIG;
     $formatlist = array(EXPORT_FORMAT_VIEW     => 'View in web browser', 
@@ -120,7 +167,14 @@ class ActionExport extends BufferedAction {
     echo '<div style="margin: 2em 0 2em 0;">'.$select->display().'</div>';
   }  
   
-  
+  /**
+  * Generate HTML form widget for user to control output.
+  *
+  * User can select which sub-view of the data to use
+  * and which specific parts of the data should be included (i.e. restrict by group)
+  *
+  * @return void nothing
+  */  
   function outputSelect() {
     $export = $this->typelist->types[$this->PD['what']];
     for ($lim = 0; $lim < count($export->limitation); $lim++) {
@@ -155,12 +209,20 @@ class ActionExport extends BufferedAction {
     echo '<input type="hidden" name="limitationselected" value="1" />';
   }
 
+  /**
+  * Common submit button for this class
+  *
+  * @return void nothing
+  */  
   function _goButton() {
     echo '<input type="submit" name="submit" value="Select" />';
   }
       
-    
-    
+  /**
+  * Generate the data export and then send it to the user in the appropriate format
+  *
+  * @return void nothing
+  */  
   function returnExport() {
     $list = $this->_getDataList($this->PD['what']);
     $list->fill();
@@ -210,6 +272,11 @@ class ActionExport extends BufferedAction {
     }
   }
   
+  /**
+  * Sets up the DBlist object so that it can query the db
+  *
+  * @return DBList query ready to run
+  */  
   function _getDataList($report) {
     $this->_export = $this->typelist->types[$report];
     $start = $this->_daterange->getStart();
@@ -231,6 +298,11 @@ class ActionExport extends BufferedAction {
     return $list;
   }
   
+  /**
+  * From the export definition in the ExportType generate a DBList query
+  *
+  * @return void DBList ready for query
+  */  
   function _getDBListFromExport(&$export, $start, $stop, $limitsOffset=0) {
     $where = $export->where;
     $where[] = $export->timewhere[0].qw($start->datetimestring);
@@ -264,6 +336,13 @@ class ActionExport extends BufferedAction {
     return $list;
   }
 
+  /**
+  * Determine what limitation should be applied to the broad query
+  *
+  * @todo   there are limitations in the IN() syntax.... replace this with lots of booleans?
+  *
+  * @return array SQL field IN (list...) syntax
+  */  
   function _limitationSet($fields, $limitsOffset, $makeSQL=true) {
     $sets = array();
     for ($lim = 0; $lim < count($fields); $lim++) {
@@ -293,32 +372,10 @@ class ActionExport extends BufferedAction {
   }
   
   /**
-   *    this function is no longer used
-   */
-  function _limitationSetRIGID($fields, $limitsOffset, $makeSQL=true) {
-    $sets = array();
-    for ($lim = 0; $lim < count($fields); $lim++) {
-      $limitation = array();
-      $namebase = 'limitation-'.($limitsOffset+$lim).'-';
-      for ($j=0; isset($this->PD[$namebase.$j.'-row']); $j++) {
-        $item = issetSet($this->PD,$namebase.$j.'-'.$fields[$lim]);
-        if (issetSet($this->PD,$namebase.$j.'-selected') && $item !== NULL) {
-          $limitation[] = /*$export->limitation[$lim].'.id='.*/qw($item);
-        }
-        echo $namebase.':'.$j.':'.$lim.':'.$fields[$lim].':'.$item.'<br/>';
-      }
-      if (count($limitation)) {
-        if ($makeSQL) {
-          $sets[] = $fields[$lim].'.id IN ('.join($limitation, ', ').')';
-        } else {
-          $sets[$fields[$lim]] = $limitation;
-        }
-      }
-      //preDump($limitation);
-    }
-    return $sets;
-  }
-  
+  * Set the filename and mimetype for the data export
+  *
+  * @return void nothing
+  */  
   function _getFilename() {
     switch ($this->format & EXPORT_FORMAT_MASK) {
       case EXPORT_FORMAT_CSV:
@@ -342,12 +399,23 @@ class ActionExport extends BufferedAction {
     $this->mimetype = $type;
   }
   
+  /**
+  * Generate the PDF for return to the user
+  *
+  * @uses PDFExport but only loaded here so that optional library can be absent without compile errors
+  * @return string $pdf containing the PDF
+  */  
   function _preparePDFExport(&$exportArray) {
     require_once('inc/export/pdfexport.php');
     $pdf = new PDFExport($exportArray);
     return $pdf;
   }
 
+  /**
+  * Generate the standard report header from the date range and the description in ExportType
+  *
+  * @return string the title to be used for this report
+  */  
   function _reportHeader() {
     $start = $this->_daterange->getStart();
     $stop  = $this->_daterange->getStop();

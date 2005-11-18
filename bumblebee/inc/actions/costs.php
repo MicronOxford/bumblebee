@@ -1,11 +1,25 @@
 <?php
-# $Id$
-# edit the groups
+/**
+* Edit and create costs for using instruments
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Actions
+*/
 
 include_once 'inc/bb/costs.php';
 include_once 'inc/formslib/anchortablelist.php';
 include_once 'inc/actions/actionaction.php';
 
+/**
+*  Edit and create costs for using instruments
+*  
+* Costs for instrument usage are calculated using a matrix of the instrument class
+* and the user class. See { @link http://bumblebeeman.sf.net/ } for further details.
+*/
 class ActionCosts extends ActionAction {
 
   function ActionCosts($auth, $pdata) {
@@ -37,6 +51,14 @@ class ActionCosts extends ActionAction {
     echoData($this->PD, 0);
   }
 
+  /**
+  * Generate an HTML form for the user to select which class of user to edit costs
+  *
+  * - do DB look-ups on what instruments exist
+  * - construct a table of links to allow the user to select which userclass to edit
+  * 
+  * @return void nothing
+  */
   function selectUserClass() {
     global $BASEURL;
     $select = new AnchorTableList('Cost', 'Select which user class to view usage costs', 1);
@@ -48,6 +70,11 @@ class ActionCosts extends ActionAction {
     echo $select->display();
   }
 
+  /**
+  * Sync the user's changes with the db and provide feedback
+  *
+  * @return void nothing
+  */
   function editCost() {
     $classCost = new ClassCost($this->PD['userclass']);
     $classCost->update($this->PD);
