@@ -9,6 +9,17 @@ $Id$
 
 
 
+	
+* a much more sophisticated permissions system that gives fine grained
+control over what users can do
+
+* being able to set permissions on groups of instruments and groups of
+users 
+
+* more reporting functions and group calendar displays.
+
+
+
 
 
 

@@ -1,5 +1,7 @@
-2005-09-05 Stuart Prescott <s.prescott@unimelb.edu.au>
+2005-11-18 Stuart Prescott <s.prescott@unimelb.edu.au>
+	* feature: Cc the logged-in user on billing emails
 	* bugfix: viewing consumable usage not updated to new deletion framework
+	* bugfix: masquerading class not available to non-sysadmin users
 
 2005-09-05 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* 1.0.0 release

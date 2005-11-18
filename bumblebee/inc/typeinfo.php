@@ -84,7 +84,8 @@ function is_valid_radiochoice($v) {
 
 function is_email_format($v) {
   #echo "'val=$v' ";
-  $pattern = '/^\w.+\@[A-Z_\-]+\.[A-Z_\-]/i';
+  #$pattern = '/^\w.+\@[A-Z_\-]+\.[A-Z_\-]/i';
+  $pattern = '/^[_a-z0-9\-]+(?:\.[_a-z0-9\-]+)*@[a-z0-9\-]+(?:\.[a-z0-9\-]{2,})+$/i';
   return (preg_match($pattern, $v));
 }
 

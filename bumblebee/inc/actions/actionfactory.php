@@ -10,6 +10,9 @@ include_once 'logout.php';
 include_once 'view.php';
 include_once 'password.php';
 
+// only some users can masquerade, include this by default
+include_once 'masquerade.php';
+
 //admin functions: only include these files if they are necessary (security + efficiency)
 if ($auth->isadmin) {
   include_once 'groups.php';
@@ -19,7 +22,6 @@ if ($auth->isadmin) {
   include_once 'consumables.php';
   include_once 'consume.php';
   include_once 'deletedbookings.php';
-  include_once 'masquerade.php';
   include_once 'costs.php';
   include_once 'specialcosts.php';
   include_once 'userclass.php';

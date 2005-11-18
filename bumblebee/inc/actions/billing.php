@@ -197,6 +197,7 @@ class ActionBilling extends ActionExport {
     $from = $CONFIG['billing']['emailFromName']
             .' <'.$CONFIG['main']['SystemEmail'].'>';
     $replyto = $this->auth->name.' <'.$this->auth->email.'>';
+    $cc   = $this->auth->name.' <'.$this->auth->email.'>';    // CC a copy to the sender
     $to   = $toName.' <'.$toEmail.'>';
     srand(time());
     $id   = '<bumblebee-'.time().'-'.rand().'@'.$_SERVER['SERVER_NAME'].'>';
@@ -255,7 +256,8 @@ class ActionBilling extends ActionExport {
     fwrite($fh, $headers.$eol.$message);
     fclose($fh);
     return 1;*/
-    $ok = @mail($to, $subject, $message, $headers);
+    $ok = @mail("$to, $cc", $subject, $message, $headers);
+    #print "sent mail to $to, $cc\n";
     return $ok;
   }
   
