@@ -90,6 +90,7 @@ class ActionConsume extends ActionAction {
     }
     #$extrapath = (isset($PD['consumableid']) ? "consumable/$PD[consumableid]/" : "");
     $userselect = new AnchorTableList('Users', 'Select which user is consuming');
+    $userselect->deleted = false;  // don't show deleted users
     $userselect->connectDB("users", array('id', 'name', 'username'));
     $userselect->hrefbase = "$BASEURL/consume/${extrapath}user/";
     $userselect->setFormat('id', '%s', array('name'), ' %s', array('username'));
@@ -111,7 +112,7 @@ class ActionConsume extends ActionAction {
       $listpath = $BASEURL.'/consume/'.$extrapath.'list';
     }
     $consumableselect = new AnchorTableList('Consumables', 'Select which Consumables to use');
-    $consumableselect->deleted = NULL;
+    $consumableselect->deleted = false;   // don't show deleted consumables
     $consumableselect->connectDB('consumables', array('id', 'name', 'longname'));
     $consumableselect->hrefbase = "$BASEURL/consume/${extrapath}consumable/";
     $consumableselect->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'));

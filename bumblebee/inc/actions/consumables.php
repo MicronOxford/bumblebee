@@ -18,7 +18,7 @@ class ActionConsumables extends ActionAction {
     if (! isset($this->PD['id'])) {
       $this->selectConsumable(issetSet($this->PD, 'showdeleted', false));
     } elseif (isset($this->PD['delete'])) {
-      $this->deleteConsumable($PD['id']);
+      $this->deleteConsumable();
     } else {
       $this->editConsumable();
     }
