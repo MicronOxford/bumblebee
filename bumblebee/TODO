@@ -1,5 +1,26 @@
 $Id$
 
+* 1.0 series
+------------
+Bugs:  
+  book dropdown on 10:00-16:00/6 includes times that would overlap bookings
+  
+
+
+* a much more sophisticated permissions system that gives fine grained
+ control over what users can do
+ 
+* being able to set permissions on groups of instruments and groups of
+ users 
+ 
+* more reporting functions: future bookings by a user or group
+
+* group of instruments:
+  - calendar displays.
+  - permissions
+  - billing reports
+
+* book instruments for weeks/months.
 
 * instruments
   - does not apply timeslot rule on create?  
@@ -8,19 +29,13 @@ $Id$
   - require confirmation for some instruments?
 
 
+ * full, user-configurable billing support included
+ * can export invoices or statements of usage
+ * can email invoices or statements of usage to groups
+ * unbooking an instrument causes an email to be sent to admin for some timeslots
+ * unbooking an instrument causes an email to be sent to the unbook list for some timeslots
 
-	
-* a much more sophisticated permissions system that gives fine grained
-control over what users can do
-
-* being able to set permissions on groups of instruments and groups of
-users 
-
-* more reporting functions and group calendar displays.
-
-
-
-
+* -ve consumable quantities (for returns)?
 
 
 
