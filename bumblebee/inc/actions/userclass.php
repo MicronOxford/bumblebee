@@ -19,6 +19,13 @@ include_once 'inc/actions/actionaction.php';
 */
 class ActionUserClass extends ActionAction  {
 
+  /**
+  * Initialising the class 
+  * 
+  * @param  BumbleBeeAuth $auth  Authorisation object
+  * @param  array $pdata   extra state data from the call path
+  * @return void nothing
+  */
   function ActionUserClass($auth, $pdata) {
     parent::ActionAction($auth, $pdata);
     $this->mungePathData();

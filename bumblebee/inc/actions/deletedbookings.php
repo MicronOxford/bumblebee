@@ -21,6 +21,13 @@ include_once 'inc/actions/actionaction.php';
 */
 class ActionDeletedBookings extends ActionAction {
     
+  /**
+  * Initialising the class 
+  * 
+  * @param  BumbleBeeAuth $auth  Authorisation object
+  * @param  array $pdata   extra state data from the call path
+  * @return void nothing
+  */
   function ActionDeletedBookings($auth, $PDATA) {
     parent::ActionAction($auth, $PDATA);
     $this->mungePathData();

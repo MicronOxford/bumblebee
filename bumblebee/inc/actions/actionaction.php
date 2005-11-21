@@ -8,7 +8,6 @@
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Actions
-* @abstract
 */
 
 include_once 'inc/statuscodes.php';
@@ -18,6 +17,30 @@ include_once 'inc/statuscodes.php';
 *  
 * An Action is a single operation requested by the user. What action is to be performed
 * is determined by the action-triage mechanism in the class ActionFactory.
+*
+*
+* Since http is a stateless protocol, what seems like just one activity
+* (e.g. "edit a publication") actually includes multiple http requests
+* ("show the user the current values" and "sync changes to disk"). Additionally,
+* the one application suite will have many different things to do (e.g. edit/create
+* users, edit/create foobar objects). There are two approaches to this multiple
+* functions problem: have many .php files that are called directly by the user
+* for each function (i.e. links to user.php and foobar.php) but then you can end up
+* with a lot of repeated code in each file to control the page layout, load themes,
+* control login etc. Alternatively, you can use just the one index.php and include
+* an extra control variable in each link that decides what the script should do this time.
+* 
+* In either case, it is convenient to have a standard "action" object that can be created
+* by some ActionFactory which then obeys a standard "action" interface to then
+* be used by the internals of the application.
+* 
+* Typical usage:
+* <code>
+* $action = new ActionFactory($params);
+* $action->go();
+* </code>
+*
+* @abstract
 */
 class ActionAction {
   /**
@@ -180,9 +203,9 @@ class ActionAction {
   *   be output. The normal range for priority is [1-10] with messages with
   *   ($priority <= $this->DEBUG) being displayed.
   */
-  function log ($string, $prio=10) {
-    if ($prio <= $this->DEBUG) {
-      echo $string."<br />\n";
+  function log ($message, $priority=10) {
+    if ($priority <= $this->DEBUG) {
+      echo $message."<br />\n";
     }
   }
 

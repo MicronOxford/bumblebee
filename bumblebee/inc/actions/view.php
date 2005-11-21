@@ -21,12 +21,30 @@ include_once 'inc/actions/actionaction.php';
 * View a bookings calendar and make bookings
 */
 class ActionView extends ActionAction {
-    
+  /**
+  * booking is for the logged in user 
+  * @var boolean
+  */
   var $_isOwnBooking    = false;
+  /**
+  * logged in user has admin view of booking/calendar
+  * @var boolean
+  */
   var $_isAdminView     = false;
+  /**
+  * logged in user can modify booking
+  * @var boolean
+  */
   var $_haveWriteAccess = false;
 
 
+  /**
+  * Initialising the class 
+  * 
+  * @param  BumbleBeeAuth $auth  Authorisation object
+  * @param  array $pdata   extra state data from the call path
+  * @return void nothing
+  */
   function ActionView($auth, $PDATA) {
     parent::ActionAction($auth, $PDATA);
     $this->mungePathData();

@@ -32,6 +32,13 @@ class ActionEmailList extends ActionAction {
   */
   var $fatal_sql = 1;
 
+  /**
+  * Initialising the class 
+  * 
+  * @param  BumbleBeeAuth $auth  Authorisation object
+  * @param  array $pdata   extra state data from the call path
+  * @return void nothing
+  */
   function ActionEmailList($auth, $pdata) {
     parent::ActionAction($auth, $pdata);
     $this->mungePathData();

@@ -20,6 +20,13 @@ include_once 'inc/actions/actionaction.php';
 */
 class ActionSpecialCosts extends ActionAction {
 
+  /**
+  * Initialising the class 
+  * 
+  * @param  BumbleBeeAuth $auth  Authorisation object
+  * @param  array $pdata   extra state data from the call path
+  * @return void nothing
+  */
   function ActionSpecialCosts($auth, $pdata) {
     parent::ActionAction($auth, $pdata);
     $this->mungePathData();

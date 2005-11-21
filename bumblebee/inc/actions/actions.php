@@ -1,8 +1,26 @@
 <?php
-# $Id$
-# Create data structures that can describe both the action-word to be acted
-# on, as well as the title to be reflected in the HTML title tag.
+/**
+* List of all currently available actions
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Actions
+*/
 
+/**
+* List of all currently available actions
+*
+* Create data structures that can describe both the action-word to be acted
+* on, as well as the title to be reflected in the HTML title tag.
+*
+* @todo this is ugly as sin. 
+* @todo it should have a much cleaner implementation than this -- use a config file perhaps?
+* @todo this should be integrated with the Menu class
+* @todo document the fixed up version
+*/
 class ActionListing {
 
   var $userfunctions;

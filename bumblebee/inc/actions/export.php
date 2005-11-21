@@ -62,6 +62,13 @@ class ActionExport extends BufferedAction {
   */
   var $_verb = 'export';
 
+  /**
+  * Initialising the class 
+  * 
+  * @param  BumbleBeeAuth $auth  Authorisation object
+  * @param  array $pdata   extra state data from the call path
+  * @return void nothing
+  */
   function ActionExport($auth, $pdata) {
     parent::BufferedAction($auth, $pdata);
   }

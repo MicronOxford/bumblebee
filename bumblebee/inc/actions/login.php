@@ -19,6 +19,11 @@ include_once 'inc/actions/actionaction.php';
 */
 class ActionPrintLoginForm extends ActionAction {
   
+  /**
+  * Initialising the class 
+  * 
+  * @return void nothing
+  */
   function ActionPrintLoginForm() {
   }
 

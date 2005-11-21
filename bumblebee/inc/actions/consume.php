@@ -23,6 +23,13 @@ include_once 'inc/actions/actionaction.php';
 */
 class ActionConsume extends ActionAction {
 
+  /**
+  * Initialising the class 
+  * 
+  * @param  BumbleBeeAuth $auth  Authorisation object
+  * @param  array $pdata   extra state data from the call path
+  * @return void nothing
+  */
   function ActionConsume($auth, $pdata) {
     parent::ActionAction($auth, $pdata);
     $this->mungePathData();
@@ -181,7 +188,11 @@ class ActionConsume extends ActionAction {
   }
 
   /**
-  * list the available consumables
+  * list the consumption records for this particular consumable
+  *
+  * @param integer $consumableID   table ID number of consumable to be displayed
+  * @param DateRange $daterange    time period over which consumption records are to be displayed
+  * @return void nothing
   */
   function listConsumeConsumable($consumableID, $daterange) {
     global $BASEURL;
@@ -212,7 +223,11 @@ class ActionConsume extends ActionAction {
   }
 
   /**
-  * list the available users
+  * list the consumption records for this particular consumable
+  *
+  * @param integer $userID         table ID number of user to be displayed
+  * @param DateRange $daterange    time period over which consumption records are to be displayed
+  * @return void nothing
   */
   function listConsumeUser($userID, $daterange) {
     global $BASEURL;

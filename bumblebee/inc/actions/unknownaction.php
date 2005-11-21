@@ -19,6 +19,13 @@ class ActionUnknown extends ActionAction {
   var $action;
   var $forbiden;
 
+  /**
+  * Initialising the class 
+  * 
+  * @param  string  $action requested action ('verb')
+  * @param  boolean $forbidden  (optional) 
+  * @return void nothing
+  */
   function ActionUnknown($action, $forbidden=0) {
     parent::ActionAction('','');
     $this->action = $action;

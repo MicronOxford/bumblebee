@@ -1,8 +1,14 @@
 <?php
-# $Id$
-# work out what it was we were supposed to be doing
-# $action is set based on what we are supposed to do
-# this is then acted upon later in the page
+/**
+* Create Action object that will do whatever category of work is required in this invocation 
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Actions
+*/
 
 // basic functions (user functions)
 include_once 'login.php';
@@ -10,10 +16,12 @@ include_once 'logout.php';
 include_once 'view.php';
 include_once 'password.php';
 
-// only some users can masquerade, include this by default
+// only some users can masquerade, but include this by default, 
+// checking permissions is done by the Masquerade class itself
 include_once 'masquerade.php';
 
 //admin functions: only include these files if they are necessary (security + efficiency)
+//these classes do not check permissions of the user -- this must be done by the instantiating code
 if ($auth->isadmin) {
   include_once 'groups.php';
   include_once 'projects.php';
@@ -38,17 +46,86 @@ include_once 'unknownaction.php';
 include_once 'inc/typeinfo.php';
 include_once 'actions.php';
 
+/**
+* Factory class for creating Action objects
+*  
+* An Action is a single operation requested by the user. What action is to be performed
+* is determined by the action-triage mechanism in the class ActionFactory.
+*
+* Everything done by an application suite (e.g. edit/create a user) can be reduced to 
+* broad categories of actions (e.g. edituser) which can be encapsulated within an 
+* object framework in which every object has the same interface.
+*
+* The invoking code is thus boiled down to something quite simple:
+* <code>
+* $action = new ActionFactory($params);
+* $action->go();
+* </code>
+* where ActionFactory does the work of deciding what is to be done on this
+* invocation and instantiates the appropriate action object.
+* 
+* The action object then actually performs the tasks desired by the user.
+*
+* Here, we use the data from the browser (a PATH_INFO variable from the URL in the form
+* index.php/user) to triage the transaction.
+*/
 class ActionFactory {
+  /** 
+  * the user-supplied "verb" (name of the action) e.g. "edituser"
+  * @var string
+  */
   var $_verb;
+  /** 
+  * the actual user-supplied verb... we may pretend to do something else due to permissions
+  * @var string
+  */
   var $_original_verb;
+  /** 
+  * Each action has a description associated with it that we will put into the HTML title tag
+  * @var string
+  */
   var $title;
+  /** 
+  * The action object (some descendent of the ActionAction class)
+  * @var ActionAction
+  */
   var $_action;
+  /** 
+  * The user's login credentials object
+  * @var BumbleBeeAuth
+  */
   var $_auth;
+  /** 
+  * user-supplied data from the PATH_INFO section of the URL
+  * @var array
+  */
   var $PDATA;
+  /** 
+  * The 'verb' that should follow this current action were a standard workflow being followed
+  * @var string
+  */
   var $nextaction;
+  /** 
+  * list of action verbs available
+  * @var array
+  */
   var $actionListing;
+  /** 
+  * list of action titles available
+  * @var array
+  */
   var $actionTitles;
   
+  /** 
+  * Constructor for the class
+  *
+  * - Parse the submitted data
+  * - work out what action we are supposed to be performing
+  * - set up the title tag for the browser
+  * - create the ActionAction descendent object that will perform the task
+  *
+  * @param BumbleBeeAuth $auth  user login credentials object
+  */
   function ActionFactory($auth) {
     global $BASEURL;
     $this->_auth = $auth;
@@ -62,10 +139,23 @@ class ActionFactory {
     $this->_action = $this->_makeAction();
   }
   
+  /** 
+  * Fire the action: make things actually happen now
+  */
   function go() {
     $this->_action->go();
   }
 
+  /** 
+  * Determine what action should be performed.
+  *
+  * This is done by:
+  * - checking that the user is logged in... if not, they *must* login
+  * - looking for hints in the user-supplied data for what the correct action is
+  * - checking that the user is an admin user if admin functions were requested
+  *
+  * @return string the name of the action (verb) to be undertaken
+  */
   function _checkActions() {
     $action = '';
   
@@ -106,14 +196,24 @@ class ActionFactory {
     return $action;
   }
 
-  function _actionRestart($auth, $newaction) {
-    global $action;
-    #$_POST['action']=$newaction;
+  /** 
+  * Trigger a restart of the action or a new action
+  *
+  * Sometimes, an action may need to be restarted or the action changed (e.g. logout => login)
+  *
+  * @param string $newaction  new verb for the new action
+  */
+  function _actionRestart($newaction) {
     $this->_verb=$newaction;
     $this->_action = $this->_makeAction();
     $this->go();
   }
   
+  /** 
+  * Parse the user-supplied data in PATH_INFO part of URL
+  *
+  * @returns array  (key => $data)
+  */
   function _eatPathInfo() {
     $pd = array();
     $pathinfo = issetSet($_SERVER, 'PATH_INFO');
@@ -136,18 +236,33 @@ class ActionFactory {
     return $pd;
   }
   
+  /** 
+  * Is it ok to allow the HTML template to dump to the browser from the output buffer?
+  *
+  * (see BufferedAction descendents)
+  *
+  * @returns boolean  ok to dump to browser
+  */
   function ob_flush_ok() {
     return $this->_action->ob_flush_ok;
   }
   
+  /** 
+  * Cause buffered actions to output their data to the browser
+  *
+  * (see BufferedAction descendents)
+  */
   function returnBufferedStream() {
     if (method_exists($this->_action, 'sendBufferedStream')) {
       $this->_action->sendBufferedStream();
     }
   }
 
+  /** 
+  * create the action object (a descendent of ActionAction) for the user-defined verb
+  */
   function _makeaction() {
-    global $BASEURL;
+    global $BASEURL;        // allow for overriding of actions
     $act = $this->actionListing;
     switch ($act[$this->_verb]) {
       case $act['login']:

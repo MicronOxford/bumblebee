@@ -33,6 +33,13 @@ class ActionBilling extends ActionExport {
   */
   var $DEBUG_PDF = false;
   
+  /**
+  * Initialising the class 
+  * 
+  * @param  BumbleBeeAuth $auth  Authorisation object
+  * @param  array $pdata   extra state data from the call path
+  * @return void nothing
+  */
   function ActionBilling($auth, $pdata) {
     parent::ActionExport($auth, $pdata);
     //$this->format = EXPORT_FORMAT_VIEW;
