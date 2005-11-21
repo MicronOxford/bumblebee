@@ -1,11 +1,33 @@
 <?php
-# $Id$
-# Collect some system stats
+/**
+* Collate some stats on the current usage of the system (number of bookings etc)
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Misc
+*/
 
+/**
+* Collate some stats on the current usage of the system (number of bookings etc)
+*/
 class SystemStats {
+  /**
+  * numbers of rows in each table ($table => $num_rows)
+  * @var array
+  */
   var $stats;
+  /**
+  * tables on which stats should be compiled
+  * @var array
+  */
   var $tables;
 
+  /** 
+  * Constructor: load up the stats
+  */
   function SystemStats() {
     $tables = array('users', 'projects', 'instruments', 'bookings');
     foreach ($tables as $t) {
@@ -13,13 +35,21 @@ class SystemStats {
     }
   }
 
+  /**
+  * Runs the SQL count(*) query to find out how many rows in the table
+  * @param string $table the table to query
+  */
   function countEntries($table) {
     $row = quickSQLSelect($table, '', '', 0, 1);
     return $row[0];
   }
 
-  function get($t) {
-    return $this->stats[$t];
+  /**
+  * Return the stats for the designated table
+  * @param string $table the table to query
+  */
+  function get($table) {
+    return $this->stats[$table];
   }
 }
 ?>

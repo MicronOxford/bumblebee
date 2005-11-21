@@ -1,12 +1,27 @@
 <?php
-# $Id$
-# database connection scripts
+/**
+* Database connection script
+*
+* Parses the {@link db.ini } file and connects to the database. 
+* If the db login doesn't work then die() as there is no point in continuing
+* without a database connection.
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Misc
+*/
 
 $db_ini = parse_ini_file($CONFIGLOCATION.'db.ini');
 $CONFIG['database']['dbhost']     = $db_ini['host'];
 $CONFIG['database']['dbusername'] = $db_ini['username'];
 $CONFIG['database']['dbpasswd']   = $db_ini['passwd'];
 $CONFIG['database']['dbname']     = $db_ini['database'];
+/**
+* @global string $TABLEPREFIX   added to the beginning of all SQL table names to allow database sharing
+*/
 $TABLEPREFIX = $db_ini['tableprefix'];
 
 $dberrmsg = '<p>Sorry, I couldn\'t connect to the database, '
@@ -25,6 +40,9 @@ $connection = mysql_pconnect($CONFIG['database']['dbhost'],
 $db = mysql_select_db($CONFIG['database']['dbname'], $connection)
               or die ($dberrmsg.($DB_CONNECT_DEBUG ? mysql_error() : ''));
 
+/**
+* import SQL functions for database lookups
+*/
 include_once 'inc/formslib/sql.php';
 
 ?> 

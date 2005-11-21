@@ -1,15 +1,60 @@
 <?php
-# $Id$
-# Some javascript functions for use in the pages
+/**
+* Create a pair of forward/back javascript links to allow the user to move forward and back through a sequence of date periods
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Misc
+*/
 
+include_once 'inc/date.php';
+/**
+* Create a pair of forward/back javascript links to allow the user to move forward and back through a sequence of date periods
+*/
 class JSQuickWalk {
-
+  /**
+  * unqiue name in the javascript namespace for these functions (prepended to everything)
+  * @var string
+  */
+  var $namebase;
+  /**
+  * name for the "back" link
+  * @var string
+  */
   var $back;
+  /**
+  * name for the "forward" link
+  * @var string
+  */
   var $fwd;
+  /**
+  * html text-input id's for the two date elements
+  * @var array
+  */
   var $keys;
+  /**
+  * dates to use in the sequence
+  * @var array
+  */
   var $values;
+  /**
+  * initial position in sequence
+  * @var integer
+  */
   var $counter;
 
+  /**
+  * Constructor
+  * @param string $namebase added to javascript namespace for uniqueness
+  * @param string $back     label for 'previous' button
+  * @param string $fwd      label for 'next' button
+  * @param array  $keys     list of js id tags for the text boxes to alter
+  * @param array  $values   list of dates to use in the sequence
+  * @param integer $counter  initial position in sequence
+  */
   function JSQuickWalk($namebase, $back, $fwd, $keys, $values, $counter) {
     $this->namebase = $namebase;
     $this->back = $back;
@@ -19,6 +64,10 @@ class JSQuickWalk {
     $this->counter = $counter;
   }
   
+  /**
+  * generate the javascript for the +/- links
+  * @return string javascript embedded in html for necessary functions and data
+  */
   function displayJS() {
     $eol="\n";
     $t = '<script type="text/javascript">'.$eol
@@ -59,11 +108,19 @@ class JSQuickWalk {
     return $t;
   }
   
+  /**
+  * generate the forward link
+  * @return string html link to fire the forwards event
+  */
   function displayFwd() {
     return '<a href="javascript:'.$this->namebase.'walkfwd()">'
             .$this->fwd.'</a>';
   }
   
+  /**
+  * generate the back link
+  * @return string html link to fire the previous event
+  */
   function displayBack() {
     return '<a href="javascript:'.$this->namebase.'walkback()">'
             .$this->back.'</a>';

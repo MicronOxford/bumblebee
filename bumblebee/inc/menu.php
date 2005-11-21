@@ -1,32 +1,120 @@
 <?php
-# $Id$
-# the main menu for an admin user
+/**
+* Main menu for admin and normal users
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Misc
+*/
 
+/**
+* Main menu for admin and normal users
+*
+* @todo combine the data storage with action.php for cleaner implementation
+*/
 class UserMenu {
+  /**
+  * text output before start of menu block
+  * @var string
+  */
   var $menuPrologue   = '';
+  /**
+  * text output after end of menu block
+  * @var string
+  */
   var $menuEpilogue   = '';
+  /**
+  * html id for the enclosing DIV
+  * @var string
+  */
   var $menuDivId      = 'menulist';
+  /**
+  * html start-tag for the menu section
+  * @var string
+  */
   var $menuStart      = '<ul>';
+  /**
+  * html menu entry (complete!) for the link to the online help
+  * @var string
+  */
   var $menuHelp       = '<li class="last"><a href="http://bumblebeeman.sf.net/docs?section=__section__&amp;version=__version__">Help</a></li>';
+  // Use local copy of the docs not the sf.net version:
   #var $menuHelp       = '<li class="last"><a href="/docs?section=__section__&amp;version=__version__">Help</a></li>';
+  /**
+  * html stop-tag for the menu section
+  * @var string
+  */
   var $menuStop       = '</ul>';
+  /**
+  * html start-tag for each menu entry
+  * @var string
+  */
   var $itemStart      = '<li>';
+  /**
+  * html stop-tag for each menu entry
+  * @var string
+  */
   var $itemStop       = '</li>';
+  /**
+  * html id for div that alerts to current Masquerade setting
+  * @var string
+  */
   var $masqDivId      = 'masquerade';
+  /**
+  * html start-tag for each menu section
+  * @var string
+  */
   var $headerStart    = '<li class="menuSection">';
+  /**
+  * html stop-tag for each menu section
+  * @var string
+  */
   var $headerStop     = '</li>';
+  /**
+  * text to include at start of main menu section
+  * @var string
+  */
   var $mainMenuHeader = 'Main Menu';
+  /**
+  * text to include at start of admin menu section
+  * @var string
+  */
   var $adminHeader    = 'Administration';
   
+  /**
+  * display the menu
+  * @var boolean
+  */
   var $showMenu       = true;
+  
+  /**
+  * logged in user's credentials
+  * @var BumbleBeeAuth
+  */
   var $_auth;
+  /**
+  * currently selected action
+  * @var string
+  */
   var $_verb;
   
+  /**
+  * Constructor
+  * @param BumbleBeeAuth $auth  user's credentials
+  * @param string        $verb  current action
+  */
   function UserMenu($auth, $verb) {
     $this->_auth = $auth;
     $this->_verb = $verb;
   }
   
+  /**
+  * Generates an html representation of the menu
+  * @return string       menu in html format
+  */
   function getMenu() {
     if (! $this->showMenu) {
       return '';
@@ -44,6 +132,10 @@ class UserMenu {
     return $menu;
   }
   
+  /**
+  * Generates an html representation of the ordinary user's section of the menu
+  * @return string       menu in html format
+  */
   function _getUserMenu() {
     global $BASEURL;
     $t = '';
@@ -69,6 +161,10 @@ class UserMenu {
     return $t;
   }
   
+  /**
+  * Generates an html div to alert the user that masquerading is in action
+  * @return string       menu in html format
+  */
   function _getMasqAlert() {  
     global $BASEURL;
     $t = '<div id="'.$this->masqDivId.'">'
@@ -78,6 +174,10 @@ class UserMenu {
     return $t;
   }
   
+  /**
+  * Generates an html representation of the admin user's section of the menu
+  * @return string       menu in html format
+  */
   function _getAdminMenu() {
     global $BASEURL;
     $menu = array(
@@ -111,6 +211,10 @@ class UserMenu {
     return $t;
   }
   
+  /**
+  * Generates an html snippet to for the link to the online help
+  * @return string       menu in html format
+  */
   function _getHelpMenu() {
     global $BUMBLEBEEVERSION;
     $help = $this->menuHelp;
