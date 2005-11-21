@@ -196,12 +196,12 @@ class ActionAction {
   /**
   *  Generic logging function for use by all Action classes
   *
-  *   @param string $message  the message to be logged to the browser
-  *   @param integer $priority  (optional) the priority level of the message
-  *
   *   The higher the value of $priority, the less likely the message is to
   *   be output. The normal range for priority is [1-10] with messages with
   *   ($priority <= $this->DEBUG) being displayed.
+  *
+  *   @param string $message  the message to be logged to the browser
+  *   @param integer $priority  (optional) the priority level of the message
   */
   function log ($message, $priority=10) {
     if ($priority <= $this->DEBUG) {

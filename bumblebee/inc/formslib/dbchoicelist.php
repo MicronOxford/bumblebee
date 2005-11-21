@@ -7,7 +7,7 @@
 * @license    http://opensource.org/licenses/gpl-license.php GNU Public License
 * @version    $Id$
 * @package    Bumblebee
-* @subpackage Forms library
+* @subpackage FormsLibrary
 */
 
 include_once 'dbobject.php';
