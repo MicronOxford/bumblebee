@@ -317,10 +317,12 @@ class BookingEntry extends DBRow {
    *
    * Here, we make a temporary booking and make sure that it is unique for that timeslot 
    * This is to prevent a race condition for checking and then making the new booking.
+   * 
+  * @global string prefix for table names 
+  * @global string prefix for URLs
   **/
   function _checkIsFree() {
-    global $TABLEPREFIX;
-    global $BASEURL;
+    global $TABLEPREFIX, $BASEURL;
     if (! $this->changed) return 1;
     #preDump($this);
     $doubleBook = 0;

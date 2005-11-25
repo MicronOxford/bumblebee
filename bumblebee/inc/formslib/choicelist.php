@@ -1,10 +1,22 @@
 <?php
-# $Id$
-# choice list (to be encapsulated in a select, list of a hrefs etc
+/**
+* a choice list field from which a select, list of hrefs etc can be built
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 
+/** parent object */
 include_once 'field.php';
+/** formatter helper object */
 include_once 'outputformatter.php';
+/** list (db) object */
 include_once 'dbchoicelist.php';
+/** list (non-db) object */
 include_once 'arraychoicelist.php';
 
 /** 

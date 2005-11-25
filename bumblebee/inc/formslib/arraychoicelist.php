@@ -1,6 +1,14 @@
 <?php
-# $Id$
-# a choice list based on an SQL statement, live db object to add extra entries
+/**
+* a choice list *not* based on an SQL statement
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 
 /**
  * Provide a non-database filled (i.e. array-filled) version of DBChoiceList
@@ -65,7 +73,7 @@ class ArrayChoiceList {
   }
 
   function text_dump() {
-    return "<pre>SimpleList:\n".print_r($this->choicelist, true).'</pre>';
+    return "<pre>ArrayChoiceList:\n".print_r($this->choicelist, true).'</pre>';
   }
 
   /** 

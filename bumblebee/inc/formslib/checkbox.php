@@ -1,8 +1,18 @@
 <?php
-# $Id$
-# CheckBox object
+/**
+* a checkbox object
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 
+/** field parent object */
 include_once 'field.php';
+/** type checking and data manipulation */
 include_once 'inc/typeinfo.php';
 
 class CheckBox extends Field {

@@ -1,9 +1,21 @@
 <?php
-# $Id$
-# a non-editable reference object that looks up data from a join table
+/**
+* a non-editable reference object that looks up data from a join table
 
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
+
+/** parent object */
 include_once 'field.php';
+/** uses ExampleEntries object */
 include_once 'exampleentries.php';
+/** type checking and data manipulation */
 include_once 'inc/typeinfo.php';
 
 class ReferenceField extends Field {

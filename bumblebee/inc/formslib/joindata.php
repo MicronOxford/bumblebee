@@ -1,10 +1,20 @@
 <?php
-# $Id$
-# JoinData: object to deal with JOINed data in the database, mimicks a Field
-# for use in a DBRow although has autonomous data.
+/**
+* an object that manages data related by an SQL JOIN but pretends to be a single form field.
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 
+/** parent object */
 include_once 'field.php';
+/** database row manipulation object */
 include_once 'dbrow.php';
+/** connect to database */
 include_once 'inc/db.php';
 
 /**

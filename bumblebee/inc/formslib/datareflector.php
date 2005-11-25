@@ -1,7 +1,14 @@
 <?php
-# $Id$
-# reflect all submitted data back to the user
-
+/**
+* reflect all submitted data back to the user
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 
 /**
  * Reflects all inputted data through hidden fields

@@ -10,33 +10,37 @@
 * @subpackage FormsLibrary
 */
 
+/** DBO parent object */
 include_once 'dbobject.php';
 
 /**
- * A choice list based on an SQL statement.
- *
- * Primitive class on which selection lists can be built from the
- * results of an SQL query. This may be used to determine the choices
- * that a user is permitted to select (e.g. dropdown list or radio buttons)
- * or also to permit additional entries to be created.
- *
- * Used in a 1:many relationship (i.e. a field in a table that is the
- * primary key in another table)
- *
- * Note that this class has no real way of displaying itself properly,
- * so it would usually be inherited and the descendent class used.
- *
- * Typical usage:
- * <code>
- * $f = new RadioList("myfield", "Field name");
- * $f->connectDB("mytable", array("id", "name"));
- * $f->setFormat("id", "%s", array("name"));
- * $newentryfield = new TextField("name","");
- * $newentryfield->namebase = "newentry-";
- * $newentryfield->suppressValidation = 0;
- * $f->list->append(array("-1","Create new: "), $newentryfield);
- *  </code>
- */
+* A choice list based on an SQL statement.
+*
+* Primitive class on which selection lists can be built from the
+* results of an SQL query. This may be used to determine the choices
+* that a user is permitted to select (e.g. dropdown list or radio buttons)
+* or also to permit additional entries to be created.
+*
+* Used in a 1:many relationship (i.e. a field in a table that is the
+* primary key in another table)
+*
+* Note that this class has no real way of displaying itself properly,
+* so it would usually be inherited and the descendent class used.
+*
+* Typical usage:
+* <code>
+* $f = new RadioList("myfield", "Field name");
+* $f->connectDB("mytable", array("id", "name"));
+* $f->setFormat("id", "%s", array("name"));
+* $newentryfield = new TextField("name","");
+* $newentryfield->namebase = "newentry-";
+* $newentryfield->suppressValidation = 0;
+* $f->list->append(array("-1","Create new: "), $newentryfield);
+*  </code>
+*
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 class DBChoiceList extends DBO {
   var $join;
   var $restriction;
@@ -221,7 +225,7 @@ class DBChoiceList extends DBO {
   }
 
   function text_dump() {
-    return "<pre>SimpleList:\n".print_r($this->choicelist, true)."</pre>";
+    return "<pre>DBChoiceList:\n".print_r($this->choicelist, true)."</pre>";
   }
 
   /** 

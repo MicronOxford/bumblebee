@@ -15,6 +15,7 @@ class SimpleList {
 
   function SimpleList($table, $key='id', $value='name', $longvalue='longname',
                       $restriction='1', $order='name') {
+    die(__FILE__.' is not dead code.');
     $this->table = $table;
     $this->key = $key;
     $this->value = $value;

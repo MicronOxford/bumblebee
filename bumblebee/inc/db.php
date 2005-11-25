@@ -19,8 +19,10 @@ $CONFIG['database']['dbhost']     = $db_ini['host'];
 $CONFIG['database']['dbusername'] = $db_ini['username'];
 $CONFIG['database']['dbpasswd']   = $db_ini['passwd'];
 $CONFIG['database']['dbname']     = $db_ini['database'];
+
 /**
-* @global string $TABLEPREFIX   added to the beginning of all SQL table names to allow database sharing
+* $TABLEPREFIX is added to the beginning of all SQL table names to allow database sharing
+* @global string $TABLEPREFIX 
 */
 $TABLEPREFIX = $db_ini['tableprefix'];
 

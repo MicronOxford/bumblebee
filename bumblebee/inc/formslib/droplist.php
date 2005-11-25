@@ -1,7 +1,16 @@
 <?php
-# $Id$
-# dropdown list (<select><option ...> $description</option>) for a ChoiceList
+/**
+* a dropdown selection list using a ChoiceList
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 
+/** parent object */
 include_once 'choicelist.php';
 
 class DropList extends ChoiceList {

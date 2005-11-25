@@ -1,8 +1,17 @@
 <?php
-# $Id$
-# anchor list (<li><a href="$href">$name</a></li>) for a ChoiceList
+/**
+* a table of checkboxes for different options
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 
-include_once 'anchorlist.php';
+/** parent object */
+include_once 'choicelist.php';
 
 class CheckBoxTableList extends ChoiceList {
   var $numcols    = '';

@@ -1,12 +1,38 @@
 <?php
-# $Id$
-# textfield object
+/**
+* the textfield widget primitive
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 
+/** parent object */
 include_once 'field.php';
+/** type checking and data manipulation */
 include_once 'inc/typeinfo.php';
 
+/**
+* The textfield widget primitive
+*
+* Designed for strings to be edited in a text field widget in the HTML form, 
+* but is inherited for TimeField, IdField etc
+*
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 class TextField extends Field {
 
+  /**
+  *  Create a new field object, designed to be superclasses
+  *
+  * @param string $name   the name of the field (db name, and html field name
+  * @param string $longname  long name to be used in the label of the field in display
+  * @param string $description  used in the html title or longdesc for the field
+  */
   function TextField($name, $longname='', $description='') {
     parent::Field($name, $longname, $description);
   }
@@ -40,7 +66,6 @@ class TextField extends Field {
   function selectedValue() {
     return xssqw($this->getValue()).$this->hidden();
   }
-
   
   function selectable() {
     $t  = '<input type="text" name="'.$this->namebase.$this->name.'" ';

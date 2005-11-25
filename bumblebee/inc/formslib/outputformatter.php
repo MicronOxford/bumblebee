@@ -1,6 +1,14 @@
 <?php
-# $Id$
-# output formatter
+/**
+* Output formatter object that controls output of other objects with sprintf statements
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 
 class OutputFormatter {
   var $format;

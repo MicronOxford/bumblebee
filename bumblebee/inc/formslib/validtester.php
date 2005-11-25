@@ -1,9 +1,26 @@
 <?php
-# $Id$
-# test the validity of data according to a set of rules
+/**
+* test the validity of data according to a set of rules
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 
+/** type checking and data manipulation */
 include_once 'inc/typeinfo.php';
 
+/**
+* check if data is valid
+*
+* @param string $validator   name of a function to call
+* @param mixed  $data        data to be validated (string, number, array etc)
+* @param integer $DEBUG      (optional) debug level for extra data output
+* @return boolean data is valid
+*/
 function ValidTester($validator, $data, $DEBUG=0) {
   //global $VERBOSEDATA;
   $isValid = 1;

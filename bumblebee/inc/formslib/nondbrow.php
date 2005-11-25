@@ -1,8 +1,18 @@
 <?php
-# $Id$
-# database objects (self-initialising and self-updating object)
+/**
+* Equivalent to DBRow where the database is not involved
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 
+/** database uber-object that we will emulate */
 include_once 'dbobject.php';
+/** status codes for success/failure of database actions */
 include_once 'inc/statuscodes.php';
 
 

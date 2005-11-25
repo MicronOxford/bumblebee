@@ -1,7 +1,16 @@
 <?php
-# $Id$
-# anchor list (<li><a href="$href">$name</a></li>) for a ChoiceList
+/**
+* anchor list (&lt;li&gt;&lt;a href="$href"&gt;$name&lt;/a&gt;&lt;/li&gt;) for a ChoiceList
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 
+/** choicelist parent object */
 include_once 'choicelist.php';
 
 class AnchorList extends ChoiceList {

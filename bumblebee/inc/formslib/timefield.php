@@ -1,15 +1,35 @@
 <?php
-# $Id$
-# textfield object
+/**
+* a textfield widget designed to handle time date
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 
+/** parent object */
 include_once 'field.php';
+/** type checking and data manipulation */
 include_once 'inc/typeinfo.php';
 
+/** Time field is in "FIXED" (uneditable) format */
 define('TF_FIXED', 0);
+/** Time field is in "DROP" (dropdown list) format */
 define('TF_DROP', 1);
+/** Time field is in "FREE" (type-in text box) format */
 define('TF_FREE', 2);
+/** Time field is in "AUTO" (any of the above as appropriate) format */
 define('TF_AUTO', -1);
 
+/**
+* a textfield widget designed to handle time date
+*
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 class TimeField extends Field {
   var $time;
   var $list;

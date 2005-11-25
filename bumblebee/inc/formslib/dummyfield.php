@@ -1,9 +1,18 @@
 <?php
-# $Id$
-# dummyfield object -- has no SQL representation, just place holds to create
-# form data
+/**
+* a dummy field does not exist in the database but stores data in the form
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 
+/** parent object */
 include_once 'field.php';
+/** type checking and data manipulation */
 include_once 'inc/typeinfo.php';
 
 class DummyField extends Field {

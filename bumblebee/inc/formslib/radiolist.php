@@ -1,7 +1,16 @@
 <?php
-# $Id$
-# radio list (<input type='radio' ...> $description<br />) for a ChoiceList
+/**
+* a radio button list based on the ChoiceList class
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 
+/** parent object */
 include_once 'choicelist.php';
 
 class RadioList extends ChoiceList {

@@ -1,9 +1,20 @@
 <?php
-# $Id$
-# database objects (self-initialising and self-updating object)
+/**
+* database object base class (self-initialising and self-updating object)
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 
+/** type checking and data manipulation */
 include_once 'inc/typeinfo.php';
+/** database connection script */
 include_once 'inc/db.php';
+/** sql manipulation routines */
 include_once 'sql.php';
 
 class DBO {

@@ -1,9 +1,18 @@
 <?php
-# $Id$
-# provide some example entries for existing values next to the choices in a
-# radiolist
+/**
+* Provide example entries for existing values next to the choices in a list, e.g. radio list
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 
+/** uses choice list object for examples */
 include_once 'dbchoicelist.php';
+/** sql manipulation routines */
 include_once 'sql.php';
 
 class ExampleEntries {

@@ -1,7 +1,25 @@
 <?php
-# $Id$
-# simplifying sql functions
+/**
+* SQL interface functions, return statuscodes as appropriate
+*
+* <b>Most</b> of the SQL functions are encapsulated here to make it easier
+* to keep track of them, particularly for porting to other databases. Encapsulation is
+* done here with a functional interface not an object interface.
+*
+* Note that thre are a number of mysql_fetch_array calls in other places where
+* there are a number of rows in the query so the encapsulation is not that good.
+*
+* @todo provide a sensible function to allow full db encapsulation and remove mysql specific functions from code.
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 
+/** status codes for success/failure of database actions */
 include_once('inc/statuscodes.php');
 
 function db_quiet($q, $fatal_sql=0) {

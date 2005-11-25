@@ -1,12 +1,26 @@
 <?php
-# $Id$
-# textfield object
+/**
+* a textfield designed for date-time data 
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 
+/** parent object */
 include_once 'field.php';
-include_once 'timefield.php';
-include_once 'datefield.php';
-include_once 'inc/date.php';
+/** type checking and data manipulation */
 include_once 'inc/typeinfo.php';
+/** contains a timefield object */
+include_once 'timefield.php';
+/** contains a timefield object */
+include_once 'datefield.php';
+/** date storage types */
+include_once 'inc/date.php';
+/** timeslot manipulation and validation object */
 include_once 'inc/bookings/timeslotrule.php';
 
 class DateTimeField extends Field {

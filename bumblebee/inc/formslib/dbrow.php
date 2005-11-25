@@ -1,8 +1,18 @@
 <?php
-# $Id$
-# database objects (self-initialising and self-updating object)
+/**
+* database row base class
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 
+/** parent object */
 include_once 'dbobject.php';
+/** status codes for success/failure of database actions */
 include_once 'inc/statuscodes.php';
 
 

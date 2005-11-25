@@ -1,7 +1,16 @@
 <?php
-# $Id$
-# commentfield object: no SQL representation, just a comment in the table.
+/**
+* a non-SQL active field (for the information of the user, not the database)
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 
+/** parent object */
 include_once 'field.php';
 
 class CommentField extends Field {
