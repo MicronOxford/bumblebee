@@ -1,6 +1,6 @@
 <?php
 /**
-* database row base class
+* Database row base class
 *
 * @author    Stuart Prescott
 * @copyright  Copyright Stuart Prescott
@@ -17,39 +17,63 @@ include_once 'inc/statuscodes.php';
 
 
 /**
- * Object representing a database row (and extensible to represent joined rows)
- * Usage:
- *   #set database connection parameters
- *   $obj = new DBRow("users", 14, "userid");
- *   #set the fields required and their attributes
- *   $obj->addElement(....);
- *   #connect to the database
- *   $obj->fill();
- *   #check to see if user data changes some values
- *   $obj->update($POST);
- *   $obj->checkValid();
- *   #synchronise with database
- *   $obj->sync();
- */
+* Object representing a database row (and extensible to represent joined rows)
+*
+* Typical usage:<code>
+*   #set database connection parameters
+*   $obj = new DBRow("users", 14, "userid");
+*   #set the fields required and their attributes
+*   $obj->addElement(....);
+*   #connect to the database
+*   $obj->fill();
+*   #check to see if user data changes some values
+*   $obj->update($POST);
+*   $obj->checkValid();
+*   #synchronise with database
+*   $obj->sync();</code>
+*/
  
 class DBRow extends DBO {
+  /** @var boolean  this is a new object the form for which has not yet been shown to the user */
   var $newObject = 0;
+  /** @var boolean  this row should be inserted into the db */
   var $insertRow = 0;
+  /** @var boolean  include all fields in the SQL statement not just ones that have changed or have values  */
   var $includeAllFields = 0;
+  /** @var boolean  automatically number new objects (i.e. the database will do it for us) */
   var $autonumbering = 1;
+  /** @var string   a restriction that is included in the WHERE statement for all queries  */
   var $restriction = '';
+  /** @var string   number of the start record number for a LIMIT statement */
   var $recStart = '';
+  /** @var string   number of the stop record number for a LIMIT statement */
   var $recNum   = '';
+  /** @var string   do a two-step synchronisation routine whereby the record is created first then updated second */
   var $use2StepSync;
+  /** @var array    additional rows to be included at the end of the display table */
   var $extrarows;
+  /** @var boolean  row is marked as deleted in the table (but not actually deleted)  */
   var $isDeleted = false;
-  var $deleteFromTable = 1;   //boolean: delete method calls SQL DELETE
+  /** @var string   this object can be deleted from the table (using DELETE); otherwise set the delete column to 1 for delete */
+  var $deleteFromTable = 1;
     
+  /**
+  *  Create a new database row object
+  *
+  * @param string $table   name of the table to be used
+  * @param integer $id     row id number in the table (-1 for new object)
+  * @param string $idfield (optional) the column in the table for the primary key (id)
+  */
   function DBRow($table, $id, $idfield='id') {
     $this->DBO($table, $id, $idfield);
     #$this->fields = array();
   }
   
+  /**
+  * Set the value of the primary key (id) for this object
+  *
+  * @param integer $newId    the id value to use
+  */
   function setId($newId) {
     $this->log('DBRow: setting new id'.$newId);
     $this->id = $newId;
@@ -62,9 +86,12 @@ class DBRow extends DBO {
   }
   
   /** 
-   *  update the value of each of the objects fields according to the user 
-   *  input data, and validate the data if appropriate
-   */
+  *  Update the object with the user-submitted data
+  *
+  *  update the value of each of the objects fields according to the user 
+  *  input data, and validate the data if appropriate
+  *  @param array user supplied data (field => $value)
+  */
   function update($data) {
     $this->log('DBRow:'.$this->namebase.' Looking for updates:');
     // First, check to see if this record is new
@@ -97,8 +124,9 @@ class DBRow extends DBO {
   }
 
   /**
-   * check the validity of the data
-  **/
+  * check the validity of the data
+  * @return boolean data is valid
+  */
   function checkValid() {
     $this->isValid = 1;
     // check each field in turn to allow it to update its data
@@ -124,14 +152,15 @@ class DBRow extends DBO {
   }
 
   /**
-   * synchronise this object's fields with the database.
-   * If the object is new, then INSERT the data, if the object is pre-existing
-   * then UPDATE the data. Fancier fields that are only pretending to
-   * do be simple fields (such as JOINed data) should perform their updates
-   * during the _sqlvals() call 
-   *
-   * Note, returns from statuscodes
-  **/
+  * Synchronise this object's fields with the database
+  *
+  * If the object is new, then INSERT the data, if the object is pre-existing
+  * then UPDATE the data. Fancier fields that are only pretending to
+  * do be simple fields (such as JOINed data) should perform their updates
+  * during the _sqlvals() call 
+  *
+  * @return integer  from statuscodes
+  */
   function sync() {
     global $TABLEPREFIX;
     // If the input isn't valid then bail out straight away
@@ -177,16 +206,15 @@ class DBRow extends DBO {
   }
   
   /**
-   * An alternative way of synchronising this object's fields with the database.
-   *
-   * Using this approach, we:
-   *
-   * If the object is new, then INSERT a temp row first. 
-   * Then, trip the sqlvals() calls.
-   * Then, UPDATE the data. 
-   *
-   * Here, we to the 'create temp row' part.
-   */
+  * An alternative way of synchronising this object's fields with the database.
+  *
+  * Using this approach, we:
+  *   - If the object is new, then INSERT a temp row first. 
+  *   - Then, trip the sqlvals() calls.
+  *   - Then, UPDATE the data. 
+  *
+  * Here, we to the 'create temp row' part.
+  */
   function _twoStageSync() {
     if ($this->id == -1) {
       $row = new DBRow($this->table, -1, 'id');
@@ -212,10 +240,11 @@ class DBRow extends DBO {
   }  
   
   /**
-   * delete this object's row from the database.
-   *
-   * Returns from statuscodes
-  **/
+  * Delete this object's row from the database.
+  *
+  * @param mixed (optional) string or array of column => value added to the UPDATE statement objects are only to be marked as deleted not actually deleted.
+  * @return integer from statuscodes
+  */
   function delete($extraUpdates=NULL) {
     global $TABLEPREFIX;
     if ($this->id == -1) {
@@ -254,6 +283,12 @@ class DBRow extends DBO {
     return $sql_result;
   }
 
+  /**
+  * Generate name='value' data for the SQL statement
+  *
+  * @param boolean $force (optional) force all fields to be included
+  * @return string of data statements
+  */
   function _sqlvals($force=0) {
     $vals = array();
     foreach (array_keys($this->fields) as $k) {
@@ -279,11 +314,15 @@ class DBRow extends DBO {
   }
 
   /** 
-   * Add an element into the fields[] array. The element must conform
-   * to the Fields class (or at least its interface!) as that will be
-   * assumed elsewhere in this object.
-   * Inheritable attributes are also set here.
-  **/
+  * Add a new field to the row
+  *
+  * Add an element into the fields[] array. The element must conform
+  * to the Fields class (or at least its interface!) as that will be
+  * assumed elsewhere in this object.
+  * Inheritable attributes are also set here.
+  *
+  * @param Field $el the field to add 
+  */
   function addElement($el) {
     $this->fields[$el->name] = $el;
     if ($this->fields[$el->name]->editable == -1) {
@@ -302,8 +341,12 @@ class DBRow extends DBO {
   }
 
   /** 
-   * Add multiple elements into the fields[] array.
-  **/
+  * Add multiple new fields to the row
+  *
+  * Adds multiple elements into the fields[] array.
+  * 
+  * @param array $els array of Field objects
+  */
   function addElements($els) {
     foreach ($els as $e) {
       #echo $e->text_dump();
@@ -312,8 +355,11 @@ class DBRow extends DBO {
   }
 
   /**
-   * Fill this object (i.e. its fields) from the SQL query
-  **/
+  * Perform the SQL lookup to fill the object with the current data
+  *
+  * Fill this object (i.e. its fields) from the SQL query
+  * @global string  prefix for table names
+  */
   function fill() {
     global $TABLEPREFIX;
     //echo "foo:$this->id:bar";
@@ -355,8 +401,8 @@ class DBRow extends DBO {
   }
 
   /** 
-   * Quick and dirty dump of fields (values only, not a full print_r
-  **/
+  * Quick and dirty dump of fields (values only, not a full print_r
+  */
   function text_dump() {
     $t  = "<pre>$this->dumpheader $this->table (id=$this->id)\n{\n";
     foreach ($this->fields as $v) {
@@ -370,6 +416,12 @@ class DBRow extends DBO {
     return $this->text_dump();
   }
 
+  /**
+  * Display the row as a form in a table
+  *
+  * @param integer $j      (optional) number of columns in the table (will pad as necessary)
+  * @return string  html table
+  */
   function displayInTable($j) {
     $t = '<table class="tabularobject">';
     foreach ($this->fields as $v) {

@@ -22,6 +22,13 @@
 /** status codes for success/failure of database actions */
 include_once('inc/statuscodes.php');
 
+/**
+* run an sql query without returning data
+*
+* @param string $q       the sql query, properly constructed and quoted
+* @param boolean $fatal_sql   db errors are fatal
+* @return integer status from statuscodes
+*/
 function db_quiet($q, $fatal_sql=0) {
   // returns from statuscodes
   $sql = mysql_query($q);
@@ -33,6 +40,13 @@ function db_quiet($q, $fatal_sql=0) {
   }
 }
 
+/**
+* run an sql query and return the sql handle for further requests
+*
+* @param string $q       the sql query, properly constructed and quoted
+* @param boolean $fatal_sql   db errors are fatal
+* @return resource mysql handle
+*/
 function db_get($q, $fatal_sql=0) {
   // returns from statuscodes
   $sql = mysql_query($q);
@@ -44,16 +58,33 @@ function db_get($q, $fatal_sql=0) {
   }
 }
 
+/**
+* run an sql query and return the single (or first) row returned
+*
+* @param string $q       the sql query, properly constructed and quoted
+* @param boolean $fatal_sql   db errors are fatal
+* @return mixed   array if successful, false if error
+*/
 function db_get_single($q, $fatal_sql=0) {
   $sql = db_get($q, $fatal_sql);
   //preDump($sql);
   return ($sql != STATUS_ERR ? mysql_fetch_array($sql) : false);
 }
 
+/**
+* return the last insert ID from the database
+*/
 function db_new_id() {
   return mysql_insert_id();
 }
 
+/**
+* echo the SQL query to the browser
+*
+* @param string $echo       the sql query
+* @param boolean $success   query was successful
+* @global boolean should the SQL be shown
+*/
 function echoSQL($echo, $success=0) {
   global $VERBOSESQL;
   if ($VERBOSESQL) {
@@ -64,9 +95,16 @@ function echoSQL($echo, $success=0) {
 }
   
 
+/**
+* echo the SQL query to the browser
+*
+* @param string $echo       the sql query
+* @param boolean $fatal     die on error
+* @global boolean should the SQL be shown
+* @global string the email address of the administrator
+*/
 function echoSQLerror($echo, $fatal=0) {
-  global $VERBOSESQL;
-  global $ADMINEMAIL;
+  global $VERBOSESQL, $ADMINEMAIL;
   if ($echo != '' && $echo) {
     if ($VERBOSESQL) {
       echo "<div class='sql error'>$echo</div>";
@@ -80,6 +118,17 @@ function echoSQLerror($echo, $fatal=0) {
   return STATUS_ERR;
 }
   
+/**
+* construct and perform a simple SQL select 
+*
+* @param string  $table  name of the table (will have TABLEPREFIX added to it
+* @param mixed   $key    single column name or list of columns for the WHERE clause
+* @param mixed   $value  single value or list of values for WHERE $key=$value
+* @param boolean $fatal     die on error
+* @param boolean $countonly   run a COUNT(*) query not a SELECT query
+* @return mixed   array if successful, false if error
+* @global string prefix for tabl nname 
+*/
 function quickSQLSelect($table, $key, $value, $fatal=1, $countonly=0) {
   global $TABLEPREFIX;
   if (! is_array($key)) {
@@ -103,7 +152,7 @@ function quickSQLSelect($table, $key, $value, $fatal=1, $countonly=0) {
   $q = 'SELECT '.($countonly ? 'count(*)' : '*')
       .' FROM '.$TABLEPREFIX.$table
       .(count($where) ? ' WHERE '.join($where,' AND ') : '')
-      .' LIMIT 1';         // we only ever return one row from this fn, so LIMIT the query.
+      .' LIMIT 1';         // we only ever return one row from this func, so LIMIT the query.
   return db_get_single($q, $fatal);
 }
 

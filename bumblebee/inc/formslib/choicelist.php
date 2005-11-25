@@ -20,45 +20,58 @@ include_once 'dbchoicelist.php';
 include_once 'arraychoicelist.php';
 
 /** 
-  * ChoiceList extends Field
-  *
-  * A field class that can only take a restricted set of values, such as
-  * a radio list or a drop-down list.
-  *
-  * This class cannot adequately represent itself and is designed to be
-  * inherited by a representation (such as RadioList or DropDownList)
- **/
+* a choice list field from which a select, list of hrefs etc can be built
+*
+* A field class that can only take a restricted set of values, such as
+* a radio list or a drop-down list.
+*
+* This class cannot adequately represent itself and is designed to be
+* inherited by a representation (such as RadioList or DropDownList)
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 class ChoiceList extends Field {
-  var $list; //contains the DBList object which has the restricted choices
+  /** @var DBChoiceList  contains the DBChoiceList object which has the restricted choices */
+  var $list; 
+  /** @var array         array of OutputFormatter objects  */
   var $formatter;
+  /** @var integer       ????  */
   var $formatid;
+  /** @var boolean       additional items can be added to the choicelist */
   var $extendable = 0;
+  /** @var tristate      in filling list, include only deleted=true, deleted=false or both (true, false, NULL) */
   var $deleted=false; //deleted=true/false in SQL; NULL means don't restrict
 
+  /**
+  *  Create a new choice list
+  *
+  * @param string $name   the name of the field (db name, and html field name
+  * @param string $description  used in the html title or longdesc for the field
+  */
   function ChoiceList($name, $description='') {
     parent::Field($name, '', $description);
     //$this->DEBUG=10;
   }
 
   /**
-   * Create a DBList object within this class that is connected to the
-   * available choices in the database and will handle the actual parsing 
-   * of user input etc
-   *
-   * If php supported multiple inheritance, then $this->list would not be
-   * a member of the class, rather DBList would be multiply inherited along
-   * with Field.
-   *
-   * @param string $table the name of the DB table to query
-   * @param mixed $fields array or string specifying the field(s) to query
-   * @param string $restriction a restriction that will be applied to the query (WHERE...)
-   * @param string $order the order to display the results (ORDER BY...)
-   * @param string $idfield the name of the field that will be used to identify the selected item (value=)
-   * @param string $limit limits that will be applied to the query (LIMIT...)
-   * @param string $join any tables that should be LEFT JOINed in the query to make sense of it
-   * @param boolean $distinct return only DISTINCT rows (default: false)
-   *
-   */
+  * Create a DBList object within this class that is connected to the
+  * available choices in the database and will handle the actual parsing 
+  * of user input etc
+  *
+  * If php supported multiple inheritance, then $this->list would not be
+  * a member of the class, rather DBList would be multiply inherited along
+  * with Field.
+  *
+  * @param string $table the name of the DB table to query
+  * @param mixed $fields array or string specifying the field(s) to query
+  * @param string $restriction a restriction that will be applied to the query (WHERE...)
+  * @param string $order the order to display the results (ORDER BY...)
+  * @param string $idfield the name of the field that will be used to identify the selected item (value=)
+  * @param string $limit limits that will be applied to the query (LIMIT...)
+  * @param string $join any tables that should be LEFT JOINed in the query to make sense of it
+  * @param boolean $distinct return only DISTINCT rows (default: false)
+  *
+  */
   function connectDB($table, $fields='', $restriction='', $order='name',
                       $idfield='id', $limit='', $join='', $distinct=false) {
     $this->list = new DBChoiceList($table, $fields, $restriction, $order,
@@ -66,12 +79,12 @@ class ChoiceList extends Field {
   }
   
   /** 
-   * Provides a set of values for the droplist rather than filling it from a db query
-   *
-   * cf. ChoiceList::connectDB
-   *
-   * @param array $list List of label=>value pairs 
-   */
+  * Provides a set of values for the droplist rather than filling it from a db query
+  *
+  * cf. ChoiceList::connectDB
+  *
+  * @param array $list List of label=>value pairs 
+  */
   function setValuesArray($list, $idfield='id', $valfield='iv'){
     $this->list = new ArrayChoiceList($list, $idfield, $valfield);
   }  
@@ -85,16 +98,15 @@ class ChoiceList extends Field {
   }
 
   /**
-   * Create a set of OutputFormatter objects to handle the display of this
-   * object. 
-   *
-   *  called as: setFormat($id, $f1, $v1, $f2, $v2, ...) {
-   *    - f1, v1 etc must be in pairs.
-   *    - f1 is an sprintf format (see PHP manual)
-   *    - v1 is an array of array indices that will be used to fill the
-   *      fields in the sprintf format from a $data array passed to the
-   *      formatter when asked to display itself
-   */
+  * Create a set of OutputFormatter objects to handle the display of this object. 
+  *
+  *  called as: setFormat($id, $f1, $v1, $f2, $v2, ...) {
+  *    - f1, v1 etc must be in pairs.
+  *    - f1 is an sprintf format (see PHP manual)
+  *    - v1 is an array of array indices that will be used to fill the
+  *      fields in the sprintf format from a $data array passed to the
+  *      formatter when asked to display itself
+  */
   function setFormat() {
     $argc = func_num_args();
     $argv = func_get_args();
@@ -106,9 +118,10 @@ class ChoiceList extends Field {
   }
 
   /**
-   * A test text-based format function for the object. Returns a 
-   * text-based representation only.
-   */
+  * A test text-based format function for the object. 
+  *
+  * @return string text-based representation
+  */
   function format($data) {
     $s = $data[$this->formatid] .":". $this->formatter[0]->format($data)
         ."(". $this->formatter[1]->format($data).")";
@@ -116,11 +129,11 @@ class ChoiceList extends Field {
   }
 
   /** 
-   * Display the field inside a table
-   *
-   * @param integer $cols the number of columns to include in the table (extras are padded out)
-   * @return string a single row HTML representation of the field
-   */
+  * Display the field inside a table
+  *
+  * @param integer $cols the number of columns to include in the table (extras are padded out)
+  * @return string a single row HTML representation of the field
+  */
   function displayInTable($cols) {
     if (! $this->hidden) {
       $errorclass = ($this->isValid ? "" : "class='inputerror'");
@@ -146,17 +159,16 @@ class ChoiceList extends Field {
   }
 
   /**
-   * Update the value of the field and also the complex field within
-   * based on the user data.
-   *
-   * This does *not* create new elements within the complex field (list)
-   * at this stage: that is deferred until the latest possible point
-   * for all error checking to be performed.
-   *
-   * @param array $data a set of name => value pairs from which the value of this field
-   *               will be extracted
-   * @return boolean did the field change?
-   */
+  * Update the value of the field and also the complex field within based on the user data.
+  *
+  * This does *not* create new elements within the complex field (list)
+  * at this stage: that is deferred until the latest possible point
+  * for all error checking to be performed.
+  *
+  * @param array $data a set of name => value pairs from which the value of this field
+  *               will be extracted
+  * @return boolean did the field change?
+  */
   function update($data) {
     parent::update($data);
     $this->list->editable = $this->editable;
@@ -177,8 +189,8 @@ class ChoiceList extends Field {
   }
 
   /**
-   * Set the value of this field, both in the Field and in the DBList
-   */
+  * Set the value of this field, both in the Field and in the DBList
+  */
   function set($value) {
     $this->list->set($value);
     parent::set($value);
@@ -198,15 +210,15 @@ class ChoiceList extends Field {
   }
 
   /**
-   * Obtain the SQL data necessary for including the foreign key in
-   * the DBRow to which we belong.
-   * trip the complex field within us to sync(), which allows us
-   * to then know our actual value (at last). 
-   *
-   * @param boolean $force force the field to return a name=value statement even
-   *                if it would prefer not to
-   * @return string name='value' from parent class
-   */
+  * Obtain the SQL data necessary for including the foreign key in
+  * the DBRow to which we belong.
+  * trip the complex field within us to sync(), which allows us
+  * to then know our actual value (at last). 
+  *
+  * @param boolean $force force the field to return a name=value statement even
+  *                if it would prefer not to
+  * @return string name='value' from parent class
+  */
   function sqlSetStr($name, $force) {
     #echo "Choicelist::sqlSetStr";
     $this->oob_status = $this->list->sync();
@@ -218,10 +230,10 @@ class ChoiceList extends Field {
   }
 
   /**
-   * prepends a value to the dropdown list
-   *
-   * @param array $a see DBChoiceList for details
-   */
+  * prepends a value to the dropdown list
+  *
+  * @param array $a see DBChoiceList for details
+  */
   function prepend($a) {
     // templist is a horrible hack around a PHP 4.3 bug
     // This is all we want to do:
@@ -235,10 +247,10 @@ class ChoiceList extends Field {
   }
 
   /**
-   * appends a value to the dropdown list
-   *
-   * @param array $a see DBChoiceList for details
-   */
+  * appends a value to the dropdown list
+  *
+  * @param array $a see DBChoiceList for details
+  */
   function append($a) {
     // templist is a horrible hack around a PHP 4.3 bug, see above
     // This is all we want to do:
@@ -248,6 +260,9 @@ class ChoiceList extends Field {
     $this->list = $templist;
   }
 
+  /**
+  * set the default value for this object
+  */
   function setDefault($val) {
     // templist is a horrible hack around a PHP 4.3 bug, see above
     // This is all we want to do:

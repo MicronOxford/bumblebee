@@ -13,8 +13,21 @@
 /** parent object */
 include_once 'field.php';
 
+/**
+* a non-SQL active field (for the information of the user, not the database)
+*
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 class CommentField extends Field {
 
+  /**
+  *  Create a new commet field object
+  *
+  * @param string $name   the name of the field (db name, and html field name
+  * @param string $longname  long name to be used in the label of the field in display
+  * @param string $description  used in the html title or longdesc for the field
+  */
   function CommentField($name, $longname='', $description='') {
     parent::Field($name, $longname, $description);
     $this->sqlHidden = 1;

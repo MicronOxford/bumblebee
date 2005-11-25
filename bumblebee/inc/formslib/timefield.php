@@ -31,16 +31,32 @@ define('TF_AUTO', -1);
 * @subpackage FormsLibrary
 */
 class TimeField extends Field {
+  /** @var SimpleTime    time object for this field */
   var $time;
+  /** @var TimeSlotRule  rules for the times that are permitted    */
   var $list;
+  /** @var boolean       field is the start time of a slot object    */
   var $isStart=0;
+  /** @var SimpleDate    the date on which this time is located     */
   var $slotStart;
+  /** @var TimeSlot      the actual time slot to which this time is associated    */
   var $slot;
+  /** @var integer       how this field is to be rendered (see TF_* options)  */
   var $representation;
+  /** @var integer       force this field to be rendered in a particular way (see TF_* options)    */
   var $_manualRepresentation = TF_AUTO;
+  /** @var DropList      DropList object for dropdown list representation of the field    */
   var $droplist;
+  /** @var boolean       is the time *really* editable ... ?? FIXME  */
   var $editableOutput=1;
   
+  /**
+  *  Create a new field object, designed to be superclasses
+  *
+  * @param string $name   the name of the field (db name, and html field name
+  * @param string $longname  long name to be used in the label of the field in display
+  * @param string $description  used in the html title or longdesc for the field
+  */
   function TimeField($name, $longname='', $description='') {
     parent::Field($name, $longname, $description);
     $this->time = new SimpleTime(0);
@@ -61,6 +77,11 @@ class TimeField extends Field {
     return $t;
   }
 
+  /**
+  * render the HTML version of the widget
+  *
+  * @return string 
+  */
   function getdisplay() {
     $t = '';
     if ($this->editable && $this->editableOutput && ! $this->hidden) {
@@ -113,7 +134,6 @@ class TimeField extends Field {
   
   /**
    * Determine what sort of representation is appropriate
-   *
    */
   function _determineRepresentation() {
     //preDump($this);
@@ -149,9 +169,7 @@ class TimeField extends Field {
   /**
    * Calculate data for the dropdown list of permissible times
    *
-   * We should:
-   *    1. determine if a dropdown list is appropriate (is numslots=* ?)
-   *    2. 
+   * @access private
    */
   function _prepareDropDown() {
     $durations = $this->slot->allSlotDurations();
@@ -166,7 +184,7 @@ class TimeField extends Field {
   }
   
   /**
-   * is a dropdown list appropriate here?
+   * determine if a dropdown list appropriate here?
    * 
    * @access private
    */
@@ -182,7 +200,7 @@ class TimeField extends Field {
   }
   
   /** 
-   * overload the parent's set() method as we need to do some magic in here
+   * overload the parent's set() method as we need to do some extra processing
    */
   function set($value) {
     parent::set($value);
@@ -288,9 +306,7 @@ class TimeField extends Field {
     }
   }
 
-
-
-        
+          
 } // class TimeField
 
 
