@@ -151,7 +151,7 @@ function printUserForm($defaults) {
     <td><input type='text' name='sqlTablePrefix' value='' /></td>
   </tr>
   <tr>
-    <td>MySQL user</td>
+    <td>MySQL username</td>
     <td><input type='text' name='sqlUser' value='<?=$defaults[sqlDefaultUser]?>' /></td>
   </tr>
   <tr>
@@ -167,7 +167,7 @@ function printUserForm($defaults) {
     <td><input type='text' name='bbAdminPass' value='<?=$defaults[bbDefaultAdminPass]?>' /></td>
   </tr>
   <tr>
-    <td>Bumblebee admin username</td>
+    <td>Bumblebee admin user's real name</td>
     <td><input type='text' name='bbAdminName' value='<?=$defaults[bbDefaultAdminName]?>' /></td>
   </tr>
   <tr>
