@@ -203,7 +203,7 @@ class BumbleBeeAuth {
     $params = array(
                 'host'     => $LDAPCONFIG['host'],
                 'port'     => $LDAPCONFIG['port'],
-                'basedn'   => $LDAPCONFIG['ldapdn'],
+                'basedn'   => $LDAPCONFIG['basedn'],
                 'userattr' => $LDAPCONFIG['userattr'],
                 'useroc'   => $LDAPCONFIG['userobjectclass'],
                 'debug'    => $LDAPCONFIG['debug'] ? true : false
