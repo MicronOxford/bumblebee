@@ -201,12 +201,14 @@ class BumbleBeeAuth {
     require_once 'Auth/Auth.php';
     $LDAPCONFIG = parse_ini_file($CONFIGLOCATION.DIRECTORY_SEPARATOR.'ldap.ini');
     $params = array(
-                'host'     => $LDAPCONFIG['host'],
-                'port'     => $LDAPCONFIG['port'],
-                'basedn'   => $LDAPCONFIG['basedn'],
-                'userattr' => $LDAPCONFIG['userattr'],
-                'useroc'   => $LDAPCONFIG['userobjectclass'],
-                'debug'    => $LDAPCONFIG['debug'] ? true : false
+                'url'        => $LDAPCONFIG['url'],
+                'basedn'     => $LDAPCONFIG['basedn'],
+                'userattr'   => $LDAPCONFIG['userattr'],
+                'useroc'     => $LDAPCONFIG['userobjectclass'],          // for v 1.2
+                'userfilter' => $LDAPCONFIG['userfilter'],               // for v 1.3
+                'debug'      => $LDAPCONFIG['debug'] ? true : false,
+                'version'    => intval($LDAPCONFIG['version']),          // for v 1.3
+                'start_tls'  => $LDAPCONFIG['start_tls'] ? true : false  // requires patched version of LDAP auth
                 );
     // start the PEAR::Auth system using LDAP authentication with the parameters 
     // we have defined here for this config. Do not display a login box on error.
