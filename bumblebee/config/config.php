@@ -13,7 +13,12 @@
 */
 
 
-// specify an alternate config location (e.g. in /etc) here:
+/** location of config files
+* 
+* By default, config/ in the Bumblbee installation directory, but
+* can be moved into /etc, /usr/share/bumblebee ...
+* @global string $CONFIGLOCATION
+*/
 $CONFIGLOCATION = 'config/';
 
 /**

@@ -161,9 +161,15 @@ class BumbleBeeAuth {
     return $row;
   }
   
+  /**
+  * RADIUS auth method to login the user against a RADIUS server
+  *
+  * @global string location of the config file
+  */
   function _auth_via_radius($username, $password) {
+    global $CONFIGLOCATION;
     require_once 'Auth/Auth.php';
-    $RADIUSCONFIG = parse_ini_file('config/radius.ini');
+    $RADIUSCONFIG = parse_ini_file($CONFIGLOCATION.DIRECTORY_SEPARATOR.'radius.ini');
     $params = array(
                 "servers" => array(array($RADIUSCONFIG['host'], 
                                          0, 
@@ -185,9 +191,34 @@ class BumbleBeeAuth {
     return $auth;
   }
 
+  /**
+  * LDAP auth method to login the user against an LDAP server
+  *
+  * @global string location of the config file
+  */
   function _auth_via_ldap($username, $password) {
-    $this->_error = 'Login failed: LDAP authentication unimplemented';
-    return false;
+    global $CONFIGLOCATION;
+    require_once 'Auth/Auth.php';
+    $LDAPCONFIG = parse_ini_file($CONFIGLOCATION.DIRECTORY_SEPARATOR.'ldap.ini');
+    $params = array(
+                'host'     => $LDAPCONFIG['host'],
+                'port'     => $LDAPCONFIG['port'],
+                'basedn'   => $LDAPCONFIG['ldapdn'],
+                'userattr' => $LDAPCONFIG['userattr'],
+                'useroc'   => $LDAPCONFIG['userobjectclass'],
+                'debug'    => $LDAPCONFIG['debug'] ? true : false
+                );
+    // start the PEAR::Auth system using LDAP authentication with the parameters 
+    // we have defined here for this config. Do not display a login box on error.
+    $a = new Auth("LDAP", $params, '', false); 
+    $a->username = $username;
+    $a->password = $password;
+    $a->start();
+    $auth = $a->getAuth();
+    if (! $auth) {
+      $this->_error = 'Login failed: ldap auth failed<br />';
+    }
+    return $auth;
   }
 
   function _auth_local($username, $password, $row) {
