@@ -10,36 +10,42 @@
 * @subpackage FormsLibrary
 */
 
+/**
+* Output formatter object that controls output of other objects with sprintf statements
+*
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 class OutputFormatter {
+  /** @var string  sprintf format string for this formatter  */
   var $format;
+  /** @var mixed   field name or array of names (keys to $data) to format using this formatter */
   var $formatfields;
 
-  function OutputFormatter($format, $fields) {
+ /**
+  *  Create a new OutputFormatter object
+  *
+  * @param string $format  see $this->format
+  * @param mixed $fields  string or array, see $this->fields
+  */
+   function OutputFormatter($format, $fields) {
     $this->format = $format;
     $this->formatfields = $fields;
   }
 
+  /**
+  * Format the data
+  *
+  * @param array $data     data to be formatted, $data[$formatfields[$i]] 
+  * @return string formatted data
+  */
   function format($data) {
-    $t = '';
-    #preDump($this);
-    #preDump($data);
-    if (is_array($this->formatfields)) {
-      $s = array();
-      foreach ($this->formatfields as $v) {
-        $s[] = isset($data[$v]) ? xssqw($data[$v]) : '';
-        #if (isset($data[$v]) && $data[$v]) {
-          #$s = $data[$v];
-          #$t .= sprintf($this->format, $s);
-        #}
-      }
-      $t .= vsprintf($this->format, $s);
-    } else {
-     $s = $this->formatfields->format($data);
-      if ($s != '') {
-        $t .= sprintf($this->format, xssqw($s));
-      }
+    $fields = is_array($this->formatfields) ? $this->formatfields : array($this->formatfields);
+    $s = array();
+    foreach ($this->formatfields as $v) {
+      $s[] = isset($data[$v]) ? xssqw($data[$v]) : '';
     }
-    return $t;
+    return vsprintf($this->format, $s);
   }
   
 } // class OutputFormatter

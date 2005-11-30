@@ -135,8 +135,8 @@ class DBChoiceList extends DBO {
         #."ORDER BY $this->order "
         .$joinSyntax
         .($restrictions != '' ? "WHERE $restrictions " : '')
-        .($this->order != '' ? "ORDER BY $this->order " : '')
-        .($this->limit != '' ? "LIMIT $this->limit " : '');
+        .($this->order != '' ? "ORDER BY {$this->order} " : '')
+        .($this->limit != '' ? "LIMIT {$this->limit} " : '');
     $sql = db_get($q, $this->fatal_sql);
     if (! $sql) {
       //then the SQL query was unsuccessful and we should bail out

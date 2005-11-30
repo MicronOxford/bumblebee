@@ -13,9 +13,22 @@
 /** parent object */
 include_once 'choicelist.php';
 
+/**
+* a radio button list based on the ChoiceList class
+*
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 class RadioList extends ChoiceList {
+  /** @var string   html/css class name to use in the generated output */
   var $radioclass = 'item';
 
+  /**
+  *  Create a new radiolist object
+  *
+  * @param string $name         the name of the field (db name, and html field name
+  * @param string $description  long name to be used in the label of the field in display
+  */
   function RadioList($name, $description='') {
     //$this->DEBUG = 10;
     $this->ChoiceList($name, $description);

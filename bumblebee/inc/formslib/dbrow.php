@@ -91,6 +91,7 @@ class DBRow extends DBO {
   *  update the value of each of the objects fields according to the user 
   *  input data, and validate the data if appropriate
   *  @param array user supplied data (field => $value)
+  *  @return boolean data is valid 
   */
   function update($data) {
     $this->log('DBRow:'.$this->namebase.' Looking for updates:');

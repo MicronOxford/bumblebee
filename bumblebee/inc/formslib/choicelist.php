@@ -35,7 +35,7 @@ class ChoiceList extends Field {
   var $list; 
   /** @var array         array of OutputFormatter objects  */
   var $formatter;
-  /** @var integer       ????  */
+  /** @var integer       name of the id field for the value of the field */
   var $formatid;
   /** @var boolean       additional items can be added to the choicelist */
   var $extendable = 0;
@@ -120,6 +120,7 @@ class ChoiceList extends Field {
   /**
   * A test text-based format function for the object. 
   *
+  * @param array $data the data to be formatted by this object's formatter object
   * @return string text-based representation
   */
   function format($data) {
@@ -137,13 +138,13 @@ class ChoiceList extends Field {
   function displayInTable($cols) {
     if (! $this->hidden) {
       $errorclass = ($this->isValid ? "" : "class='inputerror'");
-      $t = "<tr $errorclass><td>$this->description</td>\n"
-          ."<td title='$this->description'>";
+      $t = "<tr $errorclass><td>{$this->description}</td>\n"
+          ."<td title='{$this->description}'>";
       if ($this->editable) {
         $t .= $this->selectable();
       } else {
         $t .= $this->selectedValue();
-        $t .= "<input type='hidden' name='$this->name' value='$this->value' />";
+        $t .= "<input type='hidden' name='{$this->name}' value='{$this->value}' />";
       }
       $t .= "</td>\n";
       for ($i=0; $i<$cols-2; $i++) {
@@ -190,6 +191,7 @@ class ChoiceList extends Field {
 
   /**
   * Set the value of this field, both in the Field and in the DBList
+  * @param string $value  value to be set
   */
   function set($value) {
     $this->list->set($value);

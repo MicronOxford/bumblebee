@@ -1,7 +1,9 @@
 <?php
 /**
-* a non-editable reference object that looks up data from a join table
-
+* a non-editable reference object to explain a table entry
+*
+* e.g. translates the userid into the user's real name.
+*
 *
 * @author    Stuart Prescott
 * @copyright  Copyright Stuart Prescott
@@ -21,12 +23,27 @@ include_once 'inc/typeinfo.php';
 class ReferenceField extends Field {
    var $example;
 
+  /**
+  *  Create a new reference field object
+  *
+  * @param string $name   the name of the field (db name, and html field name
+  * @param string $longname  long name to be used in the label of the field in display
+  * @param string $description  used in the html title or longdesc for the field
+  */
   function ReferenceField($name, $longname='', $description='') {
     parent::Field($name, $longname, $description);
   }
 
-  function extraInfo($table, $matchfield, $field) {
-    $this->example = new ExampleEntries('id', $table, $matchfield, $field, 1);
+  /**
+  * add an extra field to the end of the formatted data
+  *
+  * @param string $table       db table for extra field
+  * @param string $matchfield  id/key field 
+  * @param string $field       field to return in the list of examples
+  * @param integer $numentries (optional) the number of entries to return
+  */
+  function extraInfo($table, $matchfield, $field, $numentries=1) {
+    $this->example = new ExampleEntries('id', $table, $matchfield, $field, $numentries);
   }
 
   function displayInTable($cols) {

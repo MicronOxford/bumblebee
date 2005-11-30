@@ -15,9 +15,24 @@ include_once 'textfield.php';
 /** type checking and data manipulation */
 include_once 'inc/typeinfo.php';
 
+/**
+* a text field that is designed to hold passwords
+*
+* @package    Bumblebee
+* @subpackage FormsLibrary
+* @todo old-passwd? retype passwd? js to check same? code to check same?
+*/
 class PasswdField extends TextField {
+  /** @var string  function used to encrypt the data  (set to '' to use plaintext passwords) */
   var $crypt_method = 'md5';
 
+  /**
+  *  Create a new password field object
+  *
+  * @param string $name   the name of the field (db name, and html field name
+  * @param string $longname  long name to be used in the label of the field in display
+  * @param string $description  used in the html title or longdesc for the field
+  */
   function PasswdField($name, $longname='', $description='') {
     //$this->DEBUG = 10;
     parent::TextField($name, $longname, $description);
@@ -32,12 +47,20 @@ class PasswdField extends TextField {
   }
 
   /**
-   * We shouldn't give up our data too easily...
-   */ 
+  * Don't return data... 
+  *
+  * We shouldn't give up our data too easily.
+  */ 
   function getValue() {
     return '';
   }
   
+  /**
+  * Update the value of the field from user-supplied data, but only if the field was filled in
+  *
+  * Empty values don't count -- that way an unfilled passwd field will never count as changed
+  * @param array $data  list of field_name => value pairs
+  */ 
   function update($data) {
     if (parent::update($data)) {
       return ($this->changed = ($this->value != ''));
@@ -46,11 +69,12 @@ class PasswdField extends TextField {
   }
   
   /**
-   * return a SQL-injection-cleansed string that can be used in an SQL
-   * UPDATE or INSERT statement. i.e. "name='Stuart'".
-   *
-   * @return string  in SQL assignable form
-   */
+  * return a SQL-injection-cleansed string that can be used in an SQL
+  * UPDATE or INSERT statement. i.e. "name='Stuart'".
+  *
+  * @param string $name the field name to be used
+  * @return string  in SQL assignable form
+  */
   function sqlSetStr($name='') {
     if (empty($name)) {
       $name = $this->name;
