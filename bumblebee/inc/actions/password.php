@@ -15,6 +15,10 @@ include_once 'inc/bb/user.php';
 
 /**
 * Permit a local user to change their password
+*
+* @package    Bumblebee
+* @subpackage Actions
+* @todo extend form to include current password and duplicate password
 */
 class ActionPassword extends ActionAction {
 

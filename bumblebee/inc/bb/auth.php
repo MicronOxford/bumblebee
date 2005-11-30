@@ -1,10 +1,29 @@
 <?php
-# $Id$
-# Authorisation object
+/**
+* User Authorisation, Login and Permissions object
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage DBObjects
+*/
 
+/** sql manipulation routines */
 include_once 'inc/formslib/sql.php';
+/** type checking and data manipulation */
 include_once 'inc/typeinfo.php';
 
+/**
+* User Authorisation, Login and Permissions object
+*
+* @package    Bumblebee
+* @subpackage DBObjects
+* @todo Split object into login and permissions objects
+* @todo split euid from login
+* @todo update permissions system
+*/
 class BumbleBeeAuth {
   var $uid;    //user id from table
   var $username;
@@ -21,6 +40,11 @@ class BumbleBeeAuth {
   var $localLogin = 0;
   var $DEBUG = 0;
 
+  /**
+  *  Create the auth object
+  *
+  * @param string $table  (optional) db table from which login data should be taken
+  */
   function BumbleBeeAuth($table='users') {
     session_start();
     $this->table = $table;
