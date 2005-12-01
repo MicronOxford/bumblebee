@@ -1,6 +1,6 @@
 <?php
 /**
-* anchor list for a ChoiceList, but this time in a table
+* Anchor list similar to AnchorList, but this time in a table not dot points
 *
 * @author    Stuart Prescott
 * @copyright  Copyright Stuart Prescott
@@ -13,20 +13,43 @@
 /** anchorlist parent object */
 include_once 'anchorlist.php';
 
+/**
+* Anchor list similar to AnchorList, but this time in a table not dot points
+*
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 class AnchorTableList extends AnchorList {
+  /** @var integer  number of columns in the table*/
   var $numcols    = '';
+  /** @var string   html/css class for each row in the table  */
   var $trclass    = 'itemrow';
+  /** @var string   html/css class for left-side table cell */
   var $tdlclass   = 'itemL';
+  /** @var string   html/css class for right-side table cell */
   var $tdrclass   = 'itemR';
-  var $aclass     = 'itemanchor';
+  /** @var string   html/css class for entire table */
   var $tableclass = 'selectlist';
+  /** @var array    list of table headings to be put at the top of the table */
   var $tableHeading;
 
+  /**
+  *  Create a new AnchorTableList
+  *
+  * @param string $name   the name of the field (db name, and html field name
+  * @param string $description  used in the html title of the list
+  * @param integer $numcols (optional) number of columns in the table
+  */
   function AnchorTableList($name, $description='', $numcols=2) {
     $this->AnchorList($name, $description);
     $this->numcols = $numcols;
   }
 
+  /**
+  *  Accessor method to set the table column headings
+  *
+  * @param array   new headings to use for the table
+  */
   function setTableHeadings($headings) {
     $this->tableHeadings = $headings;
   }

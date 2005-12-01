@@ -18,48 +18,71 @@ include_once 'dbrow.php';
 include_once 'inc/db.php';
 
 /**
-  * If the element in the table is a selection list then the setup will be
-  * as a join table.
-  *
-  * We respect the 'field' interface while overriding pretty much all of it.
-  *
-  * Primitive class for managing join data. Can be used on its own to just
-  * join data or with a selection lists class to make a join table.
-  * This may be used to determine the choices
-  * that a user is permitted to select (e.g. dropdown list or radio buttons)
-  *
-  * Used in a many:many or many:1 relationships (i.e. a field in a 
-  * table that is the listed in a join table 
-  *
-  * Typical usage:
-  *   $f = new JoinData('jointable',
-                       'id1', $table1_key,
-                       'fieldname', 'label1');
-  *   $f2 = new DropList('id2', 'label2');
-  *   $f2->connectDB('table2', array('id', 'name'));
-  *   $f2->list->prepend(array('-1','(none)'));
-  *   $f2->setFormat('id', '%s', array('name'), ' (%s)', array('longname'));
-  *   $f->addElement($f2);
-  *   $f3 = new TextField('field3', '');
-  *   $f->addElement($f3, 'sum_is_100');
-  *   $f->joinSetup('id2', array('total' => 3));
-  *   $f->use2StepSync = 1;
-  */
+* an object that manages data related by an SQL JOIN but pretends to be a single form field.
+*
+* If the element in the table is a selection list then the setup will be
+* as a join table.
+*
+* We respect the 'field' interface while overriding pretty much all of it.
+*
+* Primitive class for managing join data. Can be used on its own to just
+* join data or with a selection lists class to make a join table.
+* This may be used to determine the choices
+* that a user is permitted to select (e.g. dropdown list or radio buttons)
+*
+* Used in a many:many or many:1 relationships (i.e. a field in a 
+* table that is the listed in a join table 
+*
+* Typical usage:<code>
+*   $f = new JoinData('jointable', 'id1', $table1_key, 'fieldname', 'label1');
+*   $f2 = new DropList('id2', 'label2');
+*   $f2->connectDB('table2', array('id', 'name'));
+*   $f2->list->prepend(array('-1','(none)'));
+*   $f2->setFormat('id', '%s', array('name'), ' (%s)', array('longname'));
+*   $f->addElement($f2);
+*   $f3 = new TextField('field3', '');
+*   $f->addElement($f3, 'sum_is_100');
+*   $f->joinSetup('id2', array('total' => 3));
+*   $f->use2StepSync = 1;
+* </code>
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 class JoinData extends Field {
+  /** @var string   name of the join table (table has columns of form (LeftID, RightID) to join Left and Right tables */
   var $joinTable;
+  /** @var string   column name in the join table for the column with keys/Ids from the left table */
   var $jtLeftIDCol;
+  /** @var string   value of the left column ID that we are matching */
   var $jtLeftID;
+  /** @var string   column name in the join table for the column with keys/Ids from the right table */
   var $jtRightIDCol;
+  /** @var DBRow    prototype DBRow object that is replicated for each entry in the join table (1:many join) */
   var $protoRow;
+  /** @var array    list of DBRow objects for each row returned in a 1:many join */
   var $rows;
+  /** @var string   number of columns that this field should span in the table */
   var $colspan;
+  /** @var array    formatting control arguments (e.g. maximum number permitted in 1:many) */
   var $format;
+  /** @var integer  number of rows in the join */
   var $number = 0;
+  /** @var array    list of columns to return when the containing object asks for the SQL column=value sequence */
   var $reportFields = array();
-  var $radioclass = 'item';
+  /** @var array    list of functions that should be applied to the group of results collectively to test validity */
   var $groupValidTest;
+  /** @var boolean  SQL errors should be fatal (die()) */
   var $fatalsql = 0;
 
+  /**
+  *  Create a new joindata object
+  *
+  * @param string $jointable    see $this->joinTable
+  * @param string $jtLeftIDCol  see $this->jtLeftIDCol
+  * @param string $jtLeftID     see $this->jtLeftID
+  * @param string $name   the name of the field (db name, and html field name
+  * @param string $description  used in the html title or longdesc for the field
+  */
   function JoinData($joinTable, $jtLeftIDCol, $jtLeftID,
                      $name, $description='') {
     //$this->DEBUG=10;
@@ -77,6 +100,12 @@ class JoinData extends Field {
     $this->notifyIdChange = 1;
   }
 
+  /**
+  * Connect the join table and fill from the database
+  *
+  * @param string $jtRightIDCol  see $this->jtRightIDCol
+  * @param mixed  $format        see $this->format (string is converted to array)
+  */
   function joinSetup($jtRightIDCol, $format='') {
     $this->jtRightIDCol = $jtRightIDCol;
     $this->format = (is_array($format) ? $format : array($format));
@@ -84,6 +113,9 @@ class JoinData extends Field {
     //preDump($this);
   }
 
+  /**
+  * Calculate the maximum number of rows to display (e.g. including spares)
+  */
   function _calcMaxNumber() {
     if (isset($this->format['total'])) {
       $this->number = $this->format['total'];
@@ -100,22 +132,36 @@ class JoinData extends Field {
     }
   }
 
+  /**
+  * add a field to the join table
+  * Field will appear in each row returned from the join table
+  * @param Field  $field            the field to be added
+  * @param string  $groupValidTest  data validation routine for this field
+  */
   function addElement($field, $groupValidTest=NULL) {
     $this->protoRow->addElement($field);
     $this->groupValidTest[$field->name] = $groupValidTest;
   }
 
+  /**
+  * Create a new row from the protorow for storing data
+  * @param integer  $rowNum   number of this row (used as unique identifier in the namebase)
+  */
   function _createRow($rowNum) {
     $this->rows[$rowNum] = $this->protoRow;
     $this->rows[$rowNum]->setNamebase($this->name.'-'.$rowNum.'-');
   }
 
+  /**
+  * Fill from the database
+  */
   function _fill() {
-    $sjtLeftID = qw($this->jtLeftID);
     $this->_fillFromProto();
-    return;
   }
 
+  /**
+  * Fill from the database one row at a time
+  */
   function _fillFromProto() {
     $oldnumber = $this->number;
     $this->_calcMaxNumber();
@@ -193,9 +239,9 @@ class JoinData extends Field {
   }
 
   /**
-   *  Count the number of rows in the join table so we know how many
-   *  to retrieve
-  **/ 
+  *  Count the number of rows in the join table so we know how many to retrieve
+  * @return integer number of rows found
+  */ 
   function _countRowsInJoin() {
     $g = quickSQLSelect($this->joinTable, $this->jtLeftIDCol, $this->jtLeftID, $this->fatalsql, 1);
     $this->log('Found '.$g[0].' rows currently in join');
@@ -203,9 +249,13 @@ class JoinData extends Field {
   }
 
   /**
-    * trip the complex field within us to sync(), which allows us
-    * to then know our actual value (at last).
-   **/
+  * Trip the complex field within this object to sync()
+  * This allows the object to then know our actual value (at last) -- this has to be
+  * delayed for as long as possible as an INSERT might be needed before the value of the
+  * selection is actually known, but that shouldn't be done until all the data has passed
+  * all validation tests
+  * @return string  sql name=value sequence
+  */
   function sqlSetStr() {
     //$this->DEBUG=10;
     #echo "JoinData::sqlSetStr";
@@ -232,8 +282,8 @@ class JoinData extends Field {
   }
 
   /**
-    * synchronise the join table
-   **/
+  * synchronise the join table
+  */
   function _joinSync() {
     for ($i=0; $i < $this->number; $i++) {
       #echo "before sync row $i oob='".$this->oob_status."' ";
@@ -257,10 +307,13 @@ class JoinData extends Field {
   
   
   /**
-   * override the isValid method of the Field class, using the
-   * checkValid method of each member row completed as well as 
-   * cross checks on other fields.
-  **/
+  * Check validity of data
+  *
+  * override the isValid method of the Field class, using the
+  * checkValid method of each member row completed as well as 
+  * cross checks on other fields.
+  * @return boolean data is valid
+  */
   function isValid() {
     $this->log('Check JoinData validity: '.$this->name);
     $this->isValid = 1;
@@ -306,12 +359,18 @@ class JoinData extends Field {
     return $this->isValid;
   }
   
+  /**
+  * Change the Id value of each row
+  */
   function idChange($newId) {
     for ($i=0; $i < $this->number; $i++) {
       $this->rows[$i]->setId($newId);
     }
   }
   
+  /**
+  * Set the name base of the rows
+  */
   function setNamebase($namebase='') {
     for ($i=0; $i < $this->number; $i++) {
       $this->rows[$i]->setNamebase($namebase);
@@ -319,6 +378,9 @@ class JoinData extends Field {
     $this->protoRow->setNamebase($namebase);
   }
 
+  /**
+  * set whether each row is editable
+  */
   function setEditable($editable=false) {
     for ($i=0; $i < $this->number; $i++) {
       $this->rows[$i]->setEditable($editable);

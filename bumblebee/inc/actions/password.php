@@ -10,7 +10,9 @@
 * @subpackage Actions
 */
 
+/** parent object */
 include_once 'inc/actions/actionaction.php';
+/** user editing object */
 include_once 'inc/bb/user.php';
 
 /**

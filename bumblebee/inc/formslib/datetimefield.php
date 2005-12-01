@@ -23,18 +23,37 @@ include_once 'inc/date.php';
 /** timeslot manipulation and validation object */
 include_once 'inc/bookings/timeslotrule.php';
 
+/**
+* a textfield designed for date-time data 
+*
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 class DateTimeField extends Field {
-
+  /** @var SimpleTime time part of the field  */
   var $time;
+  /** @var boolean   time part is editable  */
   var $timeeditable;
+  /** @var SimpleDate date part of the field  */
   var $date;
+  /** @var boolean   date part is editable  */
   var $dateeditable;
+  /** @var array     list of possible choices for the day  */
   var $list;
 
+  /** @var integer   current representation of the time part (TF_* defines in TimeField class  */
   var $representation;
+  /** @var integer   manually specified representation of the time part (TF_* defines in TimeField class  */
   var $_manualRepresentation = TF_AUTO;
   
-  function DateTimeField($name, $longname='', $description='') {
+    /**
+  *  Create a new datetimefield object
+  *
+  * @param string $name   the name of the field (db name, and html field name
+  * @param string $longname  long name to be used in the label of the field in display
+  * @param string $description  used in the html title or longdesc for the field
+  */
+function DateTimeField($name, $longname='', $description='') {
     parent::Field($name, $longname, $description);
     //$this->DEBUG=10;
     $this->time = new TimeField($name.'-time', $longname, $description);
@@ -79,8 +98,8 @@ class DateTimeField extends Field {
   }
   
   /**
-   * calculate the correct values for the separate (and possibly not editable!) parts of the field
-   */
+  * calculate the correct values for the separate (and possibly not editable!) parts of the field
+  */
   function calcDateTimeParts() {
     $val = ($this->getValue() == '') ? 0 : $this->getValue();
     #echo "datetime=$val\n";
@@ -90,8 +109,8 @@ class DateTimeField extends Field {
   }
   
   /** 
-   * overload the parent's value as we need to do some magic in here
-   */
+  * overload the parent's value as we need to do some magic in here
+  */
   function set($value) {
     #echo "V=$value\n";
     parent::set($value);
@@ -99,12 +118,12 @@ class DateTimeField extends Field {
   }
   
   /**
-   * overload the parent's update method so that local calculations can be performed
-   *
-   * @param array $data html_name => value pairs
-   *
-   * @return boolean the value was updated
-   */
+  * overload the parent's update method so that local calculations can be performed
+  *
+  * @param array $data html_name => value pairs
+  *
+  * @return boolean the value was updated
+  */
   function update($data) {
     $datechanged = $this->date->update($data);
     $timechanged = $this->time->update($data);
@@ -118,10 +137,10 @@ class DateTimeField extends Field {
   }
   
   /** 
-   * associate a TimeSlotRule for validation of the times that we are using
-   *
-   * @param TimeSlotRule $list a TimeSlotRule
-   */
+  * associate a TimeSlotRule for validation of the times that we are using
+  *
+  * @param TimeSlotRule $list a TimeSlotRule
+  */
   function setSlots($list) {
     $this->list = $list;
     $this->time->setSlots($list);
@@ -129,33 +148,39 @@ class DateTimeField extends Field {
   }
   
   /** 
-   * set the appropriate date that we are refering to for the timeslot rule validation
-   *
-   * @param string $date passed to the TimeSlotRule
+  * set the appropriate date that we are refering to for the timeslot rule validation
+  *
+  * @param string $date passed to the TimeSlotRule
    */
   function setSlotStart($date) {
     $this->time->setSlotStart($date);
   }
   
   /**
-   * pass on any flags about the representation that we should use to our members
-   *
-   * @param integer $flag (TF_* types from class TimeField constants)
-   */
+  * pass on any flags about the representation that we should use to our members
+  *
+  * @param integer $flag (TF_* types from class TimeField constants)
+  */
   function setManualRepresentation($flag) {
     $this->_manualRepresentation = $flag;
     $this->time->setManualRepresentation($flag);
   }
   
   /**
-   *  isValid test (extend Field::isValid), looking at the individual parts of the field
-   */
+  *  isValid test (extend Field::isValid), looking at the individual parts of the field
+  */
   function isValid() {
     parent::isValid();
     $this->isValid = $this->isValid && $this->date->isValid() && $this->time->isValid();
     return $this->isValid;
   }
   
+  /**
+  * Set the date and time parts of the field and mark them as editable
+  *
+  * @param SimpleDate  $date  new date part of the field
+  * @param SimpleTime  $time  new time part of the field
+  */
   function setEditableOutput($date, $time) {
     $this->dateeditable = $date;
     $this->date->editableOutput = $date;
@@ -164,11 +189,11 @@ class DateTimeField extends Field {
   }
 
   /**
-   * return a SQL-injection-cleansed string that can be used in an SQL
-   * UPDATE or INSERT statement. i.e. "name='Stuart'".
-   *
-   * @return string  in SQL assignable form
-   */
+  * return a SQL-injection-cleansed string that can be used in an SQL
+  * UPDATE or INSERT statement. i.e. "name='Stuart'".
+  *
+  * @return string  in SQL assignable form
+  */
   function sqlSetStr($name='') {
     if (empty($name)) {
       $name = $this->name;

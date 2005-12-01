@@ -10,13 +10,18 @@
 * @subpackage Actions
 */
   
+/** specialcosts object */
 include_once 'inc/bb/specialcosts.php';
+/** list of choices */
 include_once 'inc/formslib/anchortablelist.php';
+/** parent object */
 include_once 'inc/actions/actionaction.php';
 
 /**
 * Edit/create/delete special instrument usage costs 
 *
+* @package    Bumblebee
+* @subpackage Actions
 */
 class ActionSpecialCosts extends ActionAction {
 

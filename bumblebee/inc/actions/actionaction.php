@@ -10,6 +10,7 @@
 * @subpackage Actions
 */
 
+/** status codes for success/failure of database actions */
 include_once 'inc/statuscodes.php';
 
 /**
@@ -41,6 +42,8 @@ include_once 'inc/statuscodes.php';
 * </code>
 *
 * @abstract
+* @package    Bumblebee
+* @subpackage Actions
 */
 class ActionAction {
   /**

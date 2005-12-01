@@ -10,13 +10,18 @@
 * @subpackage Actions
 */
 
+/** user object */
 include_once 'inc/bb/user.php';
+/** list of choices */
 include_once 'inc/formslib/anchortablelist.php';
+/** parent object */
 include_once 'inc/actions/actionaction.php';
 
 /**
 * Allow the admin user to masquerade as another user to make some bookings. A bit like "su".
 *  
+* @package    Bumblebee
+* @subpackage Actions
 */
 class ActionMasquerade extends ActionAction {
 

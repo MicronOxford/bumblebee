@@ -15,8 +15,21 @@ include_once 'field.php';
 /** type checking and data manipulation */
 include_once 'inc/typeinfo.php';
 
+/**
+* a checkbox object
+*
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 class CheckBox extends Field {
 
+  /**
+  *  Create a new checkbox object
+  *
+  * @param string $name   the name of the field (db name, and html field name
+  * @param string $longname  long name to be used in the label of the field in display
+  * @param string $description  used in the html title or longdesc for the field
+  */
   function CheckBox($name, $longname='', $description='') {
     parent::Field($name, $longname, $description);
     $this->useNullValues = 1;

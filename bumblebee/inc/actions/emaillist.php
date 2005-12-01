@@ -10,9 +10,13 @@
 * @subpackage Actions
 */
 
+/** CheckBox object */
 include_once 'inc/formslib/checkbox.php';
+/** CheckBoxTableList object */
 include_once 'inc/formslib/checkboxtablelist.php';
+/** db interrogation list object */
 include_once 'inc/formslib/dblist.php';
+/** parent object */
 include_once 'inc/actions/actionaction.php';
 
 
@@ -24,6 +28,8 @@ include_once 'inc/actions/actionaction.php';
 * Designed to be use as a per instrument "announce" list.
 *
 * @todo should this class should be split some more, with some of the details abstracted?
+* @package    Bumblebee
+* @subpackage Actions
 */
 class ActionEmailList extends ActionAction {
   /**

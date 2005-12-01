@@ -20,6 +20,8 @@
 * @todo it should have a much cleaner implementation than this -- use a config file perhaps?
 * @todo this should be integrated with the Menu class
 * @todo document the fixed up version
+* @package    Bumblebee
+* @subpackage Actions
 */
 class ActionListing {
 

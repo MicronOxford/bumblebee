@@ -10,12 +10,17 @@
 * @subpackage Actions
 */
 
+/** instrument object */
 include_once 'inc/bb/instrument.php';
+/** list of choices */
 include_once 'inc/formslib/anchortablelist.php';
+/** parent object */
 include_once 'inc/actions/actionaction.php';
 
 /**
 * Edit/create/delete instruments
+* @package    Bumblebee
+* @subpackage Actions
 */
 class ActionInstruments extends ActionAction {
 

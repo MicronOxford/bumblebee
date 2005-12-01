@@ -10,13 +10,18 @@
 * @subpackage Actions
 */
 
+/** Group object */
 include_once 'inc/bb/group.php';
+/** list of choices */
 include_once 'inc/formslib/anchortablelist.php';
+/** parent object */
 include_once 'inc/actions/actionaction.php';
 
 /**
 * Interface for editing details of groups
 *
+* @package    Bumblebee
+* @subpackage Actions
 */
 class ActionGroup extends ActionAction  {
 

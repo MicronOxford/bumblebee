@@ -10,8 +10,11 @@
 * @subpackage Actions
 */
 
+/** Costs object */
 include_once 'inc/bb/costs.php';
+/** list of choices */
 include_once 'inc/formslib/anchortablelist.php';
+/** parent object */
 include_once 'inc/actions/actionaction.php';
 
 /**
@@ -19,6 +22,8 @@ include_once 'inc/actions/actionaction.php';
 *  
 * Costs for instrument usage are calculated using a matrix of the instrument class
 * and the user class. See { @link http://bumblebeeman.sf.net/ } for further details.
+* @package    Bumblebee
+* @subpackage Actions
 */
 class ActionCosts extends ActionAction {
 

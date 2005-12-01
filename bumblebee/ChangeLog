@@ -2,6 +2,9 @@
 	* feature: Cc the logged-in user on billing emails
 	* bugfix: viewing consumable usage not updated to new deletion framework
 	* bugfix: masquerading class not available to non-sysadmin users
+  * bugfix win32: don't use %e in strftime
+  * feature: LDAP authentication enabled
+  * code docs: comments converted to phpdoc style
 
 2005-09-05 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* 1.0.0 release

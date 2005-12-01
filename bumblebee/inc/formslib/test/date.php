@@ -1,6 +1,14 @@
 <?php
-# $Id$
-# test harness for Date classes
+/**
+* Test of date objects
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 
 include_once '../date.php';
 ini_set("error_reporting",E_ALL);

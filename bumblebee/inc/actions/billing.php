@@ -10,17 +10,23 @@
 * @subpackage Actions
 */
 
+/** parent object */
 include_once 'inc/actions/export.php';
+/** ExportType and formatting */
 include_once 'inc/export/exporttypes.php';
+/** Export formatting codes */
 include_once 'inc/exportcodes.php';
+/** db interrogation object */
 include_once 'inc/formslib/dblist.php';
 
 /**
 * Send billing data by email
 *
 *  Find out what sort of report is required and generate it
+*
+* @package    Bumblebee
+* @subpackage Actions
 */
-
 class ActionBilling extends ActionExport {
   /**
   * should all group leaders be send the email or just the logged in user

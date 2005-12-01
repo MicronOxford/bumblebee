@@ -1,6 +1,6 @@
 <?php
 /**
-* the standard textfield form widget 
+* textfield form widget designed to contain dates
 *
 * @author    Stuart Prescott
 * @copyright  Copyright Stuart Prescott
@@ -14,11 +14,28 @@
 include_once 'field.php';
 /** type checking and data manipulation */
 include_once 'inc/typeinfo.php';
+/** Date/Time classes */
+include_once 'inc/date.php';
 
+/**
+* textfield form widget designed to contain dates
+*
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 class DateField extends Field {
+  /** @var SimpleDate   date value  */
   var $date;
+  /** @var boolean      date can be changed  */
   var $editableOutput=1;
 
+  /**
+  *  Create a new datefield object
+  *
+  * @param string $name   the name of the field (db name, and html field name
+  * @param string $longname  long name to be used in the label of the field in display
+  * @param string $description  used in the html title or longdesc for the field
+  */
   function DateField($name, $longname="", $description="") {
     parent::Field($name, $longname, $description);
     //$this->DEBUG=10;
@@ -39,6 +56,11 @@ class DateField extends Field {
   }
 
   
+  /**
+  * Generate the complete html representation of the field
+  *
+  * @return string html presentation
+  */
   function getdisplay() {
     $t = '';
     if ($this->editable && $this->editableOutput && ! $this->hidden) {
@@ -56,6 +78,11 @@ class DateField extends Field {
   
 
   
+  /**
+  * Generate the html representation of the field in a textfield
+  *
+  * @return string html presentation
+  */
   function selectable() {
     $t  = "<input type='text' name='$this->namebase$this->name' "
         ."value='".xssqw($this->date->datestring)."' ";
@@ -72,10 +99,10 @@ class DateField extends Field {
 
   
   /**
-   * Set the date (and value)
-   *
-   * @param SimpleDate $time 
-   */
+  * Set the date (and value)
+  *
+  * @param SimpleDate $time 
+  */
   function setDate($date) {
     $this->date = new SimpleDate($date);
     $this->value = $this->date->datestring;
@@ -83,12 +110,12 @@ class DateField extends Field {
   }
   
   /**
-   * overload the parent's update method so that local calculations can be performed
-   *
-   * @param array $data html_name => value pairs
-   *
-   * @return boolean the value was updated
-   */
+  * overload the parent's update method so that local calculations can be performed
+  *
+  * @param array $data html_name => value pairs
+  *
+  * @return boolean the value was updated
+  */
   function update($data) {
     if (parent::update($data)) {
       $this->setDate($this->value);
@@ -97,8 +124,9 @@ class DateField extends Field {
   }
 
   /**
-   *  isValid test (extend Field::isValid), looking at whether the string parsed OK
-   */
+  *  isValid test (extend Field::isValid), looking at whether the string parsed OK
+  * @return boolean data is valid
+  */
   function isValid() {
     parent::isValid();
     $this->isValid = $this->isValid && $this->date->isValid;

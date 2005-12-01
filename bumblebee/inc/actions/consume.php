@@ -10,16 +10,25 @@
 * @subpackage Actions
 */
 
+/** ConsumableUse object */
 include_once 'inc/bb/consumableuse.php';
+/** Consumable object */
 include_once 'inc/bb/consumable.php';
+/** User object */
 include_once 'inc/bb/user.php';
+/** DateRange object */
 include_once 'inc/bb/daterange.php';
+/** date manipulation routines */
 include_once 'inc/date.php';
+/** list of choices */
 include_once 'inc/formslib/anchortablelist.php';
+/** parent object */
 include_once 'inc/actions/actionaction.php';
 
 /**
 * Edit/create/delete consumables records
+* @package    Bumblebee
+* @subpackage Actions
 */
 class ActionConsume extends ActionAction {
 

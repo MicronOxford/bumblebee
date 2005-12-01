@@ -38,6 +38,7 @@ class BumbleBeeAuth {
   var $_error = '';
   var $table;
   var $localLogin = 0;
+  /** @var integer    debug level (0=off, 10=verbose)  */
   var $DEBUG = 0;
 
   /**
@@ -242,7 +243,7 @@ class BumbleBeeAuth {
     $a->start();
     $auth = $a->getAuth();
     if (! $auth) {
-      $this->_error = 'Login failed: ldap auth failed<br />';
+      $this->_error = 'Login failed: ldap auth failed';
     }
     return $auth;
   }

@@ -10,12 +10,17 @@
 * @subpackage Actions
 */
 
+/** userclass object */
 include_once 'inc/bb/userclass.php';
+/** list of choices */
 include_once 'inc/formslib/anchortablelist.php';
+/** parent object */
 include_once 'inc/actions/actionaction.php';
 
 /**
 * Edit/create/delete userclass details
+* @package    Bumblebee
+* @subpackage Actions
 */
 class ActionUserClass extends ActionAction  {
 

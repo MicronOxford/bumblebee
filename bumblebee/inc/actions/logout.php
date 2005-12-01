@@ -10,12 +10,15 @@
 * @subpackage Actions
 */
 
+/** parent object */
 include_once 'inc/actions/actionaction.php';
 
 /**
 * Thank the user for using the system.
 *  
 * Destruction of login credentials is undertaken by the class BumbleBeeAuth
+* @package    Bumblebee
+* @subpackage Actions
 */
 class ActionLogout extends ActionAction {
 

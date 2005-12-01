@@ -10,14 +10,19 @@
 * @subpackage Actions
 */
 
+/** list of choices */
 include_once 'inc/formslib/anchortablelist.php';
-include_once 'inc/formslib/datefield.php';
+/** date manipulation routines */
 include_once 'inc/date.php';
+/** DateRange object */
 include_once 'inc/bb/daterange.php';
+/** parent object */
 include_once 'inc/actions/actionaction.php';
 
 /**
 * View a list of deleted bookings for an instrument over a given time period
+* @package    Bumblebee
+* @subpackage Actions
 */
 class ActionDeletedBookings extends ActionAction {
     

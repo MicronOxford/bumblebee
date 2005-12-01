@@ -10,10 +10,13 @@
 * @subpackage Actions
 */
 
+/** parent object */
 include_once 'inc/actions/actionaction.php';
 
 /**
 * Error handling class for unknown actions
+* @package    Bumblebee
+* @subpackage Actions
 */
 class ActionUnknown extends ActionAction {
   var $action;

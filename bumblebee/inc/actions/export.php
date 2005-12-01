@@ -11,14 +11,23 @@
 * @subpackage Data Export
 */
 
+/** CheckBox object */
 include_once 'inc/formslib/checkbox.php';
+/** CheckBoxTableList object */
 include_once 'inc/formslib/checkboxtablelist.php';
+/** Data reflector object */
 include_once 'inc/formslib/datareflector.php';
+/** parent object */
 include_once 'inc/actions/bufferedaction.php';
+/** Export formatting codes */
 include_once 'inc/exportcodes.php';
+/** Export configuration and formatting */
 include_once 'inc/export/exporttypes.php';
+/** Export method object */
 include_once 'inc/export/arrayexport.php';
+/** Export method object */
 include_once 'inc/export/htmlexport.php';
+/** database interrogation object */
 include_once 'inc/formslib/dblist.php';
 
 /**
@@ -28,6 +37,8 @@ include_once 'inc/formslib/dblist.php';
 * and the data can be exported in various formats (see htmlexport.php and arrayexport.php)
 *
 * This class is inherited by other exporters
+* @package    Bumblebee
+* @subpackage Actions
 */
 class ActionExport extends BufferedAction {
   /**

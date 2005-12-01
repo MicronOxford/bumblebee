@@ -13,8 +13,20 @@
 /** parent object */
 include_once 'choicelist.php';
 
+/**
+* a dropdown selection list using a ChoiceList
+*
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 class DropList extends ChoiceList {
 
+  /**
+  *  Create a new dropdown list object
+  *
+  * @param string $name   the name of the field (db name, and html field name
+  * @param string $description  used in the html title or longdesc for the field
+  */
   function DropList($name, $description='') {
     //$this->DEBUG=10;
     $this->ChoiceList($name, $description);

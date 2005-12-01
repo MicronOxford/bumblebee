@@ -31,8 +31,10 @@ include_once 'inc/statuscodes.php';
 *   $obj->checkValid();
 *   #synchronise with database
 *   $obj->sync();</code>
+*
+* @package    Bumblebee
+* @subpackage FormsLibrary
 */
- 
 class DBRow extends DBO {
   /** @var boolean  this is a new object the form for which has not yet been shown to the user */
   var $newObject = 0;

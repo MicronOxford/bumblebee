@@ -12,23 +12,50 @@
 
 /** parent object */
 include_once 'choicelist.php';
+/** uses checkbox objects */
+include_once 'checkbox.php';
 
+/**
+* a table of checkboxes for different options
+*
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 class CheckBoxTableList extends ChoiceList {
+  /** @var integer  number of columns in the table  */
   var $numcols    = '';
+  /** @var integer  number of extra columns to be added to the table  */
   var $numExtraInfoCols = '';
+  /** @var string   html/css class for each row in the table  */
   var $trclass    = 'itemrow';
+  /** @var string   html/css class for left-side table cell */
   var $tdlclass   = 'itemL';
+  /** @var string   html/css class for right-side table cell */
   var $tdrclass   = 'itemR';
-  var $aclass     = 'itemanchor';
+  /** @var string   html/css class for entire table */
   var $tableclass = 'selectlist';
+  /** @var array    list of table headings to be put at the top of the table */
   var $tableHeading;
+  /** @var array    list of checkboxes (each checkbox added creates a new column) */
   var $checkboxes;
+  /** @var Field    a hidden field that takes a different user-supplied value for each row in the table */
   var $followHidden;
+  /** @var string   the key in $data used to populated the $this->followHidden field */
   var $followHiddenField;
+  /** @var TextField  a hidden field that takes a programatically-generated value for each row in the table */
   var $hidden;
+  /** @var array    list of strings to be included in the footer of the table */
   var $footer;
+  /** @var boolean  generate select/deselect links at the bottom of each column */
   var $includeSelectAll = false;
 
+  /**
+  *  Create a new AnchorTableList
+  *
+  * @param string $name   the name of the field (db name, and html field name
+  * @param string $description  used in the html title of the list
+  * @param integer $numExtraInfoCols (optional) number of *extra* columns in the table
+  */
   function CheckBoxTableList($name, $description='', $numExtraInfoCols=-1) {
     $this->ChoiceList($name, $description);
     $this->numExtraInfoCols = $numExtraInfoCols;
@@ -38,25 +65,51 @@ class CheckBoxTableList extends ChoiceList {
     $this->hidden->hidden = 1;
   }
 
+  /**
+  *  Accessor method to set the table column headings
+  *
+  * @param array   new headings to use for the table
+  */
   function setTableHeadings($headings) {
     $this->tableHeadings = $headings;
   }
   
+  /**
+  * Add a new column of checkboxes to the table
+  *
+  * @param CheckBox $cb checkbox Field to add
+  */
   function addCheckBox($cb) {
     $this->checkboxes[] = $cb;
     $this->numcols = count($this->checkboxes);
   }
   
+  /**
+  * Add an extra hidden field to each row to record further details about what the selections mean
+  *
+  * @param Field $h  hidden field to replicate throughout table
+  * @param string  $follow    index in the $data provided to CheckBoxTableList::format to use for the field's value
+  */
   function addFollowHidden($h, $follow='id') {
     $h->hidden = 1;
     $this->followHidden = $h;
     $this->followHiddenField = $follow;
   }
 
+  /**
+  * Toggle the creation of a footer with javascript select all/deselect all buttons
+  *
+  * @param boolean  $bool   include the footer
+  */
   function addSelectAllFooter($bool) {
     $this->includeSelectAll = $bool;
   }
   
+  /**
+  * Include an additional footer in the table
+  *
+  * @param array $f  array of fields to be included at the bottom of the table
+  */
   function addFooter($f) {
     $this->footer = $f;
   }
@@ -169,6 +222,14 @@ class CheckBoxTableList extends ChoiceList {
     return $t;
   }  
 
+  /**
+  * create a pair of select/deselect all quick buttons or links
+  *
+  * @uses jsfunctions.php
+  * @param integer $col  the column number to run the quick select sequence on.
+  * @return string html for links
+  * @todo include interface for groups of instruments.
+  */
   function _getSelectAllFooter($col) {
     return '(<a href="#" onclick="return deselectsome(\''.$this->name.'-\', '.$col.' ,'.$this->numcols.');">deselect all</a>)<br />'
         .'(<a href="#" onclick="return selectsome(\''.$this->name.'-\', '.$col.' ,'.$this->numcols.');">select all</a>)';

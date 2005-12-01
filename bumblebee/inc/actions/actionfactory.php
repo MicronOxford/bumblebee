@@ -10,7 +10,7 @@
 * @subpackage Actions
 */
 
-// basic functions (user functions)
+/**  basic functions (user functions) */
 include_once 'login.php';
 include_once 'logout.php';
 include_once 'view.php';
@@ -23,6 +23,7 @@ include_once 'masquerade.php';
 //admin functions: only include these files if they are necessary (security + efficiency)
 //these classes do not check permissions of the user -- this must be done by the instantiating code
 if ($auth->isadmin) {
+  /**  admin functions (restricted inclusion) */
   include_once 'groups.php';
   include_once 'projects.php';
   include_once 'users.php';
@@ -68,6 +69,9 @@ include_once 'actions.php';
 *
 * Here, we use the data from the browser (a PATH_INFO variable from the URL in the form
 * index.php/user) to triage the transaction.
+*
+* @package    Bumblebee
+* @subpackage Actions
 */
 class ActionFactory {
   /** 

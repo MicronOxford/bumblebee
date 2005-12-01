@@ -1,7 +1,14 @@
 <?php
-# $Id$
-# Test of authorisation object
-
+/**
+* Test of authorisation object logic
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 
 ini_set('error_reporting', E_ALL);
 

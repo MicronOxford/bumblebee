@@ -10,12 +10,17 @@
 * @subpackage Actions
 */
 
+/** Consumable object */
 include_once 'inc/bb/consumable.php';
+/** list of choices */
 include_once 'inc/formslib/anchortablelist.php';
+/** parent object */
 include_once 'inc/actions/actionaction.php';
 
 /**
 * Edit/create/delete consumables
+* @package    Bumblebee
+* @subpackage Actions
 */
 class ActionConsumables extends ActionAction {
 

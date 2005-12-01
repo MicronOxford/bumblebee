@@ -1,10 +1,26 @@
 <?php
-# $Id$
-# generic database list/export class
+/**
+* generic database list/export class
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 
-include_once 'choicelist.php';
+/** uses an OutputFormatter to format the data */
+include_once 'inc/formslib/outputformatter.php';
+/** export formatting codes */
 include_once 'inc/exportcodes.php';
 
+/**
+* generic database list/export class
+*
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 class DBList {
   var $restriction;
   var $unionrestriction;
@@ -24,6 +40,14 @@ class DBList {
   var $breakfield;
   var $fatal_sql = 1;
   
+  /**
+  *  Create a new DBList object
+  *
+  * @param string $table   name of (primary) table to be interrogated
+  * @param mixed  $returnFields   single column name or list of column names to be returned from the db
+  * @param mixed  $restriction    single or list of restrictions to be 'AND'ed together
+  * @param boolean $distinct      select only DISTINCT rows from the db
+  */
   function DBList($table, $returnFields, $restriction, $distinct=false) {
     $this->table = $table;
     $this->distinct = $distinct;
@@ -39,6 +63,11 @@ class DBList {
     }
   }
 
+  /**
+  * Fill the object from the database
+  *
+  * @todo mysql specific function
+  */
   function fill() {
     // construct the query
     if (is_array($this->union) && count($this->union)) {
@@ -86,6 +115,11 @@ class DBList {
     }
   }
   
+  /**
+  * generate the appropriate SQL syntax for this query
+  *
+  * @return string SQL query for this object
+  */
   function _getSQLsyntax() {
     global $TABLEPREFIX;
     $fields = array();
@@ -105,6 +139,9 @@ class DBList {
     return $q;
   }
 
+  /**
+  * format the list using the designated formats into another list
+  */
   function formatList() {
     //preDump($this->omitFields);
     $this->formatdata = array();
@@ -119,6 +156,11 @@ class DBList {
     }
   }
     
+  /**
+  * format a row of data 
+  * @param array $data   name=>value pairs of data
+  * @return string   formatter line of data 
+  */
   function format($data/*, $isHeader=false*/) {
     $d = array();
     foreach ($this->fieldOrder as $f) {
@@ -137,6 +179,10 @@ class DBList {
     return $this->formatter->format($d);
   }
     
+  /**
+  * format a header row 
+  * @return string   formatter header row
+  */
   function outputHeader() {
     $d = array();
     foreach ($this->returnFields as $f) {
@@ -145,6 +191,10 @@ class DBList {
     return $this->format($d/*, true*/);
   }
 
+  /**
+  * create a row of data with the value and some formatting data for use by the Array/HTML/PDF Export
+  * @return array   list of array(value=>$value, format=>$format, width=>$width)
+  */
   function _makeArray($d/*, $isHeader=false*/) {
     $row = array();
     foreach ($d as $alias => $val) {
@@ -161,36 +211,12 @@ class DBList {
     return $row;
   }
 
-/*  function formatVal($val, $format, $isHeader=false) {
-    global $CONFIG;
-    if ($isHeader)
-      return $val;
-    switch ($format & EXPORT_HTML_NUMBER_MASK) {
-      case EXPORT_HTML_MONEY:
-        $val = sprintf($CONFIG['export']['moneyFormat'], $val);
-        break;
-      case EXPORT_HTML_DECIMAL_1:
-        $val = sprintf('%.1f', $val);
-        break;
-      case EXPORT_HTML_DECIMAL_2:
-        $val = sprintf('%.2f', $val);
-        break;
-      default:
-        //echo ($format& EXPORT_HTML_NUMBER_MASK).'<br/>';
-    }
-    return $val;
-  }*/
-    
  /**
-   * Create a set of OutputFormatter objects to handle the display of this
-   * object. 
-   *
-   *  called as: setFormat($f1, $v1) {
-   *    - f1 is an sprintf format (see PHP manual)
-   *    - v1 is an array of array indices that will be used to fill the
-   *      fields in the sprintf format from a $data array passed to the
-   *      formatter when asked to display itself
-   */
+  * Create a set of OutputFormatter objects to handle the display of this object. 
+  *
+  * @param string $f1    sprintf format (see PHP manual)
+  * @param array $v1     array of indices that will be used to fill the fields in the sprintf format from a $data array passed to the formatter later.
+  */
   function setFormat($f, $v) {
     $this->formatter = new OutputFormatter($f, $v);
   }

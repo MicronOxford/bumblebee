@@ -10,13 +10,18 @@
 * @subpackage Actions
 */
 
+/** project object */
 include_once 'inc/bb/project.php';
+/** list of choices */
 include_once 'inc/formslib/anchortablelist.php';
+/** parent object */
 include_once 'inc/actions/actionaction.php';
 
 /**
 * Edit/create/delete projects
 *
+* @package    Bumblebee
+* @subpackage Actions
 */
 class ActionProjects extends ActionAction {
 
