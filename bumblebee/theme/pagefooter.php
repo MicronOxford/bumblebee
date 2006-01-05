@@ -1,8 +1,17 @@
 <?php
-  # $Id$
-  # Footer HTML to be included on every page
+/**
+* Footer HTML that is included on every page
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage theme
+*/
 
-   include 'theme/contentfooter.php';
+/** there can be a contentfooter too */
+include 'theme/contentfooter.php';
 
 ?>
   

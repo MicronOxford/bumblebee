@@ -1,12 +1,33 @@
 <?php
-# $Id$
-# Booking Vacancy object
+/**
+* Vacancy object
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Bookings
+*/
 
+/** date manipulation routines */
 include_once 'inc/date.php';
+/** parent object */
 include_once 'timeslot.php';
 
+/**
+* Vacancy object
+*
+* @package    Bumblebee
+* @subpackage Bookings
+*/
 class Vacancy extends TimeSlot {
   
+  /**
+  *  Create a new vacancy slot
+  *
+  * @param array  $arr   field => value  
+  */
   function Vacancy($arr='') {
     if (is_array($arr)) {
       $this->TimeSlot($arr['bookwhen'], $arr['stoptime'], $arr['duration']);
@@ -16,15 +37,31 @@ class Vacancy extends TimeSlot {
     $this->baseclass='vacancy';
   }
 
+  /**
+  * Set the times for the slot
+  *
+  * @param SimpleDate  $start  start time/date
+  * @param SimpleDate  $stop   stop time/date
+  */
   function setTimes($start, $stop) {
     $duration = new SimpleTime($stop->subtract($start));
     $this->_TimeSlot_SimpleDate($start, $stop, $duration);
   }
 
+  /**
+  * display the vacancy as a list of settings
+  *
+  * @return string html representation of the slot
+  */
   function display() {
     return $this->displayInTable();
   }
   
+  /**
+  * display the vacancy as a list of settings
+  *
+  * @return string html representation of the slot
+  */
   function displayInTable() {
     return '<tr><td>Vacant'
             .'</td><td>'.$this->start->datetimestring
@@ -33,10 +70,13 @@ class Vacancy extends TimeSlot {
             .'</td></tr>'."\n";
   }
 
-  //function displayCellDetails($isadmin=0) {
+  /**
+  * display the vacancy in a table calendar cell
+  *
+  * @global string base path to the installation
+  * @return string html representation of the slot
+  */
   function displayInCell($isadmin=0) {
-//     preDump(debug_backtrace());
-//     preDump($this);
     global $BASEPATH;
     $t = '';
     #echo $this->isDisabled ? 'disabled ' : 'active ';
@@ -70,6 +110,11 @@ class Vacancy extends TimeSlot {
     return $t;
   }
 
+  /**
+  * work out the title (start and stop times) for the vacancy for display
+  *
+  * @return string title
+  */
   function generateBookingTitle() {
     $start = isset($this->displayStart) ? $this->displayStart : $this->original->start;
     $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->original->stop;

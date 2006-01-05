@@ -12,6 +12,9 @@
 
 /**
 * Collate some stats on the current usage of the system (number of bookings etc)
+*
+* @package    Bumblebee
+* @subpackage Misc
 */
 class SystemStats {
   /**

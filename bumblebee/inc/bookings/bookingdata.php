@@ -1,19 +1,55 @@
 <?php
-# $Id$
-# Booking data
+/**
+* Obtains booking data from the database
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Bookings
+*/
 
+/** loads data into Booking objects */
 include_once 'booking.php';
 
+/**
+* Obtains booking data from the database
+*
+* Can be used either to find all bookings that are within a time period
+* or to look for a specific booking id. Note that when using time periods
+* to define the query, a booking is within the query time if *any* part of 
+* the booking period overlaps with *any* part of the query period.
+*
+* Can optionally exclude deleted bookings from the list.
+*
+* @package    Bumblebee
+* @subpackage Bookings
+*/
 class BookingData {
+  /** @var string   start of the query (SQL date-time string)  */
   var $start;
+  /** @var string   stop of the query (SQL date-time string)  */
   var $stop;
+  /** @var integer  instrument id number of interest  */
   var $instrument;
+  /** @var integer  specific booking that is of interest */
   var $id;
+  /** @var array    list of Booking objects returned for time period */
   var $bookinglist;
+  /** @var Booking  single Booking object returned for id match */
   var $booking;
+  /** @var boolean  sql errors are fatal */
   var $fatal_sql = 1;
+  /** @var boolean  include deleted bookings in listing */
   var $includeDeleted = 0;
   
+  /**
+  * Obtain the booking listing within defined parameters
+  *
+  * @param array  $arr    data => value pairs where data can be
+  *                       start, stop, instrument, id
+  */
   function BookingData($arr, $includeDeleted=false) {
     $this->start = issetSet($arr,'start');
     $this->stop  = issetSet($arr,'stop');
@@ -23,6 +59,12 @@ class BookingData {
     $this->_fill();
   }
 
+  /**
+  * Interrogate the database to get the bookings
+  *
+  * @global string  prefix prepended to all table names in database
+  8 @todo mysql specific function
+  */
   function _fill() {
     global $TABLEPREFIX;
     $q = 'SELECT bookings.id AS bookid,bookwhen,duration,'
@@ -68,10 +110,18 @@ class BookingData {
     }
   }
 
+  /**
+  * obtain the list of bookings
+  * @return array  list of Booking objects
+  */
   function dataArray() {
     return $this->bookinglist;
   }
 
+  /**
+  * obtain the bookings
+  * @return Booking booking object
+  */
   function dataEntry() {
     return $this->booking;
   }

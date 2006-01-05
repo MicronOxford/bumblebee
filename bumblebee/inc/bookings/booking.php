@@ -1,25 +1,59 @@
 <?php
-# $Id$
-# Booking object
+/**
+* Object for an individual booking
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Bookings
+*/
 
+/** date manipulation routines */
 include_once 'inc/date.php';
+/** parent object */
 include_once 'timeslot.php';
 
+/**
+* Object for an individual booking
+*
+* @package    Bumblebee
+* @subpackage Bookings
+*/
 class Booking extends TimeSlot {
+  /** @var integer    booking id number  */
   var $id;
+  /** @var integer    percentage discount to be applied to the booking  */
   var $discount;
+  /** @var string     log message for the instrument log book  */
   var $log;
+  /** @var string     log message for the booking calendar  */
   var $comments;
+  /** @var integer    project id number  */
   var $project;
+  /** @var integer    user id number for user that will use instrument */
   var $userid;
+  /** @var string     username of user for user that will use instrument */
   var $username;
+  /** @var string     full name of user for user that will use instrument */
   var $name;
+  /** @var string     email address for user that will use instrument */
   var $useremail;
+  /** @var integer    user id number for user that booked the instrument */
   var $masquserid;
+  /** @var integer    full name of user for user that booked the instrument */
   var $masquser;
+  /** @var string     username of user for user that booked the instrument */
   var $masqusername;
+  /** @var string     email address for user that booked the instrument */
   var $masqemail;
   
+  /**
+  *  Create a booking object
+  *
+  * @param array  $arr  key => value paids
+  */
   function Booking($arr) {
     $this->TimeSlot($arr['bookwhen'], $arr['stoptime'], $arr['duration']);
     $isVacant = false;
@@ -41,10 +75,24 @@ class Booking extends TimeSlot {
     $this->baseclass='booking';
   }
 
+  /**
+  * display the booking as a list of settings
+  *
+  * @param boolean   $displayAdmin   show admin-only information (discount etc)
+  * @param boolean   $displayOwner   show owner-only information (project etc)
+  * @return string html representation of booking
+  */
   function display($displayAdmin, $displayOwner) {
     return $this->displayInTable(2, $displayAdmin, $displayOwner);
   }
   
+  /**
+  * display the booking as a list of settings
+  *
+  * @param boolean   $displayAdmin   show admin-only information (discount etc)
+  * @param boolean   $displayOwner   show owner-only information (project etc)
+  * @return string html representation of booking
+  */
   function displayInTable($cols, $displayAdmin, $displayOwner) {
     $t = '<tr><td>Booking ID</td><td>'.$this->id.'</td></tr>'."\n"
        . '<tr><td>Start</td><td>'.$this->start->datetimestring.'</td></tr>'."\n"
@@ -67,9 +115,13 @@ class Booking extends TimeSlot {
     return $t;
   }
 
-  //function displayCellDetails() {
-  function displayInCell($isadmin=0) {
-//     preDump($this);
+  /**
+  * display the booking as a single cell in a calendar
+  *
+  * @global string base path to the installation
+  * @return string html representation of booking
+  */
+  function displayInCell(/*$isadmin=0*/) {
     global $BASEPATH;
     $start = isset($this->displayStart) ? $this->displayStart : $this->start;
     $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
@@ -90,6 +142,11 @@ class Booking extends TimeSlot {
     return $t;
   }
 
+  /**
+  * work out the title (start and stop times) for the booking for display
+  *
+  * @return string title
+  */
   function generateBookingTitle() {
     $start = isset($this->displayStart) ? $this->displayStart : $this->start;
     $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;

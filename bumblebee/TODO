@@ -4,7 +4,7 @@ $Id$
 ------------
 Bugs:  
   book dropdown on 10:00-16:00/6 includes times that would overlap bookings
-
+  PATH_INFO => action=
 
 * 1.2 series
 ------------
@@ -15,7 +15,8 @@ Features:
   * longer bookings
   * IE5Mac compatability?
   * groups of instruments
-  
+  * internationalisation
+
 * Later
 ------------
   * in-place booking (js mouse commands, DOM+js/ajax?)

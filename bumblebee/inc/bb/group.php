@@ -1,10 +1,25 @@
 <?php
-# $Id$
-# Group object (extends dbo)
+/**
+* Group editing object
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage DBObjects
+*/
 
+/** parent object */
 include_once 'inc/formslib/dbrow.php';
 include_once 'inc/formslib/textfield.php';
 
+/**
+* Group editing object
+*
+* @package    Bumblebee
+* @subpackage DBObjects
+*/
 class Group extends DBRow {
   
   function Group($id) {

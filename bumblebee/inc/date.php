@@ -28,6 +28,9 @@
 * $date = new SimpleDate('2005-03-20');
 * $date->addDays(4);   // add 4 days
 * </code>
+*
+* @package    Bumblebee
+* @subpackage Misc
 */
 class SimpleDate {
   /**
@@ -424,6 +427,9 @@ class SimpleDate {
 
 /**
 * Simple time class to perform basic time calculations
+*
+* @package    Bumblebee
+* @subpackage Misc
 */
 class SimpleTime {
   /**

@@ -1,21 +1,42 @@
 <?php
-# $Id$
-# Timeslot validation based on rules passed to us (presumably from an SQL entry)
+/**
+* Timeslot validation based on rules passed to us (presumably from an SQL entry)
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Bookings
+*/
 
+/** date manipulation routines */
 include_once 'inc/date.php';
+/** timeslot object for bookings/vacancies */
 include_once 'timeslot.php';
 
-//enumeration of date-time operations for sharing around code between find operations
+/** date-time operation control: look for match with start of slot */
 define('TSSTART',  'tstart');
+/** date-time operation control: look for match with end of slot */
 define('TSSTOP',   'tstop');
+/** date-time operation control: look for slot where this time is within the slot */
 define('TSWITHIN', 2);
+/** date-time operation control: look for slot following this time */
 define('TSNEXT',   3);
 // define('TSSLOT',   4);
-// number of extra elements in each slot array ('picture')
+/** number of extra elements that will be in the array created from the slot rules */
 define('TSARRAYMIN', 1);
+/** flag that slot was not found by the slot finding routines */
 define('TS_SLOT_NOT_FOUND', -10000);
 
   
+/**
+* Timeslot validation based on rules passed to us (presumably from an SQL entry)
+*
+* @package    Bumblebee
+* @subpackage Bookings
+* @todo       more documentation
+*/
 class TimeSlotRule {
   var $picture = '';
   var $slots;
@@ -371,6 +392,17 @@ class TimeSlotRule {
 
 
 
+/**
+* Data object for an individual time slot defined by the time slot picture
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Bookings
+* @todo       more documentation
+*/
 class RuleSlot {
   var $tstart;
   var $tstop;

@@ -13,7 +13,6 @@
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Export
-* @subpackage NumericCodes
 */
 
 /** use a user-defined function to create report */

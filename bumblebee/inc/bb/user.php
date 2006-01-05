@@ -1,13 +1,30 @@
 <?php
-# $Id$
-# User object (extends dbo), with extra customisations for other links
+/**
+* User object (extends dbo), with extra customisations for other links
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage DBObjects
+*/
 
+/** parent object */
 include_once 'inc/formslib/dbrow.php';
 include_once 'inc/formslib/textfield.php';
 include_once 'inc/formslib/radiolist.php';
 include_once 'inc/formslib/checkbox.php';
 include_once 'inc/formslib/passwdfield.php';
 
+/**
+* User object (extends dbo), with extra customisations for other links
+*
+* @package    Bumblebee
+* @subpackage DBObjects
+* @todo       Editing method for new permissions model
+* @todo       Double password entry and require them to be the same
+*/
 class User extends DBRow {
   
   var $_localAuthPermitted;

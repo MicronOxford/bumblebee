@@ -1,31 +1,65 @@
 <?php
-# $Id$
-# construct an array for exporting the data
+/**
+* Construct an array for exporting the data
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Export
+*/
 
+/** constants for defining export formatting and codes */
 include_once 'inc/exportcodes.php';
 
 /**
- *  Create a monolithic array with all the data for export
- *
- */
-
+* Construct an array for exporting the data
+*
+* Create a monolithic array with all the data for export. The array is an
+* intermediary form for creating PDF and HTML tables of data.
+*
+* @package    Bumblebee
+* @subpackage Export
+*/
 class ArrayExport {
+  /** @var DBList  raw data list */
   var $dblist;
+  /** @var string  field name on which the report should be broken into sections */
+  var $breakfield;
+  /** @var         unknown? unused? */
   var $exporter;
+  /** @var array   data array of exported data */
   var $export;
+  /** @var string  header for the report */
   var $header;
+  /** @var string  report Author (report metadata) */
   var $author = 'BumbleBee';
+  /** @var string  report Creator (report metadata) */
   var $creator = 'BumbleBee Instrument Management System : bumblebeeman.sf.net';
+  /** @var string  report Subject (report metadata) */
   var $subject = 'Instrument and consumable usage report';
+  /** @var string  report Keywords (report metadata) */
   var $keywords = 'instruments, consumables, usage, report, billing, invoicing';
+  /** @var array   list of subtotals for each section of the report for fields that are totalled  */
   var $_totals;
+  /** @var boolean calculate column totals */
   var $_doingTotalCalcs = false;
 
+  /**
+  *  Create a new array export object to be used by both HTML and PDF export
+  *
+  * @param DBList &$dblist data to be exported (passed by reference for efficiency only)
+  * @param string $breakfield   name of field to use to break report into sections
+  */
   function ArrayExport(&$dblist, $breakfield) {
     $this->dblist   =& $dblist;
     $this->breakfield = $breakfield;
   }
 
+  /**
+  *  Parsed the exported data and create the marked-up array of data
+  */
   function makeExportArray() {
     $ea = array();   //export array
     $ea[] = array('type' => EXPORT_REPORT_START,  
@@ -72,6 +106,12 @@ class ArrayExport {
     $this->export =& $ea;
   }
   
+  /**
+  * create the section header
+  *
+  * @param array  current data row
+  * @return string header string
+  */
   function _sectionHeader($row) {
     $s = '';
     if (empty($this->breakfield)) {
@@ -82,6 +122,13 @@ class ArrayExport {
     return $s;
   }  
   
+  /**
+  * get the column widths for the columns (if defined)
+  *
+  * @param integer  number of columns
+  * @param array    a row from the table
+  * @return array   number of columns and a picture of the column widths spec
+  */
   function _getColWidths($numcols, $entry) {
     $columns = array();
     foreach ($this->dblist->formatdata[$entry] as $f) {
@@ -93,6 +140,11 @@ class ArrayExport {
                 );
   }
 
+  /**
+  * create an array of metadata to include in the output
+  *
+  * @return array  key => value metadata
+  */
   function _getMetaData() {
     return array(
                   'author'  => $this->author,
@@ -103,6 +155,9 @@ class ArrayExport {
                 );
   }
 
+  /**
+  * reset the column subtotals to 0
+  */
   function _resetTotals() {
     foreach ($this->dblist->formatdata[0] as $key => $val) {
       $this->_totals[$key] = $val;
@@ -115,6 +170,9 @@ class ArrayExport {
     }
   }
   
+  /**
+  * increment each column subtotal
+  */
   function _incrementTotals($row) {
     if (! $this->_doingTotalCalcs) return;
     foreach ($row as $key => $val) {
@@ -124,6 +182,9 @@ class ArrayExport {
     }
   }
   
+  /**
+  * get the column subtotals
+  */
   function _getTotals() {
     $total = $this->_totals;
     foreach ($total as $key => $val) {
@@ -134,6 +195,12 @@ class ArrayExport {
     return $total;
   }
 
+  /**
+  * format a row of data using the formmatting information defined
+  *
+  * @param array  &$row   data row 
+  * @return array   formatted data row
+  */
   function _formatRowData(&$row) {
     $newrow = array();
     foreach ($row as $key => $val) {
@@ -143,6 +210,12 @@ class ArrayExport {
     return $newrow;
   }
   
+  /**
+  * format a data value according to the defined rules for decimal places and currency
+  *
+  * @param string  $val   value to be formatted
+  * @return string formatted value
+  */
   function _formatVal($val, $format) {
     global $CONFIG;
     switch ($format & EXPORT_HTML_NUMBER_MASK) {
@@ -161,6 +234,11 @@ class ArrayExport {
     return $val;
   }
   
+  /**
+  * join another ArrayExport object into this one.
+  *
+  * @param ArrayExport &$ea  ArrayExport object to be appended to this one
+  */
   function appendEA(&$ea) {
     $this->export = array_merge($this->export, $ea->export);
   }

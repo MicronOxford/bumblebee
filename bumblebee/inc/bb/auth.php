@@ -23,6 +23,7 @@ include_once 'inc/typeinfo.php';
 * @todo Split object into login and permissions objects
 * @todo split euid from login
 * @todo update permissions system
+* @todo documentation
 */
 class BumbleBeeAuth {
   var $uid;    //user id from table

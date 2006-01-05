@@ -7,9 +7,10 @@
 * @license    http://opensource.org/licenses/gpl-license.php GNU Public License
 * @version    $Id$
 * @package    Bumblebee
-* @subpackage FormsLibrary
+* @subpackage Tests
 */
 
+/** include the classes we are supposed to be testing */
 include_once '../date.php';
 ini_set("error_reporting",E_ALL);
 

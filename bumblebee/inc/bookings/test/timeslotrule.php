@@ -1,10 +1,20 @@
 <?php
-# $Id$
-# test the timeslotrule functions
+/**
+* Test of authorisation object logic
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Tests
+*/
+
 
 $INC = ini_get('include_path');
 ini_set('include_path', $INC.':../../../');
 
+/** include the class we have to test! */
 include_once '../timeslotrule.php';
 include_once 'inc/typeinfo.php';
 

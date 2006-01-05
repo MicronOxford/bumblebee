@@ -1,11 +1,26 @@
 <?php
-# $Id$
-# Consumables object (extends dbo)
+/**
+* Use of Consumables object 
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage DBObjects
+*/
 
+/** parent object */
 include_once 'inc/formslib/dbrow.php';
 include_once 'inc/formslib/textfield.php';
 include_once 'inc/formslib/referencefield.php';
 
+/**
+* Use of Consumables object 
+*
+* @package    Bumblebee
+* @subpackage DBObjects
+*/
 class ConsumableUse extends DBRow {
   
   function ConsumableUse($id, $userid='', $consumableid='', $uid='', $ip='', $today='') {

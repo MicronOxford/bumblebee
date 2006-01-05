@@ -1,16 +1,27 @@
 <?php
-# $Id$
-# construct a PDF from the array representation
+/**
+* Construct a PDF from the array representation
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Export
+*/
 
+/** constants for defining export formatting and codes */
 include_once 'inc/exportcodes.php';
+/** FPDF free PDF creation library for PHP: http://fpdf.org/ */
 require_once 'fpdf/fpdf.php';
 
 
 /**
- *  A PDF exporter class 
- *
- */
-
+* Construct a PDF from the array representation
+*
+* @package    Bumblebee
+* @subpackage Export
+*/
 class PDFExport {
   var $ea;
   var $pdf;
@@ -165,6 +176,11 @@ class PDFExport {
     }
   }
   
+  /** 
+  * calculate column widths
+  * 
+  * @todo make sure PDF columns don't go over right side of page
+  */
   function _calcColWidths($widths, $entry) {
     if ($this->useBigTable && count($this->cols)) return;
     $this->log('Calculating column widths');
@@ -191,6 +207,11 @@ class PDFExport {
     $this->pdf->cols = $this->cols;
   }
   
+  /**
+  * Calculate the width of an actual column
+  *
+  * @todo calculate width of header from actual header data (bold) rather than 1.1 * non-bold 
+  */
   function _getColWidth($col, $entry) {
     //why are we doing lots of calls into the pdf here? is it bad encapsulation?
     //We have to have a font chosen within FPDF to perform these length calculations
@@ -332,6 +353,12 @@ class PDFExport {
 }  //  class PDFExport
 
 
+/**
+* PDF class that extends FPDF by putting the logo in the top corner
+*
+* @package    Bumblebee
+* @subpackage Export
+*/
 class BrandedPDF extends FPDF {
   var $title = 'BumbleBee Report';
   var $pageWidth   = 297;   // mm
@@ -422,11 +449,17 @@ class BrandedPDF extends FPDF {
 } // class BrandedPDF
 
 
+/**
+* PDF class that extends BrandedPDF by providing functions for representing row data.
+*
+* Table-managing code adapted from Olivier's FPDF examples:
+*      http://www.fpdf.org/en/script/script3.php
+*
+* @package    Bumblebee
+* @subpackage Export
+*/
 class TabularPDF extends BrandedPDF {
 
-  // Table-managing code adapted from Olivier's FPDF examples:
-  // http://www.fpdf.org/en/script/script3.php
-  
   var $_last_sectionHeader;
   var $_last_tableHeader;
   var $_preventNewPage;

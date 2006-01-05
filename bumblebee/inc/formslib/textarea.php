@@ -15,6 +15,12 @@ include_once 'field.php';
 /** type checking and data manipulation */
 include_once 'inc/typeinfo.php';
 
+/**
+* a textarea widget
+*
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 class TextArea extends TextField {
 
   function TextArea($name, $longname='', $description='') {

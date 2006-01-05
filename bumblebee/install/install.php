@@ -1,5 +1,14 @@
 <?php
-// $Id$
+/**
+* Simple Bumblebee installer -- creates an SQL and ini files from user input
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Installer
+*/
 
 $sqlSourceFile = 'setup-tables.sql';
 $sqlSetupFilename = 'bumblebee.sql';
@@ -41,6 +50,9 @@ if (! isset($_POST['submitsql']) && ! isset($_POST['submitini'])) {
 
 
 
+/**
+* Work out an SQL load file from the defaults and the user input
+*/
 function constructSQL($source, $replacements) {
   $sqlSourceFile = $source;
     
@@ -108,6 +120,9 @@ function constructSQL($source, $replacements) {
   return $stream;
 }
 
+/**
+* Work out a db.ini from the defaults and the user input
+*/
 function constructini($source, $defaults) {
   $eol = "\n";
   $s = '[database]'.$eol
@@ -119,6 +134,9 @@ function constructini($source, $defaults) {
   return $s;
 }
 
+/**
+* Dump the generated file to the user to save and upload to the server
+*/
 function outputTextFile($filename, $stream) {
   // Output a text file
   header("Content-type: text/plain"); 
@@ -126,6 +144,9 @@ function outputTextFile($filename, $stream) {
   echo $stream;
 }
 
+/**
+* Find out from the user what username and passwords to use for connecting to the database etc
+*/
 function printUserForm($defaults) {
   ?>
 <html>

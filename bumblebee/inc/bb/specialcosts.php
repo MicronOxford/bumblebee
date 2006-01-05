@@ -1,10 +1,25 @@
 <?php
-# $Id$
-# Group object (extends dbo)
+/**
+* Special costs for project/instrument usage editing
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage DBObjects
+*/
 
+/** parent object */
 include_once 'inc/formslib/dbrow.php';
 include_once 'inc/formslib/textfield.php';
 
+/**
+* Special costs for project/instrument usage editing
+*
+* @package    Bumblebee
+* @subpackage DBObjects
+*/
 class SpecialCost extends DBRow {
   
   function SpecialCost($id, $project, $instrument) {

@@ -1,8 +1,17 @@
 <?php
-  # $Id$
-  # Content heading, branding etc
-  
-  // You can customise the menu system here or in pageheader.php
+/**
+* Content heading, branding etc
+*  
+* This is only a sample header file. 
+* You can customise the menu system here or in pageheader.php
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage theme
+*/
   
   $MENUCONTENTS = $usermenu->getMenu();
   

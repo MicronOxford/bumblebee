@@ -20,7 +20,14 @@ include_once 'exampleentries.php';
 /** type checking and data manipulation */
 include_once 'inc/typeinfo.php';
 
+/**
+* a non-editable reference object to explain a table entry
+*
+* @package    Bumblebee
+* @subpackage FormsLibrary
+*/
 class ReferenceField extends Field {
+   /** @var ExampleEntries   list of example entries from the db */
    var $example;
 
   /**

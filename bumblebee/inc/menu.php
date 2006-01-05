@@ -13,6 +13,8 @@
 /**
 * Main menu for admin and normal users
 *
+* @package    Bumblebee
+* @subpackage Misc
 * @todo combine the data storage with action.php for cleaner implementation
 */
 class UserMenu {

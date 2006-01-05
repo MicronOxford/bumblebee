@@ -1,7 +1,16 @@
 <?php
-# $Id$
-# Instrument object (extends dbo), with extra customisations for other links
+/**
+* Instrument object (extends dbo), with extra customisations for other links
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage DBObjects
+*/
 
+/** parent object */
 include_once 'inc/formslib/dbrow.php';
 include_once 'inc/formslib/textfield.php';
 include_once 'inc/formslib/textarea.php';
@@ -10,6 +19,12 @@ include_once 'inc/formslib/radiolist.php';
 include_once 'inc/formslib/exampleentries.php';
 include_once 'inc/bookings/timeslotrule.php';
 
+/**
+* Instrument object (extends dbo), with extra customisations for other links
+*
+* @package    Bumblebee
+* @subpackage DBObjects
+*/
 class Instrument extends DBRow {
 
   var $_slotrule;  

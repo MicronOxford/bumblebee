@@ -1,11 +1,26 @@
 <?php
-# $Id$
-# Group object (extends dbo)
+/**
+* Instrument class name
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage DBObjects
+*/
 
+/** parent object */
 include_once 'inc/formslib/dbrow.php';
 include_once 'inc/formslib/textfield.php';
 include_once 'inc/formslib/idfield.php';
 
+/**
+* Instrument class name
+*
+* @package    Bumblebee
+* @subpackage DBObjects
+*/
 class InstrumentClass extends DBRow {
   
   function InstrumentClass($id) {

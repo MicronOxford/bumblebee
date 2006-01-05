@@ -1,8 +1,18 @@
 <?php
-# $Id$
-# Booking object
+/**
+* Booking entry object for creating/editing booking
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage DBObjects
+*/
 
+/** parent object */
 include_once 'inc/formslib/dbrow.php';
+/** uses fields */
 include_once 'inc/formslib/idfield.php';
 include_once 'inc/formslib/textfield.php';
 include_once 'inc/formslib/datetimefield.php';
@@ -11,25 +21,52 @@ include_once 'inc/formslib/droplist.php';
 include_once 'inc/formslib/referencefield.php';
 include_once 'inc/formslib/dummyfield.php';
 
+/** uses time slot rules for management */
 include_once 'inc/bookings/timeslotrule.php';
-include_once 'inc/bb/calendar.php';
+/** status codes for success/failure of database actions */
 include_once 'inc/statuscodes.php';
 
+/**
+* Booking entry object for creating/editing booking
+*
+* @package    Bumblebee
+* @subpackage DBObjects
+*/
 class BookingEntry extends DBRow {
+  /** @var TimeSlotRule     rules for when the instrument can be booked    */
   var $slotrules;
+  /** @var boolean          booking is by admin user */
   var $_isadmin = 0;
+  /** @var integer          EUID of booking user @see BumblebeeAuth  */
   var $euid;
+  /** @var integer          UID of booking user @see BumblebeeAuth  */
   var $uid;
+  /** @var BumblebeeAuth    auth object for checking user permissions */
   var $_auth;
+  /** @var integer          minimum notice in hours to be given for unbooking an instrument  */
   var $minunbook;
+  /** @var boolean          object not fully constructed (using short constructor for deleting booking only  */
   var $isShort = false;
   
+  /**
+  *  Create a new BookingEntry object
+  *
+  * @param integer       $id           booking id number (existing number or -1 for new)
+  * @param BumblebeeAuth $auth         authorisation object
+  * @param integer       $instrumentid instrument id of instrument to be booked
+  * @param integer       $minunbook    minimum notice to be given for unbooking (optional)
+  * @param string        $ip           IP address of person making booking (for recording) (optional)
+  * @param SimpleDate    $start        when the booking should start (optional)
+  * @param SimpleTime    $duration     length of the booking (optional)
+  * @param string        $granlist     timeslotrule picture (optional)
+  */
   function BookingEntry($id, $auth, $instrumentid, $minunbook='', $ip='', $start='', $duration='', $granlist='') {
     //$this->DEBUG = 10;
     $this->DBRow('bookings', $id);
     $this->deleteFromTable = 0;
     $this->_checkAuth($auth, $instrumentid);
     $this->minunbook = $minunbook;
+    // check if lots of the input data is empty, then the constructor is only being used to delete the booking
     if ($ip=='' && $start=='' && $duration=='' && $granlist=='') {
       return $this->_bookingEntryShort($id, $instrumentid);
     }
@@ -113,9 +150,11 @@ class BookingEntry extends DBRow {
   }
 
   /**
-   *  secondary constructor that we can use just for deleting
-   *
-   */
+  *  secondary constructor that we can use just for deleting
+  *
+  * @param integer       $id           booking id number (existing number or -1 for new)
+  * @param integer       $instrumentid instrument id of instrument to be booked
+  */
   function _bookingEntryShort($id, $instrumentid) {
     $this->isShort = true;
     $f = new Field('id');
@@ -135,8 +174,11 @@ class BookingEntry extends DBRow {
   }
 
   /**
-   *  check our admin status
-   */
+  *  check our admin status
+  *
+  * @param BumblebeeAuth $auth         authorisation object
+  * @param integer       $instrumentid instrument id of instrument to be booked
+  */
   function _checkAuth($auth, $instrumentid) {
     $this->_auth = $auth;
     $this->_isadmin = $auth->isSystemAdmin() || $auth->isInstrumentAdmin($instrumentid);
@@ -150,9 +192,9 @@ class BookingEntry extends DBRow {
   }
     
   /** 
-   * override the default update() method with a custom one that allows us to:
-   * - munge the start and finish times to fit in with the permitted granularity
-   */
+  * override the default update() method with a custom one that allows us to:
+  * - munge the start and finish times to fit in with the permitted granularity
+  */
   function update($data) {
     parent::update($data);
     $this->fields['bookwhen']->setSlotStart($this->fields['bookwhen']->getValue());
@@ -161,9 +203,9 @@ class BookingEntry extends DBRow {
   }
 
   /** 
-   * override the default fill() method with a custom one that allows us to...
-   * - check permissions on whether we should be allowed to change the dates
-   */
+  * override the default fill() method with a custom one that allows us to...
+  * - check permissions on whether we should be allowed to change the dates
+  */
   function fill() {
     parent::fill();
     // check whether we are allowed to modify time fields: this picks up existing objects immediately
@@ -172,9 +214,9 @@ class BookingEntry extends DBRow {
   }
 
   /** 
-   * override the default sync() method with a custom one that allows us to...
-   * - send a booking confirmation email to the instrument supervisors
-   */
+  * override the default sync() method with a custom one that allows us to...
+  * - send a booking confirmation email to the instrument supervisors
+  */
   function sync() {
     $status = parent::sync();
     if ($status & STATUS_OK) {
@@ -183,6 +225,9 @@ class BookingEntry extends DBRow {
     return $status;
   }
 
+  /** 
+  * Work out what the default discount for this timeslot is from the timeslotrules 
+  */
   function _setDefaultDiscount() {
     if (!$this->isShort && ! isset($this->fields['discount']->value)) {
       $starttime = new SimpleDate($this->fields['bookwhen']->getValue());
@@ -193,8 +238,11 @@ class BookingEntry extends DBRow {
     }
   }
   
+  /** 
+  * make sure that a non-admin user is not trying to unbook the instrument with less than the minimum notice
+  */
   function _checkMinNotice() {
-  //$this->DEBUG=10;
+    //$this->DEBUG=10;
     // get some cursory checks out of the way to save the expensive checks for later
     if ($this->_isadmin || $this->id == -1) {
       //then we are unrestricted
@@ -219,9 +267,9 @@ class BookingEntry extends DBRow {
   }
   
   /**
-   *  if appropriate, send an email to the instrument supervisors to let them know that the
-   *  booking has been made
-   */
+  *  if appropriate, send an email to the instrument supervisors to let them know that the
+  *  booking has been made
+  */
   function _sendBookingEmail() {
     global $CONFIG;
     global $ADMINEMAIL;
@@ -262,11 +310,17 @@ class BookingEntry extends DBRow {
   }
   
   /**
-   *   get the email text from the configured template with standard substitutions
-   */
+  *  get the email text from the configured template with standard substitutions
+  *  
+  * @param array  $instrument   instrument data (name => , longname => )
+  * @param array  $user         user data (name => , username => )
+  * 
+  * @global array   system config settings
+  * @global string  base URL for installation
+  8 @todo  graceful error handling for fopen, fread
+  */
   function _getEmailText($instrument, $user) {
-    global $CONFIG;
-    global $BASEURL;
+    global $CONFIG, $BASEURL;
     $fh = fopen($CONFIG['instruments']['emailTemplate'], 'r');
     $txt = fread($fh, filesize($CONFIG['instruments']['emailTemplate']));
     fclose($fh);
@@ -288,12 +342,12 @@ class BookingEntry extends DBRow {
   }
   
   /** 
-   * override the default checkValid() method with a custom one that also checks that the
-   * booking is permissible (i.e. the instrument is indeed free)
-   *
-   * A temp booking is made by _checkIsFree if all tests are OK. This temporary booking
-   * secures the slot (no race conditions) and is then updated by the sync() method.
-   */
+  * override the default checkValid() method with a custom one that also checks that the
+  * booking is permissible (i.e. the instrument is indeed free)
+  *
+  * A temp booking is made by _checkIsFree if all tests are OK. This temporary booking
+  * secures the slot (no race conditions) and is then updated by the sync() method.
+  */
   function checkValid() {
     //$this->DEBUG = 10;
     parent::checkValid();
@@ -313,11 +367,11 @@ class BookingEntry extends DBRow {
   }
   
   /**
-   * check that the booking slot is indeed free before booking it
-   *
-   * Here, we make a temporary booking and make sure that it is unique for that timeslot 
-   * This is to prevent a race condition for checking and then making the new booking.
-   * 
+  * check that the booking slot is indeed free before booking it
+  *
+  * Here, we make a temporary booking and make sure that it is unique for that timeslot 
+  * This is to prevent a race condition for checking and then making the new booking.
+  * 
   * @global string prefix for table names 
   * @global string prefix for URLs
   **/
@@ -378,8 +432,8 @@ class BookingEntry extends DBRow {
   }
 
   /** 
-   * Ensure that the entered data fits the granularity criteria specified for this instrument
-   */
+  * Ensure that the entered data fits the granularity criteria specified for this instrument
+  */
   function _legalSlot() {
     #$this->DEBUG=10;
     $starttime = new SimpleDate($this->fields['bookwhen']->getValue());
@@ -429,9 +483,15 @@ class BookingEntry extends DBRow {
   }
 
   /** 
-   * check if this booking is adjoining existing bookings -- it can explain why the booking 
-   * is at funny times.
-   */
+  * check if this booking is adjoining existing bookings -- it can explain why the booking 
+  * is at funny times.
+  * 
+  * @param string   $field        SQL name of the field to be checked (stoptime, bookwhen)
+  * @param SimpleDate $checktime  time to check to see if it is adjoining the new booking
+  *
+  * @return boolean   there is a booking adjoining this time
+  * @global string   prefix prepended to all table names in the db
+  */
   function _checkTimesAdjoining($field, $checktime) {
       global $TABLEPREFIX;
       $instrument = $this->fields['instrument']->getValue();
@@ -449,8 +509,13 @@ class BookingEntry extends DBRow {
   }  
   
   /** 
-   * make a temporary booking for this slot to eliminate race conditions for this booking
-   */
+  * make a temporary booking for this slot to eliminate race conditions for this booking
+  *
+  * @param integer  $instrument  instrument id
+  * @param string   $start       date time string for the start of the booking
+  * @param string   $duration    time string for the duration of the booking
+  * @return integer  booking id number of the temporary booking
+  */
   function _makeTempBooking($instrument, $start, $duration) {
     $row = new DBRow('bookings', -1, 'id');
     $f = new Field('id');
@@ -473,8 +538,10 @@ class BookingEntry extends DBRow {
   }
 
   /** 
-   * make a temporary booking for this slot to eliminate race conditions for this booking
-   */
+  * remove the temporary booking for this slot 
+  *
+  * @param integer $tmpid   booking id number of the temporary booking
+  */
   function _removeTempBooking($tmpid) {
     $this->log('Removing row, id='. $tmpid);
     $row = new DBRow('bookings', $tmpid, 'id');
@@ -482,10 +549,10 @@ class BookingEntry extends DBRow {
   }
   
   /**
-   *  delete the entry by marking it as deleted, don't actually delete the 
-   *
-   *  Returns from statuscodes
-   */
+  *  delete the entry by marking it as deleted, don't actually delete the 
+  *
+  *  @return integer  from statuscodes
+  */
   function delete() {
     $this->_checkMinNotice();
     if (! $this->deletable && ! $this->_isadmin) {

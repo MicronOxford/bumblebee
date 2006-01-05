@@ -1,7 +1,21 @@
 <?php
-# $Id$
-# Data export object
+/**
+* Data export rules and objects
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Export
+*/
 
+/**
+* Export type object -- contains all data for constructing SQL and interpretting output
+*
+* @package    Bumblebee
+* @subpackage Export
+*/
 class ExportType {
   var $name;
   var $basetable;
@@ -35,6 +49,12 @@ class ExportType {
      
 } //class ExportType
 
+/**
+* SQL fieldname: field, alias, column heading, formatting and output column width
+*
+* @package    Bumblebee
+* @subpackage Export
+*/
 class sqlFieldName {
   var $name;
   var $alias;
@@ -54,6 +74,13 @@ class sqlFieldName {
   }
 } //sqlFieldName
 
+/**
+* Export type list -- list of ExportType objects contained in a namespace
+*
+* @package    Bumblebee
+* @subpackage Export
+* @todo create the ExportType objects from file or database not hard coded
+*/
 class ExportTypeList {
   var $types = array();
   var $_formula = array();

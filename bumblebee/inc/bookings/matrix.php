@@ -1,7 +1,22 @@
 <?php
-# $Id$
-# Booking matrix object for display in a table
+/**
+* Booking matrix object for display in a table
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Bookings
+*/
 
+/**
+* Booking matrix object for display in a table
+*
+* @package    Bumblebee
+* @subpackage Bookings
+* @todo       documentation
+*/
 class BookingMatrix {
   var $dayStart;
   var $dayStop;

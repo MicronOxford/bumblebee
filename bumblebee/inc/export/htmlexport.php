@@ -1,24 +1,46 @@
 <?php
-# $Id$
-# construct an HTML export from array representation
+/**
+* Construct an HTML export from array representation
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage Export
+*/
 
+/** constants for defining export formatting and codes */
 include_once 'inc/exportcodes.php';
 
 /**
- *  An HTML exporter
- *
- */
-
+* Construct an HTML export from array representation
+*
+* @package    Bumblebee
+* @subpackage Export
+*/
 class HTMLExport {
+  /** @var string       html-rendered data   */
   var $export;
+  /** @var boolean      export the data as one big table with header rows between sections  */
   var $bigtable = true;
+  /** @var ArrayExport  data to export    */
   var $ea;
+  /** @var string       header to the report  */
   var $header;
   
+  /**
+  *  Create the HTMLExport object
+  *
+  * @param ArrayExport  &$exportArray
+  */
   function HTMLExport(&$exportArray) {
     $this->ea =& $exportArray;
   }
 
+  /**
+  * convert the 2D array into an HTML table representation of the data
+  */
   function makeHTMLBuffer() {
     //$this->log('Making HTML representation of data');
     $ea =& $this->ea->export;
@@ -119,6 +141,11 @@ class HTMLExport {
     $this->export =& $buf;
   }
   
+  /**
+  * generate the report header
+  *
+  * @return string report header
+  */
   function _reportHeader() {
     $start = $this->_daterange->getStart();
     $stop  = $this->_daterange->getStop();
@@ -126,11 +153,21 @@ class HTMLExport {
     return $s;
   }  
 
+  /**
+  * generate the header for a section
+  *
+  * @return string section header
+  */
   function _sectionHeader($row) {
     $s = $row[$this->_export->breakField];
     return $s;
   }  
   
+  /**
+  * generate the HTML for a row
+  *
+  * @return string row
+  */
   function _formatRowHTML($row, $isHeader=false) {
     $b = '';
     for ($j=0; $j<count($row); $j++) {
@@ -139,6 +176,11 @@ class HTMLExport {
     return $b;
   }
 
+  /**
+  * generate the HTML for a single cell
+  *
+  * @return string cell
+  */
   function _formatCellHTML($d, $isHeader) {
     $t = '';
     $val = $d['value'];
@@ -164,6 +206,13 @@ class HTMLExport {
     return $t;
   }
   
+  /**
+  * embed the html within a blank page to create the report in a separate window
+  *
+  * @global array   config settings
+  * @global string  base URL for installation
+  * @return string  html snippet that will open a new window with the html report
+  */
   function wrapHTMLBuffer() {
     global $CONFIG;
     global $BASEPATH;

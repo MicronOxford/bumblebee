@@ -1,11 +1,28 @@
 <?php
-# $Id$
-# Group object (extends dbo)
+/**
+* User/Instrument class matrix 
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage DBObjects
+*/
 
+
+/** parent object */
 include_once 'inc/formslib/dbrow.php';
+/** uses fields */
 include_once 'inc/formslib/joinmatrix.php';
 include_once 'inc/formslib/textfield.php';
 
+/**
+* User/Instrument class matrix 
+*
+* @package    Bumblebee
+* @subpackage DBObjects
+*/
 class ClassCost extends DBRow {
   
   function ClassCost($id) {

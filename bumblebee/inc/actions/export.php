@@ -8,7 +8,6 @@
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Actions
-* @subpackage Data Export
 */
 
 /** CheckBox object */

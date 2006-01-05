@@ -1,28 +1,61 @@
 <?php
-// $Id$
-
 /**
- *  A class to handle a simple date range from a form and reflect all other entered data
- */
+* DateRange display/data reflection class
+*
+* A class to handle a simple date range from a form and reflect all other entered data
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage DBObjects
+*/
 
+/** date manipulation routines */
 include_once 'inc/date.php';
+/** quick select javascript object */
 include_once 'inc/jsquickwalk.php';
+/** parent object */
 include_once 'inc/formslib/nondbrow.php';
 include_once 'inc/formslib/datefield.php';
- 
+
+/** default is current time period */
 define('DR_CURRENT',  1);
+/** default is next time period */
 define('DR_NEXT',     2);
+/** default is previous time period */
 define('DR_PREVIOUS', 4);
 
+/** default time period is one day */
 define('DR_DAY',      8);
+/** default time period is one week */
 define('DR_WEEK',    16);
+/** default time period is one month */
 define('DR_MONTH',   32);
+/** default time period is one quarter (3 months) (alternative) */
 define('DR_QTR',     64);
+/** default time period is one quarter (3 months) */
 define('DR_QUARTER', 64);
+/** default time period is one year */
 define('DR_YEAR',   128);
 
+/**
+* DateRange display/data reflection class
+*
+* A class to handle a simple date range from a form and reflect all other entered data
+*
+* @author    Stuart Prescott
+* @copyright  Copyright Stuart Prescott
+* @license    http://opensource.org/licenses/gpl-license.php GNU Public License
+* @version    $Id$
+* @package    Bumblebee
+* @subpackage DBObjects
+*/
 class DateRange extends nonDBRow { 
+  /** @var boolean   include data in hidden fields if not shown  */
   var $reflectData = 1;
+  /** @var boolean   include a submit button in the output  */
   var $includeSubmitButton = 1;
 
   function dateRange($name, $longname, $description) {
@@ -42,6 +75,11 @@ class DateRange extends nonDBRow {
    * Calculate a sensible range
    *
    * this is calculated from the 'DR_*' data that we have above
+   * 
+   * @param integer $which     DR_NEXT, DR_CURRENT, DR_PREVIOUS
+   * @param integer $range     DR_DAY, DR_WEEK, etc...
+   * @param integer $basetime  what date is "current" date
+   * @return array  (SimpleDate startdate, SimpleDate stopdate) 
    */
   function _calcRange($which, $range, $basetime) {
     $start = $basetime;
@@ -131,6 +169,11 @@ class DateRange extends nonDBRow {
    * what default values should be in the boxes
    *
    * this is calculated from the 'DR_*' data that we have above
+   *
+   * @param integer $which     DR_NEXT, DR_CURRENT, DR_PREVIOUS
+   * @param integer $range     DR_DAY, DR_WEEK, etc...
+   * @param integer $basetime  what date is "current" date
+   * @return array  (html javascript, forwards-backwards button html)
    */
   function setDefaults($which, $range, $basetime=0) {
     $start = new SimpleDate($basetime ? $basetime : time());
