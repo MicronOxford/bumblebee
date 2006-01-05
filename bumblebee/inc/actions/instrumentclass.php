@@ -34,11 +34,10 @@ class ActionInstrumentClass extends ActionAction  {
   */
   function ActionInstrumentClass($auth, $pdata) {
     parent::ActionAction($auth, $pdata);
-    $this->mungePathData();
+    $this->mungeInputData();
   }
 
   function go() {
-    global $BASEURL;
     if (! isset($this->PD['id'])) {
       $this->select();
     } elseif (isset($this->PD['delete'])) {
@@ -46,7 +45,7 @@ class ActionInstrumentClass extends ActionAction  {
     } else {
       $this->edit();
     }
-    echo "<br /><br /><a href='$BASEURL/instrumentclass/'>Return to instrument class list</a>";
+    echo "<br /><br /><a href='".makeURL('instrumentclass')."'>Return to instrument class list</a>";
   }
 
   function edit() {
@@ -73,11 +72,10 @@ class ActionInstrumentClass extends ActionAction  {
   }
 
   function select() {
-    global $BASEURL;
     $select = new AnchorTableList('InstrumentClass', 'Select which instrument class to view');
     $select->connectDB('instrumentclass', array('id', 'name'));
     $select->list->prepend(array('-1','Create new instrument class'));
-    $select->hrefbase = $BASEURL.'/instrumentclass/';
+    $select->hrefbase = makeURL('instrumentclass', array('id'=>'__id__'));
     $select->setFormat('id', '%s', array('name')/*, ' %50.50s', array('longname')*/);
     #echo $groupselect->list->text_dump();
     $select->numcols = 1;

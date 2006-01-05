@@ -34,12 +34,12 @@ class ActionLogout extends ActionAction {
   }
 
   function go() {
-    global $BASEURL;
     //$this->auth->logout();
+    $url = makeURL('');
     echo "
       <h2>Successfully logged out</h2>
       <p>Thank you for using Bumblebee!</p>
-      <p>(<a href='$BASEURL/'>login</a>)</p>
+      <p>(<a href='$url'>login</a>)</p>
     ";
   }
 }

@@ -127,18 +127,11 @@ class ActionExport extends BufferedAction {
     }
   }
   
-  function mungePathData() {
-    $this->PD = array();
-    foreach ($_POST as $k => $v) {
-      $this->PD[$k] = $v;
-    }
-    if (isset($this->PDATA[1]) && ! empty($this->PDATA[1])) {
-      $this->PD['what'] = $this->PDATA[1];
-    }
+  function mungeInputData() {
+    parent::mungeInputData();
     if (isset($this->PD['outputformat'])) {
       $this->format = $this->PD['outputformat'];
     }
-    echoData($this->PD, 0);
   }
 
   /**
@@ -147,14 +140,13 @@ class ActionExport extends BufferedAction {
   * @return void nothing
   */  
   function selectExport() {
-    global $BASEURL;
     $reportlist = array();
     foreach ($this->typelist->types as $type) {
       $reportlist[$type->name] = $type->description;
     }
     $select = new AnchorTableList('datasource', 'Select which data to export', 1);
     $select->setValuesArray($reportlist, 'id', 'iv');
-    $select->hrefbase = $BASEURL.'/'.$this->_verb.'/';
+    $select->hrefbase = makeURL($this->_verb, array('what'=>'__id__'));
     $select->setFormat('id', '%s', array('iv'));
     echo $select->display();
   }

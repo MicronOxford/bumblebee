@@ -139,26 +139,25 @@ class UserMenu {
   * @return string       menu in html format
   */
   function _getUserMenu() {
-    global $BASEURL;
     $t = '';
     if ($this->mainMenuHeader) {
       $t .= $this->headerStart.$this->mainMenuHeader.$this->headerStop;
     }
     $t .= $this->itemStart
-          .'<a href="'.$BASEURL.'/view/">Main</a>'
+          .'<a href="'.makeURL('view').'">Main</a>'
         .$this->itemStop;
     if ($this->_auth->localLogin) {
       $t .= $this->itemStart
-              .'<a href="'.$BASEURL.'/passwd/">Change Password</a>'
+              .'<a href="'.makeURL('passwd').'">Change Password</a>'
             .$this->itemStop;
     }
     if ($this->_auth->masqPermitted()) {
       $t .= $this->itemStart
-              .'<a href="'.$BASEURL.'/masquerade/">Masquerade</a>'
+              .'<a href="'.makeURL('masquerade').'">Masquerade</a>'
             .$this->itemStop;
     }
     $t .= $this->itemStart
-            .'<a href="'.$BASEURL.'/logout/">Logout</a>'
+            .'<a href="'.makeURL('logout').'">Logout</a>'
           .$this->itemStop;
     return $t;
   }
@@ -168,10 +167,9 @@ class UserMenu {
   * @return string       menu in html format
   */
   function _getMasqAlert() {  
-    global $BASEURL;
     $t = '<div id="'.$this->masqDivId.'">'
              .'Mask: '.$this->_auth->eusername
-             .' (<a href="'.$BASEURL.'/masquerade/-1">end</a>)'
+             .' (<a href="'.makeURL('masquerade', array('id'=>-1)).'">end</a>)'
         .'</div>';
     return $t;
   }
@@ -181,7 +179,6 @@ class UserMenu {
   * @return string       menu in html format
   */
   function _getAdminMenu() {
-    global $BASEURL;
     $menu = array(
         array('a'=>'groups',            't'=>'Edit groups'),
         array('a'=>'projects',          't'=>'Edit projects'),
@@ -207,7 +204,7 @@ class UserMenu {
     }
     foreach ($menu as $entry) {
       $t .= $this->itemStart
-            .'<a href="'.$BASEURL.'/'.$entry['a'].'/">'.$entry['t'].'</a>'
+            .'<a href="'.makeURL($entry['a']).'">'.$entry['t'].'</a>'
           .$this->itemStop;
     }
     return $t;

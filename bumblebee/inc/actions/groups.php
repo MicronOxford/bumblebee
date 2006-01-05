@@ -34,11 +34,10 @@ class ActionGroup extends ActionAction  {
   */
   function ActionGroup($auth, $pdata) {
     parent::ActionAction($auth, $pdata);
-    $this->mungePathData();
+    $this->mungeInputData();
   }
 
   function go() {
-    global $BASEURL;
     if (! isset($this->PD['id'])) {
       $this->select(issetSet($this->PD, 'showdeleted', false));
     } elseif (isset($this->PD['delete'])) {
@@ -46,17 +45,16 @@ class ActionGroup extends ActionAction  {
     } else {
       $this->edit();
     }
-    echo "<br /><br /><a href='$BASEURL/groups'>Return to group list</a>";
+    echo "<br /><br /><a href='".makeURL('groups')."'>Return to group list</a>";
   }
 
   function select($deleted=false) {
-    global $BASEURL;
     $select = new AnchorTableList('Group', 'Select which group to view');
     $select->deleted = $deleted;
     $select->connectDB('groups', array('id', 'name', 'longname'));
     $select->list->prepend(array('-1','Create new group'));
     $select->list->append(array('showdeleted','Show deleted groups'));
-    $select->hrefbase = $BASEURL.'/groups/';
+    $select->hrefbase = makeURL('groups', array('id'=>'__id__'));
     $select->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'));
     #echo $select->list->text_dump();
     echo $select->display();

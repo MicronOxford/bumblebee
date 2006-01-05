@@ -35,11 +35,10 @@ class ActionDeletedBookings extends ActionAction {
   */
   function ActionDeletedBookings($auth, $PDATA) {
     parent::ActionAction($auth, $PDATA);
-    $this->mungePathData();
+    $this->mungeInputData();
   }
 
   function go() {
-    global $BASEURL;
     if (! isset($this->PD['instrid'])
           || $this->PD['instrid'] < 1
           || $this->PD['instrid'] == '') {
@@ -53,15 +52,14 @@ class ActionDeletedBookings extends ActionAction {
     if ($daterange->newObject) {
       $daterange->setDefaults(DR_PREVIOUS, DR_MONTH);
       echo $daterange->display($this->PD);
-      echo "<br /><br /><a href='$BASEURL/deletedbookings/'>Return to instrument list</a>";
+      echo "<br /><br /><a href='".makeURL('deletedbookings')."'>Return to instrument list</a>";
     } else {
-      $instrument = $this->PD['instrid'];
       $this->showDeleted($daterange);
-      echo "<br /><br /><a href='$BASEURL/deletedbookings/$instrument'>Choose different dates</a>";
+      echo "<br /><br /><a href='".makeURL('deletedbookings', array('instrid'=>$this->PD['instrid']))."'>Choose different dates</a>";
     }
   }
 
-  function mungePathData() {
+/*  function mungeInputData() {
     $this->PD = array();
     foreach ($_POST as $k => $v) {
       $this->PD[$k] = $v;
@@ -71,17 +69,16 @@ class ActionDeletedBookings extends ActionAction {
     }
     echoData($this->PD, 0);
   }
-  
+  */
   /**
   * Select which instrument the listing should be generated for
   */
   function selectInstrument() {
-    global $BASEURL;
     $instrselect = new AnchorTableList('Instrument', 'Select which instrument to view');
     $instrselect->connectDB('instruments', 
                             array('id', 'name', 'longname')
                             );
-    $instrselect->hrefbase = $BASEURL.'/deletedbookings/';
+    $instrselect->hrefbase = makeURL('deletedbookings', array('instrid'=>'__id__'));;
     $instrselect->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'));
     echo $instrselect->display();
   }
@@ -90,7 +87,6 @@ class ActionDeletedBookings extends ActionAction {
   * Display the deleted bookings
   */
   function showDeleted($daterange) {
-    global $BASEURL;
     $start = $daterange->getStart();
     $stop  = $daterange->getStop();
     $stop->addDays(1);
@@ -108,7 +104,7 @@ class ActionDeletedBookings extends ActionAction {
                             'bookings.id', 
                             NULL, 
                             array('users'=>'userid=users.id'));
-    $bookings->hrefbase = $BASEURL.'/view/'.$instrument.'/';
+    $bookings->hrefbase = makeURL('view', array('bookid'=>'__id__', 'instrid'=>$instrument));
     $bookings->setFormat('id', '%s', array('bookwhen'),
                                '%s', array('duration'),
                                '%s', array('username'),

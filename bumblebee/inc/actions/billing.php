@@ -58,10 +58,10 @@ class ActionBilling extends ActionExport {
                              'billing' => '');
   }
   
-  function mungePathData() {
+  function mungeInputData() {
     $this->emailIndividuals = issetSet($_POST, 'emailToGroups');
     //echo $this->emailIndividuals ? 'true' : 'false';
-    parent::mungePathData();
+    parent::mungeInputData();
   }
 
   /**
@@ -289,10 +289,11 @@ class ActionBilling extends ActionExport {
   * @param string $group   name of the group for which this report is being generated
   * @param string $start   the start date for the report
   * @param string $stop    the stop date for the report
+  * @global array  system config
+  * @global string  url base for links
   */
   function _getEmailText($group, $start, $stop) {
-    global $CONFIG;
-    global $BASEURL;
+    global $CONFIG, $BASEURL;
     $fh = fopen($CONFIG['billing']['emailTemplate'], 'r');
     $txt = fread($fh, filesize($CONFIG['billing']['emailTemplate']));
     fclose($fh);

@@ -41,11 +41,10 @@ class ActionConsume extends ActionAction {
   */
   function ActionConsume($auth, $pdata) {
     parent::ActionAction($auth, $pdata);
-    $this->mungePathData();
+    $this->mungeInputData();
   }
 
   function go() {
-    global $BASEURL;
     if (isset($this->PD['list'])) {
       $daterange = new DateRange('daterange', 'Select date range', 
                       'Enter the dates over which you want to report consumable use');
@@ -76,57 +75,53 @@ class ActionConsume extends ActionAction {
     } else {
       $this->edit();
     }
-    echo "<br /><br /><a href='$BASEURL/consume'>Return to consumable use list</a>";
+    echo "<br /><br /><a href='".makeURL('consume')."'>Return to consumable use list</a>";
   }
 
-  function mungePathData() {
-    $this->PD = array();
-    foreach ($_POST as $k => $v) {
-      $this->PD[$k] = $v;
-    }
-    $lPDATA = $this->PDATA;
-    array_shift($lPDATA);
-    while (count($lPDATA)) {
-      if (isset($lPDATA[0]) && $lPDATA[0]=='user' && is_numeric($lPDATA[1])) {
-        array_shift($lPDATA);
-        $this->PD['user'] = array_shift($lPDATA);
-      } elseif (isset($lPDATA[0]) && $lPDATA[0]=='consumable' && is_numeric($lPDATA[1])) {
-        array_shift($lPDATA);
-        $this->PD['consumableid'] = array_shift($lPDATA);
-      } elseif (isset($lPDATA[0]) && $lPDATA[0]=='list') {
-        $this->PD['list'] = 1;
-        array_shift($lPDATA);
-      } elseif (isset($lPDATA[0]) && is_numeric($lPDATA[0])) {
-        $this->PD['id'] = array_shift($lPDATA);
-      } else {
-        //this record is unwanted... drop it
-        array_shift($lPDATA);
-      }
-    }
-    #$PD['defaultclass'] = 12;
-    echoData($this->PD, 0);
-  }
+//   function mungeInputData() {
+//     $this->PD = array();
+//     foreach ($_POST as $k => $v) {
+//       $this->PD[$k] = $v;
+//     }
+//     $lPDATA = $this->PDATA;
+//     array_shift($lPDATA);
+//     while (count($lPDATA)) {
+//       if (isset($lPDATA[0]) && $lPDATA[0]=='user' && is_numeric($lPDATA[1])) {
+//         array_shift($lPDATA);
+//         $this->PD['user'] = array_shift($lPDATA);
+//       } elseif (isset($lPDATA[0]) && $lPDATA[0]=='consumable' && is_numeric($lPDATA[1])) {
+//         array_shift($lPDATA);
+//         $this->PD['consumableid'] = array_shift($lPDATA);
+//       } elseif (isset($lPDATA[0]) && $lPDATA[0]=='list') {
+//         $this->PD['list'] = 1;
+//         array_shift($lPDATA);
+//       } elseif (isset($lPDATA[0]) && is_numeric($lPDATA[0])) {
+//         $this->PD['id'] = array_shift($lPDATA);
+//       } else {
+//         //this record is unwanted... drop it
+//         array_shift($lPDATA);
+//       }
+//     }
+//     #$PD['defaultclass'] = 12;
+//     echoData($this->PD, 0);
+//   }
 
   /**
   * Select which user is consuming the item
   */
   function selectConsumeUser() {
-    global $BASEURL;
-    $extrapath = '';
-    $listpath = '';
+    $path = array();
     if (isset($this->PD['consumableid'])) {
-      $extrapath =  'consumable/'.$this->PD['consumableid'].'/';
-      $listpath = $BASEURL.'/consume/'.$extrapath.'list';
+      $path['consumableid'] = $this->PD['consumableid'];
     }
-    #$extrapath = (isset($PD['consumableid']) ? "consumable/$PD[consumableid]/" : "");
     $userselect = new AnchorTableList('Users', 'Select which user is consuming');
     $userselect->deleted = false;  // don't show deleted users
     $userselect->connectDB("users", array('id', 'name', 'username'));
-    $userselect->hrefbase = "$BASEURL/consume/${extrapath}user/";
+    $userselect->hrefbase = makeURL('consume', array_merge($path, array('user' => '__id__')));
     $userselect->setFormat('id', '%s', array('name'), ' %s', array('username'));
 
-    if ($listpath) {
-      echo "<p><a href='$listpath'>View listing</a> "
+    if (isset($this->PD['consumableid']) && $this->PD['consumableid'] > 0) {
+      echo "<p><a href='".makeURL('consume', array_merge($path, array('list'=>1)))."'>View listing</a> "
           ."for selected consumable</p>\n";
     }
     echo $userselect->display();
@@ -137,21 +132,18 @@ class ActionConsume extends ActionAction {
   * Select what item is being consumed
   */
   function selectConsumeConsumable() {
-    global $BASEURL;
-    $extrapath = '';
-    $listpath = '';
+    $path = array();
     if (isset($this->PD['user'])) {
-      $extrapath =  'user/'.$this->PD['user'].'/';
-      $listpath = $BASEURL.'/consume/'.$extrapath.'list';
+      $path['user'] = $this->PD['user'];
     }
     $consumableselect = new AnchorTableList('Consumables', 'Select which Consumables to use');
     $consumableselect->deleted = false;   // don't show deleted consumables
     $consumableselect->connectDB('consumables', array('id', 'name', 'longname'));
-    $consumableselect->hrefbase = "$BASEURL/consume/${extrapath}consumable/";
+    $consumableselect->hrefbase = makeURL('consume', array_merge($path, array('consumableid' => '__id__')));
     $consumableselect->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'));
     
-    if ($listpath) {
-      echo "<p><a href='$listpath'>View listing</a> "
+    if (isset($this->PD['user']) && $this->PD['user'] > 0) {
+      echo "<p><a href='".makeURL('consume', array_merge($path, array('list'=>1)))."'>View listing</a> "
           .'for selected user</p>'."\n";
     }
     echo $consumableselect->display();
@@ -204,9 +196,6 @@ class ActionConsume extends ActionAction {
   * @return void nothing
   */
   function listConsumeConsumable($consumableID, $daterange) {
-    global $BASEURL;
-    $extrapath = '';
-    $listpath = '';
     $start = $daterange->getStart();
     $stop  = $daterange->getStop();
     $stop->addDays(1);
@@ -225,7 +214,7 @@ class ActionConsume extends ActionAction {
                           array('consumables_use.id','conid'),
                           NULL,
                           array('users'=>'userid=users.id'));
-    $recselect->hrefbase = "$BASEURL/consume/";
+    $recselect->hrefbase = makeURL('consume', array('id'=>'__id__'));
     $recselect->setFormat('conid', '%s', array('usewhen'), ' %s (%s)', array('name', 'username'), '%s', array('quantity'));
 
     echo $recselect->display();
@@ -239,9 +228,6 @@ class ActionConsume extends ActionAction {
   * @return void nothing
   */
   function listConsumeUser($userID, $daterange) {
-    global $BASEURL;
-    $extrapath = '';
-    $listpath = '';
     $start = $daterange->getStart();
     $stop  = $daterange->getStop();
     $stop->addDays(1);
@@ -261,7 +247,7 @@ class ActionConsume extends ActionAction {
                           array('consumables_use.id','conid'),
                           NULL,
                           array('consumables'=>'consumable=consumables.id'));
-    $recselect->hrefbase = "$BASEURL/consume/";
+    $recselect->hrefbase = makeURL('consume', array('id'=>'__id__'));
     $recselect->setFormat('conid', '%s', array('usewhen'), ' %s (%30.30s)', array('name', 'longname'), '%s', array('quantity'));
 
     echo $recselect->display();

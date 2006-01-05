@@ -34,11 +34,10 @@ class ActionMasquerade extends ActionAction {
   */
   function ActionMasquerade($auth, $pdata) {
     parent::ActionAction($auth, $pdata);
-    $this->mungePathData();
+    $this->mungeInputData();
   }
 
   function go() {
-    global $BASEURL;
     if (! isset($this->PD['id'])) {
       $this->selectUser();
     } elseif ($this->PD['id'] == -1) {
@@ -46,7 +45,7 @@ class ActionMasquerade extends ActionAction {
     } else {
       $this->assumeMasquerade();
     }
-    echo "<br /><br /><a href='$BASEURL/masquerade'>Return to user list</a>";
+    echo "<br /><br /><a href='".makeURL('masquerade')."'>Return to user list</a>";
   }
 
   /**
@@ -54,10 +53,9 @@ class ActionMasquerade extends ActionAction {
   *  
   */
   function selectUser() {
-    global $BASEURL;
     $select = new AnchorTableList('Users', 'Select which user to masquerade as');
     $select->connectDB('users', array('id', 'name', 'username'),'id!='.qw($this->auth->uid));
-    $select->hrefbase = $BASEURL.'/masquerade/';
+    $select->hrefbase = makeURL('masquerade', array('id'=>'__id__'));
     $select->setFormat('id', '%s', array('name'), ' %s', array('username'));
     if ($this->auth->amMasqed()) {
       $select->list->prepend(array('-1','End current Masquerade'));

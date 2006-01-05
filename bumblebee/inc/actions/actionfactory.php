@@ -131,14 +131,14 @@ class ActionFactory {
   * @param BumbleBeeAuth $auth  user login credentials object
   */
   function ActionFactory($auth) {
-    global $BASEURL;
     $this->_auth = $auth;
-    $this->PDATA = $this->_eatPathInfo();
+    #$this->PDATA = $this->_eatPathInfo();
+    $this->PDATA = $this->_eatGPCInfo();
     $list = new ActionListing();
     $this->actionListing = $list->listing;
     $this->actionTitles = $list->titles;
     $this->_verb = $this->_checkActions();
-    $this->nextaction = $BASEURL.'/'.$this->_verb.'/';  // override this in _makeAction if needed.
+    $this->nextaction = $this->_verb;  // override this in _makeAction if needed.
     $this->title = $this->actionTitles[$this->_verb];
     $this->_action = $this->_makeAction();
   }
@@ -241,6 +241,16 @@ class ActionFactory {
   }
   
   /** 
+  * Parse the user-supplied data from either the GET or POST data
+  *
+  * @returns array  (key => $data)
+  */
+  function _eatGPCInfo() {
+    $pd = $this->_eatPathInfo();
+    return array_merge($pd, $_GET, $_POST);
+  }
+  
+  /** 
   * Is it ok to allow the HTML template to dump to the browser from the output buffer?
   *
   * (see BufferedAction descendents)
@@ -266,11 +276,10 @@ class ActionFactory {
   * create the action object (a descendent of ActionAction) for the user-defined verb
   */
   function _makeaction() {
-    global $BASEURL;        // allow for overriding of actions
     $act = $this->actionListing;
     switch ($act[$this->_verb]) {
       case $act['login']:
-        $this->nextaction = $BASEURL.'/view';
+        $this->nextaction = 'view';
         return new ActionPrintLoginForm($this->_auth, $this->PDATA);
       case $act['logout']:
         $this->_auth->logout();

@@ -117,18 +117,22 @@ class ActionAction {
   * 
   * @return void nothing
   */
-  function mungePathData() {
-    $this->PD = array();
+  function mungeInputData() {
+    $this->PD = $this->PDATA;
     foreach ($_POST as $k => $v) {
       $this->PD[$k] = $v;
     }
-    if (isset($this->PDATA[1]) && $this->PDATA[1] !== '') {
+    if (isset($this->PD['id']) && $this->PD['id'] == 'showdeleted') {
+      $this->PD['showdeleted'] = true;
+      unset($this->PD['id']);
+    }
+/*    if (isset($this->PDATA[1]) && $this->PDATA[1] !== '') {
       if ($this->PDATA[1] != 'showdeleted') {
         $this->PD['id'] = $this->PDATA[1];
       } else {
         $this->PD['showdeleted'] = true;
       }
-    }
+    }*/
     #$PD['defaultclass'] = 12;
     echoData($this->PD);
   }

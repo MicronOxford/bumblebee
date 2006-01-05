@@ -55,11 +55,10 @@ class ActionView extends ActionAction {
   */
   function ActionView($auth, $PDATA) {
     parent::ActionAction($auth, $PDATA);
-    $this->mungePathData();
+    $this->mungeInputData();
   }
 
   function go() {
-    global $BASEURL;
     if (! isset($this->PD['instrid'])
           || $this->PD['instrid'] < 1
           || $this->PD['instrid'] == '') {
@@ -86,7 +85,7 @@ class ActionView extends ActionAction {
       echo $this->_calendarViewLink($instrument);
     } elseif (isset($this->PD['instrid'])) {
       $this->instrumentMonth();
-      echo "<br /><br /><a href='$BASEURL/view/'>Return to instrument list</a>";
+      echo "<br /><br /><a href='".makeURL('view')."'>Return to instrument list</a>";
     } else {
       # shouldn't get here
       $err = 'Invalid action specification in action/view.php::go()';
@@ -96,7 +95,7 @@ class ActionView extends ActionAction {
     }
   }
 
-  function mungePathData() {
+/*  function mungeInputData() {
     $this->PD = array();
     foreach ($_POST as $k => $v) {
       $this->PD[$k] = $v;
@@ -123,26 +122,26 @@ class ActionView extends ActionAction {
       }
     }
     echoData($this->PD, 0);
-  }
+  }*/
   
   /**
   * Calculate calendar offset in days
   *
   * calculates the number of days between the current date and the last date that was selected
   * by the user (in making a booking etc)
-  * @return string URL string for inclusion in href (examples: 'o=28' 'o=-14')
+  * @return string URL string for inclusion in href (examples: '28' '-14')
   */
   function _offset() {
     $now = new SimpleDate(time());
     if (isset($this->PD['isodate'])) {
       $then = new SimpleDate($this->PD['isodate']);
-      return 'o='.floor($then->dsDaysBetween($now));
+      return floor($then->dsDaysBetween($now));
     } elseif (isset($this->PD['startticks'])) {
       $then = new SimpleDate($this->PD['startticks']);
       return $then->datestring;
     } elseif (isset($this->PD['bookwhen-date'])) {
       $then = new SimpleDate($this->PD['bookwhen-date']);
-      return 'o='.floor($then->dsDaysBetween($now));
+      return floor($then->dsDaysBetween($now));
     }
   }
     
@@ -152,16 +151,15 @@ class ActionView extends ActionAction {
   * @return string URL string for link back to calendar view
   */
   function _calendarViewLink($instrument) {
-    global $BASEURL;
-    return '<br /><br /><a href="'.$BASEURL.'/view/'.$instrument.'/'
-                      .$this->_offset().'">Return to calendar view</a>';
+    return '<br /><br /><a href="'.
+        makeURL('view', array('instrid'=>$instrument, 'caloffset'=>$this->_offset()))
+      .'">Return to calendar view</a>';
   }
                       
   /**
   * Select which instrument for which the calendar should be displayed
   */
   function selectInstrument() {
-    global $BASEURL;
     $instrselect = new AnchorTableList('Instrument', 'Select which instrument to view', 3);
     if ($this->auth->isSystemAdmin()) {
       $instrselect->connectDB('instruments', 
@@ -176,7 +174,7 @@ class ActionView extends ActionAction {
                             NULL, 
                             array('permissions'=>'instrid=id'));
     }
-    $instrselect->hrefbase = $BASEURL.'/view/';
+    $instrselect->hrefbase = makeURL('view', array('instrid'=>'__id__'));
     $instrselect->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'), ' %20.20s', array('location'));
     echo $instrselect->display();
   }
@@ -185,7 +183,6 @@ class ActionView extends ActionAction {
   * Display the monthly calendar for the selected instrument
   */
   function instrumentMonth() {
-    global $BASEURL;
     global $CONFIG;
     $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
     // Show a window $row['calendarlength'] weeks long starting $row['calendarhistory'] weeks 
@@ -228,14 +225,13 @@ class ActionView extends ActionAction {
     $cal->setTimeSlotPicture($row['timeslotpicture']);
     #$granularity = 60*60;
 //     echo $cal->display();
-    $href=$BASEURL.'/view/'.$this->PD['instrid'];
-    $cal->href=$href;
+    $cal->href=makeURL('view', array('instrid'=>$this->PD['instrid']));
     $cal->isAdminView = $this->_isAdminView;
     $cal->setOutputStyles('', $CONFIG['calendar']['todaystyle'], 
                 preg_split('{/}',$CONFIG['calendar']['monthstyle']), 'm');
     echo $this->displayInstrumentHeader($row);
-    echo $this->_linksForwardBack($href,'/o='.($offset-$callength),
-                                  '','/o='.($offset+$callength),
+    echo $this->_linksForwardBack(($offset-$callength),
+                                  0,($offset+$callength),
                                   $totaloffset <= $row['calfuture'] || $this->_isAdminView);
     echo $cal->displayMonthAsTable($daystart,$daystop,$granularity,$timelines);
     echo $this->displayInstrumentFooter($row);
@@ -245,13 +241,13 @@ class ActionView extends ActionAction {
   * Generate back | today | forward links for the calendar
   * @return string html for links
   */
-  function _linksForwardBack($href, $back, $today, $forward, $showForward=true) {
+  function _linksForwardBack($back, $today, $forward, $showForward=true, $extra=array()) {
     return '<div style="text-align:center">'
-        .'<a href="'.$href.$back.'">&laquo; earlier</a> | '
-        .'<a href="'.$href.$today.'">today</a> '
+        .'<a href="'.makeURL('view', array_merge(array('instrid'=>$this->PD['instrid'], 'caloffset'=>$back), $extra)).'">&laquo; earlier</a> | '
+        .'<a href="'.makeURL('view', array_merge(array('instrid'=>$this->PD['instrid'], 'caloffset'=>$today), $extra)).'">today</a> '
         .($showForward ? 
                 ' | '
-                .'<a href="'.$href.$forward.'">later &raquo;</a>'
+                .'<a href="'.makeURL('view', array_merge(array('instrid'=>$this->PD['instrid'], 'caloffset'=>$forward), $extra)).'">later &raquo;</a>'
                 : ''
           )
         .'</div>';
@@ -261,7 +257,6 @@ class ActionView extends ActionAction {
   * Display a single day's calendar for the selected instrument
   */
   function instrumentDay() {
-    global $BASEURL;
     $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
     $granularity = $row['calprecision'];
     $timelines   = $row['caltimemarks'];
@@ -292,14 +287,13 @@ class ActionView extends ActionAction {
     $daystart    = new SimpleTime('00:00:00');
     $daystop     = new SimpleTime('23:59:59');
 //     echo $cal->display();
-    $href=$BASEURL.'/view/'.$this->PD['instrid'];
-    $cal->href=$href;
+    $cal->href = makeURL('view', array('instrid'=>$this->PD['instrid']));
     $cal->isAdminView = $this->_isAdminView;
     $cal->setOutputStyles('', 'caltoday', array('monodd', 'moneven'), 'm');
     echo $this->displayInstrumentHeader($row);
-    echo $this->_linksForwardBack($href.'/', $start->datestring.'/o=-1', $today->datestring,
-                                $start->datestring.'/o=1', 
-                                $maxfuture > $totaloffset || $this->_isAdminView);
+    echo $this->_linksForwardBack('-1', -1*$totaloffset, '+1', 
+                                $maxfuture > $totaloffset || $this->_isAdminView, 
+                                array('isodate'=>$start->datestring));
     echo $cal->displayDayAsTable($daystart,$daystop,$granularity,$timelines);
     echo $this->displayInstrumentFooter($row);
   }
@@ -326,7 +320,6 @@ class ActionView extends ActionAction {
   * Do the hard work to edit or create the booking
   */
   function _editCreateBooking($bookid, $start, $duration) {
-    global $BASEURL;
     $ip = $this->auth->getRemoteIP();
     //echo $ip;
     $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
@@ -357,16 +350,16 @@ class ActionView extends ActionAction {
   * Display a booking in read-only format (i.e. not in a form to allow it to be edited)
   */
   function booking() {
-    global $BASEURL;
     $booking = new BookingEntryRO($this->PD['bookid']);
     $this->_checkBookingAuth($booking->data->userid);
     $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
     echo $this->displayInstrumentHeader($row);
     echo $booking->display($this->_isAdminView, $this->_isOwnBooking);
     if ($this->_isOwnBooking || $this->_isAdminView) {
-      echo "<p><a href='$BASEURL/view/".$this->PD['instrid']
-          //  .'/'.$this->PD['isodate']
-            .'/'.$this->PD['bookid']."/edit'>Edit booking</a></p>\n";
+      echo "<p><a href='"
+            .makeURL('view', 
+                array('instrid'=>$this->PD['instrid'], 'bookid'=>$this->PD['bookid'], 'edit'=>1))
+            ."'>Edit booking</a></p>\n";
     }
   }
   
@@ -374,7 +367,6 @@ class ActionView extends ActionAction {
   * Delete a booking
   */
   function deleteBooking() {
-    global $BASEURL;
     $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
     $booking = new BookingEntry($this->PD['bookid'], $this->auth, $this->PD['instrid'], $row['mindatechange']);
     $this->_checkBookingAuth($booking->fields['userid']->getValue());

@@ -90,7 +90,7 @@ class Vacancy extends TimeSlot {
       $isodate = $start->datestring;
       $t .= '<div style="float:right;">'
               .'<a href="'
-                  .$this->href.'/'.$isodate.'/'.$startticks.'-'.$stopticks.'" '
+                  .$this->href.'&amp;isodate='.$isodate.'&amp;startticks='.$startticks.'&amp;stopticks='.$stopticks.'" '
                   .'class="but" title="Make booking '.$timedescription.'">'
                       .'<img src="'.$BASEPATH.'/theme/images/book.png" '
                           .'alt="Make booking '.$timedescription.'" '

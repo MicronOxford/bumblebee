@@ -34,11 +34,10 @@ class ActionProjects extends ActionAction {
   */
   function ActionProjects($auth, $pdata) {
     parent::ActionAction($auth, $pdata);
-    $this->mungePathData();
+    $this->mungeInputData();
   }
 
   function go() {
-    global $BASEURL;
     if (! isset($this->PD['id'])) {
       $this->select(issetSet($this->PD, 'showdeleted', false));
     } elseif (isset($this->PD['delete'])) {
@@ -46,17 +45,16 @@ class ActionProjects extends ActionAction {
     } else {
       $this->edit();
     }
-    echo "<br /><br /><a href='$BASEURL/projects'>Return to project list</a>";
+    echo "<br /><br /><a href='".makeURL('projects')."'>Return to project list</a>";
   }
 
   function select($deleted=false) {
-    global $BASEURL;
     $select = new AnchorTableList('Projects', 'Select which project to view');
     $select->deleted = $deleted;
     $select->connectDB('projects', array('id', 'name', 'longname'));
     $select->list->prepend(array('-1','Create new project'));
     $select->list->append(array('showdeleted','Show deleted projects'));
-    $select->hrefbase = $BASEURL.'/projects/';
+    $select->hrefbase = makeURL('projects', array('id'=>'__id__'));
     $select->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'));
     echo $select->display();
   }

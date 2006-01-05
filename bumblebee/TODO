@@ -5,6 +5,7 @@ $Id$
 Bugs:  
   book dropdown on 10:00-16:00/6 includes times that would overlap bookings
   PATH_INFO => action=
+  editcosts noise from jtid (joinmatrix line 114)
 
 * 1.2 series
 ------------

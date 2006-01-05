@@ -62,7 +62,7 @@ class AnchorTableList extends AnchorList {
     $tdrclass  = (isset($this->tdrclass) ? " class='$this->tdrclass'" : '');
     $t  = "<tr $trclass>"
          ."<td $tdlclass>";
-    $t .= "<a href='$this->hrefbase".$data[$this->formatid]."'$aclass>"
+    $t .= "<a href='".str_replace('__id__', $data[$this->formatid], $this->hrefbase)."'$aclass>"
          .$this->formatter[0]->format($data)
          ."</a>";
     $t .= "</td>\n";

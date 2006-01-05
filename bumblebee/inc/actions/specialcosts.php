@@ -34,11 +34,11 @@ class ActionSpecialCosts extends ActionAction {
   */
   function ActionSpecialCosts($auth, $pdata) {
     parent::ActionAction($auth, $pdata);
-    $this->mungePathData();
+    $this->DEBUG=10;
+    $this->mungeInputData();
   }
 
   function go() {
-    global $BASEURL;
     if (! isset($this->PD['project'])) {
       if ($this->PD['createnew']) {
         $this->selectProjectCreate();
@@ -51,21 +51,26 @@ class ActionSpecialCosts extends ActionAction {
       } else {
         $this->selectInstrument();
       }
-    } elseif (isset($this->PD['delete']) && $this->PD['delete'] == 1) {
+    } elseif (isset($this->PD['delete'])) {
       $this->delete();
     } else {
       $this->edit();
     }
-    echo "<br /><br /><a href='$BASEURL/specialcosts/'>Return to special costs list</a>";
+    echo "<br /><br /><a href='".makeURL('specialcosts')."'>Return to special costs list</a>";
   }
   
-  function mungePathData() {
-    $this->PD = array();
-    foreach ($_POST as $k => $v) {
-      $this->PD[$k] = $v;
+  function mungeInputData() {
+    parent::mungeInputData();
+    $this->PD['createnew'] = isset($this->PD['createnew']) && $this->PD['createnew'];
+    if (isset($this->PD['project']) && $this->PD['project'] == -1) {
+      $this->PD['createnew'] = true;
+      unset($this->PD['project']);
     }
-    $this->PD['createnew'] = 0;
-    if (isset($this->PDATA[1]) && ($this->PDATA[1] == -1)) {
+    if (isset($this->PD['instrument']) && $this->PD['instrument'] == -1) {
+      $this->PD['createnew'] = true;
+      unset($this->PD['instrument']);
+    }
+/*    if (isset($this->PD[1]) && ($this->PDATA[1] == -1)) {
       $this->PD['createnew'] = 1;
       array_shift($this->PDATA);
     }
@@ -82,7 +87,7 @@ class ActionSpecialCosts extends ActionAction {
     if (isset($this->PD['delete']) && !empty($this->PD['delete'])) {
       $this->PD['delete'] = 1;
     }
-    echoData($this->PD, 0);
+    echoData($this->PD, 0);*/
   }
 
   /**
@@ -90,7 +95,7 @@ class ActionSpecialCosts extends ActionAction {
   *
   */
   function selectProject() {
-    global $BASEURL;
+    $this->log("selectProject: which existing rate to edit");
     $select = new AnchorTableList('Projects', 'Select project to rates to view');
     $select->connectDB('projects', array('id', 'name', 'longname'),
                             'projectid IS NOT NULL',
@@ -99,7 +104,7 @@ class ActionSpecialCosts extends ActionAction {
                             NULL, 
                             array('projectrates'=>'projectrates.projectid=projects.id'), true);
     $select->list->prepend(array('-1','Create new project rate'));
-    $select->hrefbase = "$BASEURL/specialcosts/";
+    $select->hrefbase = makeURL('specialcosts', array('project'=>'__id__'));
     $select->setFormat('id', '%s', array('name'), '%50.50s', array('longname'));
     echo $select->display();
   }
@@ -109,10 +114,10 @@ class ActionSpecialCosts extends ActionAction {
   *
   */
   function selectProjectCreate() {
-    global $BASEURL;
+    $this->log("selectProjectCreate: which project to create a new rate for");
     $select = new AnchorTableList('Projects', 'Select project to create rate');
     $select->connectDB('projects', array('id', 'name', 'longname'));
-    $select->hrefbase = "$BASEURL/specialcosts/-1/";
+    $select->hrefbase = makeURL('specialcosts', array('project'=>'__id__', 'createnew'=>1));
     $select->setFormat('id', '%s', array('name'), '%50.50s', array('longname'));
     echo $select->display();
   }
@@ -122,7 +127,7 @@ class ActionSpecialCosts extends ActionAction {
   *
   */
   function selectInstrument() {
-    global $BASEURL;
+    $this->log("selectInstrument: which existing rate to edit");
     $select = new AnchorTableList('Instruments', 'Select instrument to view rates');
     $select->connectDB('instruments', array('id', 'name', 'longname'),
                             'projectid='.qw($this->PD['project']),
@@ -131,9 +136,7 @@ class ActionSpecialCosts extends ActionAction {
                             NULL, 
                             array('projectrates'=>'projectrates.instrid=instruments.id'), true);
     $select->list->prepend(array('-1','Create new project rate'));
-    $select->hrefbase = $BASEURL.'/specialcosts/'
-                           .($this->PD['createnew'] ? '-1/' : '')
-                           .$this->PD['project'].'/';
+    $select->hrefbase = makeURL('specialcosts', array('instrument'=>'__id__', 'createnew'=>$this->PD['createnew'], 'project'=>$this->PD['project']));
     $select->setFormat('id', '%s', array('name'), '%50.50s', array('longname'));
     echo $select->display();
   }
@@ -143,7 +146,7 @@ class ActionSpecialCosts extends ActionAction {
   *
   */
   function selectInstrumentCreate() {
-    global $BASEURL;
+    $this->log("selectInstrumentCreate: which instrumen to create a new rate for");
     $select = new AnchorTableList('Instruments', 'Select instrument to create rate');
     $select->connectDB('instruments', array('id', 'name', 'longname'),
                             'projectid IS NULL',        //find rows *not* in the join
@@ -151,7 +154,7 @@ class ActionSpecialCosts extends ActionAction {
                             'id', 
                             NULL, 
                             array('projectrates'=>'projectrates.instrid=instruments.id AND projectrates.projectid='.qw($this->PD['project'])), true);
-    $select->hrefbase = $BASEURL.'/specialcosts/-1/'.$this->PD['project'].'/';
+    $select->hrefbase = makeURL('specialcosts', array('instrument'=>'__id__', 'createnew'=>$this->PD['createnew'], 'project'=>$this->PD['project']));
     $select->setFormat('id', '%s', array('name'), '%50.50s', array('longname'));
     echo $select->display();
   }

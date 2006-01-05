@@ -33,11 +33,10 @@ class ActionConsumables extends ActionAction {
   */
   function ActionConsumables($auth, $PDATA) {
     parent::ActionAction($auth, $PDATA);
-    $this->mungePathData();
+    $this->mungeInputData();
   }
 
   function go() {
-    global $BASEURL;
     if (! isset($this->PD['id'])) {
       $this->select(issetSet($this->PD, 'showdeleted', false));
     } elseif (isset($this->PD['delete'])) {
@@ -45,23 +44,21 @@ class ActionConsumables extends ActionAction {
     } else {
       $this->edit();
     }
-    echo "<br /><br /><a href='$BASEURL/consumables'>Return to consumables list</a>";
+    echo "<br /><br /><a href='".makeURL('consumables')."'>Return to consumables list</a>";
   }
 
   function select($deleted=false) {
-    global $BASEURL;
     $select = new AnchorTableList('Consumables', 'Select which Consumables to view');
     $select->deleted = $deleted;
     $select->connectDB('consumables', array('id', 'name', 'longname'));
     $select->list->prepend(array('-1','Create new consumable'));
     $select->list->append(array('showdeleted','Show deleted consumables'));
-    $select->hrefbase = $BASEURL.'/consumables/';
+    $select->hrefbase = makeURL('consumables', array('id'=>'__id__'));
     $select->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'));
     echo $select->display();
   }
 
   function edit() {
-    global $BASEURL;
     $consumable = new Consumable($this->PD['id']);
     $consumable->update($this->PD);
     $consumable->checkValid();
@@ -81,7 +78,7 @@ class ActionConsumables extends ActionAction {
     }
     echo "<input type='submit' name='submit' value='$submit' />";
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
-    echo "\n<p><a href='$BASEURL/consume/consumable/$consumable->id/list'>"
+    echo "\n<p><a href='".makeURL('consume', array('consumableid'=>$consumable->id, 'list'=>1))."'>"
           .'View usage records</a> '
         ."for this consumable</p>\n";
   }

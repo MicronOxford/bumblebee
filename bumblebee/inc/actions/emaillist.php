@@ -47,7 +47,7 @@ class ActionEmailList extends ActionAction {
   */
   function ActionEmailList($auth, $pdata) {
     parent::ActionAction($auth, $pdata);
-    $this->mungePathData();
+    $this->mungeInputData();
   }
 
   function go() {
@@ -67,7 +67,6 @@ class ActionEmailList extends ActionAction {
   * @return void nothing
   */
   function selectLists() {
-    //global $BASEURL;
     $selectRow = new nonDBRow('listselect', 'Select email lists', 
               'Select which email lists you want to return');
     $select = new CheckBoxTableList('Instrument', 'Select which instrument to view');

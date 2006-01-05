@@ -36,32 +36,31 @@ class ActionCosts extends ActionAction {
   */
   function ActionCosts($auth, $pdata) {
     parent::ActionAction($auth, $pdata);
-    $this->mungePathData();
+    $this->mungeInputData();
   }
 
   function go() {
-    global $BASEURL;
     if (! isset($this->PD['userclass'])) {
       $this->selectUserClass();
     } else {
       $this->editCost();
     }
-    echo "<br /><br /><a href='$BASEURL/costs/'>Return to costs list</a><br /><br />";
-    echo "<a href='$BASEURL/specialcosts/'>Edit special costs</a><br />";
-    echo "<a href='$BASEURL/instrumentclass/'>Edit instrument classes</a><br />";
-    echo "<a href='$BASEURL/userclass/'>Edit user classes</a><br />";
+    echo "<br /><br /><a href='".makeURL('costs')."'>Return to costs list</a><br /><br />";
+    echo "<a href='".makeURL('specialcosts')."'>Edit special costs</a><br />";
+    echo "<a href='".makeURL('instrumentclass')."'>Edit instrument classes</a><br />";
+    echo "<a href='".makeURL('userclass')."'>Edit user classes</a><br />";
   }
   
-  function mungePathData() {
-    $this->PD = array();
-    foreach ($_POST as $k => $v) {
-      $this->PD[$k] = $v;
-    }
-    if (isset($this->PDATA[1]) && ! empty($this->PDATA[1])) {
-      $this->PD['userclass'] = $this->PDATA[1];
-    }
-    echoData($this->PD, 0);
-  }
+//   function mungeInputData() {
+//     $this->PD = array();
+//     foreach ($_POST as $k => $v) {
+//       $this->PD[$k] = $v;
+//     }
+//     if (isset($this->PDATA[1]) && ! empty($this->PDATA[1])) {
+//       $this->PD['userclass'] = $this->PDATA[1];
+//     }
+//     echoData($this->PD, 0);
+//   }
 
   /**
   * Generate an HTML form for the user to select which class of user to edit costs
@@ -72,11 +71,10 @@ class ActionCosts extends ActionAction {
   * @return void nothing
   */
   function selectUserClass() {
-    global $BASEURL;
     $select = new AnchorTableList('Cost', 'Select which user class to view usage costs', 1);
     $select->connectDB('userclass', array('id', 'name'));
     //$select->list->prepend(array("-1","Create new user class"));
-    $select->hrefbase = "$BASEURL/costs/";
+    $select->hrefbase = makeURL('costs', array('userclass'=>'__id__'));
     $select->setFormat('id', '%s', array('name'));
     //echo $select->list->text_dump();
     echo $select->display();

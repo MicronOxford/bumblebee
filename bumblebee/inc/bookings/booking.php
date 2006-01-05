@@ -129,7 +129,7 @@ class Booking extends TimeSlot {
     //$timedescription = $this->start->timestring.' - '.$this->stop->timestring;
     $isodate = $start->datestring;
     $t = '';
-    $t .= "<div style='float:right;'><a href='$this->href/$isodate/$this->id' title='View or edit booking $timedescription' class='but'><img src='$BASEPATH/theme/images/editbooking.png' alt='View/edit booking $timedescription' class='calicon' /></a></div>";
+    $t .= "<div style='float:right;'><a href='$this->href&amp;isodate=$isodate&amp;bookid=$this->id' title='View or edit booking $timedescription' class='but'><img src='$BASEPATH/theme/images/editbooking.png' alt='View/edit booking $timedescription' class='calicon' /></a></div>";
     // Finally include details of the booking:
     $t .= '<div class="calbookperson">'
          .'<a href="mailto:'.$this->useremail.'">'

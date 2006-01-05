@@ -33,11 +33,10 @@ class ActionUsers extends ActionAction {
   */
   function ActionUsers($auth, $pdata) {
     parent::ActionAction($auth, $pdata);
-    $this->mungePathData();
+    $this->mungeInputData();
   }
   
   function go() {
-    global $BASEURL;
     if (! isset($this->PD['id'])) {
       $this->select(issetSet($this->PD, 'showdeleted', false));
     } elseif (isset($this->PD['delete'])) {
@@ -45,17 +44,16 @@ class ActionUsers extends ActionAction {
     } else {
       $this->edit();
     }
-    echo "<br /><br /><a href='$BASEURL/users'>Return to user list</a>";
+    echo "<br /><br /><a href='".makeURL('users')."'>Return to user list</a>";
   }
 
   function select($deleted=false) {
-    global $BASEURL;
     $select = new AnchorTableList('Users', 'Select which user to view');
     $select->deleted = $deleted;
     $select->connectDB('users', array('id', 'name', 'username'));
     $select->list->prepend(array('-1','Create new user'));
     $select->list->append(array('showdeleted','Show deleted users'));
-    $select->hrefbase = $BASEURL.'/users/';
+    $select->hrefbase = makeURL('users', array('id'=>'__id__'));
     $select->setFormat('id', '%s', array('name'), ' %s', array('username'));
     echo $select->display();
   }

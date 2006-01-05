@@ -33,11 +33,10 @@ class ActionInstruments extends ActionAction {
   */
   function ActionInstruments($auth, $pdata) {
     parent::ActionAction($auth, $pdata);
-    $this->mungePathData();
+    $this->mungeInputData();
   }
 
   function go() {
-    global $BASEURL;
     if (! isset($this->PD['id'])) {
       $this->select(issetSet($this->PD, 'showdeleted', false));
     } elseif (isset($this->PD['delete'])) {
@@ -45,17 +44,16 @@ class ActionInstruments extends ActionAction {
     } else {
       $this->edit();
     }
-    echo "<br /><br /><a href='$BASEURL/instruments'>Return to instruments list</a>";
+    echo "<br /><br /><a href='".makeURL('instruments')."'>Return to instruments list</a>";
   }
 
   function select($deleted=false) {
-    global $BASEURL;
     $select = new AnchorTableList('Instrument', 'Select which instrument to view');
     $select->deleted = $deleted;
     $select->connectDB('instruments', array('id', 'name', 'longname'));
     $select->list->prepend(array('-1','Create new instrument'));
     $select->list->append(array('showdeleted','Show deleted instruments'));
-    $select->hrefbase = $BASEURL.'/instruments/';
+    $select->hrefbase = makeURL('instruments', array('id'=>'__id__'));
     $select->setFormat('id', '%s', array('name'), ' %30.30s', array('longname'));
     #echo $groupselect->list->text_dump();
     echo $select->display();

@@ -33,13 +33,12 @@ class ActionPassword extends ActionAction {
   */
   function ActionPassword($auth, $pdata) {
     parent::ActionAction($auth, $pdata);
-    $this->mungePathData();
+    $this->mungeInputData();
   }
 
   function go() {
-    global $BASEURL;
     $this->edit();
-    echo "<br /><br /><a href='$BASEURL/'>Return to main menu</a>";
+    echo "<br /><br /><a href='".makeURL('')."'>Return to main menu</a>";
   }
 
   function edit() {

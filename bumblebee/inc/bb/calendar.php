@@ -436,7 +436,7 @@ class Calendar {
           $isodate = $current->datestring;
           $class = $this->_getDayClass($today, $current);
           $t .= '<td class="caldatecell '.$class.'">';
-          $t .= '<div style="float:right;"><a href="'.$this->href.'/'.$isodate.'" class="but" title="Zoom in on date: '.$isodate.'"><img src="'.$BASEPATH.'/theme/images/zoom.png" alt="Zoom in on '.$isodate.'" class="calicon" /></a></div>'."\n";
+          $t .= '<div style="float:right;"><a href="'.$this->href.'&amp;isodate='.$isodate.'" class="but" title="Zoom in on date: '.$isodate.'"><img src="'.$BASEPATH.'/theme/images/zoom.png" alt="Zoom in on '.$isodate.'" class="calicon" /></a></div>'."\n";
           $t .= '<div class="caldate">' 
                 //. strftime("%e", $current->ticks);    // works on linux
                 //. strftime("%d", $current->ticks);    // works on windows & linux but zero-pads dates

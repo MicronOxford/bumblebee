@@ -41,7 +41,7 @@ $usermenu ->showMenu = ($auth->isLoggedIn() && $action->_verb != 'logout');
 // $pagetitle can be used in theme/pageheader.php 
 $pagetitle  = $action->title . ' : ' . $CONFIG['main']['SiteTitle'];
 $pageheader = $action->title;
-$pageBaseRef = $BASEURL.'/'.$action->_verb.'/';
+$pageBaseRef = makeURL($action->_verb);
 /** display the HTML header section */
 include 'theme/pageheader.php';
 /** display the start of the html content */
@@ -49,7 +49,7 @@ include 'theme/contentheader.php';
 
 ?>
   <div id="bumblebeecontent">
-    <form method="post" action="<?php echo $action->nextaction ?>" id="bumblebeeform">
+    <form method="post" action="<?php echo makeURL($action->nextaction); ?>" id="bumblebeeform">
     <?php
       if (! $auth->isLoggedIn()) {
         echo $auth->loginError();

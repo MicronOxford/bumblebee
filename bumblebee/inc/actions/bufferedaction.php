@@ -51,7 +51,7 @@ class BufferedAction extends ActionAction  {
   */
   function BufferedAction($auth, $pdata) {
     parent::ActionAction($auth, $pdata);
-    $this->mungePathData();
+    $this->mungeInputData();
     $this->ob_flush_ok = 0;
   }
 

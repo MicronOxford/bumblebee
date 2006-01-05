@@ -33,11 +33,10 @@ class ActionUserClass extends ActionAction  {
   */
   function ActionUserClass($auth, $pdata) {
     parent::ActionAction($auth, $pdata);
-    $this->mungePathData();
+    $this->mungeInputData();
   }
 
   function go() {
-    global $BASEURL;
     if (! isset($this->PD['id'])) {
       $this->select();
     } elseif (isset($this->PD['delete'])) {
@@ -45,7 +44,7 @@ class ActionUserClass extends ActionAction  {
     } else {
       $this->edit();
     }
-    echo "<br /><br /><a href='$BASEURL/userclass/'>Return to user class list</a>";
+    echo "<br /><br /><a href='".makeURL('userclass')."'>Return to user class list</a>";
   }
 
   function edit() {
@@ -72,11 +71,10 @@ class ActionUserClass extends ActionAction  {
   }
 
   function select() {
-    global $BASEURL;
     $select = new AnchorTableList('UserClass', 'Select which user class to view');
     $select->connectDB('userclass', array('id', 'name'));
     $select->list->prepend(array('-1','Create new user class'));
-    $select->hrefbase = $BASEURL.'/userclass/';
+    $select->hrefbase = makeURL('userclass', array('id'=>'__id__'));
     $select->setFormat('id', '%s', array('name')/*, ' %50.50s', array('longname')*/);
     #echo $groupselect->list->text_dump();
     $select->numcols = 1;
