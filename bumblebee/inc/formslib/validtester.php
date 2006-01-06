@@ -11,7 +11,7 @@
 */
 
 /** type checking and data manipulation */
-include_once 'inc/typeinfo.php';
+require_once 'inc/typeinfo.php';
 
 /**
 * check if data is valid

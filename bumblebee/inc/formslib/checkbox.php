@@ -11,9 +11,9 @@
 */
 
 /** field parent object */
-include_once 'field.php';
+require_once 'field.php';
 /** type checking and data manipulation */
-include_once 'inc/typeinfo.php';
+require_once 'inc/typeinfo.php';
 
 /**
 * a checkbox object

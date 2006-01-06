@@ -11,13 +11,13 @@
 */
 
 /** parent object */
-include_once 'field.php';
+require_once 'field.php';
 /** uses ID field objects */
-include_once 'idfield.php';
+require_once 'idfield.php';
 /** database row manipulation object */
-include_once 'dbrow.php';
+require_once 'dbrow.php';
 /** connect to database */
-include_once 'inc/db.php';
+require_once 'inc/db.php';
 
 /**
 * Similar to JoinData, but presents the options in a matrix not a list

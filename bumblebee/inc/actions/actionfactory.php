@@ -10,42 +10,45 @@
 * @subpackage Actions
 */
 
+/**  permissions definitions */
+// require_once 'inc/permissions.php';
+
 /**  basic functions (user functions) */
-include_once 'login.php';
-include_once 'logout.php';
-include_once 'view.php';
-include_once 'password.php';
+// require_once 'login.php';
+// require_once 'logout.php';
+// require_once 'view.php';
+// require_once 'password.php';
 
 // only some users can masquerade, but include this by default, 
 // checking permissions is done by the Masquerade class itself
-include_once 'masquerade.php';
+// require_once 'masquerade.php';
 
 //admin functions: only include these files if they are necessary (security + efficiency)
 //these classes do not check permissions of the user -- this must be done by the instantiating code
-if ($auth->isadmin) {
+// if ($auth->isadmin) {
   /**  admin functions (restricted inclusion) */
-  include_once 'groups.php';
-  include_once 'projects.php';
-  include_once 'users.php';
-  include_once 'instruments.php';
-  include_once 'consumables.php';
-  include_once 'consume.php';
-  include_once 'deletedbookings.php';
-  include_once 'costs.php';
-  include_once 'specialcosts.php';
-  include_once 'userclass.php';
-  include_once 'instrumentclass.php';
-  //include_once 'adminconfirm.php';
-  include_once 'emaillist.php';
-  // include_once 'report.php';
-  include_once 'export.php';
-  include_once 'billing.php';
-  include_once 'backupdatabase.php';
-}
+//   require_once 'groups.php';
+//   require_once 'projects.php';
+//   require_once 'users.php';
+//   require_once 'instruments.php';
+//   require_once 'consumables.php';
+//   require_once 'consume.php';
+//   require_once 'deletedbookings.php';
+//   require_once 'costs.php';
+//   require_once 'specialcosts.php';
+//   require_once 'userclass.php';
+//   require_once 'instrumentclass.php';
+//   //require_once 'adminconfirm.php';
+//   require_once 'emaillist.php';
+//   // require_once 'report.php';
+//   require_once 'export.php';
+//   require_once 'billing.php';
+//   require_once 'backupdatabase.php';
+// }
 
-include_once 'unknownaction.php';
-include_once 'inc/typeinfo.php';
-include_once 'actions.php';
+// require_once 'unknownaction.php';
+require_once 'inc/typeinfo.php';
+require_once 'actions.php';
 
 /**
 * Factory class for creating Action objects
@@ -74,51 +77,24 @@ include_once 'actions.php';
 * @subpackage Actions
 */
 class ActionFactory {
-  /** 
-  * the user-supplied "verb" (name of the action) e.g. "edituser"
-  * @var string
-  */
-  var $_verb;
-  /** 
-  * the actual user-supplied verb... we may pretend to do something else due to permissions
-  * @var string
-  */
+  /** @var string          the user-supplied "verb" (name of the action) e.g. "edituser" */
+  var $_verb; 
+  /** @var string          the actual user-supplied verb... we may pretend to do something else due to permissions  */
   var $_original_verb;
-  /** 
-  * Each action has a description associated with it that we will put into the HTML title tag
-  * @var string
-  */
+  /**  @var string         Each action has a description associated with it that we will put into the HTML title tag  */
   var $title;
-  /** 
-  * The action object (some descendent of the ActionAction class)
-  * @var ActionAction
-  */
+  /**  @var ActionAction   The action object (some descendent of the ActionAction class)   */
   var $_action;
-  /** 
-  * The user's login credentials object
-  * @var BumbleBeeAuth
-  */
+  /**  @var BumbleBeeAuth  The user's login credentials object  */
   var $_auth;
-  /** 
-  * user-supplied data from the PATH_INFO section of the URL
-  * @var array
-  */
+  /**  @var array          user-supplied data from the PATH_INFO and GET sections of the URL  */
   var $PDATA;
-  /** 
-  * The 'verb' that should follow this current action were a standard workflow being followed
-  * @var string
-  */
+  /**  @var string         The 'verb' that should follow this current action were a standard workflow being followed   */
   var $nextaction;
-  /** 
-  * list of action verbs available
-  * @var array
-  */
+  /**  @var array          ActionListing object  */
   var $actionListing;
-  /** 
-  * list of action titles available
-  * @var array
-  */
-  var $actionTitles;
+  /**  @var ActionData     The action data object for this action  */
+  var $_action;
   
   /** 
   * Constructor for the class
@@ -134,12 +110,11 @@ class ActionFactory {
     $this->_auth = $auth;
     #$this->PDATA = $this->_eatPathInfo();
     $this->PDATA = $this->_eatGPCInfo();
-    $list = new ActionListing();
-    $this->actionListing = $list->listing;
-    $this->actionTitles = $list->titles;
+    $this->actionListing = new ActionListing();
     $this->_verb = $this->_checkActions();
-    $this->nextaction = $this->_verb;  // override this in _makeAction if needed.
-    $this->title = $this->actionTitles[$this->_verb];
+    $this->_actionData = $this->actionListing->actions[$this->_verb];
+    $this->nextaction = $this->_actionData->next_action();
+    $this->title = $this->_actionData->title();
     $this->_action = $this->_makeAction();
   }
   
@@ -186,11 +161,11 @@ class ActionFactory {
     $this->_original_verb = $action;
     
     // dump if unknown action
-    if (! isset($this->actionListing[$action])) {
+    if (! $this->actionListing->action_exists($action)) {
       return 'unknown';
     }
     // protect admin functions
-    if ($this->actionListing[$action] > 999 && ! $this->_auth->isadmin) {
+    if (! $this->_auth->permitted($this->actionListing->actions[$action]->permissions)) {
       return 'forbidden!';
     }
   
@@ -276,64 +251,74 @@ class ActionFactory {
   * create the action object (a descendent of ActionAction) for the user-defined verb
   */
   function _makeaction() {
-    $act = $this->actionListing;
-    switch ($act[$this->_verb]) {
-      case $act['login']:
-        $this->nextaction = 'view';
-        return new ActionPrintLoginForm($this->_auth, $this->PDATA);
-      case $act['logout']:
-        $this->_auth->logout();
-        return new ActionLogout($this->_auth, $this->PDATA);
-      case $act['view']:
-        return new ActionView($this->_auth, $this->PDATA);
-      case $act['passwd']:
-        return new ActionPassword($this->_auth, $this->PDATA);
-      // instrument-admin only
-      case $act['masquerade']:
-        return new ActionMasquerade($this->_auth, $this->PDATA);
-      // admin only
-      case $act['groups']:
-        return new ActionGroup($this->_auth, $this->PDATA);
-      case $act['projects']:
-        return new ActionProjects($this->_auth, $this->PDATA);
-      case $act['users']:
-        return new ActionUsers($this->_auth, $this->PDATA);
-      case $act['instruments']:
-        return new ActionInstruments($this->_auth, $this->PDATA);
-      case $act['consumables']:
-        return new ActionConsumables($this->_auth, $this->PDATA);
-      case $act['consume']:
-        return new ActionConsume($this->_auth, $this->PDATA);
-      case $act['deletedbookings']:
-        return new ActionDeletedBookings($this->_auth, $this->PDATA);
-      case $act['costs']:
-        return new ActionCosts($this->_auth, $this->PDATA);
-      case $act['specialcosts']:
-        return new ActionSpecialCosts($this->_auth, $this->PDATA);
-      case $act['instrumentclass']:
-        return new ActionInstrumentClass($this->_auth, $this->PDATA);
-      case $act['userclass']:
-        return new ActionUserClass($this->_auth, $this->PDATA);
-      /*case $act['bookmeta']:
-        return new ActionBookmeta();
-      case $act['adminconfirm']:
-        return new ActionAdminconfirm();*/
-      case $act['emaillist']:
-        return new ActionEmaillist($this->_auth, $this->PDATA);
-      case $act['backupdb']:
-        return new ActionBackupDB($this->_auth, $this->PDATA);
-      case $act['report']:
-        return new ActionReport($this->_auth, $this->PDATA);
-      case $act['export']:
-        return new ActionExport($this->_auth, $this->PDATA);
-      case $act['billing']:
-        return new ActionBilling($this->_auth, $this->PDATA);
-      case $act['forbidden!']:
+    /** to reduce PHP processing overhead, include only the file that is required for this action */
+    require_once $this->_actionData->include_file();
+    switch ($this->_verb) {
+      case 'forbidden!':
         return new ActionUnknown($this->_original_verb, 1);
-      default:
+      case 'unknown':
         return new ActionUnknown($this->_original_verb);
+      default:
+        $class = $this->_actionData->action_class();
+        return new $class ($this->_auth, $this->PDATA);
     }
   }
+//     switch ($act[$this->_verb]) {
+//       case $act['login']:
+//         $this->nextaction = 'view';
+//         return new ActionPrintLoginForm($this->_auth, $this->PDATA);
+//       case $act['logout']:
+//         $this->_auth->logout();
+//         return new ActionLogout($this->_auth, $this->PDATA);
+//       case $act['view']:
+//         return new ActionView($this->_auth, $this->PDATA);
+//       case $act['passwd']:
+//         return new ActionPassword($this->_auth, $this->PDATA);
+//       // instrument-admin only
+//       case $act['masquerade']:
+//         return new ActionMasquerade($this->_auth, $this->PDATA);
+//       // admin only
+//       case $act['groups']:
+//         return new ActionGroup($this->_auth, $this->PDATA);
+//       case $act['projects']:
+//         return new ActionProjects($this->_auth, $this->PDATA);
+//       case $act['users']:
+//         return new ActionUsers($this->_auth, $this->PDATA);
+//       case $act['instruments']:
+//         return new ActionInstruments($this->_auth, $this->PDATA);
+//       case $act['consumables']:
+//         return new ActionConsumables($this->_auth, $this->PDATA);
+//       case $act['consume']:
+//         return new ActionConsume($this->_auth, $this->PDATA);
+//       case $act['deletedbookings']:
+//         return new ActionDeletedBookings($this->_auth, $this->PDATA);
+//       case $act['costs']:
+//         return new ActionCosts($this->_auth, $this->PDATA);
+//       case $act['specialcosts']:
+//         return new ActionSpecialCosts($this->_auth, $this->PDATA);
+//       case $act['instrumentclass']:
+//         return new ActionInstrumentClass($this->_auth, $this->PDATA);
+//       case $act['userclass']:
+//         return new ActionUserClass($this->_auth, $this->PDATA);
+//       /*case $act['bookmeta']:
+//         return new ActionBookmeta();
+//       case $act['adminconfirm']:
+//         return new ActionAdminconfirm();*/
+//       case $act['emaillist']:
+//         return new ActionEmaillist($this->_auth, $this->PDATA);
+//       case $act['backupdb']:
+//         return new ActionBackupDB($this->_auth, $this->PDATA);
+//       case $act['report']:
+//         return new ActionReport($this->_auth, $this->PDATA);
+//       case $act['export']:
+//         return new ActionExport($this->_auth, $this->PDATA);
+//       case $act['billing']:
+//         return new ActionBilling($this->_auth, $this->PDATA);
+//       case $act['forbidden!']:
+//         return new ActionUnknown($this->_original_verb, 1);
+//       default:
+//         return new ActionUnknown($this->_original_verb);
+//     }
      
 }
  //class ActionFactory

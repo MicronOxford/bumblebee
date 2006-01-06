@@ -11,11 +11,11 @@
 */
   
 /** specialcosts object */
-include_once 'inc/bb/specialcosts.php';
+require_once 'inc/bb/specialcosts.php';
 /** list of choices */
-include_once 'inc/formslib/anchortablelist.php';
+require_once 'inc/formslib/anchortablelist.php';
 /** parent object */
-include_once 'inc/actions/actionaction.php';
+require_once 'inc/actions/actionaction.php';
 
 /**
 * Edit/create/delete special instrument usage costs 
@@ -34,7 +34,7 @@ class ActionSpecialCosts extends ActionAction {
   */
   function ActionSpecialCosts($auth, $pdata) {
     parent::ActionAction($auth, $pdata);
-    $this->DEBUG=10;
+    //$this->DEBUG=10;
     $this->mungeInputData();
   }
 

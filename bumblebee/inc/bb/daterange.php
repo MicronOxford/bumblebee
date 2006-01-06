@@ -13,12 +13,12 @@
 */
 
 /** date manipulation routines */
-include_once 'inc/date.php';
+require_once 'inc/date.php';
 /** quick select javascript object */
-include_once 'inc/jsquickwalk.php';
+require_once 'inc/jsquickwalk.php';
 /** parent object */
-include_once 'inc/formslib/nondbrow.php';
-include_once 'inc/formslib/datefield.php';
+require_once 'inc/formslib/nondbrow.php';
+require_once 'inc/formslib/datefield.php';
 
 /** default is current time period */
 define('DR_CURRENT',  1);

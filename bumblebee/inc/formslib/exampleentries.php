@@ -11,9 +11,9 @@
 */
 
 /** uses choice list object for examples */
-include_once 'dbchoicelist.php';
+require_once 'dbchoicelist.php';
 /** sql manipulation routines */
-include_once 'sql.php';
+require_once 'sql.php';
 
 /**
 * Provide example entries for existing values next to the choices in a list, e.g. radio list

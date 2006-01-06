@@ -11,11 +11,11 @@
 */
 
 /** parent object */
-include_once 'field.php';
+require_once 'field.php';
 /** database row manipulation object */
-include_once 'dbrow.php';
+require_once 'dbrow.php';
 /** connect to database */
-include_once 'inc/db.php';
+require_once 'inc/db.php';
 
 /**
 * an object that manages data related by an SQL JOIN but pretends to be a single form field.

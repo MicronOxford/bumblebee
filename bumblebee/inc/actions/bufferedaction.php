@@ -11,9 +11,9 @@
 */
 
 /** status codes for success/failure of database actions */
-include_once 'inc/statuscodes.php';
+require_once 'inc/statuscodes.php';
 /** parent object */
-include_once 'inc/actions/actionaction.php';
+require_once 'inc/actions/actionaction.php';
 
 /**
 * Primitive class that allows output to be suppressed 

@@ -11,9 +11,9 @@
 */
 
 /** date manipulation routines */
-include_once 'inc/date.php';
+require_once 'inc/date.php';
 /** parent object */
-include_once 'timeslot.php';
+require_once 'timeslot.php';
 
 /**
 * Object for an individual booking

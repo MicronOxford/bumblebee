@@ -11,11 +11,11 @@
 */
 
 /** Group object */
-include_once 'inc/bb/group.php';
+require_once 'inc/bb/group.php';
 /** list of choices */
-include_once 'inc/formslib/anchortablelist.php';
+require_once 'inc/formslib/anchortablelist.php';
 /** parent object */
-include_once 'inc/actions/actionaction.php';
+require_once 'inc/actions/actionaction.php';
 
 /**
 * Interface for editing details of groups
@@ -23,7 +23,7 @@ include_once 'inc/actions/actionaction.php';
 * @package    Bumblebee
 * @subpackage Actions
 */
-class ActionGroup extends ActionAction  {
+class ActionGroups extends ActionAction  {
 
   /**
   * Initialising the class 
@@ -32,7 +32,7 @@ class ActionGroup extends ActionAction  {
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
   */
-  function ActionGroup($auth, $pdata) {
+  function ActionGroups($auth, $pdata) {
     parent::ActionAction($auth, $pdata);
     $this->mungeInputData();
   }

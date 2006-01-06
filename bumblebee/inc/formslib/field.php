@@ -11,11 +11,11 @@
 */
 
 /** type checking and data manipulation */
-include_once 'inc/typeinfo.php';
+require_once 'inc/typeinfo.php';
 /** type checking and data manipulation */
-include_once 'validtester.php';
+require_once 'validtester.php';
 /** status codes for success/failure of database actions */
-include_once 'inc/statuscodes.php';
+require_once 'inc/statuscodes.php';
 
 /**
 * Field object that corresponds to one field in a SQL table row.

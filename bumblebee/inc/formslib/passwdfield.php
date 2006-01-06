@@ -11,9 +11,9 @@
 */
 
 /** parent object */
-include_once 'textfield.php';
+require_once 'textfield.php';
 /** type checking and data manipulation */
-include_once 'inc/typeinfo.php';
+require_once 'inc/typeinfo.php';
 
 /**
 * a text field that is designed to hold passwords

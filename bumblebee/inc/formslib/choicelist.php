@@ -11,13 +11,13 @@
 */
 
 /** parent object */
-include_once 'field.php';
+require_once 'field.php';
 /** formatter helper object */
-include_once 'outputformatter.php';
+require_once 'outputformatter.php';
 /** list (db) object */
-include_once 'dbchoicelist.php';
+require_once 'dbchoicelist.php';
 /** list (non-db) object */
-include_once 'arraychoicelist.php';
+require_once 'arraychoicelist.php';
 
 /** 
 * a choice list field from which a select, list of hrefs etc can be built

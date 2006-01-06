@@ -11,11 +11,11 @@
 */
 
 /** Costs object */
-include_once 'inc/bb/costs.php';
+require_once 'inc/bb/costs.php';
 /** list of choices */
-include_once 'inc/formslib/anchortablelist.php';
+require_once 'inc/formslib/anchortablelist.php';
 /** parent object */
-include_once 'inc/actions/actionaction.php';
+require_once 'inc/actions/actionaction.php';
 
 /**
 *  Edit and create costs for using instruments

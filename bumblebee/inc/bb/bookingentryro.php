@@ -11,9 +11,9 @@
 */
 
 /** uses Booking object */
-include_once 'inc/bookings/booking.php';
+require_once 'inc/bookings/booking.php';
 /** obtain data from database */
-include_once 'inc/bookings/bookingdata.php';
+require_once 'inc/bookings/bookingdata.php';
 
 /**
 * Booking entry object for viewing booking

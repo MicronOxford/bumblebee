@@ -12,10 +12,10 @@
 
 
 /** parent object */
-include_once 'inc/formslib/dbrow.php';
+require_once 'inc/formslib/dbrow.php';
 /** uses fields */
-include_once 'inc/formslib/joinmatrix.php';
-include_once 'inc/formslib/textfield.php';
+require_once 'inc/formslib/joinmatrix.php';
+require_once 'inc/formslib/textfield.php';
 
 /**
 * User/Instrument class matrix 

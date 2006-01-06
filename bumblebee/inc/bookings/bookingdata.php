@@ -11,7 +11,7 @@
 */
 
 /** loads data into Booking objects */
-include_once 'booking.php';
+require_once 'booking.php';
 
 /**
 * Obtains booking data from the database

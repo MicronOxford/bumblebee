@@ -11,13 +11,13 @@
 */
 
 /** type checking and data manipulation */
-include_once 'inc/typeinfo.php';
+require_once 'inc/typeinfo.php';
 /** database connection script */
-include_once 'inc/db.php';
+require_once 'inc/db.php';
 /** sql manipulation routines */
-include_once 'sql.php';
+require_once 'sql.php';
 /** status codes for success/failure of database actions */
-include_once 'inc/statuscodes.php';
+require_once 'inc/statuscodes.php';
 
 /**
 * database object base class (self-initialising and self-updating object)

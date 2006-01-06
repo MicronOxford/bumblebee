@@ -45,6 +45,6 @@ $db = mysql_select_db($CONFIG['database']['dbname'], $connection)
 /**
 * import SQL functions for database lookups
 */
-include_once 'inc/formslib/sql.php';
+require_once 'inc/formslib/sql.php';
 
 ?> 

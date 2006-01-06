@@ -11,9 +11,9 @@
 */
 
 /** parent object */
-include_once 'textfield.php';
+require_once 'textfield.php';
 /** type checking and data manipulation */
-include_once 'inc/typeinfo.php';
+require_once 'inc/typeinfo.php';
 
 /**
 * a textfield object designed to hold the database key (or id) field

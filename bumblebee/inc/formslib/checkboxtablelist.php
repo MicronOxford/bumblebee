@@ -11,9 +11,11 @@
 */
 
 /** parent object */
-include_once 'choicelist.php';
+require_once 'choicelist.php';
 /** uses checkbox objects */
-include_once 'checkbox.php';
+require_once 'checkbox.php';
+/** uses textfield objects */
+require_once 'textfield.php';
 
 /**
 * a table of checkboxes for different options

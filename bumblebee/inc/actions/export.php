@@ -11,23 +11,29 @@
 */
 
 /** CheckBox object */
-include_once 'inc/formslib/checkbox.php';
+require_once 'inc/formslib/checkbox.php';
 /** CheckBoxTableList object */
-include_once 'inc/formslib/checkboxtablelist.php';
+require_once 'inc/formslib/checkboxtablelist.php';
 /** Data reflector object */
-include_once 'inc/formslib/datareflector.php';
+require_once 'inc/formslib/datareflector.php';
 /** parent object */
-include_once 'inc/actions/bufferedaction.php';
+require_once 'inc/actions/bufferedaction.php';
 /** Export formatting codes */
-include_once 'inc/exportcodes.php';
+require_once 'inc/exportcodes.php';
 /** Export configuration and formatting */
-include_once 'inc/export/exporttypes.php';
+require_once 'inc/export/exporttypes.php';
 /** Export method object */
-include_once 'inc/export/arrayexport.php';
+require_once 'inc/export/arrayexport.php';
 /** Export method object */
-include_once 'inc/export/htmlexport.php';
+require_once 'inc/export/htmlexport.php';
 /** database interrogation object */
-include_once 'inc/formslib/dblist.php';
+require_once 'inc/formslib/dblist.php';
+/** list of choices */
+require_once 'inc/formslib/anchortablelist.php';
+/** list of choices */
+require_once 'inc/bb/daterange.php';
+/** list of choices */
+require_once 'inc/formslib/radiolist.php';
 
 /**
 * Export various views of the booking data in numerous formats

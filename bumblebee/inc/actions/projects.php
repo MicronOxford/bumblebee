@@ -11,11 +11,11 @@
 */
 
 /** project object */
-include_once 'inc/bb/project.php';
+require_once 'inc/bb/project.php';
 /** list of choices */
-include_once 'inc/formslib/anchortablelist.php';
+require_once 'inc/formslib/anchortablelist.php';
 /** parent object */
-include_once 'inc/actions/actionaction.php';
+require_once 'inc/actions/actionaction.php';
 
 /**
 * Edit/create/delete projects

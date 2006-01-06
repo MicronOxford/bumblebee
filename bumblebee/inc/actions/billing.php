@@ -11,13 +11,13 @@
 */
 
 /** parent object */
-include_once 'inc/actions/export.php';
+require_once 'inc/actions/export.php';
 /** ExportType and formatting */
-include_once 'inc/export/exporttypes.php';
+require_once 'inc/export/exporttypes.php';
 /** Export formatting codes */
-include_once 'inc/exportcodes.php';
+require_once 'inc/exportcodes.php';
 /** db interrogation object */
-include_once 'inc/formslib/dblist.php';
+require_once 'inc/formslib/dblist.php';
 
 /**
 * Send billing data by email

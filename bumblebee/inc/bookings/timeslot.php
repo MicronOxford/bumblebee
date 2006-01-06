@@ -11,7 +11,7 @@
 */
 
 /** date manipulation routines */
-include_once 'inc/date.php';
+require_once 'inc/date.php';
 
 /**
 * Booking/Vacancy base object -- designed to be inherited by Vacancy and Booking

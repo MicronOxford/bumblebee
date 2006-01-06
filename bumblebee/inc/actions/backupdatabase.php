@@ -11,9 +11,9 @@
 */
 
 /** parent object */
-include_once 'inc/actions/bufferedaction.php';
+require_once 'inc/actions/bufferedaction.php';
 /** status codes for success/failure of database actions */
-include_once 'inc/statuscodes.php';
+require_once 'inc/statuscodes.php';
 
 /**
 * Create a dump of the database for backup purposes

@@ -11,7 +11,7 @@
 */
 
 /** choicelist parent object */
-include_once 'choicelist.php';
+require_once 'choicelist.php';
 
 /**
 * anchor list (<li><a href="$href">$name</a></li>) for a ChoiceList

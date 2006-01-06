@@ -11,7 +11,7 @@
 */
 
 /** status codes for success/failure of database actions */
-include_once 'inc/statuscodes.php';
+require_once 'inc/statuscodes.php';
 
 /**
 * Base class inherited by all actions from the action-triage

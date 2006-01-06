@@ -11,9 +11,9 @@
 */
 
 /** uses an OutputFormatter to format the data */
-include_once 'inc/formslib/outputformatter.php';
+require_once 'inc/formslib/outputformatter.php';
 /** export formatting codes */
-include_once 'inc/exportcodes.php';
+require_once 'inc/exportcodes.php';
 
 /**
 * generic database list/export class

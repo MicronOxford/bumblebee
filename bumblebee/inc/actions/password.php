@@ -11,9 +11,9 @@
 */
 
 /** parent object */
-include_once 'inc/actions/actionaction.php';
+require_once 'inc/actions/actionaction.php';
 /** user editing object */
-include_once 'inc/bb/user.php';
+require_once 'inc/bb/user.php';
 
 /**
 * Permit a local user to change their password

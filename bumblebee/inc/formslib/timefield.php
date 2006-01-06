@@ -11,9 +11,9 @@
 */
 
 /** parent object */
-include_once 'field.php';
+require_once 'field.php';
 /** type checking and data manipulation */
-include_once 'inc/typeinfo.php';
+require_once 'inc/typeinfo.php';
 
 /** Time field is in "FIXED" (uneditable) format */
 define('TF_FIXED', 0);

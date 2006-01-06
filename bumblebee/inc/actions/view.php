@@ -11,17 +11,17 @@
 */
 
 /** calendar object */
-include_once 'inc/bb/calendar.php';
+require_once 'inc/bb/calendar.php';
 /** generic booking entry object */
-include_once 'inc/bb/bookingentry.php';
+require_once 'inc/bb/bookingentry.php';
 /** read-only booking entry object */
-include_once 'inc/bb/bookingentryro.php';
+require_once 'inc/bb/bookingentryro.php';
 /** list of choices object */
-include_once 'inc/formslib/anchortablelist.php';
+require_once 'inc/formslib/anchortablelist.php';
 /** date maniuplation objects */
-include_once 'inc/date.php';
+require_once 'inc/date.php';
 /** parent object */
-include_once 'inc/actions/actionaction.php';
+require_once 'inc/actions/actionaction.php';
 
 /**
 * View a bookings calendar and make bookings

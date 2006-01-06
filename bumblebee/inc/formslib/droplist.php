@@ -11,7 +11,7 @@
 */
 
 /** parent object */
-include_once 'choicelist.php';
+require_once 'choicelist.php';
 
 /**
 * a dropdown selection list using a ChoiceList

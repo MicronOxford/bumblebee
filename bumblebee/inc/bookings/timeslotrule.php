@@ -11,9 +11,9 @@
 */
 
 /** date manipulation routines */
-include_once 'inc/date.php';
+require_once 'inc/date.php';
 /** timeslot object for bookings/vacancies */
-include_once 'timeslot.php';
+require_once 'timeslot.php';
 
 /** date-time operation control: look for match with start of slot */
 define('TSSTART',  'tstart');

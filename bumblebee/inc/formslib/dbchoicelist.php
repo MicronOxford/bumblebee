@@ -11,7 +11,7 @@
 */
 
 /** DBO parent object */
-include_once 'dbobject.php';
+require_once 'dbobject.php';
 
 /**
 * A choice list based on an SQL statement.

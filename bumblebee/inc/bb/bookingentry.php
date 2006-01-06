@@ -11,20 +11,20 @@
 */
 
 /** parent object */
-include_once 'inc/formslib/dbrow.php';
+require_once 'inc/formslib/dbrow.php';
 /** uses fields */
-include_once 'inc/formslib/idfield.php';
-include_once 'inc/formslib/textfield.php';
-include_once 'inc/formslib/datetimefield.php';
-include_once 'inc/formslib/timefield.php';
-include_once 'inc/formslib/droplist.php';
-include_once 'inc/formslib/referencefield.php';
-include_once 'inc/formslib/dummyfield.php';
+require_once 'inc/formslib/idfield.php';
+require_once 'inc/formslib/textfield.php';
+require_once 'inc/formslib/datetimefield.php';
+require_once 'inc/formslib/timefield.php';
+require_once 'inc/formslib/droplist.php';
+require_once 'inc/formslib/referencefield.php';
+require_once 'inc/formslib/dummyfield.php';
 
 /** uses time slot rules for management */
-include_once 'inc/bookings/timeslotrule.php';
+require_once 'inc/bookings/timeslotrule.php';
 /** status codes for success/failure of database actions */
-include_once 'inc/statuscodes.php';
+require_once 'inc/statuscodes.php';
 
 /**
 * Booking entry object for creating/editing booking

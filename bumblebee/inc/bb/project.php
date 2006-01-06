@@ -11,11 +11,12 @@
 */
 
 /** parent object */
-include_once 'inc/formslib/dbrow.php';
-include_once 'inc/formslib/textfield.php';
-include_once 'inc/formslib/radiolist.php';
-include_once 'inc/formslib/droplist.php';
-include_once 'inc/formslib/joindata.php';
+require_once 'inc/formslib/dbrow.php';
+require_once 'inc/formslib/idfield.php';
+require_once 'inc/formslib/textfield.php';
+require_once 'inc/formslib/radiolist.php';
+require_once 'inc/formslib/droplist.php';
+require_once 'inc/formslib/joindata.php';
 
 /**
 * Project object (extends dbo), with extra customisations for other links

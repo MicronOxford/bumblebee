@@ -11,7 +11,7 @@
 */
 
 /** parent object */
-include_once 'field.php';
+require_once 'field.php';
 
 /**
 * a non-SQL active field (for the information of the user, not the database)

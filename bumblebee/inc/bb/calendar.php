@@ -11,19 +11,19 @@
 */
 
 /** date manipulation routines */
-include_once 'inc/date.php';
+require_once 'inc/date.php';
 /** Booking object */
-include_once 'inc/bookings/booking.php';
+require_once 'inc/bookings/booking.php';
 /** Vacancy object */
-include_once 'inc/bookings/vacancy.php';
+require_once 'inc/bookings/vacancy.php';
 /** Cell object */
-include_once 'inc/bookings/cell.php';
+require_once 'inc/bookings/cell.php';
 /** BookingMatrix object */
-include_once 'inc/bookings/matrix.php';
+require_once 'inc/bookings/matrix.php';
 /** BookingData object (list of bookings) */
-include_once 'inc/bookings/bookingdata.php';
+require_once 'inc/bookings/bookingdata.php';
 /** TimeSlot and TimeSlotRule objects */
-include_once 'inc/bookings/timeslotrule.php';
+require_once 'inc/bookings/timeslotrule.php';
 
 /** 
 * use start and end times from defined slots 

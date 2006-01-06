@@ -11,7 +11,7 @@
 */
 
 /** date manipulation routines */
-include_once 'inc/date.php';
+require_once 'inc/date.php';
 
 /**
 * Create a pair of forward/back javascript links to allow the user to move forward and back through a sequence of date periods

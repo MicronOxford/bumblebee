@@ -11,8 +11,11 @@
 */
 
 /** parent object */
-include_once 'inc/formslib/dbrow.php';
-include_once 'inc/formslib/textfield.php';
+require_once 'inc/formslib/dbrow.php';
+require_once 'inc/formslib/idfield.php';
+require_once 'inc/formslib/textfield.php';
+require_once 'inc/formslib/referencefield.php';
+require_once 'inc/formslib/joindata.php';
 
 /**
 * Special costs for project/instrument usage editing

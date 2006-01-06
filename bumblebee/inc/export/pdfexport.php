@@ -11,7 +11,7 @@
 */
 
 /** constants for defining export formatting and codes */
-include_once 'inc/exportcodes.php';
+require_once 'inc/exportcodes.php';
 /** FPDF free PDF creation library for PHP: http://fpdf.org/ */
 require_once 'fpdf/fpdf.php';
 

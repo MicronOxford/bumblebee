@@ -11,9 +11,9 @@
 */
 
 /** parent object */
-include_once 'inc/formslib/dbrow.php';
-include_once 'inc/formslib/textfield.php';
-include_once 'inc/formslib/idfield.php';
+require_once 'inc/formslib/dbrow.php';
+require_once 'inc/formslib/textfield.php';
+require_once 'inc/formslib/idfield.php';
 
 /**
 * Instrument class name

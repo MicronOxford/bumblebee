@@ -16,16 +16,16 @@
 ob_start();
 
 /** Load in the user configuration data */
-include_once 'config/config.php'; 
+require_once 'config/config.php'; 
 /** start the database session */
-include_once 'inc/db.php'; 
+require_once 'inc/db.php'; 
 /** check the user's credentials, create a session to record them */
-include_once 'inc/bb/auth.php';
+require_once 'inc/bb/auth.php';
 $auth = new BumbleBeeAuth();
 
 
 /** Load the action factory to work out what should be done in this instance of the script */
-include_once 'inc/actions/actionfactory.php';
+require_once 'inc/actions/actionfactory.php';
 $action = new ActionFactory($auth);
 if ($action->ob_flush_ok()) {
   // some actions will dump back a file, so we might not actually want to output content so far.
@@ -34,9 +34,10 @@ if ($action->ob_flush_ok()) {
 }
 
 /** load the user and/or admin menu */
-include_once 'inc/menu.php';
+require_once 'inc/menu.php';
 $usermenu = new UserMenu($auth, $action->_verb);
-$usermenu ->showMenu = ($auth->isLoggedIn() && $action->_verb != 'logout');
+$usermenu->showMenu = ($auth->isLoggedIn() && $action->_verb != 'logout');
+$usermenu->actionListing = $action->actionListing;
 
 // $pagetitle can be used in theme/pageheader.php 
 $pagetitle  = $action->title . ' : ' . $CONFIG['main']['SiteTitle'];

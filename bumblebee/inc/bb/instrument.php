@@ -11,13 +11,15 @@
 */
 
 /** parent object */
-include_once 'inc/formslib/dbrow.php';
-include_once 'inc/formslib/textfield.php';
-include_once 'inc/formslib/textarea.php';
-include_once 'inc/formslib/commentfield.php';
-include_once 'inc/formslib/radiolist.php';
-include_once 'inc/formslib/exampleentries.php';
-include_once 'inc/bookings/timeslotrule.php';
+require_once 'inc/formslib/dbrow.php';
+require_once 'inc/formslib/idfield.php';
+require_once 'inc/formslib/textfield.php';
+require_once 'inc/formslib/textarea.php';
+require_once 'inc/formslib/commentfield.php';
+require_once 'inc/formslib/checkbox.php';
+require_once 'inc/formslib/radiolist.php';
+require_once 'inc/formslib/exampleentries.php';
+require_once 'inc/bookings/timeslotrule.php';
 
 /**
 * Instrument object (extends dbo), with extra customisations for other links

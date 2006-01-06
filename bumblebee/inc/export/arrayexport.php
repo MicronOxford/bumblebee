@@ -11,7 +11,7 @@
 */
 
 /** constants for defining export formatting and codes */
-include_once 'inc/exportcodes.php';
+require_once 'inc/exportcodes.php';
 
 /**
 * Construct an array for exporting the data

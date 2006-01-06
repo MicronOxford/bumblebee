@@ -11,7 +11,7 @@
 */
 
 /** parent object */
-include_once 'choicelist.php';
+require_once 'choicelist.php';
 
 /**
 * a radio button list based on the ChoiceList class

@@ -11,7 +11,7 @@
 */
 
 /** parent object */
-include_once 'inc/actions/actionaction.php';
+require_once 'inc/actions/actionaction.php';
 
 /**
 * Error handling class for unknown actions

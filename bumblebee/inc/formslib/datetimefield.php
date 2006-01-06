@@ -11,17 +11,17 @@
 */
 
 /** parent object */
-include_once 'field.php';
+require_once 'field.php';
 /** type checking and data manipulation */
-include_once 'inc/typeinfo.php';
+require_once 'inc/typeinfo.php';
 /** contains a timefield object */
-include_once 'timefield.php';
+require_once 'timefield.php';
 /** contains a timefield object */
-include_once 'datefield.php';
+require_once 'datefield.php';
 /** date storage types */
-include_once 'inc/date.php';
+require_once 'inc/date.php';
 /** timeslot manipulation and validation object */
-include_once 'inc/bookings/timeslotrule.php';
+require_once 'inc/bookings/timeslotrule.php';
 
 /**
 * a textfield designed for date-time data 

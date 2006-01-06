@@ -20,7 +20,7 @@
 */
 
 /** status codes for success/failure of database actions */
-include_once('inc/statuscodes.php');
+require_once('inc/statuscodes.php');
 
 /**
 * run an sql query without returning data

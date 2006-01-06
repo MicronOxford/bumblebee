@@ -11,7 +11,7 @@
 */
 
 /** parent object */
-include_once 'inc/actions/actionaction.php';
+require_once 'inc/actions/actionaction.php';
 
 /**
 * Thank the user for using the system.
@@ -31,10 +31,10 @@ class ActionLogout extends ActionAction {
   */
   function ActionLogout($auth, $pdata) {
     parent::ActionAction($auth, $pdata);
+    $this->auth->logout();
   }
 
   function go() {
-    //$this->auth->logout();
     $url = makeURL('');
     echo "
       <h2>Successfully logged out</h2>

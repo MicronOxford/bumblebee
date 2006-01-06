@@ -11,7 +11,7 @@
 */
 
 /** anchorlist parent object */
-include_once 'anchorlist.php';
+require_once 'anchorlist.php';
 
 /**
 * Anchor list similar to AnchorList, but this time in a table not dot points

@@ -11,9 +11,9 @@
 */
 
 /** database uber-object that we will emulate */
-include_once 'dbobject.php';
+require_once 'dbobject.php';
 /** status codes for success/failure of database actions */
-include_once 'inc/statuscodes.php';
+require_once 'inc/statuscodes.php';
 
 
 /**

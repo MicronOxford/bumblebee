@@ -14,11 +14,11 @@
 */
 
 /** parent object */
-include_once 'field.php';
+require_once 'field.php';
 /** uses ExampleEntries object */
-include_once 'exampleentries.php';
+require_once 'exampleentries.php';
 /** type checking and data manipulation */
-include_once 'inc/typeinfo.php';
+require_once 'inc/typeinfo.php';
 
 /**
 * a non-editable reference object to explain a table entry

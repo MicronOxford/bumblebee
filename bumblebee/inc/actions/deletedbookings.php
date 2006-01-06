@@ -11,13 +11,13 @@
 */
 
 /** list of choices */
-include_once 'inc/formslib/anchortablelist.php';
+require_once 'inc/formslib/anchortablelist.php';
 /** date manipulation routines */
-include_once 'inc/date.php';
+require_once 'inc/date.php';
 /** DateRange object */
-include_once 'inc/bb/daterange.php';
+require_once 'inc/bb/daterange.php';
 /** parent object */
-include_once 'inc/actions/actionaction.php';
+require_once 'inc/actions/actionaction.php';
 
 /**
 * View a list of deleted bookings for an instrument over a given time period

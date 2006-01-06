@@ -11,9 +11,11 @@
 */
 
 /** sql manipulation routines */
-include_once 'inc/formslib/sql.php';
+require_once 'inc/formslib/sql.php';
 /** type checking and data manipulation */
-include_once 'inc/typeinfo.php';
+require_once 'inc/typeinfo.php';
+/** permissions codes */
+require_once 'inc/permissions.php';
 
 /**
 * User Authorisation, Login and Permissions object
@@ -35,6 +37,7 @@ class BumbleBeeAuth {
   var $ename;           //effective name
   var $eusername;       //effective username
   var $permissions;
+  var $system_permissions;
   var $_loggedin=0;
   var $_error = '';
   var $table;
@@ -60,6 +63,15 @@ class BumbleBeeAuth {
       $this->_loggedin = $this->_login();
     } else {
       // we're not logged in at all
+    }
+    #FIXME
+    if ($this->isadmin) {
+      $this->system_permissions = BBPERM_ADMIN_ALL;
+    } else {
+      $this->system_permissions = BBPERM_USER_ALL | BBPERM_USER_PASSWD;
+    }
+    if ($this->masqPermitted()) {
+      $this->system_permissions |= BBPERM_MASQ;
     }
   }
 
@@ -348,6 +360,16 @@ class BumbleBeeAuth {
            :  getenv('REMOTE_ADDR'));
   }
 
+  function permitted($operation, $instrument=NULL) {
+    // print "Requested: $operation and have permissions $this->system_permissions<br/>";
+    if ($instrument===NULL) {
+      // looking for system permissions
+      return $operation & $this->system_permissions;
+    } else {
+      return $operation & $this->instrument_permission($instrument);
+    }
+  }
+  
 } //BumbleBeeAuth
 
 ?> 
