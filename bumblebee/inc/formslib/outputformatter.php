@@ -40,13 +40,76 @@ class OutputFormatter {
   * @return string formatted data
   */
   function format($data) {
+    #echo "Formatting string";
     $fields = is_array($this->formatfields) ? $this->formatfields : array($this->formatfields);
     $s = array();
-    foreach ($this->formatfields as $v) {
-      $s[] = isset($data[$v]) ? xssqw($data[$v]) : '';
+    foreach ($fields as $v) {
+      if (! is_object($v)) {
+        if (isset($data[$v])) {
+          $val = isset($data[$v]) ? xssqw($data[$v]) : '';
+          if ($val !== '' && $val !== NULL) $s[] = $val;
+        }
+      } else {
+        $val = $v->format($data);
+        if ($val !== '' && $val !== NULL) $s[] = $val;
+      }
     }
-    return vsprintf($this->format, $s);
+    return count($s) ? vsprintf($this->format, $s) : '';
+/*    $t = '';
+    #preDump($this);
+    #preDump($data);
+    if (is_array($this->formatfields)) {
+      $s = array();
+      foreach ($this->formatfields as $v) {
+        $s[] = isset($data[$v]) ? xssqw($data[$v]) : '';
+        #if (isset($data[$v]) && $data[$v]) {
+          #$s = $data[$v];
+          #$t .= sprintf($this->format, $s);
+        #}
+      }
+      $t .= vsprintf($this->format, $s);
+    } else {
+     $s = $this->formatfields->format($data);
+      if ($s != '') {
+        $t .= sprintf($this->format, xssqw($s));
+      }
+    }
+    return $t;*/
+//     $fields = is_array($this->formatfields) ? $this->formatfields : array($this->formatfields);
+//     $s = array();
+//     foreach ($this->formatfields as $v) {
+//       $s[] = isset($data[$v]) ? xssqw($data[$v]) : '';
+//     }
+//     return vsprintf($this->format, $s);
   }
+/*  function format($data) {
+    $t = '';
+    #preDump($this);
+    #preDump($data);
+    if (is_array($this->formatfields)) {
+      $s = array();
+      foreach ($this->formatfields as $v) {
+        $s[] = isset($data[$v]) ? xssqw($data[$v]) : '';
+        #if (isset($data[$v]) && $data[$v]) {
+          #$s = $data[$v];
+          #$t .= sprintf($this->format, $s);
+        #}
+      }
+      $t .= vsprintf($this->format, $s);
+    } else {
+     $s = $this->formatfields->format($data);
+      if ($s != '') {
+        $t .= sprintf($this->format, xssqw($s));
+      }
+    }
+    return $t;
+//     $fields = is_array($this->formatfields) ? $this->formatfields : array($this->formatfields);
+//     $s = array();
+//     foreach ($this->formatfields as $v) {
+//       $s[] = isset($data[$v]) ? xssqw($data[$v]) : '';
+//     }
+//     return vsprintf($this->format, $s);
+  }*/
   
 } // class OutputFormatter
 

@@ -111,7 +111,7 @@ class JoinMatrix extends Field {
     parent::Field($name, $longname, $description);
     //$this->DEBUG=10;
     $this->joinTable     = $joinTable;
-    $this->jtIdField     = $jtId;
+    $this->jtIdField     = $jtIdField;
     $this->jtConstKeyCol = $jtConstKeyCol;
     $this->table1IdCol   = $table1IdCol;
     $this->table1        = $table1;
@@ -119,7 +119,7 @@ class JoinMatrix extends Field {
     $this->table2IdCol   = $table2IdCol;
     $this->table2        = $table2;
     $this->protoRow = new DBRow($this->joinTable, -1);
-    $id = new IdField($jtId);
+    $id = new IdField($jtIdField);
     $this->protoRow->addElement($id);
     $k1 = new IdField($jtConstKeyCol);
     $this->protoRow->addElement($k1);
