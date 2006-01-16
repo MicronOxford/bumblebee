@@ -99,6 +99,6 @@ if (!empty($CONFIG['main']['ExtraIncludePath'])) {
 * $BUMBLEBEEVERSION is the installed version of the software
 * @global string $BUMBLEBEEVERSION
 */
-$BUMBLEBEEVERSION = '1.0.0';
+$BUMBLEBEEVERSION = '1.0.1-pre1';
 
 ?> 

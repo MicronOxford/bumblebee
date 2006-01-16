@@ -68,7 +68,11 @@ class BumbleBeeAuth {
     if ($this->isadmin) {
       $this->system_permissions = BBPERM_ADMIN_ALL;
     } else {
-      $this->system_permissions = BBPERM_USER_ALL | BBPERM_USER_PASSWD;
+      if ($this->localLogin) {
+        $this->system_permissions = BBPERM_USER_ALL | BBPERM_USER_PASSWD;
+      } else {
+        $this->system_permissions = BBPERM_USER_ALL;
+      }
     }
     if ($this->masqPermitted()) {
       $this->system_permissions |= BBPERM_MASQ;

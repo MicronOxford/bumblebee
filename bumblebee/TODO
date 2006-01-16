@@ -55,11 +55,16 @@ Features:
 
 * -ve consumable quantities (for returns)?
 
-
+* email users with notification of booking 
+* email users a reminder that bookings are coming up (cron job)
 
 * billing
 
 configure exporttypes from files?
+
+* data exports
+  - summary of bookings for each user
+  - summary of bookings for a set of instruments 
 
 * instruments
   - can we put some better validation on the timeslotrule input? e.g. making sure every hour is accounted for?
@@ -127,9 +132,9 @@ streamline creation of project when creating a user
 
 ??  work out confirmation emails and when adminconfirm is necessary
 
-?? create flag for compulsory emails for some events (e.g. booking Raman)
-
 select all/deselect all javascript buttons where applicable
+
+
 
 * unbook emails
 
@@ -191,6 +196,12 @@ flat file logging?
 
 
 
+------------
+
+see also:
+  ors.sf.net
+
+
 
 
 
@@ -213,3 +224,7 @@ Released on instruments.c.u.e.a for testing
 
 BB0959: 2005-05-25
 Released on instruments.c.u.e.a for testing
+
+
+
+
