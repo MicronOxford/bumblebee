@@ -20,7 +20,7 @@ define('BBPERM_USER_PASSWD',   ($perm<<=1));
 define('BBPERM_MASQ',          ($perm<<=1));
 
 // SYSTEM LEVEL FUNCTIONS: ADMIN USERS
-/** Permission: Admin user required */
+/** Permission: Admin user required (a user *never* has this permission) */
 define('BBPERM_ADMIN',                 ($perm<<=1));
 /** Permission: Permission to edit groups */
 define('BBPERM_ADMIN_GROUPS',          ($perm<<=1) | BBPERM_ADMIN);
@@ -47,12 +47,27 @@ define('BBPERM_ADMIN_BILLING',         ($perm<<=1) | BBPERM_ADMIN);
 /** Permission: Permission to backup database */
 define('BBPERM_ADMIN_BACKUPDB',        ($perm<<=1) | BBPERM_ADMIN);
 
-
-
 /** Permission: Admin user can do anything */
 define('BBPERM_ADMIN_ALL',      -1);
 
-// FINE-GRAINED INSTRUMENT ADMIN PERMISSIONS
+// FINE-GRAINED INSTRUMENT PERMISSIONS
+/** Permission: View instrument booking sheet */
+define('BBPERM_INSTR_VIEW',           $perm=1);
+/** Permission: View instrument booking sheet without restrictions on viewing future bookings */
+define('BBPERM_INSTR_VIEW_FUTURE',    ($perm<<=1));
+/** Permission: Book instrument */
+define('BBPERM_INSTR_BOOK',           ($perm<<=1));
+/** Permission: Book instrument any time into the future */
+define('BBPERM_INSTR_BOOK_FUTURE',    ($perm<<=1));
+/** Permission: Book instrument without timeslot restrictions */
+define('BBPERM_INSTR_BOOK_FREE',      ($perm<<=1));
+/** Permission: Delete own bookings with appropriate notice */
+define('BBPERM_INSTR_UNBOOK',         ($perm<<=1));
+/** Permission: Delete own bookings without restrictions for appropriate notice  */
+define('BBPERM_INSTR_UNBOOK_PAST',    ($perm<<=1));
+/** Permission: Delete others' bookings */
+define('BBPERM_INSTR_UNBOOK_OTHER',   ($perm<<=1));
+
 /** Permission: Instrument admin all functions */
 define('BBPERM_INSTR_ALL',       -1);
 
