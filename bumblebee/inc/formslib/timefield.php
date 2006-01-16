@@ -108,11 +108,21 @@ class TimeField extends Field {
         $t .= $this->droplist->selectable();
         break;
       case TF_FREE:
-        $t .= "<input type='text' name='$this->namebase$this->name' "
-            ."value='".xssqw($this->time->timestring)."' ";
-        $t .= (isset($this->attr['size']) ? "size='".$this->attr['size']."' " : "");
-        $t .= (isset($this->attr['maxlength']) ? "maxlength='".$this->attr['maxlength']."' " : "");
-        $t .= "/>";
+        $fixedname = $this->namebase.$this->name.'-fixed';
+        $varname   = $this->namebase.$this->name.'-var';
+        $t .= "<span id='$fixedname'>";
+        if ($this->isStart) {
+          $t .= $this->time->timestring;
+          $t .= $this->hidden();
+        } else {
+          $this->_prepareDropDown();
+          $t .= $this->droplist->selectable();
+        }
+        $t .= $this->_makeHiddenSwitch($fixedname, $varname);
+        $t .= "</span>";
+        $t .= "<span id='$varname' style='display: none'>";
+        $t .= $this->_prepareFreeField('-varfield');
+        $t .= "</span>";
         break;
       case TF_FIXED:
         $t .= $this->time->timestring;
@@ -181,6 +191,57 @@ class TimeField extends Field {
     //}
     //$this->droplist->setDefault($j);
     $this->droplist->setDefault($this->value);
+  }
+  
+  /**
+   * Free-form field entry
+   *
+   * @access private
+   * @param string   $append  append this to the name of the input (optional)
+   * @param string   $hidden  show this as hidden by default
+   * @return string html for field
+   */
+  function _prepareFreeField($append='', $hidden=false) {
+    $t  = "<input type='text' name='{$this->namebase}{$this->name}$append' "
+        ."value='".xssqw($this->time->timestring)."' ";
+    $t .= (isset($this->attr['size']) ? "size='".$this->attr['size']."' " : "");
+    $t .= (isset($this->attr['maxlength']) ? "maxlength='".$this->attr['maxlength']."' " : "");
+    $t .= ($hidden) ? "style='display: none;' " : "";
+    $t .= "/>";
+    return $t;
+  }
+  
+  /**
+   * Convert a string into a js link that controls the behaviour of another div
+   *
+   * @access private
+   * @param string $id1 default shown element
+   * @param string $id2 default hidden element
+   * @return string html for js link
+   */
+  function _makeHiddenSwitch($id1, $id2) {
+    $func = preg_replace('/[^\w]/', '_', "hideunhide$id1");
+    $t = <<<EOC
+    
+<script type='text/javascript'>
+  function $func() {
+    //alert('foo: $func');
+    var id1 = document.getElementById('$id1');
+    //id1.style.visibility = false;
+    id1.style.display = 'none';
+    var id2 = document.getElementById('$id2');
+    //id2.style.visibility = true;
+    id2.style.display = 'inline';
+  }
+</script>
+<a href='javascript:$func();'>edit times</a>
+
+EOC;
+
+// <a href='javascript:"document.getElementById(\\"$id1\\").hidden = true; document.getElementById('$id2').hidden = false;'
+// >edit times</a>
+// EOC;
+    return $t;  
   }
   
   /**
