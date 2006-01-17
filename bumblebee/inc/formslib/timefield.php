@@ -21,6 +21,8 @@ define('TF_FIXED', 0);
 define('TF_DROP', 1);
 /** Time field is in "FREE" (type-in text box) format */
 define('TF_FREE', 2);
+/** Time field is in "FREE" (type-in text box) format always */
+define('TF_FREE_ALWAYS', 3);
 /** Time field is in "AUTO" (any of the above as appropriate) format */
 define('TF_AUTO', -1);
 
@@ -124,6 +126,9 @@ class TimeField extends Field {
         $t .= $this->_prepareFreeField('-varfield');
         $t .= "</span>";
         break;
+      case TF_FREE_ALWAYS:
+        $t .= $this->_prepareFreeField();
+        break;
       case TF_FIXED:
         $t .= $this->time->timestring;
         $t .= $this->hidden();
@@ -147,6 +152,7 @@ class TimeField extends Field {
    */
   function _determineRepresentation() {
     //preDump($this);
+    //$this->DEBUG = 10;
     $this->_findExactSlot();
     if (! isset($this->slot) && $this->slot != 0) {
       $this->log('No slot found, TF_FIXED');
@@ -155,11 +161,12 @@ class TimeField extends Field {
     }
     //preDump($this->slot);
     if ($this->_manualRepresentation != TF_AUTO) {
+      $this->log('Slot manually set');
       $this->representation = $this->_manualRepresentation;
     } elseif (! $this->editable) {
       $this->representation = TF_FIXED;
     } elseif ($this->slot->isFreeForm) {
-      $this->representation = TF_FREE;
+      $this->representation = TF_FREE_ALWAYS;
     } elseif ($this->isStart || $this->slot->numslotsFollowing < 1) {
       $this->log('Starting slot or none following, TF_FIXED');
       $this->representation = TF_FIXED;
@@ -171,7 +178,7 @@ class TimeField extends Field {
     } elseif ($this->_fixedTimeSlots()) {
       $this->representation = TF_DROP;
     } else {
-      $this->representation = TF_FREE;
+      $this->representation = TF_FREE_ALWAYS;
     }
     $this->log('Determined representation was '. $this->representation, 10);
   }
@@ -223,12 +230,15 @@ class TimeField extends Field {
     $func = preg_replace('/[^\w]/', '_', "hideunhide$id1");
     $t = <<<EOC
     
+<input type='hidden' id='{$this->namebase}{$this->name}-switch' name='{$this->namebase}{$this->name}-switch' value='' />
 <script type='text/javascript'>
   function $func() {
     //alert('foo: $func');
     var id1 = document.getElementById('$id1');
     //id1.style.visibility = false;
     id1.style.display = 'none';
+    var switchfield = document.getElementById('{$this->namebase}{$this->name}-switch');
+    switchfield.value = 'varfield';
     var id2 = document.getElementById('$id2');
     //id2.style.visibility = true;
     id2.style.display = 'inline';
@@ -280,6 +290,9 @@ EOC;
    * @return boolean the value was updated
    */
   function update($data) {
+    if (isset($data{$this->namebase.$this->name.'-switch'}) && $data{$this->namebase.$this->name.'-switch'}) {
+      $data{$this->namebase.$this->name} = $data{$this->namebase.$this->name.'-varfield'};
+    }
     if (parent::update($data)) {
       $this->setTime($this->value);
     }

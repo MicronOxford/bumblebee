@@ -88,7 +88,11 @@ class BookingEntry extends DBRow {
     $startf->isValidTest = 'is_valid_datetime';
     $attrs = array('size' => '24');
     $startf->setAttr($attrs);
-    $startf->setManualRepresentation($this->_isadmin ? TF_FREE : TF_AUTO);
+    if ($this->_isadmin) {
+      $startf->setManualRepresentation($this->id == -1 ? TF_FREE : TF_FREE_ALWAYS);
+    } else {
+      $startf->setManualRepresentation(TF_AUTO);
+    }
 //     echo $f->manualRepresentation .'-'.$f->time->manualRepresentation."\n";
     $startf->setSlots($this->slotrules);
     $startf->setSlotStart($start);
@@ -99,7 +103,11 @@ class BookingEntry extends DBRow {
     $durationf->required = 1;
     $durationf->isValidTest = 'is_valid_nonzero_time';
     $durationf->defaultValue = $duration;
-    $durationf->setManualRepresentation($this->_isadmin ? TF_FREE : TF_AUTO);
+    if ($this->_isadmin) {
+      $durationf->setManualRepresentation($this->id == -1 ? TF_FREE : TF_FREE_ALWAYS);
+    } else {
+      $durationf->setManualRepresentation(TF_AUTO);
+    }
 //     echo $f->manualRepresentation .'-'.$f->time->manualRepresentation."\n";
     $durationf->setSlots($this->slotrules);
     $durationf->setSlotStart($start);
@@ -216,11 +224,16 @@ class BookingEntry extends DBRow {
   /** 
   * override the default sync() method with a custom one that allows us to...
   * - send a booking confirmation email to the instrument supervisors
+  * - update the representation of times
   */
   function sync() {
     $status = parent::sync();
     if ($status & STATUS_OK) {
       $this->_sendBookingEmail();
+      if ($this->_isadmin) {
+        $this->fields['bookwhen']->setManualRepresentation($this->id == -1 ? TF_FREE : TF_FREE_ALWAYS);
+        $this->fields['duration']->setManualRepresentation($this->id == -1 ? TF_FREE : TF_FREE_ALWAYS);
+      }
     }
     return $status;
   }
@@ -412,7 +425,7 @@ class BookingEntry extends DBRow {
       $doubleBook = 1;
       $this->errorMessage .= 'Sorry, the instrument is not free at this time.<br /><br />'
                           .'Instrument booked by ' .$row['username']
-                          .' (<a href="'.makeURL('view', array('instrument'=>$instrument,'bookid'=>$row['bookid'])).'">booking #'.$row['bookid'].'</a>)<br />'
+                          .' (<a href="'.makeURL('view', array('instrid'=>$instrument,'bookid'=>$row['bookid'])).'">booking #'.$row['bookid'].'</a>)<br />'
                           .'from '.$row['bookwhen'].' until ' .$row['stoptime'];
       // The error should be displayed by the driver class, not us. We *never* echo.
       //echo $this->errorMessage;
