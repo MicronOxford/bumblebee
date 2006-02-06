@@ -128,53 +128,53 @@ class ActionListing {
 
   function _populate() {
     $this->actions[] = new ActionData('ActionUnknown', 'unknownaction.php', 
-        'unknown',    'Oops! I cannot do that!', 'Unknown', BBPERM_USER_ALL, -1);
+        'unknown',    _('Oops! I cannot do that!'), _('Unknown'), BBPERM_USER_ALL, -1);
     $this->actions[] = new ActionData('ActionUnknown', 'unknownaction.php', 
-        'forbidden!', 'No, you cannot do that', 'Forbidden', BBPERM_USER_ALL, -1);
+        'forbidden!', _('No, you cannot do that'), _('Forbidden'), BBPERM_USER_ALL, -1);
     
-    $this->actions[] = new ActionData('ActionView', 'view.php', 'view',   
-        'View/edit instrument bookings', 'Main', BBPERM_USER_ALL);
+    $this->actions[] = new ActionData('ActionView', 'view.php', 
+        'view',       _('View/edit instrument bookings'), _('Main'), BBPERM_USER_ALL);
     $this->actions[] = new ActionData('ActionPassword', 'password.php', 
-        'passwd', 'Change password', 'Change password',    BBPERM_USER_PASSWD);
+        'passwd',     _('Change password'), _('Change password'),    BBPERM_USER_PASSWD);
     $this->actions[] = new ActionData('ActionPrintLoginForm', 'login.php', 
-        'login',  'Login', 'Login', BBPERM_USER_ALL, -1, 'view');
+        'login',      _('Login'), _('Login'), BBPERM_USER_ALL, -1, 'view');
     $this->actions[] = new ActionData('ActionMasquerade', 'masquerade.php', 
-        'masquerade', 'Masquerade as another user', 'Masquerade', BBPERM_MASQ);
+        'masquerade', _('Masquerade as another user'), _('Masquerade'), BBPERM_MASQ);
     $this->actions[] = new ActionData('ActionLogout', 'logout.php', 
-        'logout', 'Logout', 'Logout', BBPERM_USER_ALL);
+        'logout',     _('Logout'), _('Logout'), BBPERM_USER_ALL);
     
     $this->actions[] = new ActionData('ActionGroups', 'groups.php', 
-        'groups',   'Manage groups', 'Edit groups', BBPERM_ADMIN_GROUPS);
+        'groups',     _('Manage groups'), _('Edit groups'), BBPERM_ADMIN_GROUPS);
     $this->actions[] = new ActionData('ActionProjects', 'projects.php', 
-        'projects', 'Manage projects', 'Edit projects', BBPERM_ADMIN_PROJECTS);
+        'projects',   _('Manage projects'), _('Edit projects'), BBPERM_ADMIN_PROJECTS);
     $this->actions[] = new ActionData('ActionUsers', 'users.php', 
-        'users',    'Manage users', 'Edit users', BBPERM_ADMIN_USERS);
+        'users',      _('Manage users'), _('Edit users'), BBPERM_ADMIN_USERS);
     $this->actions[] = new ActionData('ActionInstruments', 'instruments.php', 
-        'instruments', 'Manage instruments', 'Edit instruments', BBPERM_ADMIN_INSTRUMENTS);
+        'instruments', _('Manage instruments'), _('Edit instruments'), BBPERM_ADMIN_INSTRUMENTS);
     $this->actions[] = new ActionData('ActionConsumables', 'consumables.php', 
-        'consumables', 'Manage consumables', 'Edit consumables', BBPERM_ADMIN_CONSUMABLES);
+        'consumables', _('Manage consumables'), _('Edit consumables'), BBPERM_ADMIN_CONSUMABLES);
     $this->actions[] = new ActionData('ActionConsume', 'consume.php', 
-        'consume', 'Record consumable usage', 'Use consumable', BBPERM_ADMIN_CONSUME);
+        'consume',    _('Record consumable usage'), _('Use consumable'), BBPERM_ADMIN_CONSUME);
     $this->actions[] = new ActionData('ActionMasquerade', 'masquerade.php', 
-        'masquerade', 'Masquerade as another user', 'Masquerade', BBPERM_MASQ);
+        'masquerade', _('Masquerade as another user'), _('Masquerade'), BBPERM_MASQ);
     $this->actions[] = new ActionData('ActionCosts', 'costs.php', 
-        'costs', 'Edit standard costs', 'Edit costs', BBPERM_ADMIN_COSTS);
+        'costs',      _('Edit standard costs'), _('Edit costs'), BBPERM_ADMIN_COSTS);
     $this->actions[] = new ActionData('ActionSpecialCosts', 'specialcosts.php', 
-        'specialcosts', 'Edit or create special charges', 'Edit special costs', BBPERM_ADMIN_COSTS, -1);
+        'specialcosts',    _('Edit or create special charges'), _('Edit special costs'), BBPERM_ADMIN_COSTS, -1);
     $this->actions[] = new ActionData('ActionUserClass', 'userclass.php', 
-        'userclass', 'Edit or create user class', 'Edit user class', BBPERM_ADMIN_COSTS, -1);
+        'userclass',  _('Edit or create user class'), _('Edit user class'), BBPERM_ADMIN_COSTS, -1);
     $this->actions[] = new ActionData('ActionInstrumentClass', 'instrumentclass.php', 
-        'instrumentclass', 'Edit or create instrument class', 'Edit instrument class', BBPERM_ADMIN_COSTS, -1);
+        'instrumentclass', _('Edit or create instrument class'), _('Edit instrument class'), BBPERM_ADMIN_COSTS, -1);
     $this->actions[] = new ActionData('ActionDeletedBookings', 'deletedbookings.php', 
-        'deletedbookings', 'View deleted bookings', 'Deleted bookings', BBPERM_ADMIN_DELETEDBOOKINGS);
+        'deletedbookings', _('View deleted bookings'), _('Deleted bookings'), BBPERM_ADMIN_DELETEDBOOKINGS);
     $this->actions[] = new ActionData('ActionEmaillist', 'emaillist.php', 
-        'emaillist', 'Email lists', 'Email lists', BBPERM_ADMIN_EMAILLIST);
+        'emaillist',  _('Email lists'), _('Email lists'), BBPERM_ADMIN_EMAILLIST);
     $this->actions[] = new ActionData('ActionExport', 'export.php', 
-        'export', 'Export data', 'Export data', BBPERM_ADMIN_EXPORT);
+        'export',     _('Export data'), _('Export data'), BBPERM_ADMIN_EXPORT);
     $this->actions[] = new ActionData('ActionBilling', 'billing.php', 
-        'billing', 'Prepare billing summaries', 'Billing reports', BBPERM_ADMIN_BILLING);
+        'billing',    _('Prepare billing summaries'), _('Billing reports'), BBPERM_ADMIN_BILLING);
     $this->actions[] = new ActionData('ActionBackupDB', 'backupdatabase.php', 
-        'backupdb', 'Backup database', 'Backup database', BBPERM_ADMIN_BACKUPDB);
+        'backupdb',   _('Backup database'), _('Backup database'), BBPERM_ADMIN_BACKUPDB);
 
   }
   

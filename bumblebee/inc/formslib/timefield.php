@@ -228,29 +228,21 @@ class TimeField extends Field {
    */
   function _makeHiddenSwitch($id1, $id2) {
     $func = preg_replace('/[^\w]/', '_', "hideunhide$id1");
-    $t = <<<EOC
+    $t = "
     
-<input type='hidden' id='{$this->namebase}{$this->name}-switch' name='{$this->namebase}{$this->name}-switch' value='' />
-<script type='text/javascript'>
-  function $func() {
-    //alert('foo: $func');
-    var id1 = document.getElementById('$id1');
-    //id1.style.visibility = false;
-    id1.style.display = 'none';
-    var switchfield = document.getElementById('{$this->namebase}{$this->name}-switch');
-    switchfield.value = 'varfield';
-    var id2 = document.getElementById('$id2');
-    //id2.style.visibility = true;
-    id2.style.display = 'inline';
-  }
-</script>
-<a href='javascript:$func();'>edit times</a>
-
-EOC;
-
-// <a href='javascript:"document.getElementById(\\"$id1\\").hidden = true; document.getElementById('$id2').hidden = false;'
-// >edit times</a>
-// EOC;
+      <input type='hidden' id='{$this->namebase}{$this->name}-switch' name='{$this->namebase}{$this->name}-switch' value='' />
+      <script type='text/javascript'>
+        function $func() {
+          var id1 = document.getElementById('$id1');
+          id1.style.display = 'none';
+          var switchfield = document.getElementById('{$this->namebase}{$this->name}-switch');
+          switchfield.value = 'varfield';
+          var id2 = document.getElementById('$id2');
+          id2.style.display = 'inline';
+        }
+      </script>
+      <a href='javascript:$func();'>"._('edit times')."</a>
+      ";
     return $t;  
   }
   

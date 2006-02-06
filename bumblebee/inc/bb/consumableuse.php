@@ -26,33 +26,33 @@ class ConsumableUse extends DBRow {
   function ConsumableUse($id, $userid='', $consumableid='', $uid='', $ip='', $today='') {
     $this->DBRow('consumables_use', $id);
     $this->editable = 1;
-    $f = new IdField('id', 'Record ID');
+    $f = new IdField('id', _('Record ID'));
     $f->editable = 0;
     $this->addElement($f);
     if ($userid!='' && $consumableid!='' && $uid!='' && $ip!='' && $today!='') {
       $userid = $this->_checkUserID($userid);
-      $f = new ReferenceField('userid', 'User');
+      $f = new ReferenceField('userid', _('User'));
       $f->extraInfo('users', 'id', 'name');
       $f->defaultValue = $userid;
       $f->duplicateName = 'user';
       $f->editable = 0;
       $this->addElement($f);
-      $f = new ReferenceField('consumable', 'Consumable');
+      $f = new ReferenceField('consumable', _('Consumable'));
       $f->extraInfo('consumables', 'id', 'name');
       $f->defaultValue = $consumableid;
       $f->duplicateName = 'consumableid';
       $f->editable = 0;
       $this->addElement($f);
-      $f = new ReferenceField('addedby', 'Recorded by');
+      $f = new ReferenceField('addedby', _('Recorded by'));
       $f->extraInfo('users', 'id', 'name');
       $f->value = $uid;
       $f->editable = 0;
       $this->addElement($f);
-      $f = new TextField('ip', 'Computer IP');
+      $f = new TextField('ip', _('Computer IP'));
       $f->value = $ip;
       $f->editable = 0;
       $this->addElement($f);
-      $f = new DropList('projectid', 'Project');
+      $f = new DropList('projectid', _('Project'));
       $f->connectDB('projects', 
                     array('id', 'name', 'longname'), 
                     'userid='.qw($userid),
@@ -62,22 +62,22 @@ class ConsumableUse extends DBRow {
                     array('userprojects'=>'projectid=id'));
       $f->setFormat('id', '%s', array('name'), ' (%35.35s)', array('longname'));
       $this->addElement($f);
-      $f = new TextField('usewhen', 'Date');
+      $f = new TextField('usewhen', _('Date'));
       $f->value = $today;
       $f->required = 1;
       $f->isValidTest = 'is_valid_date';
       $attrs = array('size' => '48');
       $f->setAttr($attrs);
       $this->addElement($f);
-      $f = new TextField('quantity', 'Quantity');
+      $f = new TextField('quantity', _('Quantity'));
       $f->required = 1;
       $f->isValidTest = 'is_number';
       $f->setAttr($attrs);
       $this->addElement($f);
-      $f = new TextField('comments', 'Comments');
+      $f = new TextField('comments', _('Comments'));
       $f->setAttr($attrs);
       $this->addElement($f);
-      $f = new TextField('log', 'Log entry');
+      $f = new TextField('log', _('Log entry'));
       $f->setAttr($attrs);
       $this->addElement($f);
     }

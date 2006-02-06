@@ -129,7 +129,7 @@ class BumbleBeeAuth {
       return 1;
     } else {
       $this->logout();
-      $this->_error = 'Login failed: SESSION INVALID!';
+      $this->_error = _('Login failed: SESSION INVALID!');
       return 0;
     }
   }
@@ -157,7 +157,7 @@ class BumbleBeeAuth {
     // test the username first to make sure it looks valid
     $validUserRegexp = $CONFIG['auth']['validUserRegexp'];
     if (! preg_match($validUserRegexp, $_POST['username']) || ! isset($_POST['pass']) ) {
-      $this->_error = 'Login failed: bad username';
+      $this->_error = _('Login failed: bad username');
       return false;
     }
     // then there is data provided to us in a login form
@@ -166,7 +166,6 @@ class BumbleBeeAuth {
     $USERNAME = $_POST['username'];
     $row = $this->_retrieveUserInfo($USERNAME);
     if ($row == '0') { 
-      $this->_error = 'Login failed: username doesn\'t exist in table';
       return false;
     }
     
@@ -179,13 +178,13 @@ class BumbleBeeAuth {
       $this->localLogin = 1;
       $authOK = $this->_auth_local($USERNAME, $PASSWORD, $row);
     } else {   //system is misconfigured
-      $this->_error = 'System has no login method enabled';
+      $this->_error = _('System has no login method enabled');
     }
     if (! $authOK) {
       return false;
     }
     if ($row['suspended']) {
-      $this->_error = 'Login failed: this account is suspended, please contact us about this.';
+      $this->_error = _('Login failed: this account is suspended, please contact us about this.');
       return false;
     }
     // if we got to here, then we're logged in!
@@ -196,7 +195,7 @@ class BumbleBeeAuth {
   function _retrieveUserInfo($identifier, $type=1) {
     $row = quickSQLSelect('users',($type?'username':'id'),$identifier);
     if (! is_array($row)) {
-      $this->_error = "Login failed: unknown username";
+      $this->_error = _('Login failed: unknown username');
       return 0;
     }
     //$row = mysql_fetch_array($sql);
@@ -228,7 +227,7 @@ class BumbleBeeAuth {
     $a->start();
     $auth = $a->getAuth();
     if (! $auth) {
-      $this->_error = 'Login failed: radius auth failed';
+      $this->_error = _('Login failed: radius auth failed');
     }
     return $auth;
   }
@@ -260,7 +259,7 @@ class BumbleBeeAuth {
     $a->start();
     $auth = $a->getAuth();
     if (! $auth) {
-      $this->_error = 'Login failed: ldap auth failed';
+      $this->_error = _('Login failed: ldap auth failed');
     }
     return $auth;
   }
@@ -271,11 +270,11 @@ class BumbleBeeAuth {
     if ($crypt_method != '' && is_callable($crypt_method)) {
       $passOK = ($row['passwd'] == $crypt_method($password));
       if (! $passOK) {
-        $this->_error = 'Login failed: bad password';
+        $this->_error = _('Login failed: bad password');
       }
       return $passOK;
     } else {
-      $this->_error = 'Login failed: no crypt method';
+      $this->_error = _('Login failed: no crypt method');
       return false;
     }
   }

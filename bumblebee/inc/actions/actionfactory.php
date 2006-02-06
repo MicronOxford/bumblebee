@@ -11,42 +11,38 @@
 */
 
 /**  permissions definitions */
-// require_once 'inc/permissions.php';
+require_once 'inc/permissions.php';
 
-/**  basic functions (user functions) */
-// require_once 'login.php';
-// require_once 'logout.php';
-// require_once 'view.php';
-// require_once 'password.php';
+if (LOAD_ALL_PHP_FILES) {
+  /**  basic functions (user functions) */
+  require_once 'login.php';
+  require_once 'logout.php';
+  require_once 'view.php';
+  require_once 'password.php';
+  require_once 'masquerade.php';
 
-// only some users can masquerade, but include this by default, 
-// checking permissions is done by the Masquerade class itself
-// require_once 'masquerade.php';
+  // admin functions
+  /**  admin functions*/
+  require_once 'groups.php';
+  require_once 'projects.php';
+  require_once 'users.php';
+  require_once 'instruments.php';
+  require_once 'consumables.php';
+  require_once 'consume.php';
+  require_once 'deletedbookings.php';
+  require_once 'costs.php';
+  require_once 'specialcosts.php';
+  require_once 'userclass.php';
+  require_once 'instrumentclass.php';
+  //require_once 'adminconfirm.php';
+  require_once 'emaillist.php';
+  // require_once 'report.php';
+  require_once 'export.php';
+  require_once 'billing.php';
+  require_once 'backupdatabase.php';
+}
 
-//admin functions: only include these files if they are necessary (security + efficiency)
-//these classes do not check permissions of the user -- this must be done by the instantiating code
-// if ($auth->isadmin) {
-  /**  admin functions (restricted inclusion) */
-//   require_once 'groups.php';
-//   require_once 'projects.php';
-//   require_once 'users.php';
-//   require_once 'instruments.php';
-//   require_once 'consumables.php';
-//   require_once 'consume.php';
-//   require_once 'deletedbookings.php';
-//   require_once 'costs.php';
-//   require_once 'specialcosts.php';
-//   require_once 'userclass.php';
-//   require_once 'instrumentclass.php';
-//   //require_once 'adminconfirm.php';
-//   require_once 'emaillist.php';
-//   // require_once 'report.php';
-//   require_once 'export.php';
-//   require_once 'billing.php';
-//   require_once 'backupdatabase.php';
-// }
-
-// require_once 'unknownaction.php';
+require_once 'unknownaction.php';
 require_once 'inc/typeinfo.php';
 require_once 'actions.php';
 

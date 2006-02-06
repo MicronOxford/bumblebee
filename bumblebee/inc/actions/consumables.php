@@ -44,15 +44,16 @@ class ActionConsumables extends ActionAction {
     } else {
       $this->edit();
     }
-    echo "<br /><br /><a href='".makeURL('consumables')."'>Return to consumables list</a>";
+    echo "<br /><br /><a href='".makeURL('consumables')."'>"
+              ._('Return to consumables list')."</a>";
   }
 
   function select($deleted=false) {
-    $select = new AnchorTableList('Consumables', 'Select which Consumables to view');
+    $select = new AnchorTableList(_('Consumables'), _('Select which Consumables to view'));
     $select->deleted = $deleted;
     $select->connectDB('consumables', array('id', 'name', 'longname'));
-    $select->list->prepend(array('-1','Create new consumable'));
-    $select->list->append(array('showdeleted','Show deleted consumables'));
+    $select->list->prepend(array('-1', _('Create new consumable')));
+    $select->list->append(array('showdeleted', _('Show deleted consumables')));
     $select->hrefbase = makeURL('consumables', array('id'=>'__id__'));
     $select->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'));
     echo $select->display();
@@ -64,31 +65,33 @@ class ActionConsumables extends ActionAction {
     $consumable->checkValid();
     echo $this->reportAction($consumable->sync(), 
           array(
-              STATUS_OK =>   ($this->PD['id'] < 0 ? 'Consumable created' : 'Consumable updated'),
-              STATUS_ERR =>  'Consumable could not be changed: '.$consumable->errorMessage
+              STATUS_OK =>   ($this->PD['id'] < 0 
+                                ? _('Consumable created') : _('Consumable updated')),
+              STATUS_ERR =>  _('Consumable could not be changed:').' '.$consumable->errorMessage
           )
         );
     echo $consumable->display();
     if ($consumable->id < 0) {
-      $submit = 'Create new consumable';
+      $submit = _('Create new consumable');
       $delete = '0';
     } else {
-      $submit = 'Update entry';
-      $delete = $consumable->isDeleted ? 'Undelete entry' : 'Delete entry';
+      $submit = _('Update entry');
+      $delete = $consumable->isDeleted ? _('Undelete entry') : _('Delete entry');
     }
     echo "<input type='submit' name='submit' value='$submit' />";
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
-    echo "\n<p><a href='".makeURL('consume', array('consumableid'=>$consumable->id, 'list'=>1))."'>"
-          .'View usage records</a> '
-        ."for this consumable</p>\n";
+    echo '<p>'.sprintf(_('<a href="%s">View listing</a> for selected consumable'), 
+                makeURL('consume', array('consumableid'=>$consumable->id, 'list'=>1)))."</p>\n";
   }
 
   function delete() {
     $consumable = new Consumable($this->PD['id']);
     echo $this->reportAction($consumable->delete(), 
               array(
-                  STATUS_OK =>   $consumable->isDeleted ? 'Consumable undeleted' : 'Consumable deleted',
-                  STATUS_ERR =>  'Consumable could not be deleted:<br/><br/>'.$consumable->errorMessage
+                  STATUS_OK =>   $consumable->isDeleted ? _('Consumable undeleted') 
+                                                        : _('Consumable deleted'),
+                  STATUS_ERR =>  _('Consumable could not be deleted:')
+                                 .'<br/><br/>'.$consumable->errorMessage
               )
             );  
   }

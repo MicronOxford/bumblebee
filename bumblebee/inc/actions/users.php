@@ -44,15 +44,15 @@ class ActionUsers extends ActionAction {
     } else {
       $this->edit();
     }
-    echo "<br /><br /><a href='".makeURL('users')."'>Return to user list</a>";
+    echo "<br /><br /><a href='".makeURL('users')."'>"._('Return to user list')."</a>";
   }
 
   function select($deleted=false) {
-    $select = new AnchorTableList('Users', 'Select which user to view');
+    $select = new AnchorTableList(_('Users'), _('Select which user to view'));
     $select->deleted = $deleted;
     $select->connectDB('users', array('id', 'name', 'username'));
-    $select->list->prepend(array('-1','Create new user'));
-    $select->list->append(array('showdeleted','Show deleted users'));
+    $select->list->prepend(array('-1', _('Create new user')));
+    $select->list->append(array('showdeleted', _('Show deleted users')));
     $select->hrefbase = makeURL('users', array('id'=>'__id__'));
     $select->setFormat('id', '%s', array('name'), ' %s', array('username'));
     echo $select->display();
@@ -65,17 +65,17 @@ class ActionUsers extends ActionAction {
     $user->checkValid();
     echo $this->reportAction($user->sync(), 
           array(
-              STATUS_OK =>   ($this->PD['id'] < 0 ? 'User created' : 'User updated'),
-              STATUS_ERR =>  'User could not be changed: '.$user->errorMessage
+              STATUS_OK =>   ($this->PD['id'] < 0 ? _('User created') : _('User updated')),
+              STATUS_ERR =>  _('User could not be changed:').' '.$user->errorMessage
           )
         );
     echo $user->display();
     if ($user->id < 0) {
-      $submit = 'Create new user';
+      $submit = _('Create new user');
       $delete = '0';
     } else {
-      $submit = 'Update entry';
-      $delete = $user->isDeleted ? 'Undelete entry' : 'Delete entry';
+      $submit = _('Update entry');
+      $delete = $user->isDeleted ? _('Undelete entry') : _('Delete entry');
     }
     echo "<input type='submit' name='submit' value='$submit' />";
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
@@ -85,8 +85,8 @@ class ActionUsers extends ActionAction {
     $user = new User($this->PD['id']);
     echo $this->reportAction($user->delete(), 
               array(
-                  STATUS_OK =>   $user->isDeleted ? 'User undeleted' : 'User deleted',
-                  STATUS_ERR =>  'User could not be deleted:<br/><br/>'.$user->errorMessage
+                  STATUS_OK =>   $user->isDeleted ? _('User undeleted') : _('User deleted'),
+                  STATUS_ERR =>  _('User could not be deleted:').'<br/><br/>'.$user->errorMessage
               )
             );  
   }

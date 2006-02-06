@@ -145,6 +145,7 @@ class HTMLExport {
   * generate the report header
   *
   * @return string report header
+  * @todo i18n: report header
   */
   function _reportHeader() {
     $start = $this->_daterange->getStart();
@@ -220,7 +221,7 @@ class HTMLExport {
     $fd = fopen($filename, 'r');
     $contents = fread($fd, filesize ($filename));
     fclose($fd); 
-    $title = 'Data export';
+    $title = _('Data export');
     $table = preg_replace('/\$/', '&#'.ord('$').';', $this->export);
     $contents = preg_replace('/__TITLE__/', $title, $contents);
     $contents = preg_replace('/__BASEPATH__/', $BASEPATH, $contents);
@@ -244,7 +245,7 @@ class HTMLExport {
   BBwriteAll(data);
   
 //-->
-</script><a href="javascript:BBwriteAll(data)">Open Window</a>';
+</script><a href="javascript:BBwriteAll(data)">'._('Open Window').'</a>';
     return $jsbuf;
   }
 

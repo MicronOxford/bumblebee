@@ -435,8 +435,12 @@ class Calendar {
           $current->addDays($day);
           $isodate = $current->datestring;
           $class = $this->_getDayClass($today, $current);
+          $zoomwords = sprintf(_('Zoom in on %s'), $isodate);
           $t .= '<td class="caldatecell '.$class.'">';
-          $t .= '<div style="float:right;"><a href="'.$this->href.'&amp;isodate='.$isodate.'" class="but" title="Zoom in on date: '.$isodate.'"><img src="'.$BASEPATH.'/theme/images/zoom.png" alt="Zoom in on '.$isodate.'" class="calicon" /></a></div>'."\n";
+          $t .= '<div style="float:right;"><a href="'.$this->href.'&amp;isodate='.$isodate.'" '
+                  .'class="but" title="'.$zoomwords .'">'
+              .'<img src="'.$BASEPATH.'/theme/images/zoom.png" '
+                  .'alt="'.$zoomwords .'" class="calicon" /></a></div>'."\n";
           $t .= '<div class="caldate">' 
                 //. strftime("%e", $current->ticks);    // works on linux
                 //. strftime("%d", $current->ticks);    // works on windows & linux but zero-pads dates
@@ -508,7 +512,7 @@ class Calendar {
 
     $today = new SimpleDate(time());
     
-    $t = '<table class="tabularobject calendar" summary="Day view of instrument bookings">';
+    $t = '<table class="tabularobject calendar" summary="'.('Day view of instrument bookings').'">';
     $t .= '<tr><td class="dummy"></td><th></th>';
     $t .= '<td class="caldayzoom">';
     $t .= '<div class="caldate">' 

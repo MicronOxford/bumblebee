@@ -44,15 +44,15 @@ class ActionInstruments extends ActionAction {
     } else {
       $this->edit();
     }
-    echo "<br /><br /><a href='".makeURL('instruments')."'>Return to instruments list</a>";
+    echo "<br /><br /><a href='".makeURL('instruments')."'>"._('Return to instruments list')."</a>";
   }
 
   function select($deleted=false) {
-    $select = new AnchorTableList('Instrument', 'Select which instrument to view');
+    $select = new AnchorTableList('Instrument', _('Select which instrument to view'));
     $select->deleted = $deleted;
     $select->connectDB('instruments', array('id', 'name', 'longname'));
-    $select->list->prepend(array('-1','Create new instrument'));
-    $select->list->append(array('showdeleted','Show deleted instruments'));
+    $select->list->prepend(array('-1', _('Create new instrument')));
+    $select->list->append(array('showdeleted', _('Show deleted instruments')));
     $select->hrefbase = makeURL('instruments', array('id'=>'__id__'));
     $select->setFormat('id', '%s', array('name'), ' %30.30s', array('longname'));
     #echo $groupselect->list->text_dump();
@@ -65,17 +65,18 @@ class ActionInstruments extends ActionAction {
     $instrument->checkValid();
     echo $this->reportAction($instrument->sync(), 
           array(
-              STATUS_OK =>   ($this->PD['id'] < 0 ? 'Instrument created' : 'Instrument updated'),
-              STATUS_ERR =>  'Instrument could not be changed: '.$instrument->errorMessage
+              STATUS_OK =>   ($this->PD['id'] < 0 ? _('Instrument created') 
+                                                  : _('Instrument updated')),
+              STATUS_ERR =>  _('Instrument could not be changed:').' '.$instrument->errorMessage
           )
         );
     echo $instrument->display();
     if ($instrument->id < 0) {
-      $submit = 'Create new instrument';
+      $submit = _('Create new instrument');
       $delete = '0';
     } else {
-      $submit = 'Update entry';
-      $delete = $instrument->isDeleted ? 'Undelete entry' : 'Delete entry';
+      $submit = _('Update entry');
+      $delete = $instrument->isDeleted ? _('Undelete entry') : _('Delete entry');
     }
     #$submit = ($PD['id'] < 0 ? "Create new" : "Update entry");
     echo "<input type='submit' name='submit' value='$submit' />";
@@ -86,8 +87,10 @@ class ActionInstruments extends ActionAction {
     $instrument = new Instrument($this->PD['id']);
     echo $this->reportAction($instrument->delete(), 
               array(
-                  STATUS_OK =>   $instrument->isDeleted ? 'Instrument undeleted' : 'Instrument deleted',
-                  STATUS_ERR =>  'Instrument could not be deleted:<br/><br/>'.$instrument->errorMessage
+                  STATUS_OK =>   $instrument->isDeleted ? _('Instrument undeleted') 
+                                                        : _('Instrument deleted'),
+                  STATUS_ERR =>  _('Instrument could not be deleted:')
+                                 .'<br/><br/>'.$instrument->errorMessage
               )
             );  
   }

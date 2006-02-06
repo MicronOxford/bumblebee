@@ -44,7 +44,7 @@ class ActionUserClass extends ActionAction  {
     } else {
       $this->edit();
     }
-    echo "<br /><br /><a href='".makeURL('userclass')."'>Return to user class list</a>";
+    echo "<br /><br /><a href='".makeURL('userclass')."'>"._('Return to user class list')."</a>";
   }
 
   function edit() {
@@ -53,17 +53,18 @@ class ActionUserClass extends ActionAction  {
     $class->checkValid();
     echo $this->reportAction($class->sync(), 
           array(
-              STATUS_OK =>   ($this->PD['id'] < 0 ? 'User class created' : 'User class updated'),
-              STATUS_ERR =>  'User class could not be changed: '.$class->errorMessage
+              STATUS_OK =>   ($this->PD['id'] < 0 ? _('User class created') 
+                                                  : _('User class updated')),
+              STATUS_ERR =>  _('User class could not be changed:').' '.$class->errorMessage
           )
         );
         echo $class->display();
     if ($class->id < 0) {
-      $submit = 'Create new class';
+      $submit = _('Create new class');
       $delete = '0';
     } else {
-      $submit = 'Update entry';
-      $delete = 'Delete entry';
+      $submit = _('Update entry');
+      $delete = _('Delete entry');
     }
     #$submit = ($PD['id'] < 0 ? "Create new" : "Update entry");
     echo "<input type='submit' name='submit' value='$submit' />";
@@ -71,7 +72,7 @@ class ActionUserClass extends ActionAction  {
   }
 
   function select() {
-    $select = new AnchorTableList('UserClass', 'Select which user class to view');
+    $select = new AnchorTableList(_('UserClass'), _('Select which user class to view'));
     $select->connectDB('userclass', array('id', 'name'));
     $select->list->prepend(array('-1','Create new user class'));
     $select->hrefbase = makeURL('userclass', array('id'=>'__id__'));
@@ -85,8 +86,9 @@ class ActionUserClass extends ActionAction  {
     $class = new UserClass($this->PD['id']);
     echo $this->reportAction($class->delete(), 
               array(
-                  STATUS_OK =>   'User class deleted',
-                  STATUS_ERR =>  'User class could not be deleted:<br/><br/>'.$class->errorMessage
+                  STATUS_OK =>   _('User class deleted'),
+                  STATUS_ERR =>  _('User class could not be deleted:')
+                                 .'<br/><br/>'.$class->errorMessage
               )
             );  
   }

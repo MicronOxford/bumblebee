@@ -45,7 +45,8 @@ class ActionInstrumentClass extends ActionAction  {
     } else {
       $this->edit();
     }
-    echo "<br /><br /><a href='".makeURL('instrumentclass')."'>Return to instrument class list</a>";
+    echo "<br /><br /><a href='".makeURL('instrumentclass')."'>"
+                ._('Return to instrument class list')."</a>";
   }
 
   function edit() {
@@ -54,17 +55,18 @@ class ActionInstrumentClass extends ActionAction  {
     $class->checkValid();
     echo $this->reportAction($class->sync(), 
           array(
-              STATUS_OK =>   ($this->PD['id'] < 0 ? 'Instrument class created' : 'Instrument class updated'),
-              STATUS_ERR =>  'Instrument class could not be changed: '.$class->errorMessage
+              STATUS_OK =>   ($this->PD['id'] < 0 ? _('Instrument class created') 
+                                                  : _('Instrument class updated')),
+              STATUS_ERR =>  _('Instrument class could not be changed:').' '.$class->errorMessage
           )
         );
         echo $class->display();
     if ($class->id < 0) {
-      $submit = 'Create new class';
+      $submit = _('Create new class');
       $delete = '0';
     } else {
-      $submit = 'Update entry';
-      $delete = 'Delete entry';
+      $submit = _('Update entry');
+      $delete = _('Delete entry');
     }
     #$submit = ($PD['id'] < 0 ? "Create new" : "Update entry");
     echo "<input type='submit' name='submit' value='$submit' />";
@@ -72,9 +74,9 @@ class ActionInstrumentClass extends ActionAction  {
   }
 
   function select() {
-    $select = new AnchorTableList('InstrumentClass', 'Select which instrument class to view');
+    $select = new AnchorTableList('InstrumentClass', _('Select which instrument class to view'));
     $select->connectDB('instrumentclass', array('id', 'name'));
-    $select->list->prepend(array('-1','Create new instrument class'));
+    $select->list->prepend(array('-1', _('Create new instrument class')));
     $select->hrefbase = makeURL('instrumentclass', array('id'=>'__id__'));
     $select->setFormat('id', '%s', array('name')/*, ' %50.50s', array('longname')*/);
     #echo $groupselect->list->text_dump();
@@ -86,8 +88,9 @@ class ActionInstrumentClass extends ActionAction  {
     $class = new InstrumentClass($this->PD['id']);
     echo $this->reportAction($class->delete(), 
               array(
-                  STATUS_OK =>   'Instrument class deleted',
-                  STATUS_ERR =>  'Instrument class could not be deleted:<br/><br/>'.$class->errorMessage
+                  STATUS_OK =>   _('Instrument class deleted'),
+                  STATUS_ERR =>  _('Instrument class could not be deleted:')
+                                    .'<br/><br/>'.$class->errorMessage
               )
             );  
   }

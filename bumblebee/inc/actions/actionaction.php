@@ -73,12 +73,7 @@ class ActionAction {
   * Default status messages that are returned to the user.
   * @var    array
   */
-  var $stdmessages = array(
-      STATUS_NOOP => '',
-      STATUS_OK   => 'Operation completed successfully',
-      STATUS_WARN => 'Warnings produced during operation',
-      STATUS_ERR  => 'Error. Could not complete operation',
-    );
+  var $stdmessages;
   
   /**
   * Turn on debugging messages from the Action* classes
@@ -100,6 +95,12 @@ class ActionAction {
   function ActionAction($auth,$pdata) {
     $this->auth = $auth;
     $this->PDATA = $pdata;
+    $this->stdmessages = array(
+      STATUS_NOOP => '',
+      STATUS_OK   => _('Operation completed successfully'),
+      STATUS_WARN => _('Warnings produced during operation'),
+      STATUS_ERR  => _('Error. Could not complete operation'),
+    );
   }
 
   /**
@@ -167,7 +168,7 @@ class ActionAction {
       }
     }
     if (! $message) {
-      $message = 'Unknown status code. Error: '. $status;
+      $message = _('Unknown status code. Error:').' '. $status;
     }
     $t = '<div class="'.($status & STATUS_OK ? 'msgsuccess' : 'msgerror').'">'
          .$message

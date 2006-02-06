@@ -360,7 +360,7 @@ class PDFExport {
 * @subpackage Export
 */
 class BrandedPDF extends FPDF {
-  var $title = 'BumbleBee Report';
+  var $title;
   var $pageWidth   = 297;   // mm
   var $pageHeight  = 210;   // mm
   var $leftMargin  = 15;    // mm
@@ -372,6 +372,7 @@ class BrandedPDF extends FPDF {
   
   function BrandedPDF($orientation, $measure, $format) {
     parent::FPDF($orientation, $measure, $format);
+    $this->title = _('BumbleBee Report');
   }
     
   function Header() {
@@ -438,12 +439,12 @@ class BrandedPDF extends FPDF {
   
   // overload the error function to give us some better output
   function Error($msg) {
-    echo '<div class="error"><b>Error generating PDF output:</b><br/> '.$msg
-        .'<br/><br/>Sorry things didn\'t work out for you.</div';
+    echo '<div class="error"><b>'._('Error generating PDF output:').'</b><br/> '.$msg
+        .'<br/><br/>'._('Sorry things didn\'t work out for you.').'</div>';
     if ($this->DEBUG) {
       preDump(debug_backtrace());
     }
-    die('Exiting with error');
+    die(_('Exiting with error'));
   }
   
 } // class BrandedPDF
@@ -464,7 +465,7 @@ class TabularPDF extends BrandedPDF {
   var $_last_tableHeader;
   var $_preventNewPage;
   
-  var $continuedHeader = ' (continued)';
+  var $continuedHeader;
   
   var $lineHeight;
   var $normalLineHeight = 5;
@@ -503,6 +504,7 @@ class TabularPDF extends BrandedPDF {
   
   function TabularPDF($orientation, $measure, $format) {
     parent::BrandedPDF($orientation, $measure, $format);
+    $this->continuedHeader = ' '._('(continued)');
   }
     
 

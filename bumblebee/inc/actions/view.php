@@ -85,7 +85,7 @@ class ActionView extends ActionAction {
       echo $this->_calendarViewLink($instrument);
     } elseif (isset($this->PD['instrid'])) {
       $this->instrumentMonth();
-      echo "<br /><br /><a href='".makeURL('view')."'>Return to instrument list</a>";
+      echo "<br /><br /><a href='".makeURL('view')."'>". _('Return to instrument list') ."</a>";
     } else {
       # shouldn't get here
       $err = 'Invalid action specification in action/view.php::go()';
@@ -94,35 +94,6 @@ class ActionView extends ActionAction {
       $this->selectInstrument();
     }
   }
-
-/*  function mungeInputData() {
-    $this->PD = array();
-    foreach ($_POST as $k => $v) {
-      $this->PD[$k] = $v;
-    }
-    if (isset($this->PDATA[1]) && $this->PDATA[1] !== '') {
-      $this->PD['instrid'] = $this->PDATA[1];
-    }
-    for ($i=2; isset($this->PDATA[$i]); $i++) {
-      if (preg_match("/o=(-?\d+)/", $this->PDATA[$i], $m)) {
-        $this->PD['caloffset'] = $m[1];
-      } elseif (preg_match("/\d\d\d\d-\d\d-\d\d/", $this->PDATA[$i], $m)) {
-        $this->PD['isodate'] = $this->PDATA[$i];
-      } elseif (preg_match("/(\d+)-(\d+)/", $this->PDATA[$i], $m)) {
-        $this->PD['startticks'] = $m[1];
-        $this->PD['stopticks'] = $m[2];
-      } elseif (preg_match("/(\d+)/", $this->PDATA[$i], $m)) {
-        if (! isset($this->PD['bookid'])) {
-          $this->PD['bookid'] = $m[1];
-        }
-      } elseif (preg_match("/edit/", $this->PDATA[$i], $m)) {
-        $this->PD['edit'] = 1;
-      } else {
-        $this->log("I don't know what to do with that data!");
-      }
-    }
-    echoData($this->PD, 0);
-  }*/
   
   /**
   * Calculate calendar offset in days
@@ -153,14 +124,14 @@ class ActionView extends ActionAction {
   function _calendarViewLink($instrument) {
     return '<br /><br /><a href="'.
         makeURL('view', array('instrid'=>$instrument, 'caloffset'=>$this->_offset()))
-      .'">Return to calendar view</a>';
+      .'">'._('Return to calendar view') .'</a>';
   }
                       
   /**
   * Select which instrument for which the calendar should be displayed
   */
   function selectInstrument() {
-    $instrselect = new AnchorTableList('Instrument', 'Select which instrument to view', 3);
+    $instrselect = new AnchorTableList('Instrument', _('Select which instrument to view'), 3);
     if ($this->auth->isSystemAdmin()) {
       $instrselect->connectDB('instruments', 
                             array('id', 'name', 'longname', 'location')
@@ -243,11 +214,11 @@ class ActionView extends ActionAction {
   */
   function _linksForwardBack($back, $today, $forward, $showForward=true, $extra=array()) {
     return '<div style="text-align:center">'
-        .'<a href="'.makeURL('view', array_merge(array('instrid'=>$this->PD['instrid'], 'caloffset'=>$back), $extra)).'">&laquo; earlier</a> | '
-        .'<a href="'.makeURL('view', array_merge(array('instrid'=>$this->PD['instrid'], 'caloffset'=>$today), $extra)).'">today</a> '
+        .'<a href="'.makeURL('view', array_merge(array('instrid'=>$this->PD['instrid'], 'caloffset'=>$back), $extra)).'">&laquo; '. _('earlier') .'</a> | '
+        .'<a href="'.makeURL('view', array_merge(array('instrid'=>$this->PD['instrid'], 'caloffset'=>$today), $extra)).'">'. _('today') .'</a> '
         .($showForward ? 
                 ' | '
-                .'<a href="'.makeURL('view', array_merge(array('instrid'=>$this->PD['instrid'], 'caloffset'=>$forward), $extra)).'">later &raquo;</a>'
+                .'<a href="'.makeURL('view', array_merge(array('instrid'=>$this->PD['instrid'], 'caloffset'=>$forward), $extra)).'">'. _('later') .' &raquo;</a>'
                 : ''
           )
         .'</div>';
@@ -327,20 +298,20 @@ class ActionView extends ActionAction {
                                 $start, $duration, $row['timeslotpicture']);
     $this->_checkBookingAuth($booking->fields['userid']->getValue());
     if (! $this->_haveWriteAccess) {
-      return $this->_forbiddenError('Edit booking');
+      return $this->_forbiddenError(_('Edit booking'));
     }
     $booking->update($this->PD);
     $booking->checkValid();
     echo $this->displayInstrumentHeader($row);
     echo $this->reportAction($booking->sync(), 
               array(
-                  STATUS_OK =>   ($bookid < 0 ? 'Booking made' : 'Booking updated'),
-                  STATUS_ERR =>  'Booking could not be made:<br/><br/>'.$booking->errorMessage
+                  STATUS_OK =>   ($bookid < 0 ? _('Booking made') : _('Booking updated')),
+                  STATUS_ERR =>  _('Booking could not be made:').'<br/><br/>'.$booking->errorMessage
               )
             );
     echo $booking->display();
-    $submit = ($booking->id < 0) ? 'Make booking' : 'Update booking';
-    $delete = ($booking->id >= 0 && $booking->deletable) ? 'Delete booking' : '';
+    $submit = ($booking->id < 0) ? _('Make booking') : _('Update booking');
+    $delete = ($booking->id >= 0 && $booking->deletable) ? _('Delete booking') : '';
     echo "<input type='submit' name='submit' value='$submit' />";
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
     echo $this->displayInstrumentFooter($row);
@@ -359,7 +330,7 @@ class ActionView extends ActionAction {
       echo "<p><a href='"
             .makeURL('view', 
                 array('instrid'=>$this->PD['instrid'], 'bookid'=>$this->PD['bookid'], 'edit'=>1))
-            ."'>Edit booking</a></p>\n";
+            ."'>". _('Edit booking') ."</a></p>\n";
     }
   }
   
@@ -371,13 +342,13 @@ class ActionView extends ActionAction {
     $booking = new BookingEntry($this->PD['bookid'], $this->auth, $this->PD['instrid'], $row['mindatechange']);
     $this->_checkBookingAuth($booking->fields['userid']->getValue());
     if (! $this->_haveWriteAccess) {
-      return $this->_forbiddenError('Delete booking');
+      return $this->_forbiddenError(_('Delete booking'));
     }
     echo $this->displayInstrumentHeader($row);
     echo $this->reportAction($booking->delete(), 
               array(
-                  STATUS_OK =>   'Booking deleted',
-                  STATUS_ERR =>  'Booking could not be deleted:<br/><br/>'.$booking->errorMessage
+                  STATUS_OK =>   _('Booking deleted'),
+                  STATUS_ERR =>  _('Booking could not be deleted:').'<br/><br/>'.$booking->errorMessage
               )
             );  
   }
@@ -400,7 +371,7 @@ class ActionView extends ActionAction {
     $this->log('Action forbidden: '.$msg);
     echo $this->reportAction(STATUS_FORBIDDEN, 
               array(
-                  STATUS_FORBIDDEN => $msg.': <br/>Sorry, you do not have permission to do this.',
+                  STATUS_FORBIDDEN => $msg.': <br/>'._('Sorry, you do not have permission to do this.'),
               )
             );
     return STATUS_FORBIDDEN;
@@ -430,7 +401,7 @@ class ActionView extends ActionAction {
          .'<p>'.preg_replace("/\n+/", '</p><p>', $row['calendarcomment']).'</p>';
     }
     if ($row['supervisors']) {
-      $t .= '<h3>Instrument supervisors</h3>';
+      $t .= '<h3>'._('Instrument supervisors').'</h3>';
       $t .= '<ul>';
       foreach(preg_split('/,\s*/', $row['supervisors']) as $username) {
         $user = quickSQLSelect('users', 'username', $username);

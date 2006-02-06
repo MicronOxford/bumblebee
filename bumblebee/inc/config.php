@@ -131,6 +131,6 @@ if (function_exists('gettext')) {
 * $BUMBLEBEEVERSION is the installed version of the software
 * @global string $BUMBLEBEEVERSION
 */
-$BUMBLEBEEVERSION = '1.0.1-pre1';
+$BUMBLEBEEVERSION = '1.2.0-cvs';
 
 ?> 

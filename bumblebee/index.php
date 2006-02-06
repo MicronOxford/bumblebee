@@ -16,7 +16,7 @@
 ob_start();
 
 /** Load in the user configuration data */
-require_once 'config/config.php'; 
+require_once 'inc/config.php'; 
 /** start the database session */
 require_once 'inc/db.php'; 
 /** check the user's credentials, create a session to record them */

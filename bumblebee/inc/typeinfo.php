@@ -114,7 +114,14 @@ function xssqw($v) {
     // first remove any (partial or full) escaping then we'll do it properly below
     $v = stripslashes($v);
   }
-  return htmlentities($v, ENT_QUOTES);
+  $replace = array(
+        "/'/"                             =>   "&#039;",
+        '@<@'                             =>   '&lt;',
+        '@>@'                             =>   '&gt;',
+        '@&(?!(\#\d{1,4})|(\w{2,4});)@'   =>   '&amp;'  // allow &#123; and &lt; through
+  );
+  return preg_replace(array_keys($replace), array_values($replace), $v);
+  #return htmlentities($v, ENT_QUOTES);
 }
 
 /**

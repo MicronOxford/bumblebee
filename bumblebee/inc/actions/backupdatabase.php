@@ -38,7 +38,7 @@ class ActionBackupDB extends BufferedAction {
     //echo $success;
     //echo $this->errorMessage;
     echo $this->reportAction($success, 
-              array(STATUS_ERR =>  'Error making backup: '.$this->errorMessage
+              array(STATUS_ERR =>  _('Error making backup: ').$this->errorMessage
                    )
                );
   }

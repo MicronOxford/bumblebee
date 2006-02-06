@@ -85,15 +85,15 @@ class Vacancy extends TimeSlot {
       $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
       $startticks = $start->ticks;
       $stopticks = $stop->ticks;
-      $timedescription = $start->datetimestring.' - '.$stop->datetimestring;
+      $timedescription = sprintf(_('Make booking from %s to %s'), $start->datetimestring, $stop->datetimestring);
       //$timedescription = $this->start->timestring.' - '.$this->stop->timestring;
       $isodate = $start->datestring;
       $t .= '<div style="float:right;">'
               .'<a href="'
                   .$this->href.'&amp;isodate='.$isodate.'&amp;startticks='.$startticks.'&amp;stopticks='.$stopticks.'" '
-                  .'class="but" title="Make booking '.$timedescription.'">'
+                  .'class="but" title="'.$timedescription.'">'
                       .'<img src="'.$BASEPATH.'/theme/images/book.png" '
-                          .'alt="Make booking '.$timedescription.'" '
+                          .'alt="'.$timedescription.'" '
                           .'class="calicon" />'
               .'</a>'
             .'</div>';
@@ -118,13 +118,11 @@ class Vacancy extends TimeSlot {
   function generateBookingTitle() {
     $start = isset($this->displayStart) ? $this->displayStart : $this->original->start;
     $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->original->stop;
-    $t = '';
     if ($this->isDisabled) {
-      $t .= 'Unavailable from ';
+      $t = sprintf(_('Unavailable from %s to %s'), $start->datetimestring, $stop->datetimestring);
     } else {
-      $t .= 'Vacancy from ';
+      $t = sprintf(_('Vacant from %s to %s'), $start->datetimestring, $stop->datetimestring);
     }
-    $t .= $start->datetimestring .' - '. $stop->datetimestring;
     return $t;
   }
 

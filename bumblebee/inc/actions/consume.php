@@ -46,8 +46,8 @@ class ActionConsume extends ActionAction {
 
   function go() {
     if (isset($this->PD['list'])) {
-      $daterange = new DateRange('daterange', 'Select date range', 
-                      'Enter the dates over which you want to report consumable use');
+      $daterange = new DateRange('daterange', _('Select date range'),
+                      _('Enter the dates over which you want to report consumable use'));
       $daterange->update($this->PD);
       $daterange->checkValid();
       if ($daterange->newObject || !$daterange->isValid) {
@@ -75,7 +75,7 @@ class ActionConsume extends ActionAction {
     } else {
       $this->edit();
     }
-    echo "<br /><br /><a href='".makeURL('consume')."'>Return to consumable use list</a>";
+    echo "<br /><br /><a href='".makeURL('consume')."'>"._('Return to consumable use list')."</a>";
   }
 
 //   function mungeInputData() {
@@ -114,15 +114,15 @@ class ActionConsume extends ActionAction {
     if (isset($this->PD['consumableid'])) {
       $path['consumableid'] = $this->PD['consumableid'];
     }
-    $userselect = new AnchorTableList('Users', 'Select which user is consuming');
+    $userselect = new AnchorTableList(_('Users'), _('Select which user is consuming'));
     $userselect->deleted = false;  // don't show deleted users
     $userselect->connectDB("users", array('id', 'name', 'username'));
     $userselect->hrefbase = makeURL('consume', array_merge($path, array('user' => '__id__')));
     $userselect->setFormat('id', '%s', array('name'), ' %s', array('username'));
 
     if (isset($this->PD['consumableid']) && $this->PD['consumableid'] > 0) {
-      echo "<p><a href='".makeURL('consume', array_merge($path, array('list'=>1)))."'>View listing</a> "
-          ."for selected consumable</p>\n";
+      echo '<p>'.sprintf(_('<a href="%s">View listing</a> for selected consumable'), 
+                  makeURL('consume', array_merge($path, array('list'=>1))))."</p>\n";
     }
     echo $userselect->display();
     echo '<br />';
@@ -136,15 +136,15 @@ class ActionConsume extends ActionAction {
     if (isset($this->PD['user'])) {
       $path['user'] = $this->PD['user'];
     }
-    $consumableselect = new AnchorTableList('Consumables', 'Select which Consumables to use');
+    $consumableselect = new AnchorTableList(_('Consumables'), _('Select which Consumables to use'));
     $consumableselect->deleted = false;   // don't show deleted consumables
     $consumableselect->connectDB('consumables', array('id', 'name', 'longname'));
     $consumableselect->hrefbase = makeURL('consume', array_merge($path, array('consumableid' => '__id__')));
     $consumableselect->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'));
     
     if (isset($this->PD['user']) && $this->PD['user'] > 0) {
-      echo "<p><a href='".makeURL('consume', array_merge($path, array('list'=>1)))."'>View listing</a> "
-          .'for selected user</p>'."\n";
+      echo '<p>'.sprintf(_('<a href="%s">View listing</a> for selected user'),
+                  makeURL('consume', array_merge($path, array('list'=>1))))."</p>\n";
     }
     echo $consumableselect->display();
   }
@@ -162,17 +162,18 @@ class ActionConsume extends ActionAction {
     $rec->checkValid();
     echo $this->reportAction($rec->sync(), 
           array(
-              STATUS_OK =>   ($recordid < 0 ? 'Consumption recorded' : 'Consumption record updated'),
-              STATUS_ERR =>  'Consumption record could not be changed: '.$rec->errorMessage
+              STATUS_OK =>   ($recordid < 0 ? _('Consumption recorded') 
+                                            : _('Consumption record updated')),
+              STATUS_ERR =>  _('Consumption record could not be changed:').' '.$rec->errorMessage
           )
         );
     echo $rec->display();
     if ($rec->id < 0) {
-      $submit = 'Record consumable use';
+      $submit = _('Record consumable use');
       $delete = '0';
     } else {
-      $submit = 'Update entry';
-      $delete = 'Delete entry';
+      $submit = _('Update entry');
+      $delete = _('Delete entry');
     }
     echo "<input type='submit' name='submit' value='$submit' />";
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
@@ -182,8 +183,9 @@ class ActionConsume extends ActionAction {
     $rec = new ConsumableUse($this->PD['id']);
     echo $this->reportAction($rec->delete(), 
               array(
-                  STATUS_OK =>   'Consumption record deleted',
-                  STATUS_ERR =>  'Consumption record could not be deleted:<br/><br/>'.$rec->errorMessage
+                  STATUS_OK =>   _('Consumption record deleted'),
+                  STATUS_ERR =>  _('Consumption record could not be deleted:')
+                                  .'<br/><br/>'.$rec->errorMessage
               )
             );  
   }
@@ -200,11 +202,13 @@ class ActionConsume extends ActionAction {
     $stop  = $daterange->getStop();
     $stop->addDays(1);
     $consumable = new Consumable($consumableID);
-    echo '<p>Consumption records for '
-        .$consumable->fields['name']->value."</p>\n";
-    $recselect = new AnchorTableList('Consumption Record', 'Select the consumption record to view',3);
+    echo '<p>'
+          .sprintf(_('Consumption records for %s'), $consumable->fields['name']->value)
+          ."</p>\n";
+    $recselect = new AnchorTableList(_('Consumption Record'), 
+                              _('Select the consumption record to view'), 3);
     $recselect->deleted = NULL;
-    $recselect->setTableHeadings(array('Date', 'User','Quantity'));
+    $recselect->setTableHeadings(array(_('Date'), _('User'), _('Quantity')));
     $recselect->connectDB('consumables_use',
                           array(array('consumables_use.id','conid'), 'consumable', 'usewhen', 'username', 'name', 'quantity'),
                           'consumable='.qw($consumableID)
@@ -232,12 +236,15 @@ class ActionConsume extends ActionAction {
     $stop  = $daterange->getStop();
     $stop->addDays(1);
     $user = new User($userID, true);
-    echo '<p>Consumption records for '
-        .$user->fields['username']->value
-        .' ('.$user->fields['name']->value.")</p>\n";
-    $recselect = new AnchorTableList('Consumption Record', 'Select the consumption record to view',3);
+    echo '<p>'
+        .sprintf(_('Consumption records for %s (%s)'), 
+              $user->fields['username']->value,
+              $user->fields['name']->value)
+        .")</p>\n";
+    $recselect = new AnchorTableList(_('Consumption Record'), 
+                    _('Select the consumption record to view'), 3);
     $recselect->deleted = NULL;
-    $recselect->setTableHeadings(array('Date', 'Item','Quantity'));
+    $recselect->setTableHeadings(array(_('Date'), _('Item'), _('Quantity')));
     $recselect->connectDB('consumables_use',
                           array(array('consumables_use.id','conid'), 'consumable', 'usewhen', 'name', 'longname', 'quantity'),
                           'userid='.qw($userID)

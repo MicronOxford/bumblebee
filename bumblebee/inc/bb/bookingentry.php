@@ -72,16 +72,16 @@ class BookingEntry extends DBRow {
     }
     $this->slotrules = new TimeSlotRule($granlist);
     $this->editable = 1;
-    $f = new IdField('id', 'Booking ID');
+    $f = new IdField('id', _('Booking ID'));
     $f->editable = 0;
     $f->duplicateName = 'bookid';
     $this->addElement($f);
-    $f = new ReferenceField('instrument', 'Instrument');
+    $f = new ReferenceField('instrument', _('Instrument'));
     $f->extraInfo('instruments', 'id', 'name');
     $f->duplicateName = 'instrid';
     $f->defaultValue = $instrumentid;
     $this->addElement($f);
-    $startf = new DateTimeField('bookwhen', 'Start');
+    $startf = new DateTimeField('bookwhen', _('Start'));
 //     $this->starttime = &$startf;
     $startf->required = 1;
     $startf->defaultValue = $start;
@@ -98,7 +98,7 @@ class BookingEntry extends DBRow {
     $startf->setSlotStart($start);
     $startf->setEditableOutput(false, true);
     $this->addElement($startf);
-    $durationf = new TimeField('duration', 'Duration');
+    $durationf = new TimeField('duration', _('Duration'));
 //     $this->duration = &$durationf;
     $durationf->required = 1;
     $durationf->isValidTest = 'is_valid_nonzero_time';
@@ -112,7 +112,7 @@ class BookingEntry extends DBRow {
     $durationf->setSlots($this->slotrules);
     $durationf->setSlotStart($start);
     $this->addElement($durationf);
-    $f = new DropList('projectid', 'Project');
+    $f = new DropList('projectid', _('Project'));
     $f->connectDB('projects', 
                   array('id', 'name', 'longname'), 
                   'userid='.qw($this->euid),
@@ -123,30 +123,30 @@ class BookingEntry extends DBRow {
     $f->setFormat('id', '%s', array('name'), ' (%35.35s)', array('longname'));
     $this->addElement($f);
     $attrs = array('size' => '48');
-    $f = new TextField('comments', 'Comment to show on calendar');
+    $f = new TextField('comments', _('Comment to show on calendar'));
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField('log', 'Logbook Entry');
+    $f = new TextField('log', _('Logbook Entry'));
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new ReferenceField('userid', 'User');
+    $f = new ReferenceField('userid', _('User'));
     $f->extraInfo('users', 'id', 'name');
     $f->value = $this->euid;
     $this->addElement($f);
-    $f = new ReferenceField('bookedby', 'Recorded by');
+    $f = new ReferenceField('bookedby', _('Recorded by'));
     $f->extraInfo('users', 'id', 'name');
     $f->value = $auth->uid;
     $f->editable = $this->_isadmin;
     $f->hidden = !$this->_isadmin;
     $this->addElement($f);
-    $f = new TextField('discount', 'Discount (%)');
+    $f = new TextField('discount', _('Discount (%)'));
     $f->isValidTest = 'is_number';
     $f->defaultValue = '0';
     $f->editable = $this->_isadmin;
     $f->hidden = !$this->_isadmin;
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField('ip', 'Computer IP');
+    $f = new TextField('ip', _('Computer IP'));
     $f->value = $ip;
     $f->editable = 0;
     $this->addElement($f);
@@ -173,10 +173,10 @@ class BookingEntry extends DBRow {
     $this->addElement($f);
     $f = new Field('bookwhen');
     $this->addElement($f);
-    $f = new Field('userid', 'User');
+    $f = new Field('userid', _('User'));
     $f->value = $this->euid;
     $this->addElement($f);
-    $f = new Field('log', 'Log');
+    $f = new Field('log', _('Log'));
     $this->addElement($f);
     $this->fill();
   }
@@ -423,10 +423,16 @@ class BookingEntry extends DBRow {
       $this->log('Overlapping bookings, error');
       $this->_removeTempBooking($tmpid);
       $doubleBook = 1;
-      $this->errorMessage .= 'Sorry, the instrument is not free at this time.<br /><br />'
-                          .'Instrument booked by ' .$row['username']
+      $this->errorMessage .= _('Sorry, the instrument is not free at this time.').'<br /><br />'
+                          .sprintf(_('Instrument booked by %s (%s) from %s until %s.'),
+                                  $row['username'],
+                                  '<a href="'.makeURL('view', array('instrid'=>$instrument,'bookid'=>$row['bookid'])).'">'
+                                      ._('booking #').$row['bookid'].'</a>',
+                                  $row['bookwhen'],
+                                  $row['stoptime']);
+/*                          .'Instrument booked by ' .$row['username']
                           .' (<a href="'.makeURL('view', array('instrid'=>$instrument,'bookid'=>$row['bookid'])).'">booking #'.$row['bookid'].'</a>)<br />'
-                          .'from '.$row['bookwhen'].' until ' .$row['stoptime'];
+                          .'from '.$row['bookwhen'].' until ' .$row['stoptime'];*/
       // The error should be displayed by the driver class, not us. We *never* echo.
       //echo $this->errorMessage;
       #preDump($row);
@@ -488,8 +494,7 @@ class BookingEntry extends DBRow {
       }
     }
     if (! $validslot) {
-      $this->errorMessage .= 'Sorry, the timeslot you have selected is not valid, '
-                            .'due to restrictions imposed by the instrument administrator.';
+      $this->errorMessage .= _('Sorry, the timeslot you have selected is not valid, due to restrictions imposed by the instrument administrator.');
     }
     return $validslot;
   }
@@ -569,14 +574,19 @@ class BookingEntry extends DBRow {
     $this->_checkMinNotice();
     if (! $this->deletable && ! $this->_isadmin) {
       // we're not allowed to do so 
-      $this->errorMessage = 'Sorry, this booking cannot be deleted due to booking policy.';
+      $this->errorMessage = _('Sorry, this booking cannot be deleted due to booking policy.');
       return STATUS_FORBIDDEN;
     }
     $sql_result = -1;
     $today = new SimpleDate(time());
     $newlog = $this->fields['log']->value
-                  .'Booking deleted by '.$this->_auth->username
-                  .' (user #'.$this->uid.') on '.$today->datetimestring.'.';
+                  .' '
+                  .sprintf(_('Booking deleted by %s (user #%s) on %s.'), 
+                        $this->_auth->username,
+                        $this->uid,
+                        $today->datetimestring);
+/*                  .'Booking deleted by '.$this->_auth->username
+                  .' (user #'.$this->uid.') on '.$today->datetimestring.'.';*/
     return parent::delete('log='.qw($newlog));
   }
   

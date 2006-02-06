@@ -45,7 +45,7 @@ class ActionMasquerade extends ActionAction {
     } else {
       $this->assumeMasquerade();
     }
-    echo "<br /><br /><a href='".makeURL('masquerade')."'>Return to user list</a>";
+    echo "<br /><br /><a href='".makeURL('masquerade')."'>"._('Return to user list')."</a>";
   }
 
   /**
@@ -53,13 +53,13 @@ class ActionMasquerade extends ActionAction {
   *  
   */
   function selectUser() {
-    $select = new AnchorTableList('Users', 'Select which user to masquerade as');
+    $select = new AnchorTableList(_('Users'), _('Select which user to masquerade as'));
     $select->connectDB('users', array('id', 'name', 'username'),'id!='.qw($this->auth->uid));
     $select->hrefbase = makeURL('masquerade', array('id'=>'__id__'));
     $select->setFormat('id', '%s', array('name'), ' %s', array('username'));
     if ($this->auth->amMasqed()) {
-      $select->list->prepend(array('-1','End current Masquerade'));
-      echo 'Currently wearing the mask of:'
+      $select->list->prepend(array('-1', _('End current Masquerade')));
+      echo _('Currently wearing the mask of:')
         .'<blockquote class="highlight">'
         .$this->auth->ename.' ('.$this->auth->eusername.')</blockquote>';
     }
@@ -68,7 +68,7 @@ class ActionMasquerade extends ActionAction {
 
   /**
   * Put on the selected mask 
-  *  
+  *  @todo i18n: block translation
   */
   function assumeMasquerade() {
     if ($row = $this->auth->assumeMasq($this->PD['id'])) {
@@ -91,7 +91,7 @@ class ActionMasquerade extends ActionAction {
   
   /**
   * Remove the mask 
-  *  
+  *  @todo i18n: block translation
   */
   function removeMasquerade() {
     $this->auth->removeMasq();

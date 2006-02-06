@@ -56,7 +56,7 @@ class ActionSpecialCosts extends ActionAction {
     } else {
       $this->edit();
     }
-    echo "<br /><br /><a href='".makeURL('specialcosts')."'>Return to special costs list</a>";
+    echo "<br /><br /><a href='".makeURL('specialcosts')."'>"._('Return to special costs list')."</a>";
   }
   
   function mungeInputData() {
@@ -96,14 +96,14 @@ class ActionSpecialCosts extends ActionAction {
   */
   function selectProject() {
     $this->log("selectProject: which existing rate to edit");
-    $select = new AnchorTableList('Projects', 'Select project to rates to view');
+    $select = new AnchorTableList(_('Projects'), _('Select project to view rates'));
     $select->connectDB('projects', array('id', 'name', 'longname'),
                             'projectid IS NOT NULL',
                             'name', 
                             'id', 
                             NULL, 
                             array('projectrates'=>'projectrates.projectid=projects.id'), true);
-    $select->list->prepend(array('-1','Create new project rate'));
+    $select->list->prepend(array('-1', _('Create new project rate')));
     $select->hrefbase = makeURL('specialcosts', array('project'=>'__id__'));
     $select->setFormat('id', '%s', array('name'), '%50.50s', array('longname'));
     echo $select->display();
@@ -115,7 +115,7 @@ class ActionSpecialCosts extends ActionAction {
   */
   function selectProjectCreate() {
     $this->log("selectProjectCreate: which project to create a new rate for");
-    $select = new AnchorTableList('Projects', 'Select project to create rate');
+    $select = new AnchorTableList(_('Projects'), _('Select project to create rate'));
     $select->connectDB('projects', array('id', 'name', 'longname'));
     $select->hrefbase = makeURL('specialcosts', array('project'=>'__id__', 'createnew'=>1));
     $select->setFormat('id', '%s', array('name'), '%50.50s', array('longname'));
@@ -128,14 +128,14 @@ class ActionSpecialCosts extends ActionAction {
   */
   function selectInstrument() {
     $this->log("selectInstrument: which existing rate to edit");
-    $select = new AnchorTableList('Instruments', 'Select instrument to view rates');
+    $select = new AnchorTableList(_('Instruments'), _('Select instrument to view rates'));
     $select->connectDB('instruments', array('id', 'name', 'longname'),
                             'projectid='.qw($this->PD['project']),
                             'name', 
                             'id', 
                             NULL, 
                             array('projectrates'=>'projectrates.instrid=instruments.id'), true);
-    $select->list->prepend(array('-1','Create new project rate'));
+    $select->list->prepend(array('-1', _('Create new project rate')));
     $select->hrefbase = makeURL('specialcosts', array('instrument'=>'__id__', 'createnew'=>$this->PD['createnew'], 'project'=>$this->PD['project']));
     $select->setFormat('id', '%s', array('name'), '%50.50s', array('longname'));
     echo $select->display();
@@ -146,8 +146,8 @@ class ActionSpecialCosts extends ActionAction {
   *
   */
   function selectInstrumentCreate() {
-    $this->log("selectInstrumentCreate: which instrumen to create a new rate for");
-    $select = new AnchorTableList('Instruments', 'Select instrument to create rate');
+    $this->log("selectInstrumentCreate: which instrument to create a new rate for");
+    $select = new AnchorTableList(_('Instruments'), _('Select instrument to create rate'));
     $select->connectDB('instruments', array('id', 'name', 'longname'),
                             'projectid IS NULL',        //find rows *not* in the join
                             'name', 
@@ -165,17 +165,17 @@ class ActionSpecialCosts extends ActionAction {
     $specCost->checkValid();
     echo $this->reportAction($specCost->sync(), 
           array(
-              STATUS_OK =>   ($id < 0 ? 'Cost schedule created' : 'Cost schedule updated'),
-              STATUS_ERR =>  'Cost schedule could not be changed: '.$specCost->errorMessage
+              STATUS_OK =>   ($id < 0 ? _('Cost schedule created') : _('Cost schedule updated')),
+              STATUS_ERR =>  _('Cost schedule could not be changed:').' '.$specCost->errorMessage
           )
         );
     echo $specCost->display();
     if ($id < 0) {
-      $submit = 'Create new project cost';
+      $submit = _('Create new project cost');
       $delete = '0';
     } else {
-      $submit = 'Update entry';
-      $delete = 'Delete entry';
+      $submit = _('Update entry');
+      $delete = _('Delete entry');
     }
     //echo '<input type="hidden" name="project" value="'.$this->PD['project'].'" />';
     //echo '<input type="hidden" name="instrument" value="'.$this->PD['instrument'].'" />';
@@ -187,8 +187,8 @@ class ActionSpecialCosts extends ActionAction {
     list($id, $cost) = $this->_getCostObject();
     echo $this->reportAction($cost->delete(), 
               array(
-                  STATUS_OK =>   'Cost deleted',
-                  STATUS_ERR =>  'Cost could not be deleted:<br/><br/>'.$cost->errorMessage
+                  STATUS_OK =>   _('Cost deleted'),
+                  STATUS_ERR =>  _('Cost could not be deleted:').'<br/><br/>'.$cost->errorMessage
               )
             );  
   }
