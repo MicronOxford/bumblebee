@@ -462,7 +462,11 @@ class Calendar {
       for ($day=0; $day<7; $day++) {
         $current = $weekstart;
         $current->addDays($day);
-        $currentidx = $current->dsDaysBetween($this->start);
+        #$currentidx = $current->dsDaysBetween($this->start); 
+        // calculate the day number directly from the cell information rather than
+        // using date-time functions. (add a small qty to the value so that floor doesn't
+        // round down to the next integer below due to fp precision)
+        $currentidx = floor($row / $numRowsPerDay + 0.05) * 7 + $day;
         if (isset($matrix[$currentidx]->rows[$dayRow])) {
           #$t .= '<td>';
           #preDump($matrix[$currentidx]->rows[$dayRow]);

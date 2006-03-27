@@ -1,3 +1,7 @@
+2006-03-27 Stuart Prescott <stuart@nanonanonano.net>
+	* 1.0.2 release
+	* bugfix: calendar display contained duplicate bookings when coming out of daylight saving time
+
 2006-02-06 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* 1.0.1 release
 	* feature: Cc the logged-in user on billing emails
