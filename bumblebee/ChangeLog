@@ -1,5 +1,6 @@
 2006-03-31 Stuart Prescott <stuart@nanonanonano.net>
 	* feature: allow admin to reset password and turn on extra login debugging info just using the config file
+	* bugfix: user can now change password if email or phone number is not set
 
 2006-03-27 Stuart Prescott <stuart@nanonanonano.net>
 	* 1.0.2 release
