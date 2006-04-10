@@ -16,6 +16,7 @@ require_once 'inc/formslib/idfield.php';
 require_once 'inc/formslib/textfield.php';
 require_once 'inc/formslib/radiolist.php';
 require_once 'inc/formslib/checkbox.php';
+#require_once 'inc/formslib/bitmaskpopup.php';
 require_once 'inc/formslib/passwdfield.php';
 require_once 'inc/formslib/droplist.php';
 require_once 'inc/formslib/joindata.php';
@@ -69,8 +70,13 @@ class User extends DBRow {
     if (! $passwdOnly) {
       $f = new CheckBox('suspended', _('Suspended'));
       $this->addElement($f);
-      $f = new CheckBox('isadmin', _('System Administrator'));
-      $this->addElement($f);
+      #$f = new CheckBox('isadmin', _('System Administrator'));
+      #$this->addElement($f);
+      
+      //// @FIXME: bitmask control
+/*      $f = new BitmaskPopup('perms', _('User Permissions'), _('Permissions'), _('Perms'));
+      $f->setValuesArray(array(1=>'foo', 2=>'bar', 3=>'quux'), 'id', 'iv');
+      $this->addElement($f);*/
     }
     
     // association of user with an authentication method
