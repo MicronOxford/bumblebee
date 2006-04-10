@@ -4,6 +4,10 @@ $Id$
 ------------
 Bugs:  
   book dropdown on 10:00-16:00/6 includes times that would overlap bookings
+* double entry password in installer
+* double entry password in change passwd
+* installer should check username is valid in same way auth.php does
+* installer mysql5 compatability (password, boolean defaults)
 
 * 1.2 series
 ------------
@@ -16,6 +20,11 @@ Features:
   * groups of instruments
   * internationalisation
   * bring email templates into the database
+
+  * pre-inst test of auth modules, optionals (PDF, radius, ldap)
+  * post-inst auto-test of db, environment, auth modules etc.
+  * post-inst test that .ini files are protected by .htaccess
+  * check that admin can log in ok using auth.php
 
 * Later
 ------------
