@@ -21,6 +21,7 @@ Features:
   * internationalisation
   * bring email templates into the database
 
+  * pre-inst check of kit (php? dir structure? PEAR::Auth? php-gettext)
   * pre-inst test of auth modules, optionals (PDF, radius, ldap)
   * post-inst auto-test of db, environment, auth modules etc.
   * post-inst test that .ini files are protected by .htaccess
