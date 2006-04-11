@@ -46,13 +46,13 @@ class ActionCosts extends ActionAction {
       $this->editCost();
     }
     echo "<br /><br /><a href='".makeURL('costs')."'>"
-                              ._('Return to costs list')      ."</a><br /><br />";
+                              .T_('Return to costs list')      ."</a><br /><br />";
     echo "<a href='".makeURL('specialcosts')."'>"
-                              ._('Edit special costs')        ."</a><br />";
+                              .T_('Edit special costs')        ."</a><br />";
     echo "<a href='".makeURL('instrumentclass')."'>"
-                              ._('Edit instrument classes')   ."</a><br />";
+                              .T_('Edit instrument classes')   ."</a><br />";
     echo "<a href='".makeURL('userclass')."'>"
-                              ._('Edit user classes')         ."</a><br />";
+                              .T_('Edit user classes')         ."</a><br />";
   }
   
 //   function mungeInputData() {
@@ -75,7 +75,7 @@ class ActionCosts extends ActionAction {
   * @return void nothing
   */
   function selectUserClass() {
-    $select = new AnchorTableList(_('Cost'), _('Select which user class to view usage costs'), 1);
+    $select = new AnchorTableList(T_('Cost'), T_('Select which user class to view usage costs'), 1);
     $select->connectDB('userclass', array('id', 'name'));
     //$select->list->prepend(array("-1","Create new user class"));
     $select->hrefbase = makeURL('costs', array('userclass'=>'__id__'));
@@ -96,13 +96,13 @@ class ActionCosts extends ActionAction {
     echo $this->reportAction($classCost->sync(), 
           array(
               STATUS_OK =>   ($this->PD['userclass'] < 0 
-                                    ? _('Cost schedule created') 
-                                    : _('Cost schedule updated')),
-              STATUS_ERR =>  _('Cost schedule could not be changed:').' '.$classCost->errorMessage
+                                    ? T_('Cost schedule created') 
+                                    : T_('Cost schedule updated')),
+              STATUS_ERR =>  T_('Cost schedule could not be changed:').' '.$classCost->errorMessage
           )
         );
     echo $classCost->display();
-    echo '<input type="submit" name="submit" value="'._('Update entry').'" />';
+    echo '<input type="submit" name="submit" value="'.T_('Update entry').'" />';
   }
   
 }

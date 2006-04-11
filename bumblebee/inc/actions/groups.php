@@ -45,15 +45,15 @@ class ActionGroups extends ActionAction  {
     } else {
       $this->edit();
     }
-    echo "<br /><br /><a href='".makeURL('groups')."'>"._('Return to group list')."</a>";
+    echo "<br /><br /><a href='".makeURL('groups')."'>".T_('Return to group list')."</a>";
   }
 
   function select($deleted=false) {
-    $select = new AnchorTableList(_('Group'), _('Select which group to view'));
+    $select = new AnchorTableList(T_('Group'), T_('Select which group to view'));
     $select->deleted = $deleted;
     $select->connectDB('groups', array('id', 'name', 'longname'));
-    $select->list->prepend(array('-1', _('Create new group')));
-    $select->list->append(array('showdeleted', _('Show deleted groups')));
+    $select->list->prepend(array('-1', T_('Create new group')));
+    $select->list->append(array('showdeleted', T_('Show deleted groups')));
     $select->hrefbase = makeURL('groups', array('id'=>'__id__'));
     $select->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'));
     #echo $select->list->text_dump();
@@ -66,17 +66,17 @@ class ActionGroups extends ActionAction  {
     $group->checkValid();
     echo $this->reportAction($group->sync(), 
           array(
-              STATUS_OK =>   ($this->PD['id'] < 0 ? _('Group created') : _('Group updated')),
-              STATUS_ERR =>  _('Group could not be changed:').' '.$group->errorMessage
+              STATUS_OK =>   ($this->PD['id'] < 0 ? T_('Group created') : T_('Group updated')),
+              STATUS_ERR =>  T_('Group could not be changed:').' '.$group->errorMessage
           )
         );
     echo $group->display();
     if ($group->id < 0) {
-      $submit = _('Create new group');
+      $submit = T_('Create new group');
       $delete = '0';
     } else {
-      $submit = _('Update entry');
-      $delete = $group->isDeleted ? _('Undelete entry') : _('Delete entry');
+      $submit = T_('Update entry');
+      $delete = $group->isDeleted ? T_('Undelete entry') : T_('Delete entry');
     }
     #$submit = ($PD['id'] < 0 ? "Create new" : "Update entry");
     echo "<input type='submit' name='submit' value='$submit' />";
@@ -87,8 +87,8 @@ class ActionGroups extends ActionAction  {
     $group = new Group($this->PD['id']);
     echo $this->reportAction($group->delete(), 
               array(
-                  STATUS_OK =>   $group->isDeleted ? _('Group undeleted') : _('Group deleted'),
-                  STATUS_ERR =>  _('Group could not be deleted:').'<br/><br/>'.$group->errorMessage
+                  STATUS_OK =>   $group->isDeleted ? T_('Group undeleted') : T_('Group deleted'),
+                  STATUS_ERR =>  T_('Group could not be deleted:').'<br/><br/>'.$group->errorMessage
               )
             );  
   }

@@ -38,7 +38,7 @@ class ActionPassword extends ActionAction {
 
   function go() {
     $this->edit();
-    echo "<br /><br /><a href='".makeURL('')."'>"._('Return to main menu')."</a>";
+    echo "<br /><br /><a href='".makeURL('')."'>".T_('Return to main menu')."</a>";
   }
 
   function edit() {
@@ -48,12 +48,12 @@ class ActionPassword extends ActionAction {
     $user->checkValid();
     echo $this->reportAction($user->sync(), 
           array(
-              STATUS_OK =>   _('Password changed successfully.'),
-              STATUS_ERR =>  _('Password could not be changed: ').$user->errorMessage
+              STATUS_OK =>   T_('Password changed successfully.'),
+              STATUS_ERR =>  T_('Password could not be changed: ').$user->errorMessage
           )
         );
     echo $user->display();
-    echo "<input type='submit' name='submit' value='"._('Change password')."' />";
+    echo "<input type='submit' name='submit' value='".T_('Change password')."' />";
   }
 }
 

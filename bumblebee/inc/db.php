@@ -26,7 +26,7 @@ $CONFIG['database']['dbname']     = $db_ini['database'];
 */
 $TABLEPREFIX = $db_ini['tableprefix'];
 
-$dberrmsg = sprintf(_('<p>Sorry, I couldn\'t connect to the database, so there\'s nothing I can presently do. This could be due to a booking system misconfiguration, or a failure of the database subsystem.</p><p>If this persists, please contact the <a href="mailto:%s">booking system administrator</a>.</p>'), $ADMINEMAIL);
+$dberrmsg = sprintf(T_('<p>Sorry, I couldn\'t connect to the database, so there\'s nothing I can presently do. This could be due to a booking system misconfiguration, or a failure of the database subsystem.</p><p>If this persists, please contact the <a href="mailto:%s">booking system administrator</a>.</p>'), $ADMINEMAIL);
 
 $DB_CONNECT_DEBUG = 0;
 

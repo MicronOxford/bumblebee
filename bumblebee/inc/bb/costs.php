@@ -29,11 +29,11 @@ class ClassCost extends DBRow {
     $this->DBRow('userclass', $id);
     $this->editable = 1;
     $this->use2StepSync = 1;
-    $f = new IdField('id', _('UserClass ID'));
+    $f = new IdField('id', T_('UserClass ID'));
     $f->editable = 0;
     $f->duplicateName = 'userclass';
     $this->addElement($f);
-    $f = new TextField('name', _('Name'));
+    $f = new TextField('name', T_('Name'));
     $attrs = array('size' => '48');
     $f->setAttr($attrs);
     $f->required = 1;
@@ -43,28 +43,28 @@ class ClassCost extends DBRow {
     $f = new JoinMatrix('costs', 'id',
                        'userclass',       'id', 'userclass',
                        'instrumentclass', 'id', 'instrumentclass',
-                       'classlabel', _('Cost settings'), 
-                       _('Costs for each class of user corresponding to each instrument type'));
-    $userfield  = new TextField('name', _('User Class'), _('Classes of users'));
-    $instrfield = new TextField('name', _('Instrument Class'), _('Classes of instrument'));
+                       'classlabel', T_('Cost settings'), 
+                       T_('Costs for each class of user corresponding to each instrument type'));
+    $userfield  = new TextField('name', T_('User Class'), T_('Classes of users'));
+    $instrfield = new TextField('name', T_('Instrument Class'), T_('Classes of instrument'));
     //$instrfield->setFormat('id', '%s', array('name'), ' (%40.40s)', $classexample);
     $f->addKeys($userfield,$instrfield);
 
-    $cost = new TextField('costfullday', _('Full day cost'), 
-                          _('Cost of instrument use for a full day'));
+    $cost = new TextField('costfullday', T_('Full day cost'), 
+                          T_('Cost of instrument use for a full day'));
     $attrs = array('size' => '6');
     $cost->setAttr($attrs);
     $f->addElement($cost);
-    $hours= new TextField('hourfactor', _('Hourly rate multiplier'), 
-                          _('Proportion of daily rate charged per hour'));
+    $hours= new TextField('hourfactor', T_('Hourly rate multiplier'), 
+                          T_('Proportion of daily rate charged per hour'));
     $hours->setAttr($attrs);
     $f->addElement($hours);
-    $halfs= new TextField('halfdayfactor', _('Half-day rate multiplier'), 
-                          _('Proportion of daily rate charged per half-day'));
+    $halfs= new TextField('halfdayfactor', T_('Half-day rate multiplier'), 
+                          T_('Proportion of daily rate charged per half-day'));
     $halfs->setAttr($attrs);
     $f->addElement($halfs);
-    $discount= new TextField('dailymarkdown', _('Daily bulk discount %'), 
-                          _('Discount for each successive day\'s booking'));
+    $discount= new TextField('dailymarkdown', T_('Daily bulk discount %'), 
+                          T_('Discount for each successive day\'s booking'));
     $discount->setAttr($attrs);
     $f->addElement($discount);
     $f->colspan = 2;

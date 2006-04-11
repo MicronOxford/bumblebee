@@ -241,7 +241,7 @@ class TimeField extends Field {
           id2.style.display = 'inline';
         }
       </script>
-      <a href='javascript:$func();'>"._('edit times')."</a>
+      <a href='javascript:$func();'>".T_('edit times')."</a>
       ";
     return $t;  
   }

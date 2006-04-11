@@ -41,47 +41,47 @@ class User extends DBRow {
     $this->editable = ! $passwdOnly;
     $this->use2StepSync = 1;
     $this->deleteFromTable = 0;
-    $f = new IdField('id', _('User ID'));
+    $f = new IdField('id', T_('User ID'));
     $f->editable = 0;
     $this->addElement($f);
-    $f = new TextField('username', _('Username'));
+    $f = new TextField('username', T_('Username'));
     $attrs = array('size' => '48');
     $f->required = 1;
     $f->requiredTwoStage = 1;
     $f->isValidTest = 'is_empty_string';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField('name', _('Name'));
+    $f = new TextField('name', T_('Name'));
     $f->required = 1;
     $f->isValidTest = 'is_empty_string';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField('email', _('Email'));
+    $f = new TextField('email', T_('Email'));
     $f->required = 1;
     $f->isValidTest = 'is_empty_string';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField('phone', _('Phone'));
+    $f = new TextField('phone', T_('Phone'));
     $f->required = 1;
     $f->isValidTest = 'is_empty_string';
     $f->setAttr($attrs);
     $this->addElement($f);
     
     if (! $passwdOnly) {
-      $f = new CheckBox('suspended', _('Suspended'));
+      $f = new CheckBox('suspended', T_('Suspended'));
       $this->addElement($f);
-      #$f = new CheckBox('isadmin', _('System Administrator'));
+      #$f = new CheckBox('isadmin', T_('System Administrator'));
       #$this->addElement($f);
       
       //// @FIXME: bitmask control
-/*      $f = new BitmaskPopup('perms', _('User Permissions'), _('Permissions'), _('Perms'));
+/*      $f = new BitmaskPopup('perms', T_('User Permissions'), T_('Permissions'), T_('Perms'));
       $f->setValuesArray(array(1=>'foo', 2=>'bar', 3=>'quux'), 'id', 'iv');
       $this->addElement($f);*/
     }
     
     // association of user with an authentication method
     $this->_findAuthMethods();
-    $f = new RadioList('auth_method', _('User authentication method'));
+    $f = new RadioList('auth_method', T_('User authentication method'));
     $f->sqlHidden = 1;
     $f->setValuesArray($this->_authList, 'id', 'iv');
     $f->setFormat('id', '%s', array('iv'));
@@ -90,7 +90,7 @@ class User extends DBRow {
     $f->hidden = $passwdOnly;
     $this->addElement($f);
     if ($this->_localAuthPermitted) {
-      $password = new PasswdField('passwd', _('Password (for local login)'));
+      $password = new PasswdField('passwd', T_('Password (for local login)'));
       $password->setAttr(array('size' => 24));
       //$password->isValidTest = 'is_nonempty_string';
       $password->suppressValidation = 0;
@@ -103,10 +103,10 @@ class User extends DBRow {
       // association of users to projects
       $f = new JoinData('userprojects',
                         'userid', $this->id,
-                        'projects', _('Project membership'));
-      $projectfield = new DropList('projectid', _('Project'));
+                        'projects', T_('Project membership'));
+      $projectfield = new DropList('projectid', T_('Project'));
       $projectfield->connectDB('projects', array('id', 'name', 'longname'));
-      $projectfield->prepend(array('0',_('(none)'), _('no selection')));
+      $projectfield->prepend(array('0',T_('(none)'), T_('no selection')));
       $projectfield->setDefault(0);
       $projectfield->setFormat('id', '%s', array('name'), ' (%25.25s)', array('longname'));
       $f->addElement($projectfield);
@@ -117,19 +117,19 @@ class User extends DBRow {
       // association of users with instrumental permissions
       $f = new JoinData('permissions',
                         'userid', $this->id,
-                        'instruments', _('Instrument permissions'));
-      $instrfield = new DropList('instrid', _('Instrument'));
+                        'instruments', T_('Instrument permissions'));
+      $instrfield = new DropList('instrid', T_('Instrument'));
       $instrfield->connectDB('instruments', array('id', 'name', 'longname'));
-      $instrfield->prepend(array('0', _('(none)'), _('no selection')));
+      $instrfield->prepend(array('0', T_('(none)'), T_('no selection')));
       $instrfield->setDefault(0);
       $instrfield->setFormat('id', '%s', array('name'), ' (%25.25s)', array('longname'));
       $f->addElement($instrfield);
-      $subscribeAnnounce = new CheckBox('announce', _('Subscribe: announce'));
+      $subscribeAnnounce = new CheckBox('announce', T_('Subscribe: announce'));
       $subscribeAnnounce->defaultValue = 1;
       $f->addElement($subscribeAnnounce);
-      $unbookAnnounce = new CheckBox('unbook', _('Subscribe: unbook'));
+      $unbookAnnounce = new CheckBox('unbook', T_('Subscribe: unbook'));
       $f->addElement($unbookAnnounce);
-      $instradmin = new CheckBox('isadmin', _('Instrument admin'));
+      $instradmin = new CheckBox('isadmin', T_('Instrument admin'));
       $f->addElement($instradmin);
       /*  
       //Add these fields in once we need this functinality
@@ -208,7 +208,7 @@ class User extends DBRow {
                         && $this->fields['username']->value != '')  {
         $this->fields['passwd']->changed = 1;
         $this->fields['passwd']->isValid = 0;
-        $this->errorMessage .= _('password must be set for local login.').'<br/>';
+        $this->errorMessage .= T_('password must be set for local login.').'<br/>';
         $this->isValid = 0;
       } else {
       }

@@ -73,28 +73,28 @@ class ActionEmailList extends ActionAction {
   * @return void nothing
   */
   function selectLists() {
-    $selectRow = new nonDBRow('listselect', _('Select email lists'), 
-              _('Select which email lists you want to return'));
-    $select = new CheckBoxTableList(_('Instrument'), _('Select which instrument to view'));
+    $selectRow = new nonDBRow('listselect', T_('Select email lists'), 
+              T_('Select which email lists you want to return'));
+    $select = new CheckBoxTableList(T_('Instrument'), T_('Select which instrument to view'));
     $hidden = new TextField('instrument');
     $select->addFollowHidden($hidden);
-    $announce = new CheckBox('announce', _('Announce'));
+    $announce = new CheckBox('announce', T_('Announce'));
     $select->addCheckBox($announce);
-    $unbook = new CheckBox('unbook', _('Unbook'));
+    $unbook = new CheckBox('unbook', T_('Unbook'));
     $select->addCheckBox($unbook);
     //$select->numSpareCols = 1;
     $select->connectDB('instruments', array('id', 'name', 'longname'));
     $select->setFormat('id', '%s', array('name'), " %50.50s", array('longname'));
     $select->addSelectAllFooter(true);
     $selectRow->addElement($select);
-    $separator = new TextField('separator', _('Value separator'),
-                _('Separates the returned values so you can paste them into your email client'));
+    $separator = new TextField('separator', T_('Value separator'),
+                T_('Separates the returned values so you can paste them into your email client'));
     $separator->defaultValue = ',';
     $separator->setattr(array('size' => '2'));
     $selectRow->addElement($separator);
     echo $selectRow->displayInTable(4);
     echo '<input type="hidden" name="selectlist" value="1" />';
-    echo '<input type="submit" name="submit" value="'._('Select').'" />';
+    echo '<input type="submit" name="submit" value="'.T_('Select').'" />';
   }
 
 

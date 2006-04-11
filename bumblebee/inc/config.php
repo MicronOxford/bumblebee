@@ -15,7 +15,7 @@
 
 /** location of config files
 * 
-* By default, config/ in the Bumblbee installation directory, but
+* By default, config/ in the Bumblebee installation directory, but
 * can be moved into /etc, /usr/share/bumblebee ...
 * @global string $CONFIGLOCATION
 */
@@ -99,33 +99,8 @@ if (!empty($CONFIG['main']['ExtraIncludePath'])) {
   set_include_path($CONFIG['main']['ExtraIncludePath'].PATH_SEPARATOR.get_include_path());
 }
 
-
-// I18N start
-if (function_exists('gettext')) {
-  /** package name for i18n (mo name) */
-  define('PACKAGE', 'bumblebee'); 
-  $lang = $CONFIG['language']['locale']; // define language: en_US, zh_CN, zh_TW 
-  putenv("LANG=$lang"); 
-//   $lang_found = setlocale(LC_TIME, $lang);
-//   $lang_found = setlocale(LC_MESSAGES, $lang);
-  /** @todo do we really want LC_ALL here? */
-  $lang_found = setlocale(LC_ALL, $lang);
-  if (empty($lang_found)) {
-    /** @todo provide an error for the user here? */
-    // FIXME: 
-    echo "Locale error";
-  } else {
-//     echo "Preferred language is '$lang_found'";
-  }
-  bindtextdomain(PACKAGE, $CONFIG['language']['translation_base']); 
-  textdomain(PACKAGE); 
-} else {
-  // if gettext isn't installed, then provide a fallback
-  function gettext($string) {
-    return $string;
-  }
-}
-
+/** load the language pack */
+require_once 'i18n.php';
 
 /**
 * $BUMBLEBEEVERSION is the installed version of the software

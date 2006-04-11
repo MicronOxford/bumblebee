@@ -97,9 +97,9 @@ class ActionAction {
     $this->PDATA = $pdata;
     $this->stdmessages = array(
       STATUS_NOOP => '',
-      STATUS_OK   => _('Operation completed successfully'),
-      STATUS_WARN => _('Warnings produced during operation'),
-      STATUS_ERR  => _('Error. Could not complete operation'),
+      STATUS_OK   => T_('Operation completed successfully'),
+      STATUS_WARN => T_('Warnings produced during operation'),
+      STATUS_ERR  => T_('Error. Could not complete operation'),
     );
   }
 
@@ -168,7 +168,7 @@ class ActionAction {
       }
     }
     if (! $message) {
-      $message = _('Unknown status code. Error:').' '. $status;
+      $message = T_('Unknown status code. Error:').' '. $status;
     }
     $t = '<div class="'.($status & STATUS_OK ? 'msgsuccess' : 'msgerror').'">'
          .$message

@@ -32,21 +32,21 @@ class Project extends DBRow {
     $this->editable = 1;
     $this->use2StepSync = 1;
     $this->deleteFromTable = 0;
-    $f = new IdField('id', _('Project ID'));
+    $f = new IdField('id', T_('Project ID'));
     $f->editable = 0;
     $this->addElement($f);
-    $f = new TextField('name', _('Name'));
+    $f = new TextField('name', T_('Name'));
     $attrs = array('size' => '48');
     $f->required = 1;
     $f->isValidTest = 'is_nonempty_string';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField('longname', _('Description'));
+    $f = new TextField('longname', T_('Description'));
     $f->required = 1;
     $f->isValidTest = 'is_nonempty_string';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new RadioList('defaultclass', _('Default charging band'));
+    $f = new RadioList('defaultclass', T_('Default charging band'));
     $f->connectDB('userclass', array('id', 'name'));
     $f->setFormat('id', '%s', array('name'));
     $newchargename = new TextField('name','');
@@ -54,7 +54,7 @@ class Project extends DBRow {
     $newchargename->setAttr(array('size' => 24));
     $newchargename->isValidTest = 'is_nonempty_string';
     $newchargename->suppressValidation = 0;
-    $f->list->append(array('-1', _('Create new:').' '), $newchargename);
+    $f->list->append(array('-1', T_('Create new:').' '), $newchargename);
     $f->setAttr($attrs);
     $f->required = 1;
     $f->extendable = 1;
@@ -63,10 +63,10 @@ class Project extends DBRow {
     $this->addElement($f);
     $f = new JoinData('projectgroups',
                        'projectid', $this->id, 
-                       'groups', _('Group membership (%)'));
+                       'groups', T_('Group membership (%)'));
     $groupfield = new DropList('groupid', 'Group');
     $groupfield->connectDB('groups', array('id', 'name', 'longname'));
-    $groupfield->prepend(array('0', _('(none)'), _('no selection')));
+    $groupfield->prepend(array('0', T_('(none)'), T_('no selection')));
     $groupfield->setDefault(0);
     $groupfield->setFormat('id', '%s', array('name'), ' (%30.30s)', array('longname'));
     $f->addElement($groupfield);

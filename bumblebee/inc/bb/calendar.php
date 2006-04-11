@@ -435,7 +435,7 @@ class Calendar {
           $current->addDays($day);
           $isodate = $current->datestring;
           $class = $this->_getDayClass($today, $current);
-          $zoomwords = sprintf(_('Zoom in on %s'), $isodate);
+          $zoomwords = sprintf(T_('Zoom in on %s'), $isodate);
           $t .= '<td class="caldatecell '.$class.'">';
           $t .= '<div style="float:right;"><a href="'.$this->href.'&amp;isodate='.$isodate.'" '
                   .'class="but" title="'.$zoomwords .'">'

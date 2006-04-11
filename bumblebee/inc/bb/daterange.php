@@ -61,12 +61,12 @@ class DateRange extends nonDBRow {
   function dateRange($name, $longname, $description) {
     parent::nonDBRow($name, $longname, $description);
     //$this->DEBUG=10;
-    $startdate = new DateField('startdate', _('Start period beginning of'),
-                          _('Period starts at the beginning of this day'));
+    $startdate = new DateField('startdate', T_('Start period beginning of'),
+                          T_('Period starts at the beginning of this day'));
     $startdate->isValidTest = 'is_valid_date';
     $this->addElement($startdate);
-    $stopdate  = new DateField('stopdate', _('Finish period end of'), 
-                          _('Period finishes at the end of this day'));
+    $stopdate  = new DateField('stopdate', T_('Finish period end of'), 
+                          T_('Period finishes at the end of this day'));
     $stopdate->isValidTest = 'is_valid_date';
     $this->addElement($stopdate);
   }
@@ -192,7 +192,7 @@ class DateRange extends nonDBRow {
       array_push   ($rangePile, $nextrange);
     }
     //preDump($rangePile);
-    $jswalk = new JSQuickWalk($this->namebase,'&laquo; '._('Previous'), _('Next').' &raquo;', array('startdate', 'stopdate'), $rangePile, $maxRanges);
+    $jswalk = new JSQuickWalk($this->namebase,'&laquo; '.T_('Previous'), T_('Next').' &raquo;', array('startdate', 'stopdate'), $rangePile, $maxRanges);
     //preDump($jswalk);
     //$this->extrarows[] = array('', $prevRange[0]->datestring.$prevRange[1]->datestring);
     //$this->extrarows[] = array('', $nextRange[0]->datestring.$nextRange[1]->datestring);

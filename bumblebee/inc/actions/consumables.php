@@ -45,15 +45,15 @@ class ActionConsumables extends ActionAction {
       $this->edit();
     }
     echo "<br /><br /><a href='".makeURL('consumables')."'>"
-              ._('Return to consumables list')."</a>";
+              .T_('Return to consumables list')."</a>";
   }
 
   function select($deleted=false) {
-    $select = new AnchorTableList(_('Consumables'), _('Select which Consumables to view'));
+    $select = new AnchorTableList(T_('Consumables'), T_('Select which Consumables to view'));
     $select->deleted = $deleted;
     $select->connectDB('consumables', array('id', 'name', 'longname'));
-    $select->list->prepend(array('-1', _('Create new consumable')));
-    $select->list->append(array('showdeleted', _('Show deleted consumables')));
+    $select->list->prepend(array('-1', T_('Create new consumable')));
+    $select->list->append(array('showdeleted', T_('Show deleted consumables')));
     $select->hrefbase = makeURL('consumables', array('id'=>'__id__'));
     $select->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'));
     echo $select->display();
@@ -66,21 +66,21 @@ class ActionConsumables extends ActionAction {
     echo $this->reportAction($consumable->sync(), 
           array(
               STATUS_OK =>   ($this->PD['id'] < 0 
-                                ? _('Consumable created') : _('Consumable updated')),
-              STATUS_ERR =>  _('Consumable could not be changed:').' '.$consumable->errorMessage
+                                ? T_('Consumable created') : T_('Consumable updated')),
+              STATUS_ERR =>  T_('Consumable could not be changed:').' '.$consumable->errorMessage
           )
         );
     echo $consumable->display();
     if ($consumable->id < 0) {
-      $submit = _('Create new consumable');
+      $submit = T_('Create new consumable');
       $delete = '0';
     } else {
-      $submit = _('Update entry');
-      $delete = $consumable->isDeleted ? _('Undelete entry') : _('Delete entry');
+      $submit = T_('Update entry');
+      $delete = $consumable->isDeleted ? T_('Undelete entry') : T_('Delete entry');
     }
     echo "<input type='submit' name='submit' value='$submit' />";
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
-    echo '<p>'.sprintf(_('<a href="%s">View listing</a> for selected consumable'), 
+    echo '<p>'.sprintf(T_('<a href="%s">View listing</a> for selected consumable'), 
                 makeURL('consume', array('consumableid'=>$consumable->id, 'list'=>1)))."</p>\n";
   }
 
@@ -88,9 +88,9 @@ class ActionConsumables extends ActionAction {
     $consumable = new Consumable($this->PD['id']);
     echo $this->reportAction($consumable->delete(), 
               array(
-                  STATUS_OK =>   $consumable->isDeleted ? _('Consumable undeleted') 
-                                                        : _('Consumable deleted'),
-                  STATUS_ERR =>  _('Consumable could not be deleted:')
+                  STATUS_OK =>   $consumable->isDeleted ? T_('Consumable undeleted') 
+                                                        : T_('Consumable deleted'),
+                  STATUS_ERR =>  T_('Consumable could not be deleted:')
                                  .'<br/><br/>'.$consumable->errorMessage
               )
             );  

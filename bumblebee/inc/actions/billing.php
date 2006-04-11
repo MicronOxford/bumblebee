@@ -70,11 +70,11 @@ class ActionBilling extends ActionExport {
   function _goButton() {
     echo '<label>'
           .'<input type="radio" name="emailToGroups" value="0" checked="checked" /> '
-          ._('Email report to me').' ('.$this->auth->email.')'
+          .T_('Email report to me').' ('.$this->auth->email.')'
         .'</label><br/>';
     echo '<label>'
           .'<input type="radio" name="emailToGroups" value="1" /> '
-          ._('Email report to each group leader')
+          .T_('Email report to each group leader')
         .'</label><br/><br/>';
     parent::_goButton();
   }
@@ -147,7 +147,7 @@ class ActionBilling extends ActionExport {
       }
     }
     if ($noData) {
-      return $this->unbufferForError('<p>'._('No data found for those criteria').'</p>');
+      return $this->unbufferForError('<p>'.T_('No data found for those criteria').'</p>');
     } else {
       // dump out the files via email or a zip file....
       $this->unbuffer();
@@ -169,23 +169,23 @@ class ActionBilling extends ActionExport {
       }
       if ($success) {
         $s = '<div class="msgsuccess">'
-            ._('Reports sent by email.').'</div>';
+            .T_('Reports sent by email.').'</div>';
         echo $s;
       } else {
         $s = '<div class="msgerror">'
-            ._('Unknown error sending reports by email.').'</div>';
+            .T_('Unknown error sending reports by email.').'</div>';
         echo $s;
       }
       if (count($nopdfs)) {
         $s = '<div class="msgerror">'
-            ._('<b>Note:</b> no billing data was found for some groups.').'<br/><br/>';
+            .T_('<b>Note:</b> no billing data was found for some groups.').'<br/><br/>';
         foreach ($nopdfs as $group) {
           $s .= $group['groupdata']['name'].': '.$group['groupdata']['longname'].'<br/>';
         }
         $s .= '</div>';
         echo $s;
       }
-      echo '<div>'._('Regenerate reports:').'<br/><br/>';
+      echo '<div>'.T_('Regenerate reports:').'<br/><br/>';
       $this->_goButton();
       echo '</div>';
     }
@@ -236,7 +236,7 @@ class ActionBilling extends ActionExport {
     
     //$textmessage = 'Please find attached PDF billing summaries for instrument usage.';
     $subject = ($CONFIG['billing']['emailSubject'] 
-                    ? $CONFIG['billing']['emailSubject'] : _('Instrument usage summary'));
+                    ? $CONFIG['billing']['emailSubject'] : T_('Instrument usage summary'));
 
     //Having read in the data for the file attachment, 
     //we need to set up the message headers to send a multipart/mixed message:

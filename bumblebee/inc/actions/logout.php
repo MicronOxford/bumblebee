@@ -36,9 +36,9 @@ class ActionLogout extends ActionAction {
 
   function go() {
     $url = makeURL('');
-    echo '<h2>'._('Successfully logged out').'</h2>'
-        .'<p>'._('Thank you for using Bumblebee!').'</p>'
-        ."<p>(<a href='$url'>" . _('login') . '</a>)</p>';
+    echo '<h2>'.T_('Successfully logged out').'</h2>'
+        .'<p>'.T_('Thank you for using Bumblebee!').'</p>'
+        ."<p>(<a href='$url'>" . T_('login') . '</a>)</p>';
     echo "<script type='text/javascript'>self.setTimeout('window.document.location.href=\"$url\"', 2000);</script>";
   }
 }

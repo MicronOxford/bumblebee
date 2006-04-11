@@ -301,7 +301,7 @@ class DBChoiceList extends DBO {
       }
     }
     if (! $this->isValid) {
-      $this->errorMessage .= '<br />'._('Invalid data:').' '.$this->longname;
+      $this->errorMessage .= '<br />'.T_('Invalid data:').' '.$this->longname;
     }
     #echo " DBchoiceList::changed=$this->changed<br />";
     return $this->isValid;

@@ -130,7 +130,7 @@ class nonDBRow {
       if (! $this->newObject) {
         $this->log('Checking valid '.$this->fields[$k]->namebase . $k);
         if (! $this->fields[$k]->isValid()) {
-          $this->errorMessage .= _('Invalid data:').' '.$this->fields[$k]->longname
+          $this->errorMessage .= T_('Invalid data:').' '.$this->fields[$k]->longname
                                     .'('.$this->fields[$k]->name.')'
                                   .' = "'. $this->fields[$k]->getValue() .'"<br />';
           $this->isValid = false;
@@ -139,7 +139,7 @@ class nonDBRow {
     }
     if (! $this->isValid) {
       $this->errorMessage .= '<br />'
-            ._('Some values entered into the form are not valid and should be highlighted in the form below. Please check your data entry and try again.');
+            .T_('Some values entered into the form are not valid and should be highlighted in the form below. Please check your data entry and try again.');
     }
     return $this->isValid;
   }

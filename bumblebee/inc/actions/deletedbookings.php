@@ -45,18 +45,18 @@ class ActionDeletedBookings extends ActionAction {
       $this->selectInstrument();
       return;
     }
-    $daterange = new DateRange('daterange', _('Select date range'), 
-                      _('Enter the dates over which you want to report deleted bookings'));
+    $daterange = new DateRange('daterange', T_('Select date range'), 
+                      T_('Enter the dates over which you want to report deleted bookings'));
     $daterange->update($this->PD);
     $daterange->checkValid();
     if ($daterange->newObject) {
       $daterange->setDefaults(DR_PREVIOUS, DR_MONTH);
       echo $daterange->display($this->PD);
       echo "<br /><br /><a href='".makeURL('deletedbookings')."'>"
-                  ._('Return to instrument list')."</a>";
+                  .T_('Return to instrument list')."</a>";
     } else {
       $this->showDeleted($daterange);
-      echo "<br /><br /><a href='".makeURL('deletedbookings', array('instrid'=>$this->PD['instrid']))."'>"._('Choose different dates')."</a>";
+      echo "<br /><br /><a href='".makeURL('deletedbookings', array('instrid'=>$this->PD['instrid']))."'>".T_('Choose different dates')."</a>";
     }
   }
 
@@ -75,7 +75,7 @@ class ActionDeletedBookings extends ActionAction {
   * Select which instrument the listing should be generated for
   */
   function selectInstrument() {
-    $instrselect = new AnchorTableList(_('Instrument'), _('Select which instrument to view'));
+    $instrselect = new AnchorTableList(T_('Instrument'), T_('Select which instrument to view'));
     $instrselect->connectDB('instruments', 
                             array('id', 'name', 'longname')
                             );
@@ -92,8 +92,8 @@ class ActionDeletedBookings extends ActionAction {
     $stop  = $daterange->getStop();
     $stop->addDays(1);
     $instrument = $this->PD['instrid'];
-    $bookings = new AnchorTableList(_('Bookings'), _('Select deleted bookings'));
-    $bookings->setTableHeadings(array(_('Date'), _('Duration'), _('User'), _('Log Entry')));
+    $bookings = new AnchorTableList(T_('Bookings'), T_('Select deleted bookings'));
+    $bookings->setTableHeadings(array(T_('Date'), T_('Duration'), T_('User'), T_('Log Entry')));
     $bookings->numcols = 4;
     $bookings->deleted = true;
     $bookings->connectDB('bookings', 

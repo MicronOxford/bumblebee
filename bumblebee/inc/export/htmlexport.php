@@ -221,7 +221,7 @@ class HTMLExport {
     $fd = fopen($filename, 'r');
     $contents = fread($fd, filesize ($filename));
     fclose($fd); 
-    $title = _('Data export');
+    $title = T_('Data export');
     $table = preg_replace('/\$/', '&#'.ord('$').';', $this->export);
     $contents = preg_replace('/__TITLE__/', $title, $contents);
     $contents = preg_replace('/__BASEPATH__/', $BASEPATH, $contents);
@@ -245,7 +245,7 @@ class HTMLExport {
   BBwriteAll(data);
   
 //-->
-</script><a href="javascript:BBwriteAll(data)">'._('Open Window').'</a>';
+</script><a href="javascript:BBwriteAll(data)">'.T_('Open Window').'</a>';
     return $jsbuf;
   }
 

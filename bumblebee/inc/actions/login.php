@@ -31,8 +31,8 @@ class ActionPrintLoginForm extends ActionAction {
   }
 
   function go() {
-    echo '<h2>' . _('Login required').'</h2>';
-    echo '<p>'  . _('Please login to view or book instrument usage') . '</p>';
+    echo '<h2>' . T_('Login required').'</h2>';
+    echo '<p>'  . T_('Please login to view or book instrument usage') . '</p>';
     printf('
       <table>
       <tr>
@@ -48,9 +48,9 @@ class ActionPrintLoginForm extends ActionAction {
         <td><input name="submit" type="submit" value="%s" /></td>
       </tr>
       </table>',
-      _('Username:'),
-      _('Password:'),
-      _('login')  );
+      T_('Username:'),
+      T_('Password:'),
+      T_('login')  );
   }
 }
 

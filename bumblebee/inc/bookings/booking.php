@@ -94,22 +94,22 @@ class Booking extends TimeSlot {
   * @return string html representation of booking
   */
   function displayInTable($cols, $displayAdmin, $displayOwner) {
-    $t = '<tr><td>'._('Booking ID').'</td><td>'.$this->id.'</td></tr>'."\n"
-       . '<tr><td>'._('Start').'</td><td>'.$this->start->datetimestring.'</td></tr>'."\n"
-       . '<tr><td>'._('Stop').'</td><td>'.$this->stop->datetimestring.'</td></tr>'."\n"
-       . '<tr><td>'._('Duration').'</td><td>'.$this->duration->timestring/*.$bookinglength*/.'</td></tr>'."\n"
-       . '<tr><td>'._('User').'</td><td><a href="mailto:'.$this->useremail.'">'.$this->name.'</a> ('.$this->username.')</td></tr>'."\n"
-       . '<tr><td>'._('Comments').'</td><td>'.$this->comments.'</td></tr>'."\n"
-       . '<tr><td>'._('Log').'</td><td>'.$this->log.'</td></tr>'."\n";
+    $t = '<tr><td>'.T_('Booking ID').'</td><td>'.$this->id.'</td></tr>'."\n"
+       . '<tr><td>'.T_('Start').'</td><td>'.$this->start->datetimestring.'</td></tr>'."\n"
+       . '<tr><td>'.T_('Stop').'</td><td>'.$this->stop->datetimestring.'</td></tr>'."\n"
+       . '<tr><td>'.T_('Duration').'</td><td>'.$this->duration->timestring/*.$bookinglength*/.'</td></tr>'."\n"
+       . '<tr><td>'.T_('User').'</td><td><a href="mailto:'.$this->useremail.'">'.$this->name.'</a> ('.$this->username.')</td></tr>'."\n"
+       . '<tr><td>'.T_('Comments').'</td><td>'.$this->comments.'</td></tr>'."\n"
+       . '<tr><td>'.T_('Log').'</td><td>'.$this->log.'</td></tr>'."\n";
     if ($displayAdmin) {
       if ($this->masquser) {
-        $t .= '<tr><td>'._('Booked by').'</td><td><a href="mailto:'.$this->masqemail.'">'.$this->masquser.'</a> ('.$this->masqusername.')</td></tr>'."\n";
+        $t .= '<tr><td>'.T_('Booked by').'</td><td><a href="mailto:'.$this->masqemail.'">'.$this->masquser.'</a> ('.$this->masqusername.')</td></tr>'."\n";
       }
     }
     if ($displayAdmin || $displayOwner) {
-      $t .= '<tr><td>'._('Project').'</td><td>'.$this->project.'</td></tr>'."\n";
+      $t .= '<tr><td>'.T_('Project').'</td><td>'.$this->project.'</td></tr>'."\n";
       if ($this->discount) {
-        $t .= '<tr><td>'._('Discount').'</td><td>'.$this->discount.'</td></tr>'."\n";
+        $t .= '<tr><td>'.T_('Discount').'</td><td>'.$this->discount.'</td></tr>'."\n";
       }
     }
     return $t;
@@ -125,7 +125,7 @@ class Booking extends TimeSlot {
     global $BASEPATH;
     $start = isset($this->displayStart) ? $this->displayStart : $this->start;
     $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
-    $timedescription = sprintf(_('View or edit booking from %s to %s'), $start->datetimestring, $stop->datetimestring);
+    $timedescription = sprintf(T_('View or edit booking from %s to %s'), $start->datetimestring, $stop->datetimestring);
     //$timedescription = $this->start->timestring.' - '.$this->stop->timestring;
     $isodate = $start->datestring;
     $t = '';
@@ -152,7 +152,7 @@ class Booking extends TimeSlot {
   function generateBookingTitle() {
     $start = isset($this->displayStart) ? $this->displayStart : $this->start;
     $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
-    return sprintf(_('Booking from %s - %s'), $start->datetimestring, $stop->datetimestring);
+    return sprintf(T_('Booking from %s - %s'), $start->datetimestring, $stop->datetimestring);
   }
 
 } //class Booking

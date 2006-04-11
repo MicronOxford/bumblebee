@@ -28,10 +28,10 @@ class UserClass extends DBRow {
     $this->DBRow('userclass', $id);
     $this->deleteFromTable = 0;
     $this->editable = 1;
-    $f = new IdField('id', _('Class ID'));
+    $f = new IdField('id', T_('Class ID'));
     $f->editable = 0;
     $this->addElement($f);
-    $f = new TextField('name', _('User Class name'));
+    $f = new TextField('name', T_('User Class name'));
     $attrs = array('size' => '24');
     $f->setAttr($attrs);
     $f->required = 1;

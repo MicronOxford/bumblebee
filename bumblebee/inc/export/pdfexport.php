@@ -372,7 +372,7 @@ class BrandedPDF extends FPDF {
   
   function BrandedPDF($orientation, $measure, $format) {
     parent::FPDF($orientation, $measure, $format);
-    $this->title = _('BumbleBee Report');
+    $this->title = T_('BumbleBee Report');
   }
     
   function Header() {
@@ -439,12 +439,12 @@ class BrandedPDF extends FPDF {
   
   // overload the error function to give us some better output
   function Error($msg) {
-    echo '<div class="error"><b>'._('Error generating PDF output:').'</b><br/> '.$msg
-        .'<br/><br/>'._('Sorry things didn\'t work out for you.').'</div>';
+    echo '<div class="error"><b>'.T_('Error generating PDF output:').'</b><br/> '.$msg
+        .'<br/><br/>'.T_('Sorry things didn\'t work out for you.').'</div>';
     if ($this->DEBUG) {
       preDump(debug_backtrace());
     }
-    die(_('Exiting with error'));
+    die(T_('Exiting with error'));
   }
   
 } // class BrandedPDF
@@ -504,7 +504,7 @@ class TabularPDF extends BrandedPDF {
   
   function TabularPDF($orientation, $measure, $format) {
     parent::BrandedPDF($orientation, $measure, $format);
-    $this->continuedHeader = ' '._('(continued)');
+    $this->continuedHeader = ' '.T_('(continued)');
   }
     
 

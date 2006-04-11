@@ -85,7 +85,7 @@ class ActionView extends ActionAction {
       echo $this->_calendarViewLink($instrument);
     } elseif (isset($this->PD['instrid'])) {
       $this->instrumentMonth();
-      echo "<br /><br /><a href='".makeURL('view')."'>". _('Return to instrument list') ."</a>";
+      echo "<br /><br /><a href='".makeURL('view')."'>". T_('Return to instrument list') ."</a>";
     } else {
       # shouldn't get here
       $err = 'Invalid action specification in action/view.php::go()';
@@ -124,14 +124,14 @@ class ActionView extends ActionAction {
   function _calendarViewLink($instrument) {
     return '<br /><br /><a href="'.
         makeURL('view', array('instrid'=>$instrument, 'caloffset'=>$this->_offset()))
-      .'">'._('Return to calendar view') .'</a>';
+      .'">'.T_('Return to calendar view') .'</a>';
   }
                       
   /**
   * Select which instrument for which the calendar should be displayed
   */
   function selectInstrument() {
-    $instrselect = new AnchorTableList('Instrument', _('Select which instrument to view'), 3);
+    $instrselect = new AnchorTableList('Instrument', T_('Select which instrument to view'), 3);
     if ($this->auth->isSystemAdmin()) {
       $instrselect->connectDB('instruments', 
                             array('id', 'name', 'longname', 'location')
@@ -214,11 +214,11 @@ class ActionView extends ActionAction {
   */
   function _linksForwardBack($back, $today, $forward, $showForward=true, $extra=array()) {
     return '<div style="text-align:center">'
-        .'<a href="'.makeURL('view', array_merge(array('instrid'=>$this->PD['instrid'], 'caloffset'=>$back), $extra)).'">&laquo; '. _('earlier') .'</a> | '
-        .'<a href="'.makeURL('view', array_merge(array('instrid'=>$this->PD['instrid'], 'caloffset'=>$today), $extra)).'">'. _('today') .'</a> '
+        .'<a href="'.makeURL('view', array_merge(array('instrid'=>$this->PD['instrid'], 'caloffset'=>$back), $extra)).'">&laquo; '. T_('earlier') .'</a> | '
+        .'<a href="'.makeURL('view', array_merge(array('instrid'=>$this->PD['instrid'], 'caloffset'=>$today), $extra)).'">'. T_('today') .'</a> '
         .($showForward ? 
                 ' | '
-                .'<a href="'.makeURL('view', array_merge(array('instrid'=>$this->PD['instrid'], 'caloffset'=>$forward), $extra)).'">'. _('later') .' &raquo;</a>'
+                .'<a href="'.makeURL('view', array_merge(array('instrid'=>$this->PD['instrid'], 'caloffset'=>$forward), $extra)).'">'. T_('later') .' &raquo;</a>'
                 : ''
           )
         .'</div>';
@@ -298,20 +298,20 @@ class ActionView extends ActionAction {
                                 $start, $duration, $row['timeslotpicture']);
     $this->_checkBookingAuth($booking->fields['userid']->getValue());
     if (! $this->_haveWriteAccess) {
-      return $this->_forbiddenError(_('Edit booking'));
+      return $this->_forbiddenError(T_('Edit booking'));
     }
     $booking->update($this->PD);
     $booking->checkValid();
     echo $this->displayInstrumentHeader($row);
     echo $this->reportAction($booking->sync(), 
               array(
-                  STATUS_OK =>   ($bookid < 0 ? _('Booking made') : _('Booking updated')),
-                  STATUS_ERR =>  _('Booking could not be made:').'<br/><br/>'.$booking->errorMessage
+                  STATUS_OK =>   ($bookid < 0 ? T_('Booking made') : T_('Booking updated')),
+                  STATUS_ERR =>  T_('Booking could not be made:').'<br/><br/>'.$booking->errorMessage
               )
             );
     echo $booking->display();
-    $submit = ($booking->id < 0) ? _('Make booking') : _('Update booking');
-    $delete = ($booking->id >= 0 && $booking->deletable) ? _('Delete booking') : '';
+    $submit = ($booking->id < 0) ? T_('Make booking') : T_('Update booking');
+    $delete = ($booking->id >= 0 && $booking->deletable) ? T_('Delete booking') : '';
     echo "<input type='submit' name='submit' value='$submit' />";
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
     echo $this->displayInstrumentFooter($row);
@@ -330,7 +330,7 @@ class ActionView extends ActionAction {
       echo "<p><a href='"
             .makeURL('view', 
                 array('instrid'=>$this->PD['instrid'], 'bookid'=>$this->PD['bookid'], 'edit'=>1))
-            ."'>". _('Edit booking') ."</a></p>\n";
+            ."'>". T_('Edit booking') ."</a></p>\n";
     }
   }
   
@@ -342,13 +342,13 @@ class ActionView extends ActionAction {
     $booking = new BookingEntry($this->PD['bookid'], $this->auth, $this->PD['instrid'], $row['mindatechange']);
     $this->_checkBookingAuth($booking->fields['userid']->getValue());
     if (! $this->_haveWriteAccess) {
-      return $this->_forbiddenError(_('Delete booking'));
+      return $this->_forbiddenError(T_('Delete booking'));
     }
     echo $this->displayInstrumentHeader($row);
     echo $this->reportAction($booking->delete(), 
               array(
-                  STATUS_OK =>   _('Booking deleted'),
-                  STATUS_ERR =>  _('Booking could not be deleted:').'<br/><br/>'.$booking->errorMessage
+                  STATUS_OK =>   T_('Booking deleted'),
+                  STATUS_ERR =>  T_('Booking could not be deleted:').'<br/><br/>'.$booking->errorMessage
               )
             );  
   }
@@ -371,7 +371,7 @@ class ActionView extends ActionAction {
     $this->log('Action forbidden: '.$msg);
     echo $this->reportAction(STATUS_FORBIDDEN, 
               array(
-                  STATUS_FORBIDDEN => $msg.': <br/>'._('Sorry, you do not have permission to do this.'),
+                  STATUS_FORBIDDEN => $msg.': <br/>'.T_('Sorry, you do not have permission to do this.'),
               )
             );
     return STATUS_FORBIDDEN;
@@ -401,7 +401,7 @@ class ActionView extends ActionAction {
          .'<p>'.preg_replace("/\n+/", '</p><p>', $row['calendarcomment']).'</p>';
     }
     if ($row['supervisors']) {
-      $t .= '<h3>'._('Instrument supervisors').'</h3>';
+      $t .= '<h3>'.T_('Instrument supervisors').'</h3>';
       $t .= '<ul>';
       foreach(preg_split('/,\s*/', $row['supervisors']) as $username) {
         $user = quickSQLSelect('users', 'username', $username);

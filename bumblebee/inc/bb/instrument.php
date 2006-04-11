@@ -37,75 +37,75 @@ class Instrument extends DBRow {
     $this->DBRow('instruments', $id);
     $this->editable = 1;
     $this->deleteFromTable = 0;
-    $f = new IdField('id', _('Instrument ID'));
+    $f = new IdField('id', T_('Instrument ID'));
     $f->editable = 0;
     $this->addElement($f);
-    $f = new TextField('name', _('Name'));
+    $f = new TextField('name', T_('Name'));
     $attrs = array('size' => '48');
     $f->required = 1;
     $f->isValidTest = 'is_nonempty_string';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField('longname', _('Description'));
+    $f = new TextField('longname', T_('Description'));
     $f->required = 1;
     $f->isValidTest = 'is_nonempty_string';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField('location', _('Location'));
+    $f = new TextField('location', T_('Location'));
     $f->required = 1;
     $f->isValidTest = 'is_nonempty_string';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField('usualopen', _('Calendar start time (HH:MM)'));
+    $f = new TextField('usualopen', T_('Calendar start time (HH:MM)'));
     $f->required = 1;
     $f->defaultValue = $CONFIG['instruments']['usualopen'];
     $f->isValidTest = 'is_valid_time';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField('usualclose', _('Calendar end time (HH:MM)'));
+    $f = new TextField('usualclose', T_('Calendar end time (HH:MM)'));
     $f->required = 1;
     $f->defaultValue = $CONFIG['instruments']['usualclose'];
     $f->isValidTest = 'is_valid_time';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField('calprecision', _('Precision of calendar display (seconds)'));
+    $f = new TextField('calprecision', T_('Precision of calendar display (seconds)'));
     $f->required = 1;
     $f->defaultValue = $CONFIG['instruments']['usualprecision'];
     $f->isValidTest = 'is_number';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField('caltimemarks', _('Time-periods per HH:MM displayed'));
+    $f = new TextField('caltimemarks', T_('Time-periods per HH:MM displayed'));
     $f->required = 1;
     $f->defaultValue = $CONFIG['instruments']['usualtimemarks'];
     $f->isValidTest = 'is_number';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField('callength', _('Number of weeks displayed in calendar'));
+    $f = new TextField('callength', T_('Number of weeks displayed in calendar'));
     $f->required = 1;
     $f->defaultValue = $CONFIG['instruments']['usualcallength'];
     $f->isValidTest = 'is_number';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField('calhistory', _('Number of weeks history shown'));
+    $f = new TextField('calhistory', T_('Number of weeks history shown'));
     $f->required = 1;
     $f->defaultValue = $CONFIG['instruments']['usualcalhistory'];
     $f->isValidTest = 'is_number';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField('calfuture', _('Number of days into the future'));
+    $f = new TextField('calfuture', T_('Number of days into the future'));
     $f->required = 1;
     $f->defaultValue = $CONFIG['instruments']['usualcalfuture'];
     $f->isValidTest = 'is_number';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextArea('calendarcomment', _('Advisory text'), 
-          _('Displayed at the bottom of instrument calendar and on booking form. HTML permitted.'));
+    $f = new TextArea('calendarcomment', T_('Advisory text'), 
+          T_('Displayed at the bottom of instrument calendar and on booking form. HTML permitted.'));
     $f->setAttr(array('rows' =>5, 'cols' => 30));
     $f->required = 0;
     $this->addElement($f);
     
     // associate with a charging class
-    $f = new RadioList('class', _('Charging class'));
+    $f = new RadioList('class', T_('Charging class'));
     $f->connectDB('instrumentclass', array('id', 'name'));
     $classexample = new ExampleEntries('id','instruments','class','name',3);
     $classexample->separator = '; ';
@@ -115,19 +115,19 @@ class Instrument extends DBRow {
     $newclassname->setAttr(array('size' => 24));
     $newclassname->isValidTest = 'is_nonempty_string';
     $newclassname->suppressValidation = 0;
-    $f->list->append(array('-1',_('Create new:').' '), $newclassname);
+    $f->list->append(array('-1',T_('Create new:').' '), $newclassname);
     $f->setAttr($attrs);
     $f->extendable = 1;
     $f->required = 1;
     $f->isValidTest = 'is_valid_radiochoice';
     $this->addElement($f);
-    $f = new TextField('halfdaylength', _('Hours in a half-day'));
+    $f = new TextField('halfdaylength', T_('Hours in a half-day'));
     $f->required = 1;
     $f->defaultValue = $CONFIG['instruments']['usualhalfdaylength'];
     $f->isValidTest = 'is_number';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField('fulldaylength', _('Hours in a full-day'));
+    $f = new TextField('fulldaylength', T_('Hours in a full-day'));
     $f->required = 1;
     $f->defaultValue = $CONFIG['instruments']['usualfulldaylength'];
     $f->isValidTest = 'is_number';
@@ -135,11 +135,11 @@ class Instrument extends DBRow {
     $this->addElement($f);
 
     // create the timeslot rule information required
-    $f = new CommentField('timeslotpicturecomment', _('Instrument timeslots'),
-                              _('These fields describe when the instrument is available.'));
-    $f->value = _('Format: HH:MM-HH:MM/n-x%,comment');
+    $f = new CommentField('timeslotpicturecomment', T_('Instrument timeslots'),
+                              T_('These fields describe when the instrument is available.'));
+    $f->value = T_('Format: HH:MM-HH:MM/n-x%,comment');
     $this->addElement($f);
-    $f = new TextField('timeslotpicture', _('Time slot picture'));
+    $f = new TextField('timeslotpicture', T_('Time slot picture'));
     $f->required = 1;
     $f->hidden = 1;
     $f->defaultValue = $CONFIG['instruments']['usualtimeslotpicture'];
@@ -151,24 +151,24 @@ class Instrument extends DBRow {
     for ($day=0; $day<7; $day++) {
       $today = $weekstart;
       $today->addDays($day);
-      $f = new TextArea('tsr-'.$day, $today->dowStr(), _('Slots in day, one per line'));
+      $f = new TextArea('tsr-'.$day, $today->dowStr(), T_('Slots in day, one per line'));
       $f->sqlHidden = 1;
       $f->setAttr(array('rows' =>3, 'cols' => 30));
       $f->required = 1;
       $this->addElement($f);
     }
     
-    $f = new TextField('mindatechange', _('Minimum notice for booking change (hours)'));
+    $f = new TextField('mindatechange', T_('Minimum notice for booking change (hours)'));
     $f->required = 1;
     $f->defaultValue = $CONFIG['instruments']['usualmindatechange'];
     $f->isValidTest = 'is_number';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField('supervisors', _('Instrument supervisors'), _('comma separated list of usernames'));
+    $f = new TextField('supervisors', T_('Instrument supervisors'), T_('comma separated list of usernames'));
     $f->required = 0;
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new CheckBox('emailonbooking', _('Email supervisors when booking'));
+    $f = new CheckBox('emailonbooking', T_('Email supervisors when booking'));
     $f->defaultValue = 0;
     $f->setAttr($attrs);
     $this->addElement($f);

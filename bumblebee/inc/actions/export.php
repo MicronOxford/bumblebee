@@ -100,8 +100,8 @@ class ActionExport extends BufferedAction {
       $this->selectExport();
     } else {
       $allDataOK = true;
-      $this->_daterange = new DateRange('daterange', _('Select date range'), 
-                      _('Enter the dates over which you want to export data'));
+      $this->_daterange = new DateRange('daterange', T_('Select date range'), 
+                      T_('Enter the dates over which you want to export data'));
       $this->_daterange->update($this->PD);
       $this->_daterange->checkValid();
       $this->_daterange->reflectData = 0;
@@ -124,7 +124,7 @@ class ActionExport extends BufferedAction {
       }
       if ($allDataOK) {
         echo $this->reportAction($this->returnExport(),
-              array(STATUS_ERR =>  _('Error exporting data:').' '.$this->errorMessage
+              array(STATUS_ERR =>  T_('Error exporting data:').' '.$this->errorMessage
                    )
              );
       } else {
@@ -150,7 +150,7 @@ class ActionExport extends BufferedAction {
     foreach ($this->typelist->types as $type) {
       $reportlist[$type->name] = $type->description;
     }
-    $select = new AnchorTableList('datasource', _('Select which data to export'), 1);
+    $select = new AnchorTableList('datasource', T_('Select which data to export'), 1);
     $select->setValuesArray($reportlist, 'id', 'iv');
     $select->hrefbase = makeURL($this->_verb, array('what'=>'__id__'));
     $select->setFormat('id', '%s', array('iv'));
@@ -164,14 +164,14 @@ class ActionExport extends BufferedAction {
   */  
   function formatSelect() {
     global $CONFIG;
-    $formatlist = array(EXPORT_FORMAT_VIEW     => _('View in web browser'), 
-                        EXPORT_FORMAT_VIEWOPEN => _('View in web browser (new window)'), 
-                        EXPORT_FORMAT_CSV      => _('Save as comma separated variable (csv)'), 
-                        EXPORT_FORMAT_TAB      => _('Save as tab separated variable (txt)'));
+    $formatlist = array(EXPORT_FORMAT_VIEW     => T_('View in web browser'), 
+                        EXPORT_FORMAT_VIEWOPEN => T_('View in web browser (new window)'), 
+                        EXPORT_FORMAT_CSV      => T_('Save as comma separated variable (csv)'), 
+                        EXPORT_FORMAT_TAB      => T_('Save as tab separated variable (txt)'));
     if ($CONFIG['export']['enablePDF']) {
-      $formatlist[EXPORT_FORMAT_PDF] = _('Save as pdf report');
+      $formatlist[EXPORT_FORMAT_PDF] = T_('Save as pdf report');
     }
-    $select = new RadioList('outputformat', _('Select which data to export'), 1);
+    $select = new RadioList('outputformat', T_('Select which data to export'), 1);
     $select->setValuesArray($formatlist, 'id', 'iv');
     $select->setFormat('id', '%s', array('iv'));
     if (is_numeric($CONFIG['export']['defaultFormat'])) {
@@ -193,10 +193,10 @@ class ActionExport extends BufferedAction {
   function outputSelect() {
     $export = $this->typelist->types[$this->PD['what']];
     for ($lim = 0; $lim < count($export->limitation); $lim++) {
-      $select = new CheckBoxTableList('limitation-'.$lim, _('Select which detail to view'));
+      $select = new CheckBoxTableList('limitation-'.$lim, T_('Select which detail to view'));
       $hidden = new TextField($export->limitation[$lim]);
       $select->addFollowHidden($hidden);
-      $chosen = new CheckBox('selected', _('Selected'));
+      $chosen = new CheckBox('selected', T_('Selected'));
       $select->addCheckBox($chosen);
       //$select->numSpareCols = 1;
       if ($export->limitation[$lim] == 'users') {
@@ -214,7 +214,7 @@ class ActionExport extends BufferedAction {
       foreach ($export->pivot as $k => $v) {
         $views[$k] = $v['description'];
       }
-      $viewselect = new RadioList('pivot', _('Select which data view to export'), 1);
+      $viewselect = new RadioList('pivot', T_('Select which data view to export'), 1);
       $viewselect->setValuesArray($views, 'id', 'iv');
       $viewselect->setFormat('id', '%s', array('iv'));
       reset($views);
@@ -230,7 +230,7 @@ class ActionExport extends BufferedAction {
   * @return void nothing
   */  
   function _goButton() {
-    echo '<input type="submit" name="submit" value="'._('Select').'" />';
+    echo '<input type="submit" name="submit" value="'.T_('Select').'" />';
   }
       
   /**
@@ -242,7 +242,7 @@ class ActionExport extends BufferedAction {
     $list = $this->_getDataList($this->PD['what']);
     $list->fill();
     if (count($list->data) == 0) {
-      return $this->unbufferForError('<p>'._('No data found for those criteria').'</p>');
+      return $this->unbufferForError('<p>'.T_('No data found for those criteria').'</p>');
     }      
     // start rendering the data
     $list->outputFormat = $this->format;

@@ -233,8 +233,8 @@ class CheckBoxTableList extends ChoiceList {
   * @todo include interface for groups of instruments.
   */
   function _getSelectAllFooter($col) {
-    return '(<a href="#" onclick="return deselectsome(\''.$this->name.'-\', '.$col.' ,'.$this->numcols.');">'._('deselect all').'</a>)<br />'
-        .'(<a href="#" onclick="return selectsome(\''.$this->name.'-\', '.$col.' ,'.$this->numcols.');">'._('select all').'</a>)';
+    return '(<a href="#" onclick="return deselectsome(\''.$this->name.'-\', '.$col.' ,'.$this->numcols.');">'.T_('deselect all').'</a>)<br />'
+        .'(<a href="#" onclick="return selectsome(\''.$this->name.'-\', '.$col.' ,'.$this->numcols.');">'.T_('select all').'</a>)';
   }
   
 } // class CheckBoxTableList

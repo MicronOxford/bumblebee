@@ -37,18 +37,18 @@ class ActionUnknown extends ActionAction {
 
   function go() {
     global $ADMINEMAIL;
-    echo '<h2>'._('Error').'</h2><div class="msgerror">';
+    echo '<h2>'.T_('Error').'</h2><div class="msgerror">';
     if ($this->forbidden) {
       echo '<p>'
-          .sprintf(_('Sorry, you don\'t have permission to perform the action "%s".'), $this->action) 
+          .sprintf(T_('Sorry, you don\'t have permission to perform the action "%s".'), $this->action) 
           .'</p>';
     } else {
       echo '<p>'
-          .sprintf(_('An unknown error occurred. I was asked to perform the action "%s", but I don\'t know how to do that.'), $this->action)
+          .sprintf(T_('An unknown error occurred. I was asked to perform the action "%s", but I don\'t know how to do that.'), $this->action)
           .'</p>';
     }
     echo '<p>'
-        .sprintf(_('Please contact <a href="mailto:%s">the system administrator</a> for more information.'), $ADMINEMAIL)
+        .sprintf(T_('Please contact <a href="mailto:%s">the system administrator</a> for more information.'), $ADMINEMAIL)
         .'</p></div>';
   }
   

@@ -89,7 +89,7 @@ function echoSQL($echo, $success=0) {
   global $VERBOSESQL;
   if ($VERBOSESQL) {
     echo "<div class='sql'>$echo "
-        .($success ? '<div>'._('(successful)').'</div>' : '')
+        .($success ? '<div>'.T_('(successful)').'</div>' : '')
         ."</div>";
   }
 }
@@ -111,10 +111,10 @@ function echoSQLerror($echo, $fatal=0) {
     }
    if ($fatal) {
       echo "<div class='sql error'>"
-        .sprintf(_("Ooops. Something went very wrong. Please send the following log information to <a href='mailto:%s'>your Bumblebee Administrator</a> along with a description of what you were doing and ask them to pass it on to the Bumblebee developers. Thanks!"), $ADMINEMAIL)
+        .sprintf(T_("Ooops. Something went very wrong. Please send the following log information to <a href='mailto:%s'>your Bumblebee Administrator</a> along with a description of what you were doing and ask them to pass it on to the Bumblebee developers. Thanks!"), $ADMINEMAIL)
         .'</div>';
       preDump(debug_backtrace());
-      die('<b>'._('Fatal SQL error. Aborting.').'</b>');
+      die('<b>'.T_('Fatal SQL error. Aborting.').'</b>');
     }
   }
   return STATUS_ERR;

@@ -121,9 +121,9 @@ class UserMenu {
   function UserMenu($auth, $verb) {
     $this->_auth = $auth;
     $this->_verb = $verb;
-    $this->menuHelp       = '<li class="last"><a href="http://bumblebeeman.sf.net/docs?section=__section__&amp;version=__version__">' . _('Help') . '</a></li>';
-    $this->mainMenuHeader = _('Main Menu');
-    $this->adminHeader    = _('Administration');
+    $this->menuHelp       = '<li class="last"><a href="http://bumblebeeman.sf.net/docs?section=__section__&amp;version=__version__">' . T_('Help') . '</a></li>';
+    $this->mainMenuHeader = T_('Main Menu');
+    $this->adminHeader    = T_('Administration');
   }
   
   /**
