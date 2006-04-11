@@ -19,10 +19,10 @@ function logmsg($priority, $message) {
   // IP username (uid) [DD/Mon/YYYY:HH:MM:SS TZ] "action" "Message"\n
 
   $date     = gmdate("d/M/Y:H:i:s O");
-  $ip       = is_object($auth) ? $auth->getRemoteIP() : '-';
-  $username = is_object($auth) ? $auth->username      : '-';
-  $uid      = is_object($auth) ? $auth->uid           : '-';
-  $verb     = is_object($auth) ? $action->_verb       : '-';
+  $ip       = is_object($auth)   ? $auth->getRemoteIP() : '-';
+  $username = is_object($auth)   ? $auth->username      : '-';
+  $uid      = is_object($auth)   ? $auth->uid           : '-';
+  $verb     = is_object($action) ? $action->_verb       : '-';
 
   $logstring = "$ip $username ($uid) [$date] \"$verb\" \"$message\"\n";
 
