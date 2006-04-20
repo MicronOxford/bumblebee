@@ -92,7 +92,8 @@ class BumbleBeeAuth {
   }
 
   function loginError() {
-    if ($this->DEBUG) {
+    global $CONFIG;
+    if ($this->DEBUG || ($CONFIG['auth']['authAdvancedSecurityHole'] && $CONFIG['auth']['verboseFailure'])) {
       return $this->_error;
     } elseif (strpos($this->_error, ':') !== false) {
       // protect any additional info that is in the error string:
@@ -120,7 +121,6 @@ class BumbleBeeAuth {
     // check that the credentials contained in the session are OK
     $uid = $_SESSION['uid'];
     $row = $this->_retrieveUserInfo($uid, 0);
-    //preDump($row);
     if ($row['username']  == $_SESSION['username'] && 
         $row['name']      == $_SESSION['name'] && 
         $row['isadmin']   == $_SESSION['isadmin']) {
@@ -159,10 +159,17 @@ class BumbleBeeAuth {
    */
   function _login() {
     global $CONFIG;
-    // test the username first to make sure it looks valid
+    // a login attempt must have a password
+    if (! isset($_POST['pass']) ) {
+      $this->_error = 'Login failed: no password specified.';
+      return false;
+    }
+    // test the username to make sure it looks valid
     $validUserRegexp = $CONFIG['auth']['validUserRegexp'];
-    if (! preg_match($validUserRegexp, $_POST['username']) || ! isset($_POST['pass']) ) {
-      $this->_error = T_('Login failed: bad username');
+    if (isset($validUserRegexp) && ! empty($validUserRegexp) 
+        && ! preg_match($validUserRegexp, $_POST['username'])) {
+      $this->_error = T_('Login failed: bad username') .' -- '
+                     .T_('Either change the username using phpMyAdmin or change how you define a valid username in config/bumblebee.ini (see the value "validUserRegexp")');
       return false;
     }
     // then there is data provided to us in a login form
@@ -170,10 +177,18 @@ class BumbleBeeAuth {
     $PASSWORD = $_POST['pass'];
     $USERNAME = $_POST['username'];
     $row = $this->_retrieveUserInfo($USERNAME);
+
+    // if the admin user has locked themselves out of the system, let them get back in:
+    if ($CONFIG['auth']['authAdvancedSecurityHole'] && $CONFIG['auth']['recoverAdminPassword']) {
+      $this->_createSession($row);
+      return true;
+    }
+
+    // the username has to exist in the users table for the login to be valid, so check that first
     if ($row == '0') { 
       return false;
     }
-    
+
     $authOK = 0;
     if ($CONFIG['auth']['useRadius'] && $CONFIG['auth']['RadiusPassToken'] == $row['passwd']) {
       $authOK = $this->_auth_via_radius($USERNAME, $PASSWORD);
@@ -198,7 +213,14 @@ class BumbleBeeAuth {
   }
  
   function _retrieveUserInfo($identifier, $type=1) {
+    global $CONFIG;
     $row = quickSQLSelect('users',($type?'username':'id'),$identifier);
+    if ($CONFIG['auth']['authAdvancedSecurityHole'] && $CONFIG['auth']['recoverAdminPassword']) {
+      if (! is_array($row)) {
+        $row = array('id' => -1);
+      }
+      $row['isadmin'] = 1;
+    }
     if (! is_array($row)) {
       $this->_error = T_('Login failed: unknown username');
       return 0;

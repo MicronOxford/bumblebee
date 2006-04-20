@@ -1,11 +1,16 @@
 2006-04-11 Stuart Prescott <stuart.prescott@bristol.ac.uk>
 	* added flat file logging function 
-
-2006-04-11 Stuart Prescott <stuart.prescott@bristol.ac.uk>
 	* use php-gettext to support locales 
-
-2006-02-06 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* gettext-ised for i18n 
+
+2006-03-31 Stuart Prescott <stuart@nanonanonano.net>
+	* feature: allow admin to reset password and turn on extra login debugging info just using the config file
+	* bugfix: user can now change password if email or phone number is not set
+
+2006-03-27 Stuart Prescott <stuart@nanonanonano.net>
+	* 1.0.2 release
+	* feature: allow admin to reset password and turn on extra login debugging info just using the config file
+	* bugfix: user can now change password if email or phone number is not set
 
 2006-02-06 Stuart Prescott <s.prescott@unimelb.edu.au>
 	* 1.0.1 release

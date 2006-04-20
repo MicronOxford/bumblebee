@@ -8,6 +8,8 @@ Bugs:
 * double entry password in change passwd
 * installer should check username is valid in same way auth.php does
 * installer mysql5 compatability (password, boolean defaults)
+* ff1.5 autosaving passwd in user form; not showing username by default.
+* suppress autofill features on some forms?
 
 * 1.2 series
 ------------
@@ -20,17 +22,21 @@ Features:
   * groups of instruments
   * internationalisation
   * bring email templates into the database
+  * limit certain users to specific ranges of time on a particular instrument (Gordon Holtslander)
+  * split .sql file into admin and non-admin portion?
 
   * pre-inst check of kit (php? dir structure? PEAR::Auth? php-gettext)
   * pre-inst test of auth modules, optionals (PDF, radius, ldap)
   * post-inst auto-test of db, environment, auth modules etc.
   * post-inst test that .ini files are protected by .htaccess
   * check that admin can log in ok using auth.php
+  * option to run the sql code given the username and password of the sql user
 
+  
 * Later
 ------------
   * in-place booking (js mouse commands, DOM+js/ajax?)
-  
+  * click+drag time selection?
 
   
   
