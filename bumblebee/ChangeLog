@@ -1,5 +1,6 @@
 2006-04-25 Stuart Prescott <stuart@nanonanonano.net>
-	* feature: new installer script with error checking on user values 
+	* bugfix: change the default mysqldump command line so that it doesn't require grant LOCK TABLES do backup the database under MySQL 4.1 and MySQL 5. 
+	* feature: new installer script with error checking on user values and compatability with MySQL5
 	* feature: allow admin to reset password and turn on extra login debugging info just using the config file
 	* bugfix: user can now change password if email or phone number is not set
 
