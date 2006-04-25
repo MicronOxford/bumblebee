@@ -48,13 +48,14 @@ class BumbleBeeAuth {
   /**
   *  Create the auth object
   *
+  * @param boolean $recheck (optional) ignore session data and check anyway
   * @param string $table  (optional) db table from which login data should be taken
   */
-  function BumbleBeeAuth($table='users') {
+  function BumbleBeeAuth($recheck = false, $table='users') {
     session_start();
     $this->table = $table;
     $this->permissions = array();
-    if (isset($_SESSION['uid'])) {
+    if (!$recheck && isset($_SESSION['uid'])) {
       // the we have a session login already done, check it
       $this->_loggedin = $this->_verifyLogin();
       $this->_checkMasq();
