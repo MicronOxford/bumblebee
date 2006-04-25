@@ -1,4 +1,5 @@
-2006-03-31 Stuart Prescott <stuart@nanonanonano.net>
+2006-04-25 Stuart Prescott <stuart@nanonanonano.net>
+	* feature: new installer script with error checking on user values 
 	* feature: allow admin to reset password and turn on extra login debugging info just using the config file
 	* bugfix: user can now change password if email or phone number is not set
 
