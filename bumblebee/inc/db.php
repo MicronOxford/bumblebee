@@ -33,15 +33,35 @@ $dberrmsg = '<p>Sorry, I couldn\'t connect to the database, '
            .'<p>If this persists, please contact the '
            .'<a href="mailto:'.$ADMINEMAIL.'">booking system administrator</a>.</p>';
 
-$DB_CONNECT_DEBUG = 0;
+$DB_CONNECT_DEBUG = isset($DB_CONNECT_DEBUG) ? $DB_CONNECT_DEBUG : false;
+$NON_FATAL_DB     = isset($NON_FATAL_DB)     ? $NON_FATAL_DB     : false;
 
-$connection = mysql_pconnect($CONFIG['database']['dbhost'], 
+// $connection = mysql_pconnect($CONFIG['database']['dbhost'], 
+//                              $CONFIG['database']['dbusername'], 
+//                              $CONFIG['database']['dbpasswd'])
+//               or (! $NON_FATAL_DB && die ($dberrmsg.($DB_CONNECT_DEBUG ? mysql_error() : '')))
+//               or                     trigger_error($dberrmsg.($DB_CONNECT_DEBUG ? mysql_error() : ''), E_USER_NOTICE);
+// $db = mysql_select_db($CONFIG['database']['dbname'], $connection)
+//               or (! $NON_FATAL_DB && die ($dberrmsg.($DB_CONNECT_DEBUG ? mysql_error() : '')))
+//               or                     trigger_error($dberrmsg.($DB_CONNECT_DEBUG ? mysql_error() : ''), E_USER_NOTICE);
+
+if (($connection = mysql_pconnect($CONFIG['database']['dbhost'], 
                              $CONFIG['database']['dbusername'], 
-                             $CONFIG['database']['dbpasswd'])
-              or die ($dberrmsg.($DB_CONNECT_DEBUG ? mysql_error() : ''));
-$db = mysql_select_db($CONFIG['database']['dbname'], $connection)
-              or die ($dberrmsg.($DB_CONNECT_DEBUG ? mysql_error() : ''));
-
+                             $CONFIG['database']['dbpasswd']) )
+    && ($db = mysql_select_db($CONFIG['database']['dbname'], $connection)) ) {
+  // then we successfully logged on to the database
+} else {
+  if ($NON_FATAL_DB) {
+    trigger_error($dberrmsg.($DB_CONNECT_DEBUG 
+                              ? mysql_error() 
+                                .'<br />Connected using parameters <pre>'
+                                .print_r($CONFIG['database'],true).'</pre>'
+                              : ''), E_USER_NOTICE);
+    return false;
+  } else {
+    die ($dberrmsg.($DB_CONNECT_DEBUG ? mysql_error() : ''));
+  }
+}
 /**
 * import SQL functions for database lookups
 */

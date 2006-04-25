@@ -313,4 +313,23 @@ class UserMenu {
     return $help;
   }*/
   
+
+/**
+* create a URL for an anchor
+* @param string $action    action to be performed
+* @param array  $list      (optional) key => value data to be added to the URL
+* @return string URL
+* @global string base URL for the installation
+*/
+function makeURL($action, $list=NULL) {
+  global $BASEURL;
+  $list = is_array($list) ? $list : array();
+  $list['action'] = $action;
+  $args = array();
+  foreach ($list as $field => $value) {
+    $args[] = $field.'='.urlencode($value);
+  }
+  return $BASEURL.'?'.join('&amp;', $args);
+}
+
 ?> 
