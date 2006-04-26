@@ -1,7 +1,5 @@
-2006-04-26 Stuart Prescott <stuart.prescott@bristol.ac.uk>
-	* bugfix: work around PHP session.auto_start 
-
 2006-04-25 Stuart Prescott <stuart@nanonanonano.net>
+	* bugfix: work around PHP session.auto_start; also allow for externally started sessions (from some CMS framework) and make sure the session cookie is only available to the Bumblebee installation
 	* bugfix: change the default mysqldump command line so that it doesn't require grant LOCK TABLES do backup the database under MySQL 4.1 and MySQL 5. 
 	* feature: new installer script with error checking on user values and compatability with MySQL5
 	* feature: allow admin to reset password and turn on extra login debugging info just using the config file
