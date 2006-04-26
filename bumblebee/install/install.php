@@ -91,7 +91,7 @@ function check_preinst($data) {
 //            ."PHP said:<pre>\n$php_errormsg</pre>";
 //     $warn = true;
 //   } else {
-//     $s[] = "php-gettext found for generating translated content.";
+//     $s[] = "GOOD: php-gettext found for generating translated content.";
 //   }
   // check kit: LDAP and RADIUS modules
   if (! (@ include 'Auth/Auth.php') || ! (@ include_once 'PEAR.php')) {
