@@ -52,7 +52,7 @@ class BumbleBeeAuth {
   * @param string $table  (optional) db table from which login data should be taken
   */
   function BumbleBeeAuth($recheck = false, $table='users') {
-    session_start();
+    if (! ini_get('session.auto_start')) session_start();
     $this->table = $table;
     $this->permissions = array();
     if (!$recheck && isset($_SESSION['uid'])) {
