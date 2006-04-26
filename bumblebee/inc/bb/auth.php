@@ -52,6 +52,8 @@ class BumbleBeeAuth {
   * @param string $table  (optional) db table from which login data should be taken
   */
   function BumbleBeeAuth($recheck = false, $table='users') {
+    // ideally, we'd check to see if the session has already been started to permit encapsulation within
+    // some other PHP system, but PHP doesn't expose an interface to this.
     if (! ini_get('session.auto_start')) session_start();
     $this->table = $table;
     $this->permissions = array();
