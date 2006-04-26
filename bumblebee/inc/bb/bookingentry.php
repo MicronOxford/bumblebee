@@ -198,12 +198,13 @@ class BookingEntry extends DBRow {
       $this->euid = $auth->getEUID();
     }
   }
-    
+
   /** 
   * override the default update() method with a custom one that allows us to:
   * - munge the start and finish times to fit in with the permitted granularity
   */
   function update($data) {
+    $this->_setDefaultDiscount($data);
     parent::update($data);
     $this->fields['bookwhen']->setSlotStart($this->fields['bookwhen']->getValue());
     $this->fields['duration']->setSlotStart($this->fields['bookwhen']->getValue());
@@ -218,7 +219,6 @@ class BookingEntry extends DBRow {
     parent::fill();
     // check whether we are allowed to modify time fields: this picks up existing objects immediately
     $this->_checkMinNotice();
-    $this->_setDefaultDiscount();
   }
 
   /** 
@@ -241,16 +241,21 @@ class BookingEntry extends DBRow {
   /** 
   * Work out what the default discount for this timeslot is from the timeslotrules 
   */
-  function _setDefaultDiscount() {
-    if (!$this->isShort && ! isset($this->fields['discount']->value)) {
+  function _setDefaultDiscount($data) {
+    if (!$this->isShort) {# && ! isset($this->fields['discount']->value)) {
       $starttime = new SimpleDate($this->fields['bookwhen']->getValue());
+      if ($starttime->ticks == 0) {
+        $newstart = new DateTimeField('bookwhen');
+        $newstart->update($data);
+        $starttime = new SimpleDate($newstart->getValue());
+      }
       $slot = $this->slotrules->findSlotByStart($starttime);
-      //preDump($this->slotrules); preDump($slot);
-      $this->fields['discount']->defaultValue = (isset($slot->discount) ? $slot->discount : 0);
-      $this->log('BookingEntry::_setDefaultDiscount '.$starttime->datetimestring.' '.$slot->discount.'%');
+      $discount = ($slot->discount === NULL) ? 0 : substr($slot->discount, 1, -1);
+      $this->fields['discount']->defaultValue = $discount;
+      $this->log('BookingEntry::_setDefaultDiscount '.$starttime->datetimestring.' '.$slot->discount.' gave '.$discount);
     }
   }
-  
+
   /** 
   * make sure that a non-admin user is not trying to unbook the instrument with less than the minimum notice
   */
