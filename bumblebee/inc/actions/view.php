@@ -95,34 +95,15 @@ class ActionView extends ActionAction {
     }
   }
 
-/*  function mungeInputData() {
-    $this->PD = array();
-    foreach ($_POST as $k => $v) {
-      $this->PD[$k] = $v;
-    }
-    if (isset($this->PDATA[1]) && $this->PDATA[1] !== '') {
-      $this->PD['instrid'] = $this->PDATA[1];
-    }
-    for ($i=2; isset($this->PDATA[$i]); $i++) {
-      if (preg_match("/o=(-?\d+)/", $this->PDATA[$i], $m)) {
-        $this->PD['caloffset'] = $m[1];
-      } elseif (preg_match("/\d\d\d\d-\d\d-\d\d/", $this->PDATA[$i], $m)) {
-        $this->PD['isodate'] = $this->PDATA[$i];
-      } elseif (preg_match("/(\d+)-(\d+)/", $this->PDATA[$i], $m)) {
-        $this->PD['startticks'] = $m[1];
-        $this->PD['stopticks'] = $m[2];
-      } elseif (preg_match("/(\d+)/", $this->PDATA[$i], $m)) {
-        if (! isset($this->PD['bookid'])) {
-          $this->PD['bookid'] = $m[1];
-        }
-      } elseif (preg_match("/edit/", $this->PDATA[$i], $m)) {
-        $this->PD['edit'] = 1;
-      } else {
-        $this->log("I don't know what to do with that data!");
-      }
+  function mungeInputData() {
+    parent::mungeInputData();
+    if (isset($this->PD['caloffset']) && preg_match("/\d\d\d\d-\d\d-\d\d/", $this->PD['caloffset'])) {
+      $then = new SimpleDate($this->PD['caloffset']);
+      $now = new SimpleDate(time());
+      $this->PD['caloffset'] = floor($then->dsDaysBetween($now));
     }
     echoData($this->PD, 0);
-  }*/
+  }
   
   /**
   * Calculate calendar offset in days
@@ -155,7 +136,7 @@ class ActionView extends ActionAction {
         makeURL('view', array('instrid'=>$instrument, 'caloffset'=>$this->_offset()))
       .'">Return to calendar view</a>';
   }
-                      
+
   /**
   * Select which instrument for which the calendar should be displayed
   */
@@ -165,7 +146,7 @@ class ActionView extends ActionAction {
       $instrselect->connectDB('instruments', 
                             array('id', 'name', 'longname', 'location')
                             );
-    } else {                        
+    } else {
       $instrselect->connectDB('instruments', 
                             array('id', 'name', 'longname', 'location'),
                             'userid='.qw($this->auth->getEUID()),
@@ -313,7 +294,8 @@ class ActionView extends ActionAction {
   * Editing an existing booking
   */
   function editBooking() {
-    $this->_editCreateBooking($this->PD['bookid'], -1, -1);
+    $start = new SimpleDate(issetSet($this->PD, 'startticks'));
+    $this->_editCreateBooking($this->PD['bookid'], $start->datetimestring, -1);
   }
 
   /**
@@ -358,7 +340,10 @@ class ActionView extends ActionAction {
     if ($this->_isOwnBooking || $this->_isAdminView) {
       echo "<p><a href='"
             .makeURL('view', 
-                array('instrid'=>$this->PD['instrid'], 'bookid'=>$this->PD['bookid'], 'edit'=>1))
+                array('instrid' => $this->PD['instrid'], 
+                      'bookid'  => $this->PD['bookid'], 
+                      'edit'    => 1,
+                      'isodate' => $this->PD['isodate']))
             ."'>Edit booking</a></p>\n";
     }
   }

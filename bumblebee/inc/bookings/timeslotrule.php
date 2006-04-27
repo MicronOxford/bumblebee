@@ -137,9 +137,20 @@ class TimeSlotRule {
         $tstart   = new SimpleTime($start);
         $tstop    = new SimpleTime($stop);
         $numslots = $tmp[3];
-        $discount = issetSet($tmp,4);
-        $comment  = issetSet($tmp,5);
-        #echo "(start,stop,slots) = ($start,$stop,$numslots)\n";
+        $optional=4;
+        $discount = 0; $comment = '';
+        while (isset($tmp[$optional])) {
+          if (substr($tmp[$optional], 0, 1) == '-' && substr($tmp[$optional], -1, 1) == '%') {
+            // then it's a discouint
+            $discount = substr($tmp[$optional],1,-1);
+          } else {
+            // then it's the comment at the end
+            $comment  = $tmp[$optional];
+          }
+          $optional++;
+        }
+        //echo "(start,stop,slots) = ($start,$stop,$numslots)\n";
+        //echo "(discount,comment) = ($discount,$comment)<br />\n";
         if ($numslots != '*' && $numslots != '0') {
           #echo "Trying to interpolate timeslots\n";
           $tgran = new SimpleTime($tstop->subtract($tstart)/$numslots);
@@ -418,6 +429,7 @@ class RuleSlot {
   var $picture = '';
   var $nextSlot;
   var $comment = '';
+  var $discount = 0;
   
   function RuleSlot($picture, $startStr, $stopStr, $tstart, $tstop, $tgran=0) {
     $this->picture = $picture;

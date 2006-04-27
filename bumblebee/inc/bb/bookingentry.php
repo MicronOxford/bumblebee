@@ -20,6 +20,7 @@ require_once 'inc/formslib/timefield.php';
 require_once 'inc/formslib/droplist.php';
 require_once 'inc/formslib/referencefield.php';
 require_once 'inc/formslib/dummyfield.php';
+require_once 'inc/formslib/textfield.php';
 
 /** uses time slot rules for management */
 require_once 'inc/bookings/timeslotrule.php';
@@ -80,6 +81,14 @@ class BookingEntry extends DBRow {
     $f->extraInfo('instruments', 'id', 'name');
     $f->duplicateName = 'instrid';
     $f->defaultValue = $instrumentid;
+    $this->addElement($f);
+    $f = new TextField('startticks');
+    $f->hidden = 1;
+    $f->required = 1;
+    $f->editable = 0;
+    $f->sqlHidden = 1;
+    $startticks = new SimpleDate($start);
+    $f->value = $startticks->ticks;
     $this->addElement($f);
     $startf = new DateTimeField('bookwhen', 'Start');
 //     $this->starttime = &$startf;
@@ -204,7 +213,7 @@ class BookingEntry extends DBRow {
   * - munge the start and finish times to fit in with the permitted granularity
   */
   function update($data) {
-    $this->_setDefaultDiscount($data);
+    $this->_setDefaultDiscount();
     parent::update($data);
     $this->fields['bookwhen']->setSlotStart($this->fields['bookwhen']->getValue());
     $this->fields['duration']->setSlotStart($this->fields['bookwhen']->getValue());
@@ -241,18 +250,21 @@ class BookingEntry extends DBRow {
   /** 
   * Work out what the default discount for this timeslot is from the timeslotrules 
   */
-  function _setDefaultDiscount($data) {
-    if (!$this->isShort) {# && ! isset($this->fields['discount']->value)) {
-      $starttime = new SimpleDate($this->fields['bookwhen']->getValue());
-      if ($starttime->ticks == 0) {
-        $newstart = new DateTimeField('bookwhen');
-        $newstart->update($data);
-        $starttime = new SimpleDate($newstart->getValue());
-      }
-      $slot = $this->slotrules->findSlotByStart($starttime);
-      $discount = ($slot->discount === NULL) ? 0 : substr($slot->discount, 1, -1);
-      $this->fields['discount']->defaultValue = $discount;
-      $this->log('BookingEntry::_setDefaultDiscount '.$starttime->datetimestring.' '.$slot->discount.' gave '.$discount);
+  function _setDefaultDiscount() {
+    if ($this->isShort) return;
+
+    $starttime = new SimpleDate($this->fields['bookwhen']->getValue());
+    $slot = $this->slotrules->findSlotByStart($starttime);
+    if (! $this->_isadmin) {
+      $this->fields['discount']->value = (isset($slot->discount) ? $slot->discount : 0);
+      $this->log('BookingEntry::_setDefaultDiscount value '.$starttime->datetimestring.' '.$slot->discount.'%');
+      return;
+    }
+    
+    if (! isset($this->fields['discount']->value)) {  // handle missing values in the submission
+      //preDump($this->slotrules); preDump($slot);
+      $this->fields['discount']->defaultValue = (isset($slot->discount) ? $slot->discount : 0);
+      $this->log('BookingEntry::_setDefaultDiscount defaultValue '.$starttime->datetimestring.' '.$slot->discount.'%');
     }
   }
 
