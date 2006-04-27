@@ -1,4 +1,5 @@
 2006-04-28  Stuart Prescott <stuart@nanonanonano.net>
+  * 1.0.3 release
 	* bugfix: allow timeslot discount and comment to work on the same slot 
 	* bugfix: change action calculation to not use PATH_INFO at all; 
     now works under PHP CGI module (closes #1477103) 
