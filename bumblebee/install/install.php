@@ -79,20 +79,20 @@ function check_preinst($data) {
   // check kit: check that a Bumblebee installation can be found
   $REBASE_INSTALL = '..'.DIRECTORY_SEPARATOR;
   set_include_path($REBASE_INSTALL.PATH_SEPARATOR.get_include_path());
-  if (@ include 'config/config.php') {   // FIXME file moved for v1.2
+  if (@ include 'inc/config.php') {
     $s[] = "GOOD: Found installation of Bumblebee version $BUMBLEBEEVERSION.";
   } else {
     $s[] = "ERROR: I couldn't find any evidence of a Bumblebee installation here. PHP said:<pre>\n$php_errormsg</pre>";
     $error = true;
   }
-  // check kit: check that php-gettext can be found  // FIXME not needed for 1.0
-//   if (! @ include 'php-gettext/gettext.inc') {
-//     $s[] = "WARNING: <a href='https://savannah.nongnu.org/projects/php-gettext/'>php-gettext</a> internationali[sz]ation layer not found. Translations will not be available. "
-//            ."PHP said:<pre>\n$php_errormsg</pre>";
-//     $warn = true;
-//   } else {
-//     $s[] = "GOOD: php-gettext found for generating translated content.";
-//   }
+  // check kit: check that php-gettext can be found 
+  if (! @ include 'php-gettext/gettext.inc') {
+    $s[] = "WARNING: <a href='https://savannah.nongnu.org/projects/php-gettext/'>php-gettext</a> internationali[sz]ation layer not found. Translations will not be available. "
+           ."PHP said:<pre>\n$php_errormsg</pre>";
+    $warn = true;
+  } else {
+    $s[] = "GOOD: php-gettext found for generating translated content.";
+  }
   // check kit: LDAP and RADIUS modules
   if (! (@ include 'Auth/Auth.php') || ! (@ include_once 'PEAR.php')) {
     $s[] = "WARNING: <a href='http://pear.php.net/'>PEAR::Auth</a> modules not found. LDAP and RADIUS authentication unavailable. "
@@ -185,7 +185,7 @@ function check_postinst($data) {
   $REBASE_INSTALL = '..'.DIRECTORY_SEPARATOR;
   $NON_FATAL_DB = true;
   $DB_CONNECT_DEBUG = true;
-  require 'config/config.php';   // FIXME file moved for v1.2
+  require 'inc/config.php'; 
   if (! @ require_once 'inc/db.php') {
     $s[] = "ERROR: Unable to connect to database. "
            ."PHP said:<blockquote>\n$php_errormsg</blockquote>";
