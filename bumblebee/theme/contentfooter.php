@@ -18,7 +18,7 @@
 */
 
   /** use the SystemStats object to create some nice info about what the system does */
-  include 'inc/systemstats.php';
+  include_once 'inc/systemstats.php';
   $stat = new SystemStats;
 ?>
 
