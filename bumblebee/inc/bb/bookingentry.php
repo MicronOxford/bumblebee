@@ -20,6 +20,7 @@ require_once 'inc/formslib/timefield.php';
 require_once 'inc/formslib/droplist.php';
 require_once 'inc/formslib/referencefield.php';
 require_once 'inc/formslib/dummyfield.php';
+require_once 'inc/formslib/textfield.php';
 
 /** uses time slot rules for management */
 require_once 'inc/bookings/timeslotrule.php';
@@ -80,6 +81,14 @@ class BookingEntry extends DBRow {
     $f->extraInfo('instruments', 'id', 'name');
     $f->duplicateName = 'instrid';
     $f->defaultValue = $instrumentid;
+    $this->addElement($f);
+    $f = new TextField('startticks');
+    $f->hidden = 1;
+    $f->required = 1;
+    $f->editable = 0;
+    $f->sqlHidden = 1;
+    $startticks = new SimpleDate($start);
+    $f->value = $startticks->ticks;
     $this->addElement($f);
     $startf = new DateTimeField('bookwhen', T_('Start'));
 //     $this->starttime = &$startf;
@@ -198,12 +207,13 @@ class BookingEntry extends DBRow {
       $this->euid = $auth->getEUID();
     }
   }
-    
+
   /** 
   * override the default update() method with a custom one that allows us to:
   * - munge the start and finish times to fit in with the permitted granularity
   */
   function update($data) {
+    $this->_setDefaultDiscount();
     parent::update($data);
     $this->fields['bookwhen']->setSlotStart($this->fields['bookwhen']->getValue());
     $this->fields['duration']->setSlotStart($this->fields['bookwhen']->getValue());
@@ -218,7 +228,6 @@ class BookingEntry extends DBRow {
     parent::fill();
     // check whether we are allowed to modify time fields: this picks up existing objects immediately
     $this->_checkMinNotice();
-    $this->_setDefaultDiscount();
   }
 
   /** 
@@ -242,15 +251,23 @@ class BookingEntry extends DBRow {
   * Work out what the default discount for this timeslot is from the timeslotrules 
   */
   function _setDefaultDiscount() {
-    if (!$this->isShort && ! isset($this->fields['discount']->value)) {
-      $starttime = new SimpleDate($this->fields['bookwhen']->getValue());
-      $slot = $this->slotrules->findSlotByStart($starttime);
+    if ($this->isShort) return;
+
+    $starttime = new SimpleDate($this->fields['bookwhen']->getValue());
+    $slot = $this->slotrules->findSlotByStart($starttime);
+    if (! $this->_isadmin) {
+      $this->fields['discount']->value = (isset($slot->discount) ? $slot->discount : 0);
+      $this->log('BookingEntry::_setDefaultDiscount value '.$starttime->datetimestring.' '.$slot->discount.'%');
+      return;
+    }
+    
+    if (! isset($this->fields['discount']->value)) {  // handle missing values in the submission
       //preDump($this->slotrules); preDump($slot);
       $this->fields['discount']->defaultValue = (isset($slot->discount) ? $slot->discount : 0);
-      $this->log('BookingEntry::_setDefaultDiscount '.$starttime->datetimestring.' '.$slot->discount.'%');
+      $this->log('BookingEntry::_setDefaultDiscount defaultValue '.$starttime->datetimestring.' '.$slot->discount.'%');
     }
   }
-  
+
   /** 
   * make sure that a non-admin user is not trying to unbook the instrument with less than the minimum notice
   */

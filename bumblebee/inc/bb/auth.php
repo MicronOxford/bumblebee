@@ -50,13 +50,27 @@ class BumbleBeeAuth {
   /**
   *  Create the auth object
   *
+  * @param boolean $recheck (optional) ignore session data and check anyway
   * @param string $table  (optional) db table from which login data should be taken
+  * @global base path for installation
   */
-  function BumbleBeeAuth($table='users') {
-    session_start();
+  function BumbleBeeAuth($recheck = false, $table='users') {
+    global $BASEPATH;
+    // Only start the session if one has not already been started (e.g. to cope
+    // with the situation where session.auto_start=1 in php.ini or where
+    // the entire thing is embedded within some other framework.
+    // For session.auto_start, the following is enough:
+    //      if (! ini_get('session.auto_start')) {
+    // But we can check the session_id() (hexadecimal string if session has started
+    // empty string "" if it hasn't)
+    if (! session_id()) {
+      session_name('BumblebeeLogin');
+      session_set_cookie_params(ini_get('session.cookie_lifetime'), $BASEPATH);
+      session_start();
+    }
     $this->table = $table;
     $this->permissions = array();
-    if (isset($_SESSION['uid'])) {
+    if (!$recheck && isset($_SESSION['uid'])) {
       // the we have a session login already done, check it
       $this->_loggedin = $this->_verifyLogin();
       $this->_checkMasq();

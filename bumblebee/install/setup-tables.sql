@@ -1,6 +1,8 @@
--- Create the user and tables that will actually be used for the system
+-- Creates the user and tables that will actually be used for the system
+--
+-- You can load this file using either phpMyAdmin or MySQL's command line tools
 -- 
--- mysql -p --user bumblebee < setup-tables.sql
+-- mysql -p --user root < bumbbelee.sql
 -- 
 -- $Id$
 
@@ -30,9 +32,9 @@ CREATE TABLE users (
   passwd CHAR(32) NOT NULL,
   email VARCHAR(63),
   phone VARCHAR(20),
-  suspended BOOL DEFAULT 'FALSE',
-  isadmin BOOL DEFAULT 'FALSE',
-  deleted BOOL DEFAULT 'FALSE',
+  suspended BOOL DEFAULT 0,
+  isadmin BOOL DEFAULT 0,
+  deleted BOOL DEFAULT 0,
   PRIMARY KEY (id),
   UNIQUE KEY username (username)
 );
@@ -44,7 +46,7 @@ CREATE TABLE projects (
   name VARCHAR(31) NOT NULL,
   longname VARCHAR(255) NOT NULL,
   defaultclass SMALLINT UNSIGNED NOT NULL,
-  deleted BOOL DEFAULT 'FALSE',
+  deleted BOOL DEFAULT 0,
   PRIMARY KEY (id)
 );
 
@@ -62,7 +64,7 @@ CREATE TABLE groups (
   email VARCHAR(63),
   fax VARCHAR(20),
   account VARCHAR(255),
-  deleted BOOL DEFAULT 'FALSE',
+  deleted BOOL DEFAULT 0,
   PRIMARY KEY (id)
 );
 
@@ -70,7 +72,7 @@ DROP TABLE IF EXISTS userprojects;
 CREATE TABLE userprojects (
   userid SMALLINT UNSIGNED NOT NULL,
   projectid SMALLINT UNSIGNED NOT NULL,
-  isdefault BOOL DEFAULT 'FALSE'
+  isdefault BOOL DEFAULT 0
 );
 
 DROP TABLE IF EXISTS projectgroups;
@@ -100,8 +102,8 @@ CREATE TABLE instruments (
   mindatechange FLOAT(16) NOT NULL,
   calendarcomment TEXT NOT NULL,
   supervisors VARCHAR(255),
-  emailonbooking BOOL DEFAULT 'FALSE',
-  deleted BOOL DEFAULT 'FALSE',
+  emailonbooking BOOL DEFAULT 0,
+  deleted BOOL DEFAULT 0,
   PRIMARY KEY (id)
 );
 
@@ -109,10 +111,10 @@ DROP TABLE IF EXISTS permissions;
 CREATE TABLE permissions (
   userid SMALLINT UNSIGNED NOT NULL,
   instrid SMALLINT UNSIGNED NOT NULL,
-  isadmin BOOL DEFAULT 'FALSE',
-  announce BOOL DEFAULT 'TRUE',
-  unbook BOOL DEFAULT 'TRUE',
-  haspriority BOOL DEFAULT 'FALSE',
+  isadmin BOOL DEFAULT 0,
+  announce BOOL DEFAULT 1,
+  unbook BOOL DEFAULT 1,
+  haspriority BOOL DEFAULT 0,
   points SMALLINT UNSIGNED,
   pointsrecharge SMALLINT UNSIGNED
 );
@@ -126,7 +128,7 @@ DROP TABLE IF EXISTS instrumentclass;
 CREATE TABLE instrumentclass (
   id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(63) NOT NULL,
-  deleted BOOL DEFAULT 'FALSE',
+  deleted BOOL DEFAULT 0,
   PRIMARY KEY (id)
 );
 
@@ -134,7 +136,7 @@ DROP TABLE IF EXISTS userclass;
 CREATE TABLE userclass (
   id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(63) NOT NULL,
-  deleted BOOL DEFAULT 'FALSE',
+  deleted BOOL DEFAULT 0,
   PRIMARY KEY (id)
 );
 
@@ -166,8 +168,8 @@ CREATE TABLE bookings (
   -- starttime TIME NOT NULL,
   -- stoptime TIME NOT NULL,
   duration TIME NOT NULL,
-  -- ishalfday BOOL DEFAULT 'FALSE',
-  -- isfullday BOOL DEFAULT 'FALSE',
+  -- ishalfday BOOL DEFAULT 0,
+  -- isfullday BOOL DEFAULT 0,
   instrument SMALLINT UNSIGNED NOT NULL,
   bookedby SMALLINT UNSIGNED NOT NULL,
   userid SMALLINT UNSIGNED NOT NULL,
@@ -176,7 +178,7 @@ CREATE TABLE bookings (
   ip CHAR(16),
   comments VARCHAR(255),
   log TEXT,
-  deleted BOOL DEFAULT 'FALSE',
+  deleted BOOL DEFAULT 0,
   PRIMARY KEY (id)
 );
 
@@ -191,9 +193,9 @@ CREATE TABLE bookings (
 -- DROP TABLE IF EXISTS bookingmeta;
 -- CREATE TABLE bookingmeta (
 --   instrid SMALLINT UNSIGNED NOT NULL,
---   requireapproval BOOL DEFAULT 'FALSE',
+--   requireapproval BOOL DEFAULT 0,
 --   min_unbook FLOAT(16), -- in hours
---   alert_unbook BOOL DEFAULT 'FALSE',
+--   alert_unbook BOOL DEFAULT 0,
 --   book_future_normal TINYINT UNSIGNED, -- days in advance that users can book
 --   book_priority_safe TINYINT UNSIGNED, -- days to protect priority users
 --   book_priority_days TINYINT UNSIGNED, -- which days are priority days
@@ -210,7 +212,7 @@ CREATE TABLE consumables (
   name VARCHAR(31) NOT NULL,
   longname VARCHAR(255) NOT NULL,
   cost FLOAT(16) NOT NULL,
-  deleted BOOL DEFAULT 'FALSE',
+  deleted BOOL DEFAULT 0,
   PRIMARY KEY (id)
 );
 

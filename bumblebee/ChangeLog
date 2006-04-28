@@ -3,7 +3,19 @@
 	* use php-gettext to support locales 
 	* gettext-ised for i18n 
 
-2006-03-31 Stuart Prescott <stuart@nanonanonano.net>
+2006-04-28  Stuart Prescott <stuart@nanonanonano.net>
+  * 1.0.3 release
+	* bugfix: allow timeslot discount and comment to work on the same slot 
+	* bugfix: change action calculation to not use PATH_INFO at all; 
+    now works under PHP CGI module (closes #1477103) 
+	* bugfix: assume that a null value for discount means 0. 
+	* bugfix: work around PHP session.auto_start; also allow for externally 
+    started sessions (from some CMS framework) and make sure the session 
+    cookie is only available to the Bumblebee installation (closes #1473112)
+	* bugfix: change the default mysqldump command line so that it doesn't 
+    require grant LOCK TABLES do backup the database under MySQL 4.1 and MySQL 5. 
+	* feature: new installer script with error checking on user values and 
+    compatability with MySQL5 (closes #1473020)
 	* feature: allow admin to reset password and turn on extra login debugging info just using the config file
 	* bugfix: user can now change password if email or phone number is not set
 

@@ -4,17 +4,23 @@ $Id$
 ------------
 Bugs:  
   book dropdown on 10:00-16:00/6 includes times that would overlap bookings
-* double entry password in installer
 * double entry password in change passwd
-* installer should check username is valid in same way auth.php does
-* installer mysql5 compatability (password, boolean defaults)
 * ff1.5 autosaving passwd in user form; not showing username by default.
 * suppress autofill features on some forms?
 
+
+* installer test suite
+  All tests in the test suite should report their outcome in a consistent manner, making it easy for humans or computer programs to understand and to process them. The following test states, defined by EARL (the Evaluation And Report Language), have proved useful:
+
+    * cannotTell
+    * fail
+    * notApplicable
+    * notTested
+    * pass
+
+
 * 1.2 series
 ------------
-Code documentation:
-  real phpdoc format and publish 
 Features:
   * heirarchical+fine-grained permission system 
   * longer bookings
@@ -25,12 +31,14 @@ Features:
   * limit certain users to specific ranges of time on a particular instrument (Gordon Holtslander)
   * split .sql file into admin and non-admin portion?
 
-  * pre-inst check of kit (php? dir structure? PEAR::Auth? php-gettext)
-  * pre-inst test of auth modules, optionals (PDF, radius, ldap)
-  * post-inst auto-test of db, environment, auth modules etc.
-  * post-inst test that .ini files are protected by .htaccess
-  * check that admin can log in ok using auth.php
   * option to run the sql code given the username and password of the sql user
+
+  * use fieldset and label to beautify forms
+
+  * put all column names and table names in back ticks
+  * change all boolean fields to !fieldname instead of fieldname = true
+
+  * email ics file for booking to user
 
   
 * Later

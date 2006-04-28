@@ -217,8 +217,9 @@ class ActionFactory {
   * @returns array  (key => $data)
   */
   function _eatGPCInfo() {
-    $pd = $this->_eatPathInfo();
-    return array_merge($pd, $_GET, $_POST);
+    //$pd = $this->_eatPathInfo();
+    //return array_merge($pd, $_GET, $_POST);
+    return array_merge($_GET, $_POST);
   }
   
   /** 
