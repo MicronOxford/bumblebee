@@ -25,7 +25,7 @@
     </a>
   </div>
   <div id="headerRight">
-    <h1>Bumblebee Instrument Bookings</h1>
+    <h1><?php print T_('Bumblebee Instrument Bookings'); ?></h1>
   </div>
 </div>
 
