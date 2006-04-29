@@ -12,6 +12,8 @@
 * @subpackage Misc
 */
 
+$REBASE_INSTALL = isset($REBASE_INSTALL) ? $REBASE_INSTALL : '';
+
 
 /** location of config files
 * 
