@@ -324,7 +324,7 @@ class ExportTypeList {
   }
   
   function _createBillingConsumable() {
-    $type = new ExportType('consumablebilling', 'consumables_use', T_('Billing data: consumable usage for %s - $s'), array('consumables', 'groups'));
+    $type = new ExportType('consumablebilling', 'consumables_use', T_('Billing data: consumable usage for %s - %s'), array('consumables', 'groups'));
     $type->join[] = array('table' => 'consumables', 'condition' =>  'consumables.id=consumables_use.consumable');
     $type->join[] = array('table' => 'projectgroups', 'condition' =>  'projectgroups.projectid=consumables_use.projectid');
     $type->join[] = array('table' => 'groups', 'condition' =>  'groups.id=projectgroups.groupid');
