@@ -15,6 +15,7 @@
 // prevent output for the moment to permit session headers
 ob_start();
 
+global $CONFIG;
 /** Load in the user configuration data */
 require_once 'inc/config.php'; 
 /** start the database session */

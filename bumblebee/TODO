@@ -8,6 +8,7 @@ Bugs:
 * ff1.5 autosaving passwd in user form; not showing username by default.
 * suppress autofill features on some forms?
 
+* custom info page on login screen (e.g. secured by...)
 
 * installer test suite
   All tests in the test suite should report their outcome in a consistent manner, making it easy for humans or computer programs to understand and to process them. The following test states, defined by EARL (the Evaluation And Report Language), have proved useful:
@@ -39,7 +40,11 @@ Features:
   * change all boolean fields to !fieldname instead of fieldname = true
 
   * email ics file for booking to user
-
+  
+i18n:
+  * day and month names not translated now not using LC_ALL/locale
+  * HOWTO:
+      ./update-translations.sh
   
 * Later
 ------------

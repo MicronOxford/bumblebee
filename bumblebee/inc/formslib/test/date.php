@@ -11,10 +11,10 @@
 */
 
 /** include the classes we are supposed to be testing */
-include_once '../date.php';
+require_once '../../date.php';
 ini_set("error_reporting",E_ALL);
 
-
+/*
 $days = 30;
 
 $start = new SimpleDate(time() - $days * 24 * 60 * 60);
@@ -46,6 +46,34 @@ for ($d = 0; $d < 84; $d++) {
   echo ", (partDaysBetween=".$date->partDaysBetween($start).")";
   echo "\n";
 }
+*/
+
+
+// benchmarks:
+
+$reps = 10000;
+$benchmark_start_time = getmicrotime();
+
+$days = 30;
+$start = new SimpleDate(time() - $days * 24 * 60 * 60);
+$newtime = new SimpleTime('01:30:00');
+for ($i=0; $i<$reps; $i++) {
+  //$start->dayRound();
+  $time = $start;
+  $time->setTime($newtime);
+  #echo $time->datetimestring;
+}
+
+
+$elapsed_time = getmicrotime() - $benchmark_start_time;
+echo "<p>Time elapsed: $elapsed_time seconds";
+
+
+function getmicrotime() {
+  list($usec, $sec) = explode(" ",microtime());
+   return ((float)$usec + (float)$sec);
+}
+
 
 
 

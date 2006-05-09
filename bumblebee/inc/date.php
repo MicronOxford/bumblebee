@@ -155,6 +155,11 @@ class SimpleDate {
   * sets the current YYY-MM-DD HH:MM:SS to YYYY-MM-DD 00:00:00
   */
   function dayRound() {
+    // this might look as though it would be faster by avoiding the expensive strtotime() call,
+    // (10000 reps took average 0.490s with PHP 4.4.2, libc6-2.3.6)
+    //    $this->setTimeParts(0,0,0,date('d', $this->ticks),date('m', $this->ticks),date('Y', $this->ticks));
+    // but this is actually faster.
+    // (10000 reps took average 0.385s with PHP 4.4.2, libc6-2.3.6; that's 21% faster)
     $this->setStr($this->datestring);
   }
 
@@ -272,9 +277,21 @@ class SimpleDate {
   */
   function setTime($s) {
     //echo $this->dump().$s.'<br/>';
-    $this->dayRound();
+    
+    // Benchmarks of 10000 calls to setTime($time)
+    // 
+    // Original algorithm, dayRound() and then addTimeParts(); avg over 10 benchmark runs = 1.28s
+    // $this->dayRound();
+    // $time = new SimpleTime($s);
+    // $this->addTimeParts($time->part('s'), $time->part('i'), $time->part('H'), 0,0,0);
+    
+    // setTimeParts() directly; avg over 10 benchmark runs = 0.80s
     $time = new SimpleTime($s);
-    $this->addTimeParts($time->part('s'), $time->part('i'), $time->part('H'), 0,0,0);
+    //$this->setTimeParts(date('s', $time->ticks),date('i', $time->ticks),date('H', $time->ticks),
+    //                    date('d', $this->ticks),date('m', $this->ticks),date('Y', $this->ticks));
+    $this->setTimeParts($time->part('s'),        $time->part('i'),        $time->part('H'),
+                        date('d', $this->ticks), date('m', $this->ticks), date('Y', $this->ticks));
+    
     return $this;
   }  
     
