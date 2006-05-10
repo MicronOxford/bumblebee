@@ -100,7 +100,7 @@ class TimeField extends Field {
   }
   
   function selectable() {
-    #echo "TIME=".$this->time->timestring."\n";
+    #echo "TIME=".$this->time->timeString()."\n";
     $this->_determineRepresentation();
     $this->setTime(parent::getValue());
     $t = '';
@@ -114,7 +114,7 @@ class TimeField extends Field {
         $varname   = $this->namebase.$this->name.'-var';
         $t .= "<span id='$fixedname'>";
         if ($this->isStart) {
-          $t .= $this->time->timestring;
+          $t .= $this->time->timeString();
           $t .= $this->hidden();
         } else {
           $this->_prepareDropDown();
@@ -130,7 +130,7 @@ class TimeField extends Field {
         $t .= $this->_prepareFreeField();
         break;
       case TF_FIXED:
-        $t .= $this->time->timestring;
+        $t .= $this->time->timeString();
         $t .= $this->hidden();
         break;
     }
@@ -210,7 +210,7 @@ class TimeField extends Field {
    */
   function _prepareFreeField($append='', $hidden=false) {
     $t  = "<input type='text' name='{$this->namebase}{$this->name}$append' "
-        ."value='".xssqw($this->time->timestring)."' ";
+        ."value='".xssqw($this->time->timeString())."' ";
     $t .= (isset($this->attr['size']) ? "size='".$this->attr['size']."' " : "");
     $t .= (isset($this->attr['maxlength']) ? "maxlength='".$this->attr['maxlength']."' " : "");
     $t .= ($hidden) ? "style='display: none;' " : "";
@@ -257,7 +257,7 @@ class TimeField extends Field {
     } else {
       $this->fixedTimeSlots = $this->slot->numslotsFollowing;
     }
-    $this->log('Slot starts at '.$this->slotStart->datetimestring
+    $this->log('Slot starts at '.$this->slotStart->dateTimeString()
                 .', numFollowing: '.$this->fixedTimeSlots, 8);
     return $this->fixedTimeSlots;
   }
@@ -311,7 +311,7 @@ class TimeField extends Field {
   function setTime($time) {
     #echo "SETTIME = $time\n";
     $this->time = new SimpleTime($time);
-    $this->value = $this->time->timestring;
+    $this->value = $this->time->timeString();
   }
 
   /** 
@@ -334,13 +334,13 @@ class TimeField extends Field {
   }
 
   function _findExactSlot() {
-    $this->log('Looking for slot starting at '.$this->slotStart->datetimestring, 10);
+    $this->log('Looking for slot starting at '.$this->slotStart->dateTimeString(), 10);
     $this->slot = $this->list->findSlotByStart($this->slotStart);
     if (! $this->slot) {
       $this->slot = $this->list->findSlotFromWithin($this->slotStart);
     }
-    $this->log('Found slot start '.$this->slot->start->datetimestring, 10);
-    $this->log('Found slot stop '.$this->slot->stop->datetimestring, 10);
+    $this->log('Found slot start '.$this->slot->start->dateTimeString(), 10);
+    $this->log('Found slot stop '.$this->slot->stop->dateTimeString(), 10);
 /*    if ($this->slot == '0') {
       $this->slot = $this->list->findSlotFromWithin($this->slotStart);
     }*/

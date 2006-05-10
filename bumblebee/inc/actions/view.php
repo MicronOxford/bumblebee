@@ -119,7 +119,7 @@ class ActionView extends ActionAction {
       return floor($then->dsDaysBetween($now));
     } elseif (isset($this->PD['startticks'])) {
       $then = new SimpleDate($this->PD['startticks']);
-      return $then->datestring;
+      return $then->dateString();
     } elseif (isset($this->PD['bookwhen-date'])) {
       $then = new SimpleDate($this->PD['bookwhen-date']);
       return floor($then->dsDaysBetween($now));
@@ -186,7 +186,7 @@ class ActionView extends ActionAction {
       $start = $now;
       $offset = $row['calfuture'] - $callength + 7*$row['calhistory'] + 7;
       $start->addDays($offset);
-      #echo $start->datetimestring;
+      #echo $start->dateTimeString();
     }
     
     // jump backwards to the start of that week.
@@ -274,7 +274,7 @@ class ActionView extends ActionAction {
     echo $this->displayInstrumentHeader($row);
     echo $this->_linksForwardBack('-1', -1*$totaloffset, '+1', 
                                 $maxfuture > $totaloffset || $this->_isAdminView, 
-                                array('isodate'=>$start->datestring));
+                                array('isodate'=>$start->dateString()));
     echo $cal->displayDayAsTable($daystart,$daystop,$granularity,$timelines);
     echo $this->displayInstrumentFooter($row);
   }
@@ -286,8 +286,8 @@ class ActionView extends ActionAction {
     $start = new SimpleDate(issetSet($this->PD, 'startticks'));
     $stop  = new SimpleDate(issetSet($this->PD, 'stopticks'));
     $duration = new SimpleTime($stop->subtract($start));
-    $this->log($start->datetimestring.', '.$duration->timestring.', '.$start->dow());
-    $this->_editCreateBooking(-1, $start->datetimestring, $duration->timestring);
+    $this->log($start->dateTimeString().', '.$duration->timeString().', '.$start->dow());
+    $this->_editCreateBooking(-1, $start->dateTimeString(), $duration->timeString());
   }
 
   /**
@@ -295,7 +295,7 @@ class ActionView extends ActionAction {
   */
   function editBooking() {
     $start = new SimpleDate(issetSet($this->PD, 'startticks'));
-    $this->_editCreateBooking($this->PD['bookid'], $start->datetimestring, -1);
+    $this->_editCreateBooking($this->PD['bookid'], $start->dateTimeString(), -1);
   }
 
   /**

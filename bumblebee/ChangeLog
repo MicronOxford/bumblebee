@@ -1,3 +1,9 @@
+2006-05-09 Stuart Prescott <stuart.prescott@bristol.ac.uk>
+	* benchmark date functions and improve SimpleDate->setTime() 
+	  (gave 18% improvement in page load time for monthly calendar)
+	* only calculate string representations of dates and times when required and 
+	  cache result (gave 6% improvement in page load time for monthly calendar)
+
 2006-04-11 Stuart Prescott <stuart.prescott@bristol.ac.uk>
 	* added flat file logging function 
 	* use php-gettext to support locales 

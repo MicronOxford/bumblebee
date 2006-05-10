@@ -150,7 +150,7 @@ class HTMLExport {
   function _reportHeader() {
     $start = $this->_daterange->getStart();
     $stop  = $this->_daterange->getStop();
-    $s = $this->_export->description .' for '. $start->datestring .' - '. $stop->datestring;
+    $s = $this->_export->description .' for '. $start->dateString() .' - '. $stop->dateString();
     return $s;
   }  
 

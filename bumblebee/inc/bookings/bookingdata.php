@@ -51,8 +51,12 @@ class BookingData {
   *                       start, stop, instrument, id
   */
   function BookingData($arr, $includeDeleted=false) {
-    $this->start = issetSet($arr,'start');
-    $this->stop  = issetSet($arr,'stop');
+    if ($start = issetSet($arr,'start')) {
+      $this->start = $start->dateTimeString();
+    }
+    if ($stop = issetSet($arr,'stop')) {
+      $this->stop = $stop->dateTimeString();
+    }
     $this->instrument  = issetSet($arr,'instrument');
     $this->id  = issetSet($arr,'id');
     $this->includeDeleted = $includeDeleted;

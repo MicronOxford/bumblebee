@@ -157,7 +157,7 @@ class ActionConsume extends ActionAction {
     $ip = $this->auth->getRemoteIP();
     $today = new SimpleDate(time());
     $rec = new ConsumableUse($recordid, $userid, $consumableid,
-                              $uid, $ip, $today->datestring);
+                              $uid, $ip, $today->dateString());
     $rec->update($this->PD);
     $rec->checkValid();
     echo $this->reportAction($rec->sync(), 
@@ -212,8 +212,8 @@ class ActionConsume extends ActionAction {
     $recselect->connectDB('consumables_use',
                           array(array('consumables_use.id','conid'), 'consumable', 'usewhen', 'username', 'name', 'quantity'),
                           'consumable='.qw($consumableID)
-                              .' AND usewhen >= '.qw($start->datetimestring)
-                              .' AND usewhen < '.qw($stop->datetimestring),
+                              .' AND usewhen >= '.qw($start->dateTimeString())
+                              .' AND usewhen < '.qw($stop->dateTimeString()),
                           'usewhen',
                           array('consumables_use.id','conid'),
                           NULL,
@@ -248,8 +248,8 @@ class ActionConsume extends ActionAction {
     $recselect->connectDB('consumables_use',
                           array(array('consumables_use.id','conid'), 'consumable', 'usewhen', 'name', 'longname', 'quantity'),
                           'userid='.qw($userID)
-                              .' AND usewhen >= '.qw($start->datetimestring)
-                              .' AND usewhen < '.qw($stop->datetimestring),
+                              .' AND usewhen >= '.qw($start->dateTimeString())
+                              .' AND usewhen < '.qw($stop->dateTimeString()),
                           'usewhen',
                           array('consumables_use.id','conid'),
                           NULL,

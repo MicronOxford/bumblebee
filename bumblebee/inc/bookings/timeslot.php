@@ -82,10 +82,10 @@ class TimeSlot {
   */
   function displayShort() {
     return '<tr><td>'.get_class($this)
-            .'</td><td>'.$this->start->datetimestring
-            .'</td><td>'.$this->stop->datetimestring
-            .'</td><td>'.$this->displayStart->datetimestring
-            .'</td><td>'.$this->displayStop->datetimestring
+            .'</td><td>'.$this->start->dateTimeString()
+            .'</td><td>'.$this->stop->dateTimeString()
+            .'</td><td>'.(is_object($this->displayStart) ? $this->displayStart->dateTimeString() : 'NULL')
+            .'</td><td>'.(is_object($this->displayStop)  ? $this->displayStop->dateTimeString()  : 'NULL')
             .'</td><td>'.$this->isStart
             .'</td></tr>'."\n";
   }

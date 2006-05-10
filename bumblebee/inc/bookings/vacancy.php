@@ -31,7 +31,7 @@ class Vacancy extends TimeSlot {
   function Vacancy($arr='') {
     if (is_array($arr)) {
       $this->TimeSlot($arr['bookwhen'], $arr['stoptime'], $arr['duration']);
-      #echo "Vacancy from ".$this->start->datetimestring." to ".$this->stop->datetimestring."<br />\n";
+      #echo "Vacancy from ".$this->start->dateTimeString()." to ".$this->stop->dateTimeString()."<br />\n";
     }
     $this->isVacant = true;
     $this->baseclass='vacancy';
@@ -64,8 +64,8 @@ class Vacancy extends TimeSlot {
   */
   function displayInTable() {
     return '<tr><td>Vacant'
-            .'</td><td>'.$this->start->datetimestring
-            .'</td><td>'.$this->stop->datetimestring
+            .'</td><td>'.$this->start->dateTimeString()
+            .'</td><td>'.$this->stop->dateTimeString()
             .'</td><td>'
             .'</td></tr>'."\n";
   }
@@ -85,9 +85,9 @@ class Vacancy extends TimeSlot {
       $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
       $startticks = $start->ticks;
       $stopticks = $stop->ticks;
-      $timedescription = sprintf(T_('Make booking from %s to %s'), $start->datetimestring, $stop->datetimestring);
-      //$timedescription = $this->start->timestring.' - '.$this->stop->timestring;
-      $isodate = $start->datestring;
+      $timedescription = sprintf(T_('Make booking from %s to %s'), $start->dateTimeString(), $stop->dateTimeString());
+      //$timedescription = $this->start->timeString().' - '.$this->stop->timeString();
+      $isodate = $start->dateString();
       $t .= '<div style="float:right;">'
               .'<a href="'
                   .$this->href.'&amp;isodate='.$isodate.'&amp;startticks='.$startticks.'&amp;stopticks='.$stopticks.'" '
@@ -119,9 +119,9 @@ class Vacancy extends TimeSlot {
     $start = isset($this->displayStart) ? $this->displayStart : $this->original->start;
     $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->original->stop;
     if ($this->isDisabled) {
-      $t = sprintf(T_('Unavailable from %s to %s'), $start->datetimestring, $stop->datetimestring);
+      $t = sprintf(T_('Unavailable from %s to %s'), $start->dateTimeString(), $stop->dateTimeString());
     } else {
-      $t = sprintf(T_('Vacant from %s to %s'), $start->datetimestring, $stop->datetimestring);
+      $t = sprintf(T_('Vacant from %s to %s'), $start->dateTimeString(), $stop->dateTimeString());
     }
     return $t;
   }

@@ -257,14 +257,14 @@ class BookingEntry extends DBRow {
     $slot = $this->slotrules->findSlotByStart($starttime);
     if (! $this->_isadmin) {
       $this->fields['discount']->value = (isset($slot->discount) ? $slot->discount : 0);
-      $this->log('BookingEntry::_setDefaultDiscount value '.$starttime->datetimestring.' '.$slot->discount.'%');
+      $this->log('BookingEntry::_setDefaultDiscount value '.$starttime->dateTimeString().' '.$slot->discount.'%');
       return;
     }
     
     if (! isset($this->fields['discount']->value)) {  // handle missing values in the submission
       //preDump($this->slotrules); preDump($slot);
       $this->fields['discount']->defaultValue = (isset($slot->discount) ? $slot->discount : 0);
-      $this->log('BookingEntry::_setDefaultDiscount defaultValue '.$starttime->datetimestring.' '.$slot->discount.'%');
+      $this->log('BookingEntry::_setDefaultDiscount defaultValue '.$starttime->dateTimeString().' '.$slot->discount.'%');
     }
   }
 
@@ -283,8 +283,8 @@ class BookingEntry extends DBRow {
     $timeoffset = $this->minunbook*60*60;
     $booking->addTime(-1*$timeoffset);
     $now = new SimpleDate(time());
-    $this->log('Booking times comparison: now='.$now->datetimestring
-                  .', minunbook='.$booking->datetimestring);
+    $this->log('Booking times comparison: now='.$now->dateTimeString()
+                  .', minunbook='.$booking->dateTimeString());
     if ($booking->ticks < $now->ticks) {
       // then we can't edit the date and time and we shouldn't delete the booking
       $this->log('Within limitation period, preventing time changes and deletion',9);
@@ -359,8 +359,8 @@ class BookingEntry extends DBRow {
     $replace = array(
             '/__instrumentname__/'      => $instrument['name'],
             '/__instrumentlongname__/'  => $instrument['longname'],
-            '/__start__/'               => $start->datetimestring,
-            '/__duration__/'            => $duration->timestring,
+            '/__start__/'               => $start->dateTimeString(),
+            '/__duration__/'            => $duration->timeString(),
             '/__name__/'                => $user['name'],
             '/__username__/'            => $user['username'],
             '/__host__/'      => 'http://'.$_SERVER['SERVER_NAME'].$BASEURL
@@ -411,11 +411,11 @@ class BookingEntry extends DBRow {
     $doubleBook = 0;
     $instrument = $this->fields['instrument']->getValue();
     $startdate = new SimpleDate($this->fields['bookwhen']->getValue());
-    $start = $startdate->datetimestring;
+    $start = $startdate->dateTimeString();
     $d = new SimpleDate($start);
     $duration = new SimpleTime($this->fields['duration']->getValue());
     $d->addTime($duration);
-    $stop = $d->datetimestring;
+    $stop = $d->dateTimeString();
     
     $tmpid = $this->_makeTempBooking($instrument, $start, $duration->getHMSstring());
     $this->log('Created temp row for locking, id='.$tmpid.'(origid='.$this->id.')');
@@ -474,8 +474,8 @@ class BookingEntry extends DBRow {
     $starttime = new SimpleDate($this->fields['bookwhen']->getValue());
     $stoptime = $starttime;
     $stoptime->addTime(new SimpleTime($this->fields['duration']->getValue()));
-    $this->log('BookingEntry::_legalSlot '.$starttime->datetimestring
-                  .' '.$stoptime->datetimestring);
+    $this->log('BookingEntry::_legalSlot '.$starttime->dateTimeString()
+                  .' '.$stoptime->dateTimeString());
     $validslot = $this->slotrules->isValidSlot($starttime, $stoptime);
     if (! $validslot) {
       $this->log('This slot isn\'t legal so far... perhaps it is FreeForm?');
@@ -529,7 +529,7 @@ class BookingEntry extends DBRow {
   function _checkTimesAdjoining($field, $checktime) {
       global $TABLEPREFIX;
       $instrument = $this->fields['instrument']->getValue();
-      $time = $checktime->datetimestring;
+      $time = $checktime->dateTimeString();
       $q = 'SELECT bookings.id AS bookid, bookwhen, duration, '
           .'DATE_ADD( bookwhen, INTERVAL duration HOUR_SECOND ) AS stoptime '
           .'FROM '.$TABLEPREFIX.'bookings AS bookings '
@@ -601,9 +601,9 @@ class BookingEntry extends DBRow {
                   .sprintf(T_('Booking deleted by %s (user #%s) on %s.'), 
                         $this->_auth->username,
                         $this->uid,
-                        $today->datetimestring);
+                        $today->dateTimeString());
 /*                  .'Booking deleted by '.$this->_auth->username
-                  .' (user #'.$this->uid.') on '.$today->datetimestring.'.';*/
+                  .' (user #'.$this->uid.') on '.$today->dateTimeString().'.';*/
     return parent::delete('log='.qw($newlog));
   }
   

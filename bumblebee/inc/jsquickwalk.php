@@ -82,7 +82,7 @@ class JSQuickWalk {
       $t .= $this->namebase.'walkarray['.$i.']= new Array();'.$eol;
       foreach ($this->keys as $k) {
         $t .= $this->namebase.'walkarray['.$i.']["'.$k.'"]="'
-                                    .$this->values[$i][$k]->datestring.'";'.$eol;
+                                    .$this->values[$i][$k]->dateString().'";'.$eol;
       }
     }
     $c = $this->namebase.'walkcounter';

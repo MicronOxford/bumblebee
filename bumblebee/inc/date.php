@@ -37,12 +37,12 @@ class SimpleDate {
   * date in string format (YYYY-MM-DD)
   * @var string
   */
-  var $datestring = '';
+  var $_datestring = '';
   /**
   * date and time in string format (YYYY-MM-DD HH:MM:SS)
   * @var string
   */
-  var $datetimestring = '';
+  var $_datetimestring = '';
   /**
   * date in seconds since epoch
   * @var integer
@@ -87,16 +87,30 @@ class SimpleDate {
   function setStr($s) {
     $this->isValid = 1;
     $this->_setTicks($s);
-    $this->_setStr();
+    //$this->_setStr();
   }
 
-  function _setStr() {
-    #echo "SimpleDate::Str $this->ticks<br />";
-    $this->datestring = strftime('%Y-%m-%d', $this->ticks);
-    $this->datetimestring = strftime('%Y-%m-%d %H:%M:%S', $this->ticks);
-    $this->isValid = $this->isValid && ($this->datestring != '' && $this->datetimestring != '' 
-                   && $this->datestring != -1 && $this->datetimestring != -1);
+  function dateTimeString() {
+    if ($this->_datetimestring === '') {
+      $this->_datetimestring = strftime('%Y-%m-%d %H:%M:%S', $this->ticks);
+    }
+    return $this->_datetimestring;
   }
+  
+  function dateString() {
+    if ($this->_datestring === '') {
+      $this->_datestring = strftime('%Y-%m-%d', $this->ticks);
+    }
+    return $this->_datestring;
+  }
+  
+//   function _setStr() {
+//     #echo "SimpleDate::Str $this->ticks<br />";
+//     $this->datestring = strftime('%Y-%m-%d', $this->ticks);
+//     $this->datetimestring = strftime('%Y-%m-%d %H:%M:%S', $this->ticks);
+//     $this->isValid = $this->isValid && ($this->datestring != '' && $this->datetimestring != '' 
+//                    && $this->datestring != -1 && $this->datetimestring != -1);
+//   }
 
   /**
   * set the date and time from seconds since epoch
@@ -106,13 +120,17 @@ class SimpleDate {
   function setTicks($t) {
     $this->isValid = 1;
     $this->ticks = $t;
-    $this->_setStr();
+    $this->_datestring = '';
+    $this->_datetimestring = '';
+    //$this->_setStr();
   }
 
   function _setTicks($s) {
     #echo "SimpleDate::Ticks $s<br />";
     #preDump(debug_backtrace());
     $this->ticks = strtotime($s);
+    $this->_datestring = '';
+    $this->_datetimestring = '';
     $this->isValid = $this->isValid && ($this->ticks != '' && $this->ticks != -1);
   }
 
@@ -137,7 +155,9 @@ class SimpleDate {
     } else {
       $this->ticks += $t;
     }
-    $this->_setStr();
+    $this->_datestring = '';
+    $this->_datetimestring = '';
+//     $this->_setStr();
   }
   
   /**
@@ -145,8 +165,10 @@ class SimpleDate {
   * @param integer $s seconds to add
   */
   function addSecs($s) {
-    $this->ticks+=$s;
-    $this->_setStr();
+    $this->ticks += $s;
+    $this->_datestring = '';
+    $this->_datetimestring = '';
+//     $this->_setStr();
   }
 
   /**
@@ -160,7 +182,7 @@ class SimpleDate {
     //    $this->setTimeParts(0,0,0,date('d', $this->ticks),date('m', $this->ticks),date('Y', $this->ticks));
     // but this is actually faster.
     // (10000 reps took average 0.385s with PHP 4.4.2, libc6-2.3.6; that's 21% faster)
-    $this->setStr($this->datestring);
+    $this->setStr($this->dateString());
   }
 
   /**
@@ -242,7 +264,7 @@ class SimpleDate {
     $startwhole->dayRound();
     $stopwhole = $this;
     $stopwhole->ticks += 24*60*60-1;
-    $stopwhole->_setStr();
+//     $stopwhole->_setStr();
     $stopwhole->dayRound();
     
     return $stopwhole->dsDaysBetween($startwhole);
@@ -266,7 +288,7 @@ class SimpleDate {
   */
   function timePart() {
     $timestring = strftime('%H:%M:%S', $this->ticks);
-    return new SimpleTime($timestring,1);
+    return new SimpleTime($timestring);
   }
 
   /** 
@@ -326,7 +348,7 @@ class SimpleDate {
   function floorTime($g) {
     $tp = $this->timePart();
     $tp->floorTime($g);
-    $this->setTime($tp->timestring);
+    $this->setTime($tp->timeString());
   }
   
   /**
@@ -354,7 +376,9 @@ class SimpleDate {
                             date('d',$this->ticks) + $day,
                             date('y',$this->ticks) + $year
                         );
-    $this->_setStr();
+    $this->_datestring = '';
+    $this->_datetimestring = '';
+//     $this->_setStr();
   }
   
   /**
@@ -376,7 +400,9 @@ class SimpleDate {
                             $day,
                             $year
                         );
-    $this->_setStr();
+    $this->_datestring = '';
+    $this->_datetimestring = '';
+//     $this->_setStr();
   }
   
   /**
@@ -434,7 +460,7 @@ class SimpleDate {
   * @return string datetimestring and ticks
   */
   function dump($html=1) {
-    $s = 'ticks = ' . $this->ticks . ', ' . $this->datetimestring;
+    $s = 'ticks = ' . $this->ticks . ', ' . $this->dateTimeString();
     $s .= ($html ? '<br />' : '') . "\n";
     return $s;
   }
@@ -453,7 +479,7 @@ class SimpleTime {
   * current time in string format (HH:MM:SS)
   * @var string
   */
-  var $timestring = '';
+  var $_timestring = '';
   /**
   * current time in integer seconds since midnight
   * @var integer
@@ -489,19 +515,27 @@ class SimpleTime {
   */
   function setStr($s) {
     $this->_setTicks($s);
-    $this->_setStr();
+    //$this->_setStr();
   }
 
-  function _setStr() {
-    $this->timestring = sprintf('%02d:%02d', $this->ticks/3600, ($this->ticks%3600)/60);
-  }
+//   function _setStr() {
+//     $this->timestring = sprintf('%02d:%02d', $this->ticks/3600, ($this->ticks%3600)/60);
+//   }
 
+  function timeString() {
+    if ($this->_timestring === '') {
+      $this->_timestring = sprintf('%02d:%02d', $this->ticks/3600, ($this->ticks%3600)/60);;
+    }
+    return $this->_timestring;
+  }
+  
   /** 
   * Set time by seconds since midnight
   */
   function setTicks($t) {
     $this->ticks = $t;
-    $this->_setStr();
+    $this->_timestring = '';
+//     $this->_setStr();
   }
 
   function _setTicks($s) {
@@ -515,6 +549,7 @@ class SimpleTime {
       $this->ticks = 0;
       $this->inValid = 0;
     }
+    $this->_timestring = '';
   }
 
   /** 
@@ -532,7 +567,8 @@ class SimpleTime {
   */
   function addSecs($s) {
     $this->ticks += $s;
-    $this->_setStr();
+    $this->_timestring = '';
+//     $this->_setStr();
   }
 
   /** 
@@ -623,7 +659,8 @@ class SimpleTime {
   */
   function addTime($t) {
     $this->ticks += $t->ticks;
-    $this->_setStr();
+    $this->_timestring = '';
+//     $this->_setStr();
   }
   
   /**
@@ -632,7 +669,7 @@ class SimpleTime {
   * @return string timestring and ticks
   */
   function dump($html=1) {
-    $s = 'ticks = ' . $this->ticks . ', ' . $this->timestring;
+    $s = 'ticks = ' . $this->ticks . ', ' . $this->timeString();
     $s .= ($html ? '<br />' : '') . "\n";
     return $s;
   }

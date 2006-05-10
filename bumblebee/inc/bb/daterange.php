@@ -178,8 +178,8 @@ class DateRange extends nonDBRow {
   function setDefaults($which, $range, $basetime=0) {
     $start = new SimpleDate($basetime ? $basetime : time());
     $daterange = $this->_calcRange($which, $range, $start);    
-    $this->fields['startdate']->setDate($daterange['startdate']->datestring);
-    $this->fields['stopdate']->setDate($daterange['stopdate']->datestring);
+    $this->fields['startdate']->setDate($daterange['startdate']->dateString());
+    $this->fields['stopdate']->setDate($daterange['stopdate']->dateString());
     $this->extrarows = array();
     $rangePile = array($daterange);
     $nextrange = $daterange;
@@ -194,8 +194,8 @@ class DateRange extends nonDBRow {
     //preDump($rangePile);
     $jswalk = new JSQuickWalk($this->namebase,'&laquo; '.T_('Previous'), T_('Next').' &raquo;', array('startdate', 'stopdate'), $rangePile, $maxRanges);
     //preDump($jswalk);
-    //$this->extrarows[] = array('', $prevRange[0]->datestring.$prevRange[1]->datestring);
-    //$this->extrarows[] = array('', $nextRange[0]->datestring.$nextRange[1]->datestring);
+    //$this->extrarows[] = array('', $prevRange[0]->dateString().$prevRange[1]->dateString());
+    //$this->extrarows[] = array('', $nextRange[0]->dateString().$nextRange[1]->dateString());
     $this->extrarows[] = array($jswalk->displayJS(),
                         $jswalk->displayBack().' | '.$jswalk->displayFwd());  
   }

@@ -232,7 +232,7 @@ class ActionBilling extends ActionExport {
     $start = $this->_daterange->getStart();
     $stop  = $this->_daterange->getStop();
     
-    $textmessage = $this->_getEmailText($group, $start->datestring, $stop->datestring);
+    $textmessage = $this->_getEmailText($group, $start->dateString(), $stop->dateString());
     
     //$textmessage = 'Please find attached PDF billing summaries for instrument usage.';
     $subject = ($CONFIG['billing']['emailSubject'] 

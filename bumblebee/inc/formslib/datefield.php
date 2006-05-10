@@ -85,7 +85,7 @@ class DateField extends Field {
   */
   function selectable() {
     $t  = "<input type='text' name='$this->namebase$this->name' "
-        ."value='".xssqw($this->date->datestring)."' ";
+        ."value='".xssqw($this->date->dateString())."' ";
     $t .= (isset($this->attr['size']) ? "size='".$this->attr['size']."' " : "");
     $t .= (isset($this->attr['maxlength']) ? "maxlength='".$this->attr['maxlength']."' " : "");
     $t .= "/>";
@@ -105,8 +105,8 @@ class DateField extends Field {
   */
   function setDate($date) {
     $this->date = new SimpleDate($date);
-    $this->value = $this->date->datestring;
-//     $this->set($this->time->timestring);
+    $this->value = $this->date->dateString();
+//     $this->set($this->time->timeString());
   }
   
   /**

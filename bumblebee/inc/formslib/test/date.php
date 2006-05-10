@@ -23,9 +23,9 @@ $start->dayRound();
 for ($d = 0; $d < 84; $d++) {
   $date = $start;
   $date->addDays($d);
-  echo $start->datetimestring. " (" .$start->ticks.") \n";
+  echo $start->dateTimeString(). " (" .$start->ticks.") \n";
   echo "\t + $d days = ";
-  echo $date->datetimestring. " (" .$date->ticks.") \n";;
+  echo $date->dateTimeString(). " (" .$date->ticks.") \n";;
   echo "\t (daysBetween=".$date->daysBetween($start).")";
   echo ", (dsDaysBetween=".$date->dsDaysBetween($start).")";
   echo ", (partDaysBetween=".$date->partDaysBetween($start).")";
@@ -33,14 +33,14 @@ for ($d = 0; $d < 84; $d++) {
 }
 
 $offset = new SimpleTime("01:00:00",1);
-echo "OFFSET=".$offset->ticks.", ".$offset->timestring."\n\n";
+echo "OFFSET=".$offset->ticks.", ".$offset->timeString()."\n\n";
 $start->addTime($offset);
 for ($d = 0; $d < 84; $d++) {
   $date = $start;
   $date->addDays($d);
-  echo $start->datetimestring. " (" .$start->ticks.") \n";
+  echo $start->dateTimeString(). " (" .$start->ticks.") \n";
   echo "\t + $d days = ";
-  echo $date->datetimestring. " (" .$date->ticks.") \n";;
+  echo $date->dateTimeString(). " (" .$date->ticks.") \n";;
   echo "\t (daysBetween=".$date->daysBetween($start).")";
   echo ", (dsDaysBetween=".$date->dsDaysBetween($start).")";
   echo ", (partDaysBetween=".$date->partDaysBetween($start).")";
@@ -61,7 +61,7 @@ for ($i=0; $i<$reps; $i++) {
   //$start->dayRound();
   $time = $start;
   $time->setTime($newtime);
-  #echo $time->datetimestring;
+  #echo $time->dateTimeString();
 }
 
 

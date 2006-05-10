@@ -98,8 +98,8 @@ class ActionDeletedBookings extends ActionAction {
     $bookings->deleted = true;
     $bookings->connectDB('bookings', 
                             array('bookings.id', 'username', 'bookwhen', 'duration','log'),
-                                    'bookwhen >= '.qw($start->datetimestring)
-                              .' AND bookwhen < ' .qw($stop->datetimestring)
+                                    'bookwhen >= '.qw($start->dateTimeString())
+                              .' AND bookwhen < ' .qw($stop->dateTimeString())
                               .' AND instrument = '.qw($instrument),
                             'bookwhen', 
                             'bookings.id', 

@@ -41,11 +41,11 @@ class BookingMatrix {
     $numBookings = count($this->bookings);
 
     #echo "Preparing matrix with $this->numRows rows for date "
-        #.$this->day->datestring."<br/>\n";
+        #.$this->day->dateString()."<br/>\n";
 
     $foundFlag = false;
     foreach ($this->bookings as $k => $b) {
-      #echo "Booking $k, ".$b->start->datetimestring." - ".$b->stop->datetimestring."<br />";
+      #echo "Booking $k, ".$b->start->dateTimeString()." - ".$b->stop->dateTimeString()."<br />";
       $bookDay = $b->start;
       $bookDay->dayRound();
       $bookStopDay = $b->stop;

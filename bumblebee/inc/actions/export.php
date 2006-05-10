@@ -320,8 +320,8 @@ class ActionExport extends BufferedAction {
   */  
   function _getDBListFromExport(&$export, $start, $stop, $limitsOffset=0) {
     $where = $export->where;
-    $where[] = $export->timewhere[0].qw($start->datetimestring);
-    $where[] = $export->timewhere[1].qw($stop->datetimestring);
+    $where[] = $export->timewhere[0].qw($start->dateTimeString());
+    $where[] = $export->timewhere[1].qw($stop->dateTimeString());
     $where = array_merge($where, $this->_limitationSet($export->limitation, $limitsOffset));
     // work out what view/pivot of the data we want to see
     if (count($export->limitation) > 1 && is_array($export->pivot)) {
@@ -434,7 +434,7 @@ class ActionExport extends BufferedAction {
   function _reportHeader() {
     $start = $this->_daterange->getStart();
     $stop  = $this->_daterange->getStop();
-    $s = sprintf($this->_export->description, $start->datestring, $stop->datestring);
+    $s = sprintf($this->_export->description, $start->dateString(), $stop->dateString());
     return $s;
   }  
 

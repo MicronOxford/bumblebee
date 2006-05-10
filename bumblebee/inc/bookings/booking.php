@@ -71,7 +71,7 @@ class Booking extends TimeSlot {
     $this->masqusername = $arr['masqusername'];
     $this->masqemail = $arr['masqemail'];
 
-    #echo "Booking from ".$this->start->datetimestring." to ".$this->stop->datetimestring."<br />\n";
+    #echo "Booking from ".$this->start->dateTimeString()." to ".$this->stop->dateTimeString()."<br />\n";
     $this->baseclass='booking';
   }
 
@@ -95,9 +95,9 @@ class Booking extends TimeSlot {
   */
   function displayInTable($cols, $displayAdmin, $displayOwner) {
     $t = '<tr><td>'.T_('Booking ID').'</td><td>'.$this->id.'</td></tr>'."\n"
-       . '<tr><td>'.T_('Start').'</td><td>'.$this->start->datetimestring.'</td></tr>'."\n"
-       . '<tr><td>'.T_('Stop').'</td><td>'.$this->stop->datetimestring.'</td></tr>'."\n"
-       . '<tr><td>'.T_('Duration').'</td><td>'.$this->duration->timestring/*.$bookinglength*/.'</td></tr>'."\n"
+       . '<tr><td>'.T_('Start').'</td><td>'.$this->start->dateTimeString().'</td></tr>'."\n"
+       . '<tr><td>'.T_('Stop').'</td><td>'.$this->stop->dateTimeString().'</td></tr>'."\n"
+       . '<tr><td>'.T_('Duration').'</td><td>'.$this->duration->timeString()/*.$bookinglength*/.'</td></tr>'."\n"
        . '<tr><td>'.T_('User').'</td><td><a href="mailto:'.$this->useremail.'">'.$this->name.'</a> ('.$this->username.')</td></tr>'."\n"
        . '<tr><td>'.T_('Comments').'</td><td>'.$this->comments.'</td></tr>'."\n"
        . '<tr><td>'.T_('Log').'</td><td>'.$this->log.'</td></tr>'."\n";
@@ -125,9 +125,9 @@ class Booking extends TimeSlot {
     global $BASEPATH;
     $start = isset($this->displayStart) ? $this->displayStart : $this->start;
     $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
-    $timedescription = sprintf(T_('View or edit booking from %s to %s'), $start->datetimestring, $stop->datetimestring);
-    //$timedescription = $this->start->timestring.' - '.$this->stop->timestring;
-    $isodate = $start->datestring;
+    $timedescription = sprintf(T_('View or edit booking from %s to %s'), $start->dateTimeString(), $stop->dateTimeString());
+    //$timedescription = $this->start->timeString().' - '.$this->stop->timeString();
+    $isodate = $start->dateString();
     $t = '';
     $t .= "<div style='float:right;'><a href='$this->href&amp;isodate=$isodate&amp;bookid=$this->id' "
               ."title='$timedescription' class='but'><img src='$BASEPATH/theme/images/editbooking.png' "
@@ -152,7 +152,7 @@ class Booking extends TimeSlot {
   function generateBookingTitle() {
     $start = isset($this->displayStart) ? $this->displayStart : $this->start;
     $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
-    return sprintf(T_('Booking from %s - %s'), $start->datetimestring, $stop->datetimestring);
+    return sprintf(T_('Booking from %s - %s'), $start->dateTimeString(), $stop->dateTimeString());
   }
 
 } //class Booking
