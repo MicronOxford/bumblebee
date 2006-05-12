@@ -51,17 +51,16 @@ if (($connection = mysql_pconnect($CONFIG['database']['dbhost'],
     && ($db = mysql_select_db($CONFIG['database']['dbname'], $connection)) ) {
   // then we successfully logged on to the database
 } else {
-  if ($NON_FATAL_DB) {
-    trigger_error($dberrmsg.($DB_CONNECT_DEBUG 
-                              ? mysql_error() 
-                                .'<br />Connected using parameters <pre>'
-                                .print_r($CONFIG['database'],true).'</pre>'
-                              : ''), E_USER_NOTICE);
-    return false;
-  } else {
-    die ($dberrmsg.($DB_CONNECT_DEBUG ? mysql_error() : ''));
+  $errcode = $NON_FATAL_DB ? E_USER_NOTICE : E_USER_ERROR;
+  $errmsg  = $dberrmsg;
+  if ($DB_CONNECT_DEBUG) {
+    $errmsg .= mysql_error() 
+              .'<br />Connected using parameters <pre>'
+              .print_r($CONFIG['database'],true).'</pre>';
   }
+  trigger_error($errmsg, $errcode);
 }
+
 /**
 * import SQL functions for database lookups
 */
