@@ -30,7 +30,7 @@ class ActionCosts extends ActionAction {
   /**
   * Initialising the class 
   * 
-  * @param  BumbleBeeAuth $auth  Authorisation object
+  * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
   */

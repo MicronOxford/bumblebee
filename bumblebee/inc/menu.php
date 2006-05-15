@@ -104,7 +104,7 @@ class UserMenu {
   
   /**
   * logged in user's credentials
-  * @var BumbleBeeAuth
+  * @var BumblebeeAuth
   */
   var $_auth;
   /**
@@ -115,7 +115,7 @@ class UserMenu {
   
   /**
   * Constructor
-  * @param BumbleBeeAuth $auth  user's credentials
+  * @param BumblebeeAuth $auth  user's credentials
   * @param string        $verb  current action
   */
   function UserMenu($auth, $verb) {

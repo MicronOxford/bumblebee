@@ -34,9 +34,9 @@ class ArrayExport {
   /** @var string  header for the report */
   var $header;
   /** @var string  report Author (report metadata) */
-  var $author = 'BumbleBee';
+  var $author = 'Bumblebee';
   /** @var string  report Creator (report metadata) */
-  var $creator = 'BumbleBee Instrument Management System : bumblebeeman.sf.net';
+  var $creator = 'Bumblebee Instrument Management System : bumblebeeman.sf.net';
   /** @var string  report Subject (report metadata) */
   var $subject = 'Instrument and consumable usage report';
   /** @var string  report Keywords (report metadata) */

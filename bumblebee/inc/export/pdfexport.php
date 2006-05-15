@@ -372,7 +372,7 @@ class BrandedPDF extends FPDF {
   
   function BrandedPDF($orientation, $measure, $format) {
     parent::FPDF($orientation, $measure, $format);
-    $this->title = T_('BumbleBee Report');
+    $this->title = T_('Bumblebee Report');
   }
     
   function Header() {

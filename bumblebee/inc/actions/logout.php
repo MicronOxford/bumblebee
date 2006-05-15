@@ -16,7 +16,7 @@ require_once 'inc/actions/actionaction.php';
 /**
 * Thank the user for using the system.
 *  
-* Destruction of login credentials is undertaken by the class BumbleBeeAuth
+* Destruction of login credentials is undertaken by the class BumblebeeAuth
 * @package    Bumblebee
 * @subpackage Actions
 */
@@ -25,7 +25,7 @@ class ActionLogout extends ActionAction {
   /**
   * Initialising the class 
   * 
-  * @param  BumbleBeeAuth $auth  Authorisation object
+  * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
   */

@@ -46,7 +46,9 @@ i18n:
   * day and month names not translated now not using LC_ALL/locale
   * HOWTO:
       ./update-translations.sh
-  
+
+  * reportbug script that includes phpinfo() etc
+
 * Later
 ------------
   * in-place booking (js mouse commands, DOM+js/ajax?)

@@ -48,7 +48,7 @@ require_once 'inc/statuscodes.php';
 class ActionAction {
   /**
   * Authorisation object
-  * @var    BumbleBeeAuth
+  * @var    BumblebeeAuth
   */
   var $auth;
   /**
@@ -88,7 +88,7 @@ class ActionAction {
   * - use parent's constructor
   * - parse input data 
   * 
-  * @param  BumbleBeeAuth $auth  Authorisation object
+  * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
   */

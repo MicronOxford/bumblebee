@@ -2,10 +2,10 @@
 /**
 * Footer HTML that is included on every page
 *  
-* this is only a sample implementation giving credit to the BumbleBee project and some
-* feedback on what BumbleBee has been managing.
+* this is only a sample implementation giving credit to the Bumblebee project and some
+* feedback on what Bumblebee has been managing.
 *
-* This is GPL'd software, so it is *not* a requirement that you give credit to BumbleBee,
+* This is GPL'd software, so it is *not* a requirement that you give credit to Bumblebee,
 * link to the site etc. In fact, this is in the theme/ directory to allow you to customise
 * it easily, without having to delve into the rest of the code.
 *
@@ -23,10 +23,10 @@ $stat = new SystemStats;
 
 print "<div id='bumblebeefooter'>";
 print "<p>";
-printf(T_('System managed by <a href="http://bumblebeeman.sf.net/">BumbleBee</a> version %s, released under the <a href="http://www.gnu.org/licenses/gpl.html">GNU GPL</a>.'),
+printf(T_('System managed by <a href="http://bumblebeeman.sf.net/">Bumblebee</a> version %s, released under the <a href="http://www.gnu.org/licenses/gpl.html">GNU GPL</a>.'),
             $BUMBLEBEEVERSION);
 print "<br />";
-printf(T_('This installation of BumbleBee currently manages %s users, %s projects, %s instruments and %s bookings'),
+printf(T_('This installation of Bumblebee currently manages %s users, %s projects, %s instruments and %s bookings'),
             $stat->get('users'), $stat->get('projects'), $stat->get('instruments'), $stat->get('bookings'));
 print "<br />";
 printf(T_('Email the <a href="mailto:%s">system administrator</a> for help.'), 

@@ -198,7 +198,7 @@ function check_postinst($data) {
     require_once 'inc/bb/auth.php';
     $_POST['username'] = $data['bbAdmin'];
     $_POST['pass']     = $data['bbAdminPass'];
-    $auth = @ new BumbleBeeAuth(true);
+    $auth = @ new BumblebeeAuth(true);
     if (! $auth->isLoggedIn()) {
       $auth->DEBUG=10;
       $s[] = "ERROR: Admin user cannot log in to Bumblebee with username and password supplied. Bumblebee said:"

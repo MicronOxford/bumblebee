@@ -29,7 +29,7 @@ require_once 'inc/logging.php';
 * @todo update permissions system
 * @todo documentation
 */
-class BumbleBeeAuth {
+class BumblebeeAuth {
   var $uid;    //user id from table
   var $username;
   var $name;
@@ -54,7 +54,7 @@ class BumbleBeeAuth {
   * @param string $table  (optional) db table from which login data should be taken
   * @global base path for installation
   */
-  function BumbleBeeAuth($recheck = false, $table='users') {
+  function BumblebeeAuth($recheck = false, $table='users') {
     global $BASEPATH;
     // Only start the session if one has not already been started (e.g. to cope
     // with the situation where session.auto_start=1 in php.ini or where
@@ -414,6 +414,6 @@ class BumbleBeeAuth {
     }
   }
   
-} //BumbleBeeAuth
+} //BumblebeeAuth
 
 ?> 

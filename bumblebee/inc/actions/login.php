@@ -16,7 +16,7 @@ require_once 'inc/actions/actionaction.php';
 /**
 * Print a polite login form
 *  
-* Authentication is undertaken by the class BumbleBeeAuth
+* Authentication is undertaken by the class BumblebeeAuth
 * @package    Bumblebee
 * @subpackage Actions
 */

@@ -81,7 +81,7 @@ class ActionFactory {
   var $title;
   /**  @var ActionAction   The action object (some descendent of the ActionAction class)   */
   var $_action;
-  /**  @var BumbleBeeAuth  The user's login credentials object  */
+  /**  @var BumblebeeAuth  The user's login credentials object  */
   var $_auth;
   /**  @var array          user-supplied data from the PATH_INFO and GET sections of the URL  */
   var $PDATA;
@@ -100,7 +100,7 @@ class ActionFactory {
   * - set up the title tag for the browser
   * - create the ActionAction descendent object that will perform the task
   *
-  * @param BumbleBeeAuth $auth  user login credentials object
+  * @param BumblebeeAuth $auth  user login credentials object
   */
   function ActionFactory($auth) {
     $this->_auth = $auth;
