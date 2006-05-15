@@ -7,7 +7,6 @@ Bugs:
 * double entry password in change passwd
 * ff1.5 autosaving passwd in user form; not showing username by default.
 * suppress autofill features on some forms?
-* return to calendar link broken after editing or deleting booking
 
 * custom info page on login screen (e.g. secured by...)
 
@@ -37,6 +36,8 @@ Features:
 
   * use fieldset and label to beautify forms
 
+  * combine instruments onto the one calendar in some way. even just a free/busy with name
+  
   * put all column names and table names in back ticks
   * change all boolean fields to !fieldname instead of fieldname = true
 
