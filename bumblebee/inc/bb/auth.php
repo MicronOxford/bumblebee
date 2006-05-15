@@ -65,7 +65,7 @@ class BumblebeeAuth {
     // empty string "" if it hasn't)
     if (! session_id()) {
       session_name('BumblebeeLogin');
-      session_set_cookie_params(ini_get('session.cookie_lifetime'), $BASEPATH);
+      session_set_cookie_params(ini_get('session.cookie_lifetime'), $BASEPATH.'/');
       session_start();
     }
     $this->table = $table;

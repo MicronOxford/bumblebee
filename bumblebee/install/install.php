@@ -79,11 +79,20 @@ function check_preinst($data) {
   // check kit: check that a Bumblebee installation can be found
   $REBASE_INSTALL = '..'.DIRECTORY_SEPARATOR;
   set_include_path($REBASE_INSTALL.PATH_SEPARATOR.get_include_path());
-  if (@ include 'inc/config.php') {
+  $NON_FATAL_CONFIG = true;
+  $php_errormsg = '';
+  if (@ include 'inc/config.php') {   // FIXME file moved for v1.2
     $s[] = "GOOD: Found installation of Bumblebee version $BUMBLEBEEVERSION.";
   } else {
-    $s[] = "ERROR: I couldn't find any evidence of a Bumblebee installation here. PHP said:<pre>\n$php_errormsg</pre>";
+    $s[] = "ERROR: I couldn't find any evidence of a Bumblebee installation here. PHP said:<blockquote>\n$php_errormsg</blockquote>";
     $error = true;
+  }
+  if ($php_errormsg !== '') {
+    $s[] = "ERROR: Configuration didn't load properly. "
+           ."Bumblebee said:<blockquote>\n$php_errormsg</blockquote>";
+    $error = true;
+  } else {
+    $s[] = "GOOD: Configuration loaded successfully";
   }
   // check kit: check that php-gettext can be found 
   if (! @ include 'php-gettext/gettext.inc') {
@@ -181,12 +190,22 @@ function check_postinst($data) {
   $s = array();
   $error = $warn = false;
   ini_set('track_errors', true);
-  // check that we can login to the db
+  // check that we can load the config correctly
   $REBASE_INSTALL = '..'.DIRECTORY_SEPARATOR;
+  $NON_FATAL_CONFIG = true;
+  $php_errormsg = '';
+  if ((! @ require 'inc/config.php') || $php_errormsg !== '') {
+    $s[] = "ERROR: Configuration didn't load properly. "
+           ."Bumblebee said:<blockquote>\n$php_errormsg</blockquote>";
+    $error = true;
+  } else {
+    $s[] = "GOOD: Configuration loaded successfully";
+  }
+  // check that we can login to the db
   $NON_FATAL_DB = true;
   $DB_CONNECT_DEBUG = true;
-  require 'inc/config.php'; 
-  if (! @ require_once 'inc/db.php') {
+  $php_errormsg = '';
+  if ((! @ require_once 'inc/db.php') || $php_errormsg !== '') {
     $s[] = "ERROR: Unable to connect to database. "
            ."PHP said:<blockquote>\n$php_errormsg</blockquote>";
     $error = true;
@@ -561,14 +580,15 @@ function printUserData($values, $extradata) {
   </fieldset>
   <fieldset id='dbini'>
     <legend>Config file generation</legend>
-    Bumblebee needs to know what username and password to use for connecting to your database
+    Bumblebee needs to know what username and password to use for connecting to your database.
     Download the <code>db.ini</code> file (which will contain the values specified above)
     and save it into your Bumblebee installation on the webserver as <code>config/db.ini</code>.<br />
     <input type='submit' name='submitini' value='Generate db.ini file' />
   </fieldset>
   <fieldset id='test'>
     <legend>Test installation</legend>
-    Once you have setup the database and given Bumblebee its <code>db.ini</code> file, you might
+    Once you have setup the database, given Bumblebee its <code>db.ini</code> file and customised your
+    <code>bumblebee.ini</code> file, you might
     like to test your installion to make sure that it's all looking good.<br />
     <input type='submit' name='submitpostinst' value='Run post-install check' />
   </fieldset>

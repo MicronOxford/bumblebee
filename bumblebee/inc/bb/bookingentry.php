@@ -222,10 +222,14 @@ class BookingEntry extends DBRow {
 
   /** 
   * override the default fill() method with a custom one that allows us to...
+  * - work out what the startticks parameter is for generating links to the current calendar
   * - check permissions on whether we should be allowed to change the dates
   */
   function fill() {
     parent::fill();
+    if (isset($this->fields['startticks']) && ! $this->fields['startticks']->value) {
+      $this->fields['startticks']->value = $this->fields['bookwhen']->getValue();
+    }
     // check whether we are allowed to modify time fields: this picks up existing objects immediately
     $this->_checkMinNotice();
   }
