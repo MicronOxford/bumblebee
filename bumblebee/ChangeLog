@@ -4,6 +4,8 @@
 	* only calculate string representations of dates and times when required and 
 	  cache result (gave 6% improvement in page load time for monthly calendar)
 	* s/BumbleBee/Bumblebee/ for consistency across project
+	* change booking matrix calculation to cache results and from O(n2) to O(n)
+    (gave 30% improvement in page load time for monthly calendar)
 
 2006-04-11 Stuart Prescott <stuart.prescott@bristol.ac.uk>
 	* added flat file logging function 

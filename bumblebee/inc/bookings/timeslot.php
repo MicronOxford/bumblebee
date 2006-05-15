@@ -24,6 +24,10 @@ class TimeSlot {
   var $start;             
   /** @var SimpleDate   end of the slot as used for calculating graphical representation  */
   var $stop;              
+  /** @var SimpleDate   date the start is on (i.e. $start with time of 00:00:00)   */
+  var $_dayStart = NULL;
+  /** @var SimpleDate   date the end is on (i.e. $stop with time of 00:00:00)  */
+  var $_dayStop = NULL;
   /** @var SimpleTime   unused?  */
   var $duration;      
   /** @var string       href to current page */
@@ -88,6 +92,28 @@ class TimeSlot {
             .'</td><td>'.(is_object($this->displayStop)  ? $this->displayStop->dateTimeString()  : 'NULL')
             .'</td><td>'.$this->isStart
             .'</td></tr>'."\n";
+  }
+
+  function dayStart() {
+    if ($this->_dayStart !== NULL) {
+      #echo "start hit ";
+      return $this->_dayStart;
+    }
+      #echo "start miss ";
+    $this->_dayStart = $this->start;
+    $this->_dayStart->dayRound();
+    return $this->_dayStart;
+  }
+
+  function dayStop() {
+    if ($this->_dayStop !== NULL) {
+      #echo "stop hit ";
+      return $this->_dayStop;
+    }
+      #echo "stop miss ";
+    $this->_dayStop = $this->stop;
+    $this->_dayStop->dayRound();
+    return $this->_dayStop;
   }
 
 } //class TimeSlot

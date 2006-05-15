@@ -251,8 +251,8 @@ class Calendar {
         $slotrule = $list->findNextSlot($bl[$bv]->start);
       }
       do {  //until the current booking has been broken up across list boundaries
-        $this->timelog('bookingo', $bl[$bv]);
-        $this->timelog('timeslot', $slotrule);
+        $this->slotlog('bookingo', $bl[$bv]);
+        $this->slotlog('timeslot', $slotrule);
         // push the new booking onto the stack; record if it's the start of a booking or not
         $this->bookinglist[$booking] = $cbook;
         $realStart = isset($this->bookinglist[$booking]->displayStart) ? $this->bookinglist[$booking]->displayStart : $this->bookinglist[$booking]->start;
@@ -322,13 +322,13 @@ class Calendar {
         // to chop up the next booking)
         $nextslotrule = $list->findNextSlot($slotrule->start);
         $isStart = $next_isStart;
-        $this->timelog('displayv',$this->bookinglist[$booking], true);
-        $this->timelog('realvalu',$this->bookinglist[$booking]);
+        $this->slotlog('displayv',$this->bookinglist[$booking], true);
+        $this->slotlog('realvalu',$this->bookinglist[$booking]);
         $slotrule = $nextslotrule;
         $booking++;
         //$this->log('oticks='.$this->bookinglist[$booking-1]->original->stop->ticks
         //           .'nticks='.$slotrule->start->ticks,10);
-        $this->log('nextstart='.$slotrule->start->dateTimeString(),10);
+        $this->timelog('nextstart=',$slotrule->start);
         //var_dump($this->bookinglist[$booking-1]->original);
         //$this->log('ost='.$this->bookinglist[$booking-1]->original->stop->ticks,10);
         //$this->log('tst='.$slotrule->start->ticks,10);
@@ -342,13 +342,14 @@ class Calendar {
   */
   function _collectMatrix($daystart, $daystop, $granularity) {
     $matrixlist = array();
+    // matrix calculation object is shared from day to day which permits caching of data
+    $matrix = new BookingMatrix($daystart, $daystop, $granularity, $this->bookinglist);
     for ($day = 0; $day < $this->numDays; $day++) {
       $today = $this->start;
       $today->addDays($day);
-      $matrix = new BookingMatrix($daystart, $daystop, $today, 
-                                        $granularity, $this->bookinglist);
+      $matrix->setDate($today);
       $matrix->prepareMatrix();
-      $matrixlist[] = $matrix;
+      $matrixlist[] = $matrix->getMatrix();
     }
     return $matrixlist;
   }
@@ -474,10 +475,10 @@ class Calendar {
         // using date-time functions. (add a small qty to the value so that floor doesn't
         // round down to the next integer below due to fp precision)
         $currentidx = floor($row / $numRowsPerDay + 0.05) * 7 + $day;
-        if (isset($matrix[$currentidx]->rows[$dayRow])) {
+        if (isset($matrix[$currentidx][$dayRow])) {
           #$t .= '<td>';
           #preDump($matrix[$currentidx]->rows[$dayRow]);
-          $b =& $matrix[$currentidx]->rows[$dayRow];
+          $b =& $matrix[$currentidx][$dayRow];
           $class = $this->_getDayClass($today, $b->booking->start);
           $class .= ($b->booking->isDisabled ? ' disabled' : '');
           //echo "$class <br />\n";
@@ -541,10 +542,10 @@ class Calendar {
         $t .= $timecolumn[$row]->timeString();
         $t .= '</td>';
       }
-      if (isset($matrix[0]->rows[$row])) {
+      if (isset($matrix[0][$row])) {
         #$t .= '<td>';
         #preDump($matrix[$currentidx]->rows[$dayRow]);
-        $b =& $matrix[0]->rows[$row];
+        $b =& $matrix[0][$row];
         $class = $this->_getDayClass($today, $b->booking->start);
         $t .= "\n\t".$b->display($class, $this->href, $this->isAdminView)."\n";
         #$t .= '</td>';
@@ -578,9 +579,14 @@ class Calendar {
   *
   * The higher $prio, the more verbose (in the debugging sense) the output.
   */
-  function timelog ($string, $slot, $display=false) {
+  function slotlog ($string, $slot, $display=false) {
     // Efficiency would suggest that &$slot would be better here, but bugs in PHP mean that we can't do that
     // see http://bugs.php.net/bug.php?id=24485 and http://bugs.php.net/bug.php?id=30787
+
+    // short circuit the evaluation here -- if there's no logging going to be done then 
+    // we don't want to make expensive dateTimeString() calls.
+    if ($this->DEBUG < 10) return;
+
     if ($display) {
       $this->log($string.':start='.$slot->displayStart->dateTimeString() 
             .' '.$string.':stop='.$slot->displayStop->dateTimeString(), 10);
@@ -588,6 +594,25 @@ class Calendar {
       $this->log($string.':start='.$slot->start->dateTimeString() 
             .' '.$string.':stop='.$slot->stop->dateTimeString(), 10);
     }
+  }
+  
+  /** 
+  * time logging function 
+  *
+  * @param string $string  prefix to text to be logged
+  * @param SimpleDate $slot    the time to be logged
+  *
+  * The higher $prio, the more verbose (in the debugging sense) the output.
+  */
+  function timelog ($string, $time) {
+    // Efficiency would suggest that &$time would be better here, but bugs in PHP mean that we can't do that
+    // see http://bugs.php.net/bug.php?id=24485 and http://bugs.php.net/bug.php?id=30787
+    
+    // short circuit the evaluation here -- if there's no logging going to be done then 
+    // we don't want to make expensive dateTimeString() calls.
+    if ($this->DEBUG < 10) return;
+    
+    $this->log($string.' '.$time->dateTimeString(), 10);
   }
 
     
