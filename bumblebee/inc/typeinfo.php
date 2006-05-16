@@ -34,8 +34,8 @@ function issetSet(&$a, $k, $default=NULL) {
 function preDump($v) {
   #echo "<pre>".print_r($v,1)."</pre>\n";
   echo '<pre>';
-  #var_dump($v);
-  print_r($v);
+  var_dump($v);
+  #print_r($v);
   echo '</pre>'."\n";
 }
 

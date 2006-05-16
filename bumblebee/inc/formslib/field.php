@@ -63,7 +63,7 @@ class Field {
   /** @var boolean  permit NULL values in this field */
   var $useNullValues = 0;
   /** @var array    display attributes */
-  var $attr;
+  var $attr = array();
   /** @var string   CSS class to be used for marking fields with errors */
   var $errorclass = 'error';
   /** @var string   prepended to the name of the field in the html id and hence in the data array */
