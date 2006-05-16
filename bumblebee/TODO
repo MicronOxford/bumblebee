@@ -22,6 +22,7 @@ Bugs:
 
 * 1.2 series
 ------------
+  * upgrade howto upgrade.php?
 Features:
   * heirarchical+fine-grained permission system 
   * longer bookings
@@ -30,7 +31,6 @@ Features:
   * internationalisation
   * bring email templates into the database
   * limit certain users to specific ranges of time on a particular instrument (Gordon Holtslander)
-  * split .sql file into admin and non-admin portion?
 
   * option to run the sql code given the username and password of the sql user
 
@@ -47,6 +47,7 @@ i18n:
   * day and month names not translated now not using LC_ALL/locale
   * HOWTO:
       ./update-translations.sh
+      php-gettext: gettext.inc: $enable_cache=false  CachedFileReader
 
   * reportbug script that includes phpinfo() etc
 

@@ -126,6 +126,7 @@ class ActionListing {
     $this->_initialise();
   }
 
+  /** @todo: conditionally initialise these -- at least limit the number of extraneous T_() calls for non admin users */
   function _populate() {
     $this->actions[] = new ActionData('ActionUnknown', 'unknownaction.php', 
         'unknown',    T_('Oops! I cannot do that!'), T_('Unknown'), BBPERM_USER_ALL, -1);

@@ -69,8 +69,8 @@ class User extends DBRow {
     if (! $passwdOnly) {
       $f = new CheckBox('suspended', T_('Suspended'));
       $this->addElement($f);
-      #$f = new CheckBox('isadmin', T_('System Administrator'));
-      #$this->addElement($f);
+      $f = new CheckBox('isadmin', T_('System Administrator'));
+      $this->addElement($f);
       
       //// @FIXME: bitmask control
 /*      $f = new BitmaskPopup('perms', T_('User Permissions'), T_('Permissions'), T_('Perms'));
