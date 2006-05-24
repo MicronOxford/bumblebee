@@ -243,9 +243,10 @@ class ChoiceList extends Field {
     // but that causes $this->list to suddenly become a reference: Object not &Object (see a var_dump)
     // see http://bugs.php.net/bug.php?id=24485 and http://bugs.php.net/bug.php?id=30787
     // Note that PHP 4.4.x claims to have fixed this bug. (although 4.4.0 does not)
-    $templist = $this->list;
+/*    $templist = $this->list;
     $templist->prepend($a);
-    $this->list = $templist;
+    $this->list = $templist;*/
+    $this->list->prepend($a);
   }
 
   /**
@@ -257,9 +258,10 @@ class ChoiceList extends Field {
     // templist is a horrible hack around a PHP 4.3 bug, see above
     // This is all we want to do:
     //    $this->list->append($a);
-    $templist = $this->list;
+/*    $templist = $this->list;
     $templist->append($a);
-    $this->list = $templist;
+    $this->list = $templist;*/
+    $this->list->append($a);
   }
 
   /**
@@ -268,16 +270,28 @@ class ChoiceList extends Field {
   function setDefault($val) {
     // templist is a horrible hack around a PHP 4.3 bug, see above
     // This is all we want to do:
-    //    $this->list->append($a);
+    //    $this->list->setDefault($val);
     $this->defaultValue = $val;
-    $templist = $this->list;
+/*    $templist = $this->list;
     $templist->setDefault($val);
-    $this->list = $templist;
+    $this->list = $templist;*/
+    $this->list->setDefault($val);
   }
 
   function getValue() {
     return (isset($this->value) ? $this->value : $this->defaultValue);
   }
+
+  /**
+  * PHP5 clone method
+  *
+  * PHP5 clone statement will perform only a shallow copy of the object. Any subobjects must also be cloned
+  */
+  function __clone() {
+    // Force a copy of contents of $this->list 
+    if (is_object($this->list)) $this->list = clone($this->list);
+  }
+
 
 } // class ChoiceList
 

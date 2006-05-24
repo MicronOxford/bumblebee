@@ -90,7 +90,7 @@ class ActionFactory {
   /**  @var array          ActionListing object  */
   var $actionListing;
   /**  @var ActionData     The action data object for this action  */
-  var $_action;
+  var $_actionData;
   
   /** 
   * Constructor for the class

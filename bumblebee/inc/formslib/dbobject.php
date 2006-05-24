@@ -143,6 +143,25 @@ class DBO {
     }
   }
 
+  /**
+  * PHP5 clone method
+  *
+  * PHP5 clone statement will perform only a shallow copy of the object. Any subobjects must also be cloned
+  */
+  function __clone() {
+   // print "send in the clones! I'm cloning a ".get_class($this);
+    //preDump($this->fields);
+    // Force a copy of contents of $this->fields array, otherwise the fields will only be references
+    $fields = $this->fields;
+    $this->fields = array();
+    foreach ($fields as $k => $f) { 
+      //print "cloning $k<br />";
+      $this->fields[$k] = clone($f);
+    }
+    //print "done cloning";
+  }
+
+
 } // class dbo
 
 ?> 

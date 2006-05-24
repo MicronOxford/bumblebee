@@ -107,17 +107,20 @@ class ActionExport extends BufferedAction {
       $this->_daterange->reflectData = 0;
       $this->_daterange->includeSubmitButton = 0;
       if ($this->_daterange->newObject || !$this->_daterange->isValid) {
+        #echo "don't have date range <br />";
         $allDataOK = false;
         $this->unbuffer();
         $this->_daterange->setDefaults(DR_PREVIOUS, DR_QUARTER);
         echo $this->_daterange->display($this->PD);
       } 
       if (! isset($this->format)) {
+        #echo "don't have format<br />";
         $allDataOK = false;
         $this->unbuffer();
         $this->formatSelect();
       }
       if (! isset($this->PD['limitationselected'])) {
+        #echo "don't have instruments <br />";
         $allDataOK = false;
         $this->unbuffer();
         $this->outputSelect();
@@ -295,7 +298,7 @@ class ActionExport extends BufferedAction {
   function _getDataList($report) {
     $this->_export = $this->typelist->types[$report];
     $start = $this->_daterange->getStart();
-    $stop  = $this->_daterange->getStop();
+    $stop  = clone($this->_daterange->getStop());
     $stop->addDays(1);
 
     if (is_array($this->_export->union) && count($this->_export->union)) {
@@ -434,7 +437,7 @@ class ActionExport extends BufferedAction {
   function _reportHeader() {
     $start = $this->_daterange->getStart();
     $stop  = $this->_daterange->getStop();
-    $s = sprintf($this->_export->description, $start->dateString(), $stop->dateString());
+    $s = sprintf($this->_export->header, $start->dateString(), $stop->dateString());
     return $s;
   }  
 

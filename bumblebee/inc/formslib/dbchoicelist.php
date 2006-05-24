@@ -93,6 +93,7 @@ class DBChoiceList extends DBO {
   */
   function DBChoiceList($table, $fields='', $restriction='',
                   $order='', $idfield='id', $limit='', $join='', $distinct=false, $deleted=NULL) {
+    #$this->DEBUG=10;
     $this->DBO($table, '', $idfield);
     $this->fields = (is_array($fields) ? $fields : array($fields));
     $this->restriction = $restriction;
@@ -178,8 +179,19 @@ class DBChoiceList extends DBO {
     for ($i=0; $i < count($values); $i++) {
       $a[$this->fields[$i]] = $values[$i];
     }
-    $a['_field'] = $field;
+    $a['_field'] = is_object($field) ? clone($field) : $field;
     return $a;
+  }
+
+  /**
+   * Clone the array field structure
+   * @param array $a field structure array (see _mkaddedarray())
+   * @return array clone of $a
+   */
+  function _addedclone($a) {
+    $b = $a;
+    $b['_field'] = is_object($a['_field']) ? clone($a['_field']) : $a['_field'];
+    return $b;
   }
 
   /**
@@ -220,11 +232,11 @@ class DBChoiceList extends DBO {
   * future reference
   */
   function _append($fa) {
-    array_push($this->choicelist, $fa);
+    array_push($this->choicelist, $this->_addedclone($fa));
   }
 
   function _prepend($fa) {
-    array_unshift($this->choicelist, $fa);
+    array_unshift($this->choicelist, $this->_addedclone($fa));
   }
 
   /**
@@ -289,7 +301,7 @@ class DBChoiceList extends DBO {
         $this->id = -1;
         foreach ($this->choicelist as $k => $v) {
           //preDump($v);
-          if (isset($v['_field']) && $v['_field'] != "") {
+          if (isset($v['_field']) && is_object($v['_field'])) {
             $this->choicelist[$k]['_field']->update($data);
             $this->isValid += $this->choicelist[$k]['_field']->isValid();
           }
@@ -322,7 +334,7 @@ class DBChoiceList extends DBO {
   * 
   * This also creates the true value for this field if it is undefined
   * @return code from statuscodes
-  8 @global string prefix for SQL table names
+  * @global string prefix for SQL table names
   */
   function sync() {
     global $TABLEPREFIX;
@@ -397,6 +409,29 @@ class DBChoiceList extends DBO {
       $this->id = $val;
     }
   }
+
+  /**
+  * PHP5 clone method
+  *
+  * PHP5 clone statement will perform only a shallow copy of the object. Any subobjects must also be cloned
+  */
+  function __clone() {
+    //print "send in the clones! I'm cloning a ".get_class($this);
+    //preDump(debug_backtrace());
+    //preDump($this->appendedfields);
+    //preDump($this->prependedfields);
+    // Force a copy of contents of $this->fields array, otherwise the fields will only be references
+    foreach ($this->appendedfields as $k => $f) { 
+      //print "cloning $k<br />";
+      if (is_object($f['_field'])) $this->appendedfields[$k]['_field'] = clone($f['_field']);
+    }
+    foreach ($this->prependedfields as $k => $f) { 
+      //print "cloning $k<br />";
+      if (is_object($f['_field'])) $this->prependedfields[$k]['_field'] = clone($f['_field']);
+    }
+    //print "done cloning";
+  }
+
 
 } // class DBChoiceList
 

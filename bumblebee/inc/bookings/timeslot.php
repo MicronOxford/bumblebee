@@ -100,7 +100,7 @@ class TimeSlot {
       return $this->_dayStart;
     }
       #echo "start miss ";
-    $this->_dayStart = $this->start;
+    $this->_dayStart = clone($this->start);
     $this->_dayStart->dayRound();
     return $this->_dayStart;
   }
@@ -111,7 +111,7 @@ class TimeSlot {
       return $this->_dayStop;
     }
       #echo "stop miss ";
-    $this->_dayStop = $this->stop;
+    $this->_dayStop = clone($this->stop);
     $this->_dayStop->dayRound();
     return $this->_dayStop;
   }

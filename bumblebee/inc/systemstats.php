@@ -55,4 +55,22 @@ class SystemStats {
     return $this->stats[$table];
   }
 }
+
+/**
+* @return string name of the server software
+*/
+function webserver_get_name() {
+  return substr($_SERVER['SERVER_SOFTWARE'], 0, strpos($_SERVER['SERVER_SOFTWARE'], '/'));
+}
+
+/**
+* @return string version of the server software
+*/
+function webserver_get_version() {
+  $slash   = strpos($_SERVER['SERVER_SOFTWARE'], '/');
+  $version = substr($_SERVER['SERVER_SOFTWARE'], $slash+1);
+  $space   = strpos($version, ' ');
+  if ($space !== false) $version = substr($version, 0, $space);
+  return $version;
+}
 ?>

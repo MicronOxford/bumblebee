@@ -148,7 +148,7 @@ class JoinData extends Field {
   * @param integer  $rowNum   number of this row (used as unique identifier in the namebase)
   */
   function _createRow($rowNum) {
-    $this->rows[$rowNum] = $this->protoRow;
+    $this->rows[$rowNum] = clone($this->protoRow);
     $this->rows[$rowNum]->setNamebase($this->name.'-'.$rowNum.'-');
   }
 
@@ -175,6 +175,7 @@ class JoinData extends Field {
       $this->rows[$i]->insertRow = ! ($this->rows[$i]->fields[$this->jtRightIDCol]->value > 0);
       $this->log('This row flagged with insertRow '.$this->rows[$i]->insertRow);
     }
+    //preDump($this->rows);
   }
   
   function display() {

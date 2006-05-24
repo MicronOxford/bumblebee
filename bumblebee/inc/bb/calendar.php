@@ -91,6 +91,7 @@ class Calendar {
     $this->log('Creating calendar from '.$start->dateString().' to '.$stop->dateString(), 5);
     $this->_fill();
     $this->_insertVacancies();
+    //print $this->displayAsTable();
   }
 
   /**
@@ -118,7 +119,8 @@ class Calendar {
     //break bookings over the predefined pictures
     $this->log('Breaking up bookings according to defined rules');
     $this->_breakAccordingToList($this->timeslots, CAL_TIME_SLOTRULE, CAL_TIME_SLOTRULE);
-  }
+    //print $this->displayAsTable();
+ }
 
   /**
   * Obtain the booking data for this time period
@@ -161,20 +163,20 @@ class Calendar {
         
     // put a vacancy at the end so we don't run off the end of the list.
     $v = new Vacancy();
-    $v->setTimes($this->stop,$this->stop);
+    $v->setTimes(clone($this->stop),clone($this->stop));
     $bookings[] = $v;
     
     //insert a vacancy between each non-consecutive booking
     $bvlist = array();
     $booking = 0;
-    $now = $this->start;
+    $now = clone($this->start);
     $this->log('Normalising bookings');    
     while ($now->ticks < $this->stop->ticks) {
       if ($now->ticks < $bookings[$booking]->start->ticks) {
         // then we should create a pseudobooking
         $v = new Vacancy();
         $stoptime = new SimpleDate($bookings[$booking]->start->ticks);
-        $v->setTimes($now, $stoptime);
+        $v->setTimes(clone($now), clone($stoptime));
         $bvlist[] = $v;
         $now = $stoptime;
         $this->log('Created vacancy: '.$v->start->dateTimeString()
@@ -242,11 +244,11 @@ class Calendar {
 /*      $this->log('considering timeslot #'.$bv.': '
                       .$bl[$bv]->start->dateTimeString().' - '.$bl[$bv]->stop->dateTimeString(), 8);*/
       $cbook = $bl[$bv];
-      $cbook->original = $cbook;
+      $cbook->original = clone($cbook);
       $isStart = START_BOOKING;
       $slotrule = $list->findSlotFromWithin($bl[$bv]->start);  
       #$start = $list->findSlotStart($bl[$bv]->start);
-      if ($slotrule == 0) {
+      if (!is_object($slotrule) && $slotrule == 0) {
         // then the original start time must be outside the proper limits
         $slotrule = $list->findNextSlot($bl[$bv]->start);
       }
@@ -254,26 +256,26 @@ class Calendar {
         $this->slotlog('bookingo', $bl[$bv]);
         $this->slotlog('timeslot', $slotrule);
         // push the new booking onto the stack; record if it's the start of a booking or not
-        $this->bookinglist[$booking] = $cbook;
+        $this->bookinglist[$booking] = clone($cbook);
         $realStart = isset($this->bookinglist[$booking]->displayStart) ? $this->bookinglist[$booking]->displayStart : $this->bookinglist[$booking]->start;
         if ($isStart == MIDDLE_BOOKING && $slotrule->start->dow() != $realStart->dow()) {
           $this->bookinglist[$booking]->isStart |= START_BOOKING_DAY;
         }
         $next_isStart = MIDDLE_BOOKING;
         
-        $newstart = $this->bookinglist[$booking]->start;
+        $newstart = clone($this->bookinglist[$booking]->start);
         $newstart->max($slotrule->start);
-        $newstop = $this->bookinglist[$booking]->stop;
+        $newstop = clone($this->bookinglist[$booking]->stop);
         $newstop->min($slotrule->stop);
         
         if (! $this->bookinglist[$booking]->isVacant) {
           switch ($keepTimesBook) {
             case CAL_TIME_SLOTRULE:   // for bookings
               if ($this->bookinglist[$booking]->arb_start) {
-                $newstart = $this->bookinglist[$booking]->start;
+                $newstart = clone($this->bookinglist[$booking]->start);
               }
               if ($this->bookinglist[$booking]->arb_stop) {
-                $newstop = $this->bookinglist[$booking]->stop;
+                $newstop = clone($this->bookinglist[$booking]->stop);
               }
               $this->bookinglist[$booking]->displayStart = $this->bookinglist[$booking]->original->start;
               $this->bookinglist[$booking]->displayStop  = $this->bookinglist[$booking]->original->stop;
@@ -295,10 +297,10 @@ class Calendar {
           switch ($keepTimesVacant) {
             case CAL_TIME_SLOTRULE:  // for vacancies
               if ($this->bookinglist[$booking]->arb_start) {
-                $newstart = $slotrule->start;
+                $newstart = clone($slotrule->start);
               }
               if ($this->bookinglist[$booking]->arb_stop) {
-                $newstop = $slotrule->stop;
+                $newstop = clone($slotrule->stop);
               }
               $this->bookinglist[$booking]->start = $newstart;
               $this->bookinglist[$booking]->stop  = $newstop;
@@ -343,9 +345,9 @@ class Calendar {
   function _collectMatrix($daystart, $daystop, $granularity) {
     $matrixlist = array();
     // matrix calculation object is shared from day to day which permits caching of data
-    $matrix = new BookingMatrix($daystart, $daystop, $granularity, $this->bookinglist);
+    $matrix = new BookingMatrix(clone($daystart), clone($daystop), $granularity, $this->bookinglist);
     for ($day = 0; $day < $this->numDays; $day++) {
-      $today = $this->start;
+      $today = clone($this->start);
       $today->addDays($day);
       $matrix->setDate($today);
       $matrix->prepareMatrix();
@@ -411,20 +413,20 @@ class Calendar {
    
     #report the time in a time column on the LHS every nth row:
     $timecolumn = array();
-    $time = $daystart;
+    $time = clone($daystart);
     for ($row=0; $row<$numRowsPerDay; $row++) {
-      $timecolumn[$row] = $time;
+      $timecolumn[$row] = clone($time);
       $time->addSecs($granularity);
     }
 
     $today = new SimpleDate(time());
     
     $t = '<table class="tabularobject calendar">';
-    $weekstart = $this->start;
+    $weekstart = clone($this->start);
     $weekstart->addDays(-7);
     $t .= '<tr><th colspan="2"></th>';
     for ($day=0; $day<7; $day++) {
-      $current = $weekstart;
+      $current = clone($weekstart);
       $current->addDays($day);
       $t .= '<th class="caldow">'.date('D', $current->ticks).'</th>';
     }
@@ -435,7 +437,7 @@ class Calendar {
         $weekstart->addDays(7);
         $t .= '<tr><td colspan="2"></td>';
         for ($day=0; $day<7; $day++) {
-          $current = $weekstart;
+          $current = clone($weekstart);
           $current->addDays($day);
           $isodate = $current->dateString();
           $class = $this->_getDayClass($today, $current);
@@ -468,7 +470,7 @@ class Calendar {
         $t .= '</td>';
       }
       for ($day=0; $day<7; $day++) {
-        $current = $weekstart;
+        $current = clone($weekstart);
         $current->addDays($day);
         #$currentidx = $current->dsDaysBetween($this->start); 
         // calculate the day number directly from the cell information rather than
@@ -514,7 +516,7 @@ class Calendar {
     $timecolumn = array();
     $time = $daystart;
     for ($row=0; $row<$numRowsPerDay; $row++) {
-      $timecolumn[$row] = $time;
+      $timecolumn[$row] = clone($time);
       $time->addSecs($granularity);
     }
 

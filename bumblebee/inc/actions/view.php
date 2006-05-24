@@ -171,7 +171,7 @@ class ActionView extends ActionAction {
     $offset = issetSet($this->PD, 'caloffset');
     $now = new SimpleDate(time());
     $now->dayRound();
-    $start = $now;
+    $start = clone($now);
     $start->addDays($offset);
     
     // check to see if this is an allowable calendar view (not too far into the future)
@@ -183,7 +183,7 @@ class ActionView extends ActionAction {
     $this->_checkBookingAuth(-1);
     if ($totaloffset > $row['calfuture'] && !$this->_isAdminView) {
       #echo "Found total offset of $totaloffset, but only ".$row['calfuture']." is permitted. ";
-      $start = $now;
+      $start = clone($now);
       $offset = $row['calfuture'] - $callength + 7*$row['calhistory'] + 7;
       $start->addDays($offset);
       #echo $start->dateTimeString();
@@ -193,7 +193,7 @@ class ActionView extends ActionAction {
     $day = $start->dow(); // the day of the week, 0=Sun, 6=Sat
     $start->addDays(1-7*$row['calhistory']-$day);
         
-    $stop = $start;
+    $stop = clone($start);
     $stop->addDays($callength);
     
     $cal = new Calendar($start, $stop, $this->PD['instrid']);
@@ -259,7 +259,7 @@ class ActionView extends ActionAction {
       #echo "Changing offset by $delta\n";
       $start->addDays($delta);
     }
-    $stop = $start;
+    $stop = clone($start);
     $stop->addDays(1);
     $cal = new Calendar($start, $stop, $this->PD['instrid']);
     $cal->setTimeSlotPicture($row['timeslotpicture']);

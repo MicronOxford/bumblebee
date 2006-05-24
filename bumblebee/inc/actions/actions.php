@@ -185,7 +185,7 @@ class ActionListing {
     foreach ($actions as $action) {
       $this->actions[$action->name()] = $action;
     }
-    $this->actions[''] = $this->actions[$this->default_action];
+    $this->actions[''] = clone($this->actions[$this->default_action]);
     $this->actions['']->menu_visible = false;
   }
   

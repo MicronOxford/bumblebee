@@ -26,9 +26,19 @@ print "<p>";
 printf(T_('System managed by <a href="http://bumblebeeman.sf.net/">Bumblebee</a> version %s, released under the <a href="http://www.gnu.org/licenses/gpl.html">GNU GPL</a>.'),
             $BUMBLEBEEVERSION);
 print "<br />";
-printf(T_('This installation of Bumblebee currently manages %s users, %s projects, %s instruments and %s bookings'),
+printf(T_('This installation of Bumblebee currently manages %s users, %s projects, %s instruments and %s bookings.'),
             $stat->get('users'), $stat->get('projects'), $stat->get('instruments'), $stat->get('bookings'));
 print "<br />";
+
+if ($CONFIG['display']['server_signature']) {
+  printf(T_('Running under %s (%s), %s (%s), PHP (%s, %s mode) with %s (%s).'),
+              php_uname('s'), php_uname('r'), 
+              webserver_get_name(), webserver_get_version(), 
+              phpversion(), PHP_SAPI, 
+              db_get_name(), db_get_version());
+  print "<br />";
+}
+
 printf(T_('Email the <a href="mailto:%s">system administrator</a> for help.'), 
             $ADMINEMAIL);
 print "</p>";

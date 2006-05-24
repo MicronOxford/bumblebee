@@ -1,3 +1,6 @@
+2006-05-24 Stuart Prescott <bumblebee@nanonanonano.net>
+	* major changes to give PHP5 compatability to the code.
+
 2006-05-09 Stuart Prescott <bumblebee@nanonanonano.net>
 	* benchmark date functions and improve SimpleDate->setTime() 
 	  (gave 18% improvement in page load time for monthly calendar)

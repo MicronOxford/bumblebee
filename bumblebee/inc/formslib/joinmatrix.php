@@ -198,7 +198,7 @@ class JoinMatrix extends Field {
   * @param integer  $rowNum   number of this row (used as unique identifier in the namebase)
   */
   function _createRow($rowNum) {
-    $this->rows[$rowNum] = $this->protoRow;
+    $this->rows[$rowNum] = clone($this->protoRow);
     $this->rows[$rowNum]->setNamebase($this->name.'-'.$rowNum.'-');
   }
 

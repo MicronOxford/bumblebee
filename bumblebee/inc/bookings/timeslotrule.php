@@ -155,11 +155,11 @@ class TimeSlotRule {
           #echo "Trying to interpolate timeslots\n";
           $tgran = new SimpleTime($tstop->subtract($tstart)/$numslots);
           $siblingSlot=1;
-          for ($time = $tstart; $time->ticks < $tstop->ticks; $time->addTime($tgran)) {
-            #echo $time->timeString().' '. $tstop->timeString().' '.$tgran->timeString()."\n";
-            $sstop = $time;
+          for ($time = clone($tstart); $time->ticks < $tstop->ticks; $time->addTime($tgran)) {
+            //echo $time->timeString().' '. $tstop->timeString().' '.$tgran->timeString()."<br />\n";
+            $sstop = clone($time);
             $sstop->addTime($tgran);
-            $this->slots[$dow][$i] = new RuleSlot($slot, $start, $stop, $time, $sstop, $tgran);
+            $this->slots[$dow][$i] = new RuleSlot($slot, $start, $stop, clone($time), $sstop, $tgran);
             $this->slots[$dow][$i]->numslotsInGroup = 1;
             $this->slots[$dow][$i]->numslotsFollowing = $numslots - $siblingSlot;
             $this->slots[$dow][$i]->comment = $comment;
@@ -204,7 +204,7 @@ class TimeSlotRule {
    * to this object's slot rules.
    */
   function isValidStop($date) {
-    $startday = $date;
+    $startday = clone($date);
     $startday->dayRound();
     //echo "$startday->dateTimeString() =? $date->dateTimeString()\n";
     if ($startday->ticks == $date->ticks) {
@@ -289,11 +289,11 @@ class TimeSlotRule {
     if ($datetime == 0) {
       $time = $date->timePart();
       $dow = $date->dow();
-      $day = $date;
+      $day = clone($date);
     } else {
-      $time = $date;
+      $time = clone($date);
       $dow = $datetime->dow();
-      $day = $datetime;
+      $day = clone($datetime);
       //echo "Found $time->timeString(), $dow, $day->dateTimeString()\n";
     } 
     $slot=0;
@@ -365,7 +365,7 @@ class TimeSlotRule {
       return 0;
       $finalslot==0;
     }
-    $returnSlot = $this->slots[$dow][$finalslot];
+    $returnSlot = clone($this->slots[$dow][$finalslot]);
     //preDump($returnSlot);
     $returnSlot->setDate($day);
 //    preDump($returnSlot->dump());
@@ -431,19 +431,19 @@ class RuleSlot {
   var $comment = '';
   var $discount = 0;
   
-  function RuleSlot($picture, $startStr, $stopStr, $tstart, $tstop, $tgran=0) {
+  function RuleSlot($picture, $startStr, $stopStr, $tstart, $tstop, $tgran=NULL) {
     $this->picture = $picture;
     $this->startStr = $startStr;
     $this->stopStr = $stopStr;
     $this->tstart = $tstart;
     $this->tstop = $tstop;
-    $this->tgran = $tgran != 0 ? $tgran : new SimpleTime(0);
+    $this->tgran = is_a($tgran, 'SimpleTime') ? $tgran : new SimpleTime(0);
   }
 
   function setDate($date) {
-    $this->start = $date;
+    $this->start = clone($date);
     $this->start->setTime($this->tstart);
-    $this->stop = $date;
+    $this->stop = clone($date);
     $this->stop->setTime($this->tstop);
   }
   

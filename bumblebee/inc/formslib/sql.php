@@ -158,4 +158,20 @@ function quickSQLSelect($table, $key, $value, $fatal=1, $countonly=0) {
   return db_get_single($q, $fatal);
 }
 
+/**
+* returns the current version of the database that is being talked to
+* @return string database version
+*/
+function db_get_version() {
+  return mysql_get_server_info();
+}
+
+/**
+* returns the name of the database software that is being talked to
+* @return string database server software name
+*/
+function db_get_name() {
+  return 'MySQL';
+}
+
 ?> 

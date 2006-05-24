@@ -71,7 +71,8 @@ class ArrayExport {
     $breakfield = $this->breakfield;
     $breakReport = (!empty($breakfield) && isset($this->dblist->data[$entry][$breakfield]));
     //echo $breakReport ? 'Breaking' : 'Not breaking';
-    while ($entry < count($this->dblist->formatdata)) {
+    $numrows = count($this->dblist->formatdata);
+    while ($entry < $numrows) {
       //$this->log('Row: '.$entry);
       $this->_resetTotals();
       $ea[] = array('type' => EXPORT_REPORT_SECTION_HEADER, 
@@ -84,12 +85,13 @@ class ArrayExport {
                     'data' => '');
       $ea[] = array('type' => EXPORT_REPORT_TABLE_HEADER, 
                     'data' => $this->dblist->outputHeader());
-      while ($entry < count($this->dblist->formatdata) 
+      while ($entry < $numrows 
                 && (! $breakReport
                     || $initial == $this->dblist->data[$entry][$breakfield]) ) {
         $ea[] = array('type' => EXPORT_REPORT_TABLE_ROW, 
                       'data' => $this->_formatRowData($this->dblist->formatdata[$entry]));
         $this->_incrementTotals($this->dblist->formatdata[$entry]);
+        //if ($entry>0) unset($this->dblist->formatdata[$entry]);  //FIXME: this can save a couple of MB
         $entry++;
       }
       if ($this->_doingTotalCalcs) {

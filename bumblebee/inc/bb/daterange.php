@@ -58,7 +58,7 @@ class DateRange extends nonDBRow {
   /** @var boolean   include a submit button in the output  */
   var $includeSubmitButton = 1;
 
-  function dateRange($name, $longname, $description) {
+  function DateRange($name, $longname, $description) {
     parent::nonDBRow($name, $longname, $description);
     //$this->DEBUG=10;
     $startdate = new DateField('startdate', T_('Start period beginning of'),
@@ -82,12 +82,12 @@ class DateRange extends nonDBRow {
    * @return array  (SimpleDate startdate, SimpleDate stopdate) 
    */
   function _calcRange($which, $range, $basetime) {
-    $start = $basetime;
-    $stop = $start;
+    $start = clone($basetime);
+    $stop  = clone($start);
     switch ($range) {
       case DR_YEAR:
         $start->yearRound();
-        $stop = $start;
+        $stop = clone($start);
         switch ($which) {
           case DR_NEXT:
             $start->addTimeParts(0,0,0,0,0,1);
@@ -102,7 +102,7 @@ class DateRange extends nonDBRow {
         break;
       case DR_QUARTER:
         $start->quarterRound();
-        $stop = $start;
+        $stop = clone($start);
         switch ($which) {
           case DR_NEXT:
             $start->addTimeParts(0,0,0,0,3);
@@ -117,7 +117,7 @@ class DateRange extends nonDBRow {
         break;
       case DR_MONTH:
         $start->monthRound();
-        $stop = $start;
+        $stop = clone($start);
         switch ($which) {
           case DR_NEXT:
             $start->addTimeParts(0,0,0,0,1);
@@ -132,7 +132,7 @@ class DateRange extends nonDBRow {
         break;
       case DR_WEEK:
         $start->weekRound();
-        $stop = $start;
+        $stop = clone($start);
         switch ($which) {
           case DR_NEXT:
             $start->addTimeParts(0,0,0,7);
@@ -147,7 +147,7 @@ class DateRange extends nonDBRow {
         break;
       case DR_DAY:
         $start->dayRound();
-        $stop = $start;
+        $stop = clone($start);
         switch ($which) {
           case DR_NEXT:
             $start->addTimeParts(0,0,0,1);
@@ -184,7 +184,7 @@ class DateRange extends nonDBRow {
     $rangePile = array($daterange);
     $nextrange = $daterange;
     $prevrange = $daterange;
-    $maxRanges  = 10;
+    $maxRanges  = 10;             //FIXME: hardcoded magic number
     for ($i=0; $i<$maxRanges; $i++) {
       $nextrange = $this->_calcRange(DR_NEXT,     $range, $nextrange['startdate']);
       $prevrange = $this->_calcRange(DR_PREVIOUS, $range, $prevrange['startdate']);

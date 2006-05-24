@@ -20,6 +20,7 @@ require_once 'inc/exportcodes.php';
 *
 * @package    Bumblebee
 * @subpackage FormsLibrary
+* @todo codedoc
 */
 class DBList {
   var $restriction;
@@ -29,6 +30,7 @@ class DBList {
   var $group;
   var $union;
   var $returnFields;
+  var $numReturnFields;
   var $omitFields = array();
   var $fieldOrder;
   var $formatter;
@@ -61,6 +63,17 @@ class DBList {
     } else {
       $this->returnFields = array($returnFields);
     }
+    // calculate some values in advance and cache them to speed this class with large datasets
+    $this->numReturnFields = count($this->returnFields);
+    $this->returnFieldAliases = array();
+    $this->returnFieldCells = array();
+    for ($i=0; $i<$this->numReturnFields; $i++) {
+      $this->returnFieldAliases[$this->returnFields[$i]->alias] = $i;
+      $cell = array();
+      $cell['format'] = $this->returnFields[$i]->format;
+      $cell['width'] =  isset($this->returnFields[$i]->width) ? $this->returnFields[$i]->width : 10;
+      $this->returnFieldCells[$this->returnFields[$i]->alias] = $cell;
+    }
   }
 
   /**
@@ -91,14 +104,15 @@ class DBList {
     if (isset($this->manualGroup) && $this->manualGroup != '') {
       $sumdata = array();
       $row=0; 
-      while ($row < count($data)) {
+      $numrows = count($data);
+      while ($row < $numrows) {
         $current = $data[$row][$this->manualGroup];
         $currentRow = $data[$row];
         $sums = array();
         foreach ($this->manualSum as $col) {
           $sums[$col] = 0;
         }
-        while ($row < count($data) && $data[$row][$this->manualGroup] == $current) {
+        while ($row < $numrows && $data[$row][$this->manualGroup] == $current) {
           foreach ($this->manualSum as $col) {
             $sums[$col] += $data[$row][$col];
           }
@@ -151,7 +165,8 @@ class DBList {
         $this->fieldOrder[] = $f->alias;
       }
     }
-    for ($i=0; $i<count($this->data); $i++) {
+    $numdata = count($this->data);
+    for ($i=0; $i<$numdata; $i++) {
       $this->formatdata[$i] = $this->format($this->data[$i]);
     }
   }
@@ -164,7 +179,10 @@ class DBList {
   function format($data/*, $isHeader=false*/) {
     $d = array();
     foreach ($this->fieldOrder as $f) {
-      if (! array_key_exists($f, $this->omitFields)) {
+      // performance of array_key_exists() can be a problem
+      // see  http://bugs.php.net/37563
+      //if (! array_key_exists($f, $this->omitFields)) {
+      if (! isset($this->omitFields[$f])) {
         $d[$f] = $data[$f];
       }
     }
@@ -195,17 +213,17 @@ class DBList {
   * create a row of data with the value and some formatting data for use by the Array/HTML/PDF Export
   * @return array   list of array(value=>$value, format=>$format, width=>$width)
   */
-  function _makeArray($d/*, $isHeader=false*/) {
+  function _makeArray(&$d/*, $isHeader=false*/) {
     $row = array();
     foreach ($d as $alias => $val) {
-      for ($i=0; $i<count($this->returnFields) && $this->returnFields[$i]->alias != $alias; $i++) {
-      }
-      $f = $this->returnFields[$i];
-      $cell = array();
+      $cell = $this->returnFieldCells[$alias];
+      // use the cached reverse mapping of field aliases/names back to the field number
+      //$f = $this->returnFields[$this->returnFieldAliases[$alias]];
+//       $cell = array();
       //$cell['value'] = $this->formatVal($val, $f->format, $isHeader);
       $cell['value'] = $val;
-      $cell['format'] = $f->format;
-      $cell['width'] =  isset($f->width) ? $f->width : 10;
+//       $cell['format'] = $f->format;
+//       $cell['width'] =  isset($f->width) ? $f->width : 10;
       $row[] = $cell;
     }
     return $row;

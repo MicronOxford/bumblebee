@@ -188,7 +188,8 @@ class DBRow extends DBO {
         $q = 'UPDATE '.$TABLEPREFIX.$this->table 
             .' SET '.$vals 
             .' WHERE '.$this->idfield.'='.qw($this->id)
-            .(($this->restriction !== '') ? ' AND '.$this->restriction : '');
+            .(($this->restriction !== '') ? ' AND '.$this->restriction : '')
+            .' LIMIT 1';
         $sql_result = db_quiet($q, $this->fatal_sql);
       } else {
         //it's a new record, insert it

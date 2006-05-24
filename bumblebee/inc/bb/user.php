@@ -112,7 +112,7 @@ class User extends DBRow {
       $f->joinSetup('projectid', array('minspare' => 2));
       $f->colspan = 2;
       $this->addElement($f);
-  
+      //preDump($f);
       // association of users with instrumental permissions
       $f = new JoinData('permissions',
                         'userid', $this->id,

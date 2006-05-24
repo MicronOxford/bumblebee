@@ -48,7 +48,8 @@ class HTMLExport {
     $metaData = $ea['metadata'];
     unset($ea['metadata']);
     $buf = '';
-    for ($i=0; $i<count($ea); $i++) {
+    $numrows = count($ea);
+    for ($i=0; $i<$numrows; $i++) {
       if (! $this->bigtable) {
         switch ($ea[$i]['type']) {
           case EXPORT_REPORT_START:
@@ -137,6 +138,7 @@ class HTMLExport {
             break;
         }
       }
+      # unset($ea[$i]); //FIXME: try to free memory as we are using it
     }      
     $this->export =& $buf;
   }
@@ -150,7 +152,7 @@ class HTMLExport {
   function _reportHeader() {
     $start = $this->_daterange->getStart();
     $stop  = $this->_daterange->getStop();
-    $s = $this->_export->description .' for '. $start->dateString() .' - '. $stop->dateString();
+    $s = $this->_export->description .' for '. $start->dateString() .' - '. $stop->dateString(); //FIXME
     return $s;
   }  
 
@@ -171,7 +173,8 @@ class HTMLExport {
   */
   function _formatRowHTML($row, $isHeader=false) {
     $b = '';
-    for ($j=0; $j<count($row); $j++) {
+    $numfields = count($row);  //FIXME: can this be cached?
+    for ($j=0; $j<$numfields; $j++) {
       $b .= $this->_formatCellHTML($row[$j], $isHeader);
     }
     return $b;
@@ -213,6 +216,7 @@ class HTMLExport {
   * @global array   config settings
   * @global string  base URL for installation
   * @return string  html snippet that will open a new window with the html report
+  * @todo potential memory hog (stores HTML output in three places at once)
   */
   function wrapHTMLBuffer() {
     global $CONFIG;

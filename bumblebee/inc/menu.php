@@ -155,6 +155,7 @@ class UserMenu {
       $t .= $this->headerStart.$this->mainMenuHeader.$this->headerStop;
     }
     $first_admin = true;
+    #preDump($this->actionListing->actions);
     foreach ($this->actionListing->actions as $action) {
       #print $action->name(). " required=".$action->permissions();
       if ($action->menu_visible() && $this->_auth->permitted($action->permissions())) {

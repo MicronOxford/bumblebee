@@ -64,14 +64,14 @@ class BookingMatrix {
       #echo "Booking $k, ".$b->start->dateTimeString()." - ".$b->stop->dateTimeString()."<br />";
       // the TimeSlot object will cache the dayStart and dayStop calculations.
       // (function is 50% faster with this change)
-      $bookDay = $this->bookings[$booknum]->dayStart();
-      $bookStopDay = $this->bookings[$booknum]->dayStop();
+      $bookDay = clone($this->bookings[$booknum]->dayStart());
+      $bookStopDay = clone($this->bookings[$booknum]->dayStop());
       #echo "Checking eligibility for booking: ".$this->day->ticks .'='.$bookDay->ticks.'||'.$bookStopDay->ticks.'<br />';
       if ($bookDay->ticks == $this->day->ticks) {
         $foundFlag = true;
-        $bookDayStart = $bookDay;
-        $mystart = isset($b->displayStart) ? $b->displayStart : $b->start;
-        $mystop  = isset($b->displayStop)  ? $b->displayStop  : $b->stop;
+        $bookDayStart = clone($bookDay);
+        $mystart = clone( isset($b->displayStart) ? $b->displayStart : $b->start );
+        $mystop  = clone( isset($b->displayStop)  ? $b->displayStop  : $b->stop  );
         $bookDayStart->setTime($this->dayStart);
         //$starttime = $b->start->subtract($bookDayStart);
         $starttime = $mystart->subtract($bookDayStart);
@@ -82,7 +82,7 @@ class BookingMatrix {
           //the booking starts before the matrix; starting row adjusted
           $rowstart = 0;
         }
-        $bookDayStop = $bookDay;
+        $bookDayStop = clone($bookDay);
         $bookDayStop->setTime($this->dayStop);
         //$stoptime = $b->stop->subtract($bookDayStop);
         $stoptime = $mystop->subtract($bookDayStop);

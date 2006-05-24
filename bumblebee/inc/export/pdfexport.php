@@ -266,8 +266,9 @@ class PDFExport {
     $ea =& $this->ea->export;
     $metaData = $ea['metadata'];
     unset($ea['metadata']);
-    $this->log('Found '.count($ea).' rows in this ExportArray');
-    for ($i=0; $i<count($ea); $i++) {
+    $ea_length = count($ea);
+    $this->log('Found '.$ea_length.' rows in this ExportArray');
+    for ($i=0; $i<$ea_length; $i++) {
       #echo $i.': '.$ea[$i]['type'].'<br/>';
       #preDump($ea[$i]);
       switch ($ea[$i]['type']) {
@@ -306,6 +307,7 @@ class PDFExport {
           $this->tableRow++;
           break;
       }
+      # unset($ea[$i]); // FIXME: free memory as we are using it up
     }      
   }
    
