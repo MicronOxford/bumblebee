@@ -1,0 +1,13 @@
+Bumblebee Instrument Management System
+
+Copyright (C) 2004 - 2006 Stuart Prescott
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License (found in the file COPYING.TXT), or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program in the file COPYING.TXT; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
+
+In addition, as a special exception, the copyright holder gives permission to link the code of this program with those files in the PEAR library that are licensed under the PHP License (or with modified versions of those files that use the same license as those files), and distribute linked combinations including the two. You must obey the GNU General Public License in all respects for all of the code used other than those files in the PEAR library that are licensed under the PHP License. If you modify this program, you may extend this exception to your version of the program, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.
+
+The copyright holder of Bumblebee makes no claims over the copyright of any files in the system-inc directory which may have been included with this distribution of Bumblebee.
