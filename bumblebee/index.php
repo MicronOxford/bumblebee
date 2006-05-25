@@ -50,7 +50,13 @@ include 'theme/contentheader.php';
 
 ?>
   <div id="bumblebeecontent">
-    <form method="post" action="<?php echo makeURL($action->nextaction); ?>" id="bumblebeeform">
+    <form method="post" 
+      action="<?php echo makeURL($action->nextaction); ?>" 
+      id="bumblebeeform"
+      <?php 
+        if (! isset($CONFIG['main']['AllowAutocomplete']) || ! $CONFIG['main']['AllowAutocomplete']) 
+          echo "AUTOCOMPLETE='off'";
+      ?>>
     <?php
       if (! $auth->isLoggedIn()) {
         echo $auth->loginError();
