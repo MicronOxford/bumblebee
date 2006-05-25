@@ -24,7 +24,7 @@ require_once 'inc/exportcodes.php';
 */
 class DBList {
   var $restriction;
-  var $unionrestriction;
+  var $unionrestriction = array();
   var $join = array();
   var $order;
   var $group;
