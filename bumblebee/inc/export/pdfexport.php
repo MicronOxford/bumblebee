@@ -223,12 +223,13 @@ class PDFExport {
         $key<count($ea)-1 && ($this->useBigTable || $ea[$key]['type'] != EXPORT_REPORT_TABLE_END);
         $key++) {
       //$this->log('key='.$key);
-      //preDump($ea[$key]);
-      $newWidth = $this->pdf->GetStringWidth($ea[$key]['data'][$col]['value']);
-      if ($ea[$key]['type'] == EXPORT_REPORT_TABLE_HEADER)
-        $newWidth *= 1.1;     //FIXME: we should do this calculation properly!
-      //echo "VAL=".$ea[$key]['data'][$col]['value'].", WIDTH=$newWidth/$width.<br/>";
-      $width = max($width, $newWidth);
+      if (is_array($ea[$key]['data'])) { // protect against headers
+        $newWidth = $this->pdf->GetStringWidth($ea[$key]['data'][$col]['value']);
+        if ($ea[$key]['type'] == EXPORT_REPORT_TABLE_HEADER)
+          $newWidth *= 1.1;     //FIXME: we should do this calculation properly!
+        //echo "VAL=".$ea[$key]['data'][$col]['value'].", WIDTH=$newWidth/$width.<br/>";
+        $width = max($width, $newWidth);
+      }
     }
     //echo "WIDTH=$width.<br/>";
     return $width + $this->minAutoMargin;
