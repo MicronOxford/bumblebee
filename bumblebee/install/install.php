@@ -95,10 +95,13 @@ function check_preinst($data) {
     $s[] = "GOOD: Configuration loaded successfully";
   }
   // check kit: check that php-gettext can be found 
-  if (! @ include 'php-gettext/gettext.inc') {
+  if (! @ include_once 'php-gettext/gettext.inc') {
     $s[] = "WARNING: <a href='https://savannah.nongnu.org/projects/php-gettext/'>php-gettext</a> internationali[sz]ation layer not found. Translations will not be available. "
            ."PHP said:<pre>\n$php_errormsg</pre>";
     $warn = true;
+    if (! function_exists('T_')) {
+      function T_($s) { return $s; }
+    }
   } else {
     $s[] = "GOOD: php-gettext found for generating translated content.";
   }
