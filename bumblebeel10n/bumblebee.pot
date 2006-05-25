@@ -1,0 +1,1835 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-05-24 18:11+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: inc/actions/actionaction.php:100
+msgid "Operation completed successfully"
+msgstr ""
+
+#: inc/actions/actionaction.php:101
+msgid "Warnings produced during operation"
+msgstr ""
+
+#: inc/actions/actionaction.php:102
+msgid "Error. Could not complete operation"
+msgstr ""
+
+#: inc/actions/actionaction.php:171
+msgid "Unknown status code. Error:"
+msgstr ""
+
+#: inc/actions/backupdatabase.php:41
+msgid "Error making backup: "
+msgstr ""
+
+#: inc/actions/actions.php:132
+msgid "Oops! I cannot do that!"
+msgstr ""
+
+#: inc/actions/actions.php:132
+msgid "Unknown"
+msgstr ""
+
+#: inc/actions/actions.php:134
+msgid "No, you cannot do that"
+msgstr ""
+
+#: inc/actions/actions.php:134
+msgid "Forbidden"
+msgstr ""
+
+#: inc/actions/actions.php:137
+msgid "View/edit instrument bookings"
+msgstr ""
+
+#: inc/actions/actions.php:137
+msgid "Main"
+msgstr ""
+
+#: inc/actions/actions.php:139 inc/actions/password.php:56
+msgid "Change password"
+msgstr ""
+
+#: inc/actions/actions.php:141
+msgid "Login"
+msgstr ""
+
+#: inc/actions/actions.php:143 inc/actions/actions.php:160
+msgid "Masquerade as another user"
+msgstr ""
+
+#: inc/actions/actions.php:143 inc/actions/actions.php:160
+msgid "Masquerade"
+msgstr ""
+
+#: inc/actions/actions.php:145
+msgid "Logout"
+msgstr ""
+
+#: inc/actions/actions.php:148
+msgid "Manage groups"
+msgstr ""
+
+#: inc/actions/actions.php:148
+msgid "Edit groups"
+msgstr ""
+
+#: inc/actions/actions.php:150
+msgid "Manage projects"
+msgstr ""
+
+#: inc/actions/actions.php:150
+msgid "Edit projects"
+msgstr ""
+
+#: inc/actions/actions.php:152
+msgid "Manage users"
+msgstr ""
+
+#: inc/actions/actions.php:152
+msgid "Edit users"
+msgstr ""
+
+#: inc/actions/actions.php:154
+msgid "Manage instruments"
+msgstr ""
+
+#: inc/actions/actions.php:154
+msgid "Edit instruments"
+msgstr ""
+
+#: inc/actions/actions.php:156
+msgid "Manage consumables"
+msgstr ""
+
+#: inc/actions/actions.php:156
+msgid "Edit consumables"
+msgstr ""
+
+#: inc/actions/actions.php:158
+msgid "Record consumable usage"
+msgstr ""
+
+#: inc/actions/actions.php:158
+msgid "Use consumable"
+msgstr ""
+
+#: inc/actions/actions.php:162
+msgid "Edit standard costs"
+msgstr ""
+
+#: inc/actions/actions.php:162
+msgid "Edit costs"
+msgstr ""
+
+#: inc/actions/actions.php:164
+msgid "Edit or create special charges"
+msgstr ""
+
+#: inc/actions/actions.php:164 inc/actions/costs.php:51
+msgid "Edit special costs"
+msgstr ""
+
+#: inc/actions/actions.php:166
+msgid "Edit or create user class"
+msgstr ""
+
+#: inc/actions/actions.php:166
+msgid "Edit user class"
+msgstr ""
+
+#: inc/actions/actions.php:168
+msgid "Edit or create instrument class"
+msgstr ""
+
+#: inc/actions/actions.php:168
+msgid "Edit instrument class"
+msgstr ""
+
+#: inc/actions/actions.php:170
+msgid "View deleted bookings"
+msgstr ""
+
+#: inc/actions/actions.php:170
+msgid "Deleted bookings"
+msgstr ""
+
+#: inc/actions/actions.php:172
+msgid "Email lists"
+msgstr ""
+
+#: inc/actions/actions.php:174
+msgid "Export data"
+msgstr ""
+
+#: inc/actions/actions.php:176
+msgid "Prepare billing summaries"
+msgstr ""
+
+#: inc/actions/actions.php:176
+msgid "Billing reports"
+msgstr ""
+
+#: inc/actions/actions.php:178
+msgid "Backup database"
+msgstr ""
+
+#: inc/actions/billing.php:73
+msgid "Email report to me"
+msgstr ""
+
+#: inc/actions/billing.php:77
+msgid "Email report to each group leader"
+msgstr ""
+
+#: inc/actions/billing.php:150 inc/actions/export.php:248
+msgid "No data found for those criteria"
+msgstr ""
+
+#: inc/actions/billing.php:172
+msgid "Reports sent by email."
+msgstr ""
+
+#: inc/actions/billing.php:176
+msgid "Unknown error sending reports by email."
+msgstr ""
+
+#: inc/actions/billing.php:181
+msgid "<b>Note:</b> no billing data was found for some groups."
+msgstr ""
+
+#: inc/actions/billing.php:188
+msgid "Regenerate reports:"
+msgstr ""
+
+#: inc/actions/billing.php:239
+msgid "Instrument usage summary"
+msgstr ""
+
+#: inc/actions/deletedbookings.php:48 inc/actions/consume.php:49
+#: inc/actions/export.php:103
+msgid "Select date range"
+msgstr ""
+
+#: inc/actions/deletedbookings.php:49
+msgid "Enter the dates over which you want to report deleted bookings"
+msgstr ""
+
+#: inc/actions/deletedbookings.php:56 inc/actions/view.php:88
+msgid "Return to instrument list"
+msgstr ""
+
+#: inc/actions/deletedbookings.php:59
+msgid "Choose different dates"
+msgstr ""
+
+#: inc/actions/deletedbookings.php:78 inc/actions/emaillist.php:78
+#: inc/bb/bookingentry.php:80 inc/bb/specialcosts.php:42 inc/bb/user.php:120
+#: inc/export/exporttypes.php:121 inc/export/exporttypes.php:123
+#: inc/export/exporttypes.php:146 inc/export/exporttypes.php:148
+#: inc/export/exporttypes.php:182 inc/export/exporttypes.php:184
+#: inc/export/exporttypes.php:237 inc/export/exporttypes.php:401
+#: inc/export/exporttypes.php:402 inc/export/exporttypes.php:452
+msgid "Instrument"
+msgstr ""
+
+#: inc/actions/deletedbookings.php:78 inc/actions/emaillist.php:78
+#: inc/actions/instruments.php:51 inc/actions/view.php:144
+msgid "Select which instrument to view"
+msgstr ""
+
+#: inc/actions/deletedbookings.php:95
+msgid "Bookings"
+msgstr ""
+
+#: inc/actions/deletedbookings.php:95
+msgid "Select deleted bookings"
+msgstr ""
+
+#: inc/actions/deletedbookings.php:96 inc/actions/consume.php:211
+#: inc/actions/consume.php:247 inc/bb/consumableuse.php:65
+#: inc/export/exporttypes.php:268
+msgid "Date"
+msgstr ""
+
+#: inc/actions/deletedbookings.php:96 inc/bb/bookingentry.php:110
+#: inc/bookings/booking.php:100
+msgid "Duration"
+msgstr ""
+
+#: inc/actions/deletedbookings.php:96 inc/actions/consume.php:211
+#: inc/bb/bookingentry.php:141 inc/bb/bookingentry.php:185
+#: inc/bb/consumableuse.php:34 inc/bookings/booking.php:101
+msgid "User"
+msgstr ""
+
+#: inc/actions/deletedbookings.php:96
+msgid "Log Entry"
+msgstr ""
+
+#: inc/actions/consumables.php:48
+msgid "Return to consumables list"
+msgstr ""
+
+#: inc/actions/consumables.php:52 inc/actions/consume.php:139
+msgid "Consumables"
+msgstr ""
+
+#: inc/actions/consumables.php:52
+msgid "Select which Consumables to view"
+msgstr ""
+
+#: inc/actions/consumables.php:55 inc/actions/consumables.php:75
+msgid "Create new consumable"
+msgstr ""
+
+#: inc/actions/consumables.php:56
+msgid "Show deleted consumables"
+msgstr ""
+
+#: inc/actions/consumables.php:69
+msgid "Consumable created"
+msgstr ""
+
+#: inc/actions/consumables.php:69
+msgid "Consumable updated"
+msgstr ""
+
+#: inc/actions/consumables.php:70
+msgid "Consumable could not be changed:"
+msgstr ""
+
+#: inc/actions/consumables.php:78 inc/actions/consume.php:175
+#: inc/actions/costs.php:105 inc/actions/instrumentclass.php:68
+#: inc/actions/groups.php:78 inc/actions/instruments.php:78
+#: inc/actions/projects.php:77 inc/actions/specialcosts.php:177
+#: inc/actions/userclass.php:66 inc/actions/users.php:77
+msgid "Update entry"
+msgstr ""
+
+#: inc/actions/consumables.php:79 inc/actions/groups.php:79
+#: inc/actions/instruments.php:79 inc/actions/projects.php:78
+#: inc/actions/users.php:78
+msgid "Undelete entry"
+msgstr ""
+
+#: inc/actions/consumables.php:79 inc/actions/consume.php:176
+#: inc/actions/instrumentclass.php:69 inc/actions/groups.php:79
+#: inc/actions/instruments.php:79 inc/actions/projects.php:78
+#: inc/actions/specialcosts.php:178 inc/actions/userclass.php:67
+#: inc/actions/users.php:78
+msgid "Delete entry"
+msgstr ""
+
+#: inc/actions/consumables.php:83 inc/actions/consume.php:124
+#, php-format
+msgid "<a href=\"%s\">View listing</a> for selected consumable"
+msgstr ""
+
+#: inc/actions/consumables.php:91
+msgid "Consumable undeleted"
+msgstr ""
+
+#: inc/actions/consumables.php:92
+msgid "Consumable deleted"
+msgstr ""
+
+#: inc/actions/consumables.php:93
+msgid "Consumable could not be deleted:"
+msgstr ""
+
+#: inc/actions/consume.php:50
+msgid "Enter the dates over which you want to report consumable use"
+msgstr ""
+
+#: inc/actions/consume.php:78
+msgid "Return to consumable use list"
+msgstr ""
+
+#: inc/actions/consume.php:117 inc/actions/masquerade.php:56
+#: inc/actions/users.php:51
+msgid "Users"
+msgstr ""
+
+#: inc/actions/consume.php:117
+msgid "Select which user is consuming"
+msgstr ""
+
+#: inc/actions/consume.php:139
+msgid "Select which Consumables to use"
+msgstr ""
+
+#: inc/actions/consume.php:146
+#, php-format
+msgid "<a href=\"%s\">View listing</a> for selected user"
+msgstr ""
+
+#: inc/actions/consume.php:165
+msgid "Consumption recorded"
+msgstr ""
+
+#: inc/actions/consume.php:166
+msgid "Consumption record updated"
+msgstr ""
+
+#: inc/actions/consume.php:167
+msgid "Consumption record could not be changed:"
+msgstr ""
+
+#: inc/actions/consume.php:172
+msgid "Record consumable use"
+msgstr ""
+
+#: inc/actions/consume.php:186
+msgid "Consumption record deleted"
+msgstr ""
+
+#: inc/actions/consume.php:187
+msgid "Consumption record could not be deleted:"
+msgstr ""
+
+#: inc/actions/consume.php:206
+#, php-format
+msgid "Consumption records for %s"
+msgstr ""
+
+#: inc/actions/consume.php:208 inc/actions/consume.php:244
+msgid "Consumption Record"
+msgstr ""
+
+#: inc/actions/consume.php:209 inc/actions/consume.php:245
+msgid "Select the consumption record to view"
+msgstr ""
+
+#: inc/actions/consume.php:211 inc/actions/consume.php:247
+#: inc/bb/consumableuse.php:72 inc/export/exporttypes.php:272
+#: inc/export/exporttypes.php:313 inc/export/exporttypes.php:362
+#: inc/export/exporttypes.php:455 inc/export/exporttypes.php:494
+msgid "Quantity"
+msgstr ""
+
+#: inc/actions/consume.php:240
+#, php-format
+msgid "Consumption records for %s (%s)"
+msgstr ""
+
+#: inc/actions/consume.php:247 inc/export/exporttypes.php:267
+#: inc/export/exporttypes.php:307 inc/export/exporttypes.php:357
+#: inc/export/exporttypes.php:358 inc/export/exporttypes.php:473
+#: inc/export/exporttypes.php:492
+msgid "Item"
+msgstr ""
+
+#: inc/actions/costs.php:49
+msgid "Return to costs list"
+msgstr ""
+
+#: inc/actions/costs.php:53
+msgid "Edit instrument classes"
+msgstr ""
+
+#: inc/actions/costs.php:55
+msgid "Edit user classes"
+msgstr ""
+
+#: inc/actions/costs.php:78 inc/export/exporttypes.php:365
+#: inc/export/exporttypes.php:415 inc/export/exporttypes.php:457
+#: inc/export/exporttypes.php:532
+msgid "Cost"
+msgstr ""
+
+#: inc/actions/costs.php:78
+msgid "Select which user class to view usage costs"
+msgstr ""
+
+#: inc/actions/costs.php:99 inc/actions/specialcosts.php:168
+msgid "Cost schedule created"
+msgstr ""
+
+#: inc/actions/costs.php:100 inc/actions/specialcosts.php:168
+msgid "Cost schedule updated"
+msgstr ""
+
+#: inc/actions/costs.php:101 inc/actions/specialcosts.php:169
+msgid "Cost schedule could not be changed:"
+msgstr ""
+
+#: inc/actions/instrumentclass.php:49
+msgid "Return to instrument class list"
+msgstr ""
+
+#: inc/actions/instrumentclass.php:58
+msgid "Instrument class created"
+msgstr ""
+
+#: inc/actions/instrumentclass.php:59
+msgid "Instrument class updated"
+msgstr ""
+
+#: inc/actions/instrumentclass.php:60
+msgid "Instrument class could not be changed:"
+msgstr ""
+
+#: inc/actions/instrumentclass.php:65 inc/actions/userclass.php:63
+msgid "Create new class"
+msgstr ""
+
+#: inc/actions/instrumentclass.php:77
+msgid "Select which instrument class to view"
+msgstr ""
+
+#: inc/actions/instrumentclass.php:79
+msgid "Create new instrument class"
+msgstr ""
+
+#: inc/actions/instrumentclass.php:91
+msgid "Instrument class deleted"
+msgstr ""
+
+#: inc/actions/instrumentclass.php:92
+msgid "Instrument class could not be deleted:"
+msgstr ""
+
+#: inc/actions/emaillist.php:76
+msgid "Select email lists"
+msgstr ""
+
+#: inc/actions/emaillist.php:77
+msgid "Select which email lists you want to return"
+msgstr ""
+
+#: inc/actions/emaillist.php:81
+msgid "Announce"
+msgstr ""
+
+#: inc/actions/emaillist.php:83
+msgid "Unbook"
+msgstr ""
+
+#: inc/actions/emaillist.php:90
+msgid "Value separator"
+msgstr ""
+
+#: inc/actions/emaillist.php:91
+msgid ""
+"Separates the returned values so you can paste them into your email client"
+msgstr ""
+
+#: inc/actions/emaillist.php:97 inc/actions/export.php:236
+msgid "Select"
+msgstr ""
+
+#: inc/actions/export.php:104
+msgid "Enter the dates over which you want to export data"
+msgstr ""
+
+#: inc/actions/export.php:130
+msgid "Error exporting data:"
+msgstr ""
+
+#: inc/actions/export.php:156 inc/actions/export.php:177
+msgid "Select which data to export"
+msgstr ""
+
+#: inc/actions/export.php:170
+msgid "View in web browser"
+msgstr ""
+
+#: inc/actions/export.php:171
+msgid "View in web browser (new window)"
+msgstr ""
+
+#: inc/actions/export.php:172
+msgid "Save as comma separated variable (csv)"
+msgstr ""
+
+#: inc/actions/export.php:173
+msgid "Save as tab separated variable (txt)"
+msgstr ""
+
+#: inc/actions/export.php:175
+msgid "Save as pdf report"
+msgstr ""
+
+#: inc/actions/export.php:199
+msgid "Select which detail to view"
+msgstr ""
+
+#: inc/actions/export.php:202
+msgid "Selected"
+msgstr ""
+
+#: inc/actions/export.php:220
+msgid "Select which data view to export"
+msgstr ""
+
+#: inc/actions/groups.php:48
+msgid "Return to group list"
+msgstr ""
+
+#: inc/actions/groups.php:52 inc/export/exporttypes.php:188
+#: inc/export/exporttypes.php:309 inc/export/exporttypes.php:311
+#: inc/export/exporttypes.php:353 inc/export/exporttypes.php:355
+#: inc/export/exporttypes.php:404 inc/export/exporttypes.php:454
+#: inc/export/exporttypes.php:475 inc/export/exporttypes.php:493
+#: inc/export/exporttypes.php:522 inc/export/exporttypes.php:548
+#: inc/export/exporttypes.php:572
+msgid "Group"
+msgstr ""
+
+#: inc/actions/groups.php:52
+msgid "Select which group to view"
+msgstr ""
+
+#: inc/actions/groups.php:55 inc/actions/groups.php:75
+msgid "Create new group"
+msgstr ""
+
+#: inc/actions/groups.php:56
+msgid "Show deleted groups"
+msgstr ""
+
+#: inc/actions/groups.php:69
+msgid "Group created"
+msgstr ""
+
+#: inc/actions/groups.php:69
+msgid "Group updated"
+msgstr ""
+
+#: inc/actions/groups.php:70
+msgid "Group could not be changed:"
+msgstr ""
+
+#: inc/actions/groups.php:90
+msgid "Group undeleted"
+msgstr ""
+
+#: inc/actions/groups.php:90
+msgid "Group deleted"
+msgstr ""
+
+#: inc/actions/groups.php:91
+msgid "Group could not be deleted:"
+msgstr ""
+
+#: inc/actions/unknownaction.php:40
+msgid "Error"
+msgstr ""
+
+#: inc/actions/unknownaction.php:43
+#, php-format
+msgid "Sorry, you don't have permission to perform the action \"%s\"."
+msgstr ""
+
+#: inc/actions/unknownaction.php:47
+#, php-format
+msgid ""
+"An unknown error occurred. I was asked to perform the action \"%s\", but I "
+"don't know how to do that."
+msgstr ""
+
+#: inc/actions/unknownaction.php:51
+#, php-format
+msgid ""
+"Please contact <a href=\"mailto:%s\">the system administrator</a> for more "
+"information."
+msgstr ""
+
+#: inc/actions/instruments.php:47
+msgid "Return to instruments list"
+msgstr ""
+
+#: inc/actions/instruments.php:54 inc/actions/instruments.php:75
+msgid "Create new instrument"
+msgstr ""
+
+#: inc/actions/instruments.php:55
+msgid "Show deleted instruments"
+msgstr ""
+
+#: inc/actions/instruments.php:68
+msgid "Instrument created"
+msgstr ""
+
+#: inc/actions/instruments.php:69
+msgid "Instrument updated"
+msgstr ""
+
+#: inc/actions/instruments.php:70
+msgid "Instrument could not be changed:"
+msgstr ""
+
+#: inc/actions/instruments.php:90
+msgid "Instrument undeleted"
+msgstr ""
+
+#: inc/actions/instruments.php:91
+msgid "Instrument deleted"
+msgstr ""
+
+#: inc/actions/instruments.php:92
+msgid "Instrument could not be deleted:"
+msgstr ""
+
+#: inc/actions/login.php:34
+msgid "Login required"
+msgstr ""
+
+#: inc/actions/login.php:35
+msgid "Please login to view or book instrument usage"
+msgstr ""
+
+#: inc/actions/login.php:51
+msgid "Username:"
+msgstr ""
+
+#: inc/actions/login.php:52
+msgid "Password:"
+msgstr ""
+
+#: inc/actions/login.php:53 inc/actions/logout.php:41
+msgid "login"
+msgstr ""
+
+#: inc/actions/logout.php:39
+msgid "Successfully logged out"
+msgstr ""
+
+#: inc/actions/logout.php:40
+msgid "Thank you for using Bumblebee!"
+msgstr ""
+
+#: inc/actions/masquerade.php:48 inc/actions/users.php:47
+msgid "Return to user list"
+msgstr ""
+
+#: inc/actions/masquerade.php:56
+msgid "Select which user to masquerade as"
+msgstr ""
+
+#: inc/actions/masquerade.php:61
+msgid "End current Masquerade"
+msgstr ""
+
+#: inc/actions/masquerade.php:62
+msgid "Currently wearing the mask of:"
+msgstr ""
+
+#: inc/actions/password.php:41
+msgid "Return to main menu"
+msgstr ""
+
+#: inc/actions/password.php:51
+msgid "Password changed successfully."
+msgstr ""
+
+#: inc/actions/password.php:52
+msgid "Password could not be changed: "
+msgstr ""
+
+#: inc/actions/projects.php:48
+msgid "Return to project list"
+msgstr ""
+
+#: inc/actions/projects.php:52 inc/actions/specialcosts.php:99
+#: inc/actions/specialcosts.php:118
+msgid "Projects"
+msgstr ""
+
+#: inc/actions/projects.php:52
+msgid "Select which project to view"
+msgstr ""
+
+#: inc/actions/projects.php:55 inc/actions/projects.php:74
+msgid "Create new project"
+msgstr ""
+
+#: inc/actions/projects.php:56
+msgid "Show deleted projects"
+msgstr ""
+
+#: inc/actions/projects.php:68
+msgid "Project created"
+msgstr ""
+
+#: inc/actions/projects.php:68
+msgid "Project updated"
+msgstr ""
+
+#: inc/actions/projects.php:69
+msgid "Project could not be changed:"
+msgstr ""
+
+#: inc/actions/projects.php:88
+msgid "Project undeleted"
+msgstr ""
+
+#: inc/actions/projects.php:88
+msgid "Project deleted"
+msgstr ""
+
+#: inc/actions/projects.php:89
+msgid "Project could not be deleted:"
+msgstr ""
+
+#: inc/actions/specialcosts.php:59
+msgid "Return to special costs list"
+msgstr ""
+
+#: inc/actions/specialcosts.php:99
+msgid "Select project to view rates"
+msgstr ""
+
+#: inc/actions/specialcosts.php:106 inc/actions/specialcosts.php:138
+msgid "Create new project rate"
+msgstr ""
+
+#: inc/actions/specialcosts.php:118
+msgid "Select project to create rate"
+msgstr ""
+
+#: inc/actions/specialcosts.php:131 inc/actions/specialcosts.php:150
+msgid "Instruments"
+msgstr ""
+
+#: inc/actions/specialcosts.php:131
+msgid "Select instrument to view rates"
+msgstr ""
+
+#: inc/actions/specialcosts.php:150
+msgid "Select instrument to create rate"
+msgstr ""
+
+#: inc/actions/specialcosts.php:174
+msgid "Create new project cost"
+msgstr ""
+
+#: inc/actions/specialcosts.php:190
+msgid "Cost deleted"
+msgstr ""
+
+#: inc/actions/specialcosts.php:191
+msgid "Cost could not be deleted:"
+msgstr ""
+
+#: inc/actions/userclass.php:47
+msgid "Return to user class list"
+msgstr ""
+
+#: inc/actions/userclass.php:56
+msgid "User class created"
+msgstr ""
+
+#: inc/actions/userclass.php:57
+msgid "User class updated"
+msgstr ""
+
+#: inc/actions/userclass.php:58
+msgid "User class could not be changed:"
+msgstr ""
+
+#: inc/actions/userclass.php:75
+msgid "UserClass"
+msgstr ""
+
+#: inc/actions/userclass.php:75
+msgid "Select which user class to view"
+msgstr ""
+
+#: inc/actions/userclass.php:89
+msgid "User class deleted"
+msgstr ""
+
+#: inc/actions/userclass.php:90
+msgid "User class could not be deleted:"
+msgstr ""
+
+#: inc/actions/users.php:51
+msgid "Select which user to view"
+msgstr ""
+
+#: inc/actions/users.php:54 inc/actions/users.php:74
+msgid "Create new user"
+msgstr ""
+
+#: inc/actions/users.php:55
+msgid "Show deleted users"
+msgstr ""
+
+#: inc/actions/users.php:68
+msgid "User created"
+msgstr ""
+
+#: inc/actions/users.php:68
+msgid "User updated"
+msgstr ""
+
+#: inc/actions/users.php:69
+msgid "User could not be changed:"
+msgstr ""
+
+#: inc/actions/users.php:88
+msgid "User undeleted"
+msgstr ""
+
+#: inc/actions/users.php:88
+msgid "User deleted"
+msgstr ""
+
+#: inc/actions/users.php:89
+msgid "User could not be deleted:"
+msgstr ""
+
+#: inc/actions/view.php:137
+msgid "Return to calendar view"
+msgstr ""
+
+#: inc/actions/view.php:227
+msgid "earlier"
+msgstr ""
+
+#: inc/actions/view.php:228
+msgid "today"
+msgstr ""
+
+#: inc/actions/view.php:231
+msgid "later"
+msgstr ""
+
+#: inc/actions/view.php:312 inc/actions/view.php:347
+msgid "Edit booking"
+msgstr ""
+
+#: inc/actions/view.php:319
+msgid "Booking made"
+msgstr ""
+
+#: inc/actions/view.php:319
+msgid "Booking updated"
+msgstr ""
+
+#: inc/actions/view.php:320
+msgid "Booking could not be made:"
+msgstr ""
+
+#: inc/actions/view.php:324
+msgid "Make booking"
+msgstr ""
+
+#: inc/actions/view.php:324
+msgid "Update booking"
+msgstr ""
+
+#: inc/actions/view.php:325 inc/actions/view.php:359
+msgid "Delete booking"
+msgstr ""
+
+#: inc/actions/view.php:364
+msgid "Booking deleted"
+msgstr ""
+
+#: inc/actions/view.php:365
+msgid "Booking could not be deleted:"
+msgstr ""
+
+#: inc/actions/view.php:388
+msgid "Sorry, you do not have permission to do this."
+msgstr ""
+
+#: inc/actions/view.php:418 inc/bb/instrument.php:167
+msgid "Instrument supervisors"
+msgstr ""
+
+#: inc/bb/bookingentry.php:76 inc/bookings/booking.php:97
+msgid "Booking ID"
+msgstr ""
+
+#: inc/bb/bookingentry.php:93 inc/bookings/booking.php:98
+msgid "Start"
+msgstr ""
+
+#: inc/bb/bookingentry.php:124 inc/bb/consumableuse.php:55
+#: inc/bb/specialcosts.php:36 inc/bb/user.php:106 inc/bookings/booking.php:110
+#: inc/export/exporttypes.php:149 inc/export/exporttypes.php:189
+#: inc/export/exporttypes.php:271 inc/export/exporttypes.php:312
+msgid "Project"
+msgstr ""
+
+#: inc/bb/bookingentry.php:135
+msgid "Comment to show on calendar"
+msgstr ""
+
+#: inc/bb/bookingentry.php:138
+msgid "Logbook Entry"
+msgstr ""
+
+#: inc/bb/bookingentry.php:145 inc/bb/consumableuse.php:46
+msgid "Recorded by"
+msgstr ""
+
+#: inc/bb/bookingentry.php:151
+msgid "Discount (%)"
+msgstr ""
+
+#: inc/bb/bookingentry.php:158 inc/bb/consumableuse.php:51
+msgid "Computer IP"
+msgstr ""
+
+#: inc/bb/bookingentry.php:188 inc/bookings/booking.php:103
+msgid "Log"
+msgstr ""
+
+#: inc/bb/bookingentry.php:447
+msgid "Sorry, the instrument is not free at this time."
+msgstr ""
+
+#: inc/bb/bookingentry.php:448
+#, php-format
+msgid "Instrument booked by %s (%s) from %s until %s."
+msgstr ""
+
+#: inc/bb/bookingentry.php:451
+msgid "booking #"
+msgstr ""
+
+#: inc/bb/bookingentry.php:518
+msgid ""
+"Sorry, the timeslot you have selected is not valid, due to restrictions "
+"imposed by the instrument administrator."
+msgstr ""
+
+#: inc/bb/bookingentry.php:598
+msgid "Sorry, this booking cannot be deleted due to booking policy."
+msgstr ""
+
+#: inc/bb/bookingentry.php:605
+#, php-format
+msgid "Booking deleted by %s (user #%s) on %s."
+msgstr ""
+
+#: inc/bb/auth.php:151
+msgid "Login failed: SESSION INVALID!"
+msgstr ""
+
+#: inc/bb/auth.php:185
+msgid "Login failed: bad username"
+msgstr ""
+
+#: inc/bb/auth.php:186
+msgid ""
+"Either change the username using phpMyAdmin or change how you define a valid "
+"username in config/bumblebee.ini (see the value \"validUserRegexp\")"
+msgstr ""
+
+#: inc/bb/auth.php:215
+msgid "System has no login method enabled"
+msgstr ""
+
+#: inc/bb/auth.php:221
+msgid "Login failed: this account is suspended, please contact us about this."
+msgstr ""
+
+#: inc/bb/auth.php:239
+msgid "Login failed: unknown username"
+msgstr ""
+
+#: inc/bb/auth.php:271
+msgid "Login failed: radius auth failed"
+msgstr ""
+
+#: inc/bb/auth.php:303
+msgid "Login failed: ldap auth failed"
+msgstr ""
+
+#: inc/bb/auth.php:314
+msgid "Login failed: bad password"
+msgstr ""
+
+#: inc/bb/auth.php:318
+msgid "Login failed: no crypt method"
+msgstr ""
+
+#: inc/bb/calendar.php:444
+#, php-format
+msgid "Zoom in on %s"
+msgstr ""
+
+#: inc/bb/consumable.php:31
+msgid "Consumable ID"
+msgstr ""
+
+#: inc/bb/consumable.php:34 inc/export/exporttypes.php:264
+#: inc/export/exporttypes.php:304
+msgid "Item Code"
+msgstr ""
+
+#: inc/bb/consumable.php:40 inc/bb/instrument.php:49 inc/bb/project.php:44
+#: inc/export/exporttypes.php:150 inc/export/exporttypes.php:359
+msgid "Description"
+msgstr ""
+
+#: inc/bb/consumable.php:45 inc/export/exporttypes.php:360
+#: inc/export/exporttypes.php:456 inc/export/exporttypes.php:477
+#: inc/export/exporttypes.php:495
+msgid "Unit cost"
+msgstr ""
+
+#: inc/bb/consumableuse.php:29
+msgid "Record ID"
+msgstr ""
+
+#: inc/bb/consumableuse.php:40
+msgid "Consumable"
+msgstr ""
+
+#: inc/bb/consumableuse.php:77 inc/bookings/booking.php:102
+msgid "Comments"
+msgstr ""
+
+#: inc/bb/consumableuse.php:80 inc/export/exporttypes.php:126
+msgid "Log entry"
+msgstr ""
+
+#: inc/bb/costs.php:32
+msgid "UserClass ID"
+msgstr ""
+
+#: inc/bb/costs.php:36 inc/bb/instrument.php:43 inc/bb/project.php:38
+#: inc/bb/user.php:54 inc/export/exporttypes.php:120
+#: inc/export/exporttypes.php:236 inc/export/exporttypes.php:270
+msgid "Name"
+msgstr ""
+
+#: inc/bb/costs.php:46
+msgid "Cost settings"
+msgstr ""
+
+#: inc/bb/costs.php:47
+msgid "Costs for each class of user corresponding to each instrument type"
+msgstr ""
+
+#: inc/bb/costs.php:48
+msgid "User Class"
+msgstr ""
+
+#: inc/bb/costs.php:48
+msgid "Classes of users"
+msgstr ""
+
+#: inc/bb/costs.php:49
+msgid "Instrument Class"
+msgstr ""
+
+#: inc/bb/costs.php:49
+msgid "Classes of instrument"
+msgstr ""
+
+#: inc/bb/costs.php:53 inc/bb/specialcosts.php:60
+msgid "Full day cost"
+msgstr ""
+
+#: inc/bb/costs.php:54 inc/bb/specialcosts.php:61
+msgid "Cost of instrument use for a full day"
+msgstr ""
+
+#: inc/bb/costs.php:58 inc/bb/specialcosts.php:65
+msgid "Hourly rate multiplier"
+msgstr ""
+
+#: inc/bb/costs.php:59 inc/bb/specialcosts.php:66
+msgid "Proportion of daily rate charged per hour"
+msgstr ""
+
+#: inc/bb/costs.php:62 inc/bb/specialcosts.php:69
+msgid "Half-day rate multiplier"
+msgstr ""
+
+#: inc/bb/costs.php:63 inc/bb/specialcosts.php:70
+msgid "Proportion of daily rate charged per half-day"
+msgstr ""
+
+#: inc/bb/costs.php:66 inc/bb/specialcosts.php:73
+msgid "Daily bulk discount %"
+msgstr ""
+
+#: inc/bb/costs.php:67
+msgid "Discount for each successive day's booking"
+msgstr ""
+
+#: inc/bb/daterange.php:64
+msgid "Start period beginning of"
+msgstr ""
+
+#: inc/bb/daterange.php:65
+msgid "Period starts at the beginning of this day"
+msgstr ""
+
+#: inc/bb/daterange.php:68
+msgid "Finish period end of"
+msgstr ""
+
+#: inc/bb/daterange.php:69
+msgid "Period finishes at the end of this day"
+msgstr ""
+
+#: inc/bb/daterange.php:195
+msgid "Previous"
+msgstr ""
+
+#: inc/bb/daterange.php:195
+msgid "Next"
+msgstr ""
+
+#: inc/bb/group.php:32
+msgid "Group ID"
+msgstr ""
+
+#: inc/bb/group.php:35
+msgid "Addressee name"
+msgstr ""
+
+#: inc/bb/group.php:41
+msgid "Group name"
+msgstr ""
+
+#: inc/bb/group.php:46 inc/export/exporttypes.php:523
+#: inc/export/exporttypes.php:549
+msgid "Address 1"
+msgstr ""
+
+#: inc/bb/group.php:49 inc/export/exporttypes.php:524
+#: inc/export/exporttypes.php:550
+msgid "Address 2"
+msgstr ""
+
+#: inc/bb/group.php:52 inc/export/exporttypes.php:525
+#: inc/export/exporttypes.php:551
+msgid "Suburb"
+msgstr ""
+
+#: inc/bb/group.php:55 inc/export/exporttypes.php:526
+#: inc/export/exporttypes.php:552
+msgid "State"
+msgstr ""
+
+#: inc/bb/group.php:58
+msgid "Postcode"
+msgstr ""
+
+#: inc/bb/group.php:61 inc/export/exporttypes.php:528
+#: inc/export/exporttypes.php:554
+msgid "Country"
+msgstr ""
+
+#: inc/bb/group.php:64 inc/bb/user.php:58 inc/export/exporttypes.php:529
+#: inc/export/exporttypes.php:555 inc/export/exporttypes.php:579
+msgid "Email"
+msgstr ""
+
+#: inc/bb/group.php:69 inc/export/exporttypes.php:530
+#: inc/export/exporttypes.php:556 inc/export/exporttypes.php:580
+msgid "Fax"
+msgstr ""
+
+#: inc/bb/group.php:72
+msgid "Account code"
+msgstr ""
+
+#: inc/bb/instrument.php:40
+msgid "Instrument ID"
+msgstr ""
+
+#: inc/bb/instrument.php:54
+msgid "Location"
+msgstr ""
+
+#: inc/bb/instrument.php:59
+msgid "Calendar start time (HH:MM)"
+msgstr ""
+
+#: inc/bb/instrument.php:65
+msgid "Calendar end time (HH:MM)"
+msgstr ""
+
+#: inc/bb/instrument.php:71
+msgid "Precision of calendar display (seconds)"
+msgstr ""
+
+#: inc/bb/instrument.php:77
+msgid "Time-periods per HH:MM displayed"
+msgstr ""
+
+#: inc/bb/instrument.php:83
+msgid "Number of weeks displayed in calendar"
+msgstr ""
+
+#: inc/bb/instrument.php:89
+msgid "Number of weeks history shown"
+msgstr ""
+
+#: inc/bb/instrument.php:95
+msgid "Number of days into the future"
+msgstr ""
+
+#: inc/bb/instrument.php:101
+msgid "Advisory text"
+msgstr ""
+
+#: inc/bb/instrument.php:102
+msgid ""
+"Displayed at the bottom of instrument calendar and on booking form. HTML "
+"permitted."
+msgstr ""
+
+#: inc/bb/instrument.php:108
+msgid "Charging class"
+msgstr ""
+
+#: inc/bb/instrument.php:118 inc/bb/project.php:57
+msgid "Create new:"
+msgstr ""
+
+#: inc/bb/instrument.php:124
+msgid "Hours in a half-day"
+msgstr ""
+
+#: inc/bb/instrument.php:130
+msgid "Hours in a full-day"
+msgstr ""
+
+#: inc/bb/instrument.php:138
+msgid "Instrument timeslots"
+msgstr ""
+
+#: inc/bb/instrument.php:139
+msgid "These fields describe when the instrument is available."
+msgstr ""
+
+#: inc/bb/instrument.php:140
+msgid "Format: HH:MM-HH:MM/n-x%,comment"
+msgstr ""
+
+#: inc/bb/instrument.php:142
+msgid "Time slot picture"
+msgstr ""
+
+#: inc/bb/instrument.php:154
+msgid "Slots in day, one per line"
+msgstr ""
+
+#: inc/bb/instrument.php:161
+msgid "Minimum notice for booking change (hours)"
+msgstr ""
+
+#: inc/bb/instrument.php:167
+msgid "comma separated list of usernames"
+msgstr ""
+
+#: inc/bb/instrument.php:171
+msgid "Email supervisors when booking"
+msgstr ""
+
+#: inc/bb/instrumentclass.php:31 inc/bb/userclass.php:31
+msgid "Class ID"
+msgstr ""
+
+#: inc/bb/instrumentclass.php:34
+msgid "Instrument Class name"
+msgstr ""
+
+#: inc/bb/project.php:35
+msgid "Project ID"
+msgstr ""
+
+#: inc/bb/project.php:49
+msgid "Default charging band"
+msgstr ""
+
+#: inc/bb/project.php:66
+msgid "Group membership (%)"
+msgstr ""
+
+#: inc/bb/project.php:69 inc/bb/user.php:108 inc/bb/user.php:122
+msgid "(none)"
+msgstr ""
+
+#: inc/bb/project.php:69 inc/bb/user.php:108 inc/bb/user.php:122
+msgid "no selection"
+msgstr ""
+
+#: inc/bb/specialcosts.php:51
+msgid "Charging settings:"
+msgstr ""
+
+#: inc/bb/specialcosts.php:57
+msgid "Rate ID"
+msgstr ""
+
+#: inc/bb/specialcosts.php:74
+msgid "Discount for each successive day&#39;s booking"
+msgstr ""
+
+#: inc/bb/user.php:44
+msgid "User ID"
+msgstr ""
+
+#: inc/bb/user.php:47 inc/export/exporttypes.php:119
+#: inc/export/exporttypes.php:235 inc/export/exporttypes.php:269
+msgid "Username"
+msgstr ""
+
+#: inc/bb/user.php:63
+msgid "Phone"
+msgstr ""
+
+#: inc/bb/user.php:70
+msgid "Suspended"
+msgstr ""
+
+#: inc/bb/user.php:72
+msgid "System Administrator"
+msgstr ""
+
+#: inc/bb/user.php:83
+msgid "User authentication method"
+msgstr ""
+
+#: inc/bb/user.php:92
+msgid "Password (for local login)"
+msgstr ""
+
+#: inc/bb/user.php:105
+msgid "Project membership"
+msgstr ""
+
+#: inc/bb/user.php:119
+msgid "Instrument permissions"
+msgstr ""
+
+#: inc/bb/user.php:126
+msgid "Subscribe: announce"
+msgstr ""
+
+#: inc/bb/user.php:129
+msgid "Subscribe: unbook"
+msgstr ""
+
+#: inc/bb/user.php:131
+msgid "Instrument admin"
+msgstr ""
+
+#: inc/bb/user.php:210
+msgid "password must be set for local login."
+msgstr ""
+
+#: inc/bb/userclass.php:34
+msgid "User Class name"
+msgstr ""
+
+#: inc/bookings/booking.php:99
+msgid "Stop"
+msgstr ""
+
+#: inc/bookings/booking.php:106
+msgid "Booked by"
+msgstr ""
+
+#: inc/bookings/booking.php:112
+msgid "Discount"
+msgstr ""
+
+#: inc/bookings/booking.php:128
+#, php-format
+msgid "View or edit booking from %s to %s"
+msgstr ""
+
+#: inc/bookings/booking.php:155
+#, php-format
+msgid "Booking from %s - %s"
+msgstr ""
+
+#: inc/bookings/vacancy.php:88
+#, php-format
+msgid "Make booking from %s to %s"
+msgstr ""
+
+#: inc/bookings/vacancy.php:122
+#, php-format
+msgid "Unavailable from %s to %s"
+msgstr ""
+
+#: inc/bookings/vacancy.php:124
+#, php-format
+msgid "Vacant from %s to %s"
+msgstr ""
+
+#: inc/export/exporttypes.php:110
+msgid "Instrument usage log book"
+msgstr ""
+
+#: inc/export/exporttypes.php:111
+#, php-format
+msgid "Instrument usage log book for %s - %s"
+msgstr ""
+
+#: inc/export/exporttypes.php:117
+msgid "Date/Time"
+msgstr ""
+
+#: inc/export/exporttypes.php:118
+msgid "Length"
+msgstr ""
+
+#: inc/export/exporttypes.php:124
+msgid "Project name"
+msgstr ""
+
+#: inc/export/exporttypes.php:125
+msgid "User comments"
+msgstr ""
+
+#: inc/export/exporttypes.php:140
+msgid "Instrument usage by projects"
+msgstr ""
+
+#: inc/export/exporttypes.php:141
+#, php-format
+msgid "Instrument usage by projects for %s - %s"
+msgstr ""
+
+#: inc/export/exporttypes.php:151 inc/export/exporttypes.php:193
+#: inc/export/exporttypes.php:243
+msgid "Hours used"
+msgstr ""
+
+#: inc/export/exporttypes.php:157 inc/export/exporttypes.php:204
+#: inc/export/exporttypes.php:428
+msgid "Group results by instrument"
+msgstr ""
+
+#: inc/export/exporttypes.php:162
+msgid "Group results by project"
+msgstr ""
+
+#: inc/export/exporttypes.php:173
+msgid "Instrument usage by groups"
+msgstr ""
+
+#: inc/export/exporttypes.php:174
+#, php-format
+msgid "Instrument usage by groups for %s - %s"
+msgstr ""
+
+#: inc/export/exporttypes.php:187 inc/export/exporttypes.php:308
+#: inc/export/exporttypes.php:352 inc/export/exporttypes.php:521
+#: inc/export/exporttypes.php:547 inc/export/exporttypes.php:571
+msgid "Supervisor"
+msgstr ""
+
+#: inc/export/exporttypes.php:198 inc/export/exporttypes.php:314
+#: inc/export/exporttypes.php:363 inc/export/exporttypes.php:476
+msgid "Share"
+msgstr ""
+
+#: inc/export/exporttypes.php:210 inc/export/exporttypes.php:324
+#: inc/export/exporttypes.php:368 inc/export/exporttypes.php:422
+msgid "Group results by research group"
+msgstr ""
+
+#: inc/export/exporttypes.php:216 inc/export/exporttypes.php:330
+msgid "Group results by research group with per-user breakdown"
+msgstr ""
+
+#: inc/export/exporttypes.php:229
+msgid "Instrument usage by users"
+msgstr ""
+
+#: inc/export/exporttypes.php:230
+#, php-format
+msgid "Instrument usage by users for %s - %s"
+msgstr ""
+
+#: inc/export/exporttypes.php:257
+msgid "Consumables usage by users"
+msgstr ""
+
+#: inc/export/exporttypes.php:258
+#, php-format
+msgid "Consumables usage by users for %s - %s"
+msgstr ""
+
+#: inc/export/exporttypes.php:265 inc/export/exporttypes.php:305
+msgid "Item Name"
+msgstr ""
+
+#: inc/export/exporttypes.php:275 inc/export/exporttypes.php:375
+msgid "Group results by consumable"
+msgstr ""
+
+#: inc/export/exporttypes.php:283
+msgid "Group results by user"
+msgstr ""
+
+#: inc/export/exporttypes.php:295
+msgid "Consumables usage by groups"
+msgstr ""
+
+#: inc/export/exporttypes.php:296
+#, php-format
+msgid "Consumables usage by groups for %s - %s"
+msgstr ""
+
+#: inc/export/exporttypes.php:318
+msgid "Group results by consumables"
+msgstr ""
+
+#: inc/export/exporttypes.php:345
+msgid "Billing data: consumable usage"
+msgstr ""
+
+#: inc/export/exporttypes.php:346
+#, php-format
+msgid "Billing data: consumable usage for %s - %s"
+msgstr ""
+
+#: inc/export/exporttypes.php:388
+msgid "Billing data: instrument usage"
+msgstr ""
+
+#: inc/export/exporttypes.php:389
+#, php-format
+msgid "Billing data: instrument usage for %s - %s"
+msgstr ""
+
+#: inc/export/exporttypes.php:407
+msgid "Days used"
+msgstr ""
+
+#: inc/export/exporttypes.php:408
+msgid "Share (%)"
+msgstr ""
+
+#: inc/export/exporttypes.php:411
+msgid "Rate"
+msgstr ""
+
+#: inc/export/exporttypes.php:414
+msgid "Bulk Discount (%)"
+msgstr ""
+
+#: inc/export/exporttypes.php:439
+msgid "Billing data: complete: instruments"
+msgstr ""
+
+#: inc/export/exporttypes.php:440
+#, php-format
+msgid "Billing data: complete: instruments for %s - %s"
+msgstr ""
+
+#: inc/export/exporttypes.php:465
+msgid "Billing data: complete: consumable usage"
+msgstr ""
+
+#: inc/export/exporttypes.php:466
+#, php-format
+msgid "Billing data: complete: consumable usage for %s - %s"
+msgstr ""
+
+#: inc/export/exporttypes.php:480 inc/export/exporttypes.php:559
+msgid "Cost to group"
+msgstr ""
+
+#: inc/export/exporttypes.php:488
+msgid "Billing data: complete"
+msgstr ""
+
+#: inc/export/exporttypes.php:489
+#, php-format
+msgid "Billing data: complete for %s - %s"
+msgstr ""
+
+#: inc/export/exporttypes.php:496 inc/export/exporttypes.php:582
+msgid "Amount"
+msgstr ""
+
+#: inc/export/exporttypes.php:509
+msgid "Billing data: summary: instruments"
+msgstr ""
+
+#: inc/export/exporttypes.php:510
+#, php-format
+msgid "Billing data: summary: instruments for %s - %s"
+msgstr ""
+
+#: inc/export/exporttypes.php:527 inc/export/exporttypes.php:553
+msgid "Postal code"
+msgstr ""
+
+#: inc/export/exporttypes.php:531 inc/export/exporttypes.php:557
+#: inc/export/exporttypes.php:581
+msgid "Account"
+msgstr ""
+
+#: inc/export/exporttypes.php:540
+msgid "Billing data: summary: consumable usage"
+msgstr ""
+
+#: inc/export/exporttypes.php:541
+#, php-format
+msgid "Billing data: summary: consumable usage for %s - %s"
+msgstr ""
+
+#: inc/export/exporttypes.php:567
+msgid "Billing data: summary"
+msgstr ""
+
+#: inc/export/exporttypes.php:568
+#, php-format
+msgid "Billing data: summary for %s - %s"
+msgstr ""
+
+#: inc/export/exporttypes.php:573
+msgid "Address"
+msgstr ""
+
+#: inc/export/htmlexport.php:228
+msgid "Data export"
+msgstr ""
+
+#: inc/export/htmlexport.php:252
+msgid "Open Window"
+msgstr ""
+
+#: inc/export/pdfexport.php:377
+msgid "Bumblebee Report"
+msgstr ""
+
+#: inc/export/pdfexport.php:444
+msgid "Error generating PDF output:"
+msgstr ""
+
+#: inc/export/pdfexport.php:445
+msgid "Sorry things didn't work out for you."
+msgstr ""
+
+#: inc/export/pdfexport.php:449
+msgid "Exiting with error"
+msgstr ""
+
+#: inc/export/pdfexport.php:509
+msgid "(continued)"
+msgstr ""
+
+#: inc/formslib/checkboxtablelist.php:236
+msgid "deselect all"
+msgstr ""
+
+#: inc/formslib/checkboxtablelist.php:237
+msgid "select all"
+msgstr ""
+
+#: inc/formslib/dbchoicelist.php:316 inc/formslib/dbrow.php:142
+#: inc/formslib/nondbrow.php:133
+msgid "Invalid data:"
+msgstr ""
+
+#: inc/formslib/dbrow.php:151 inc/formslib/nondbrow.php:142
+msgid ""
+"Some values entered into the form are not valid and should be highlighted in "
+"the form below. Please check your data entry and try again."
+msgstr ""
+
+#: inc/formslib/dbrow.php:260
+msgid "Cannot delete this item. Permission denied."
+msgstr ""
+
+#: inc/formslib/sql.php:92
+msgid "(successful)"
+msgstr ""
+
+#: inc/formslib/sql.php:114
+#, php-format
+msgid ""
+"Ooops. Something went very wrong. Please send the following log information "
+"to <a href='mailto:%s'>your Bumblebee Administrator</a> along with a "
+"description of what you were doing and ask them to pass it on to the "
+"Bumblebee developers. Thanks!"
+msgstr ""
+
+#: inc/formslib/sql.php:117
+msgid "Fatal SQL error. Aborting."
+msgstr ""
+
+#: inc/formslib/timefield.php:244
+msgid "edit times"
+msgstr ""
+
+#: inc/db.php:29
+#, php-format
+msgid ""
+"<p>Sorry, I couldn't connect to the database, so there's nothing I can "
+"presently do. This could be due to a booking system misconfiguration, or a "
+"failure of the database subsystem.</p><p>If this persists, please contact "
+"the <a href=\"mailto:%s\">booking system administrator</a>.</p>"
+msgstr ""
+
+#: inc/menu.php:124
+msgid "Help"
+msgstr ""
+
+#: inc/menu.php:125
+msgid "Main Menu"
+msgstr ""
+
+#: inc/menu.php:126
+msgid "Administration"
+msgstr ""
+
+#: theme/contentfooter.php:26
+#, php-format
+msgid ""
+"System managed by <a href=\"http://bumblebeeman.sf.net/\">Bumblebee</a> "
+"version %s, released under the <a href=\"http://www.gnu.org/licenses/gpl.html"
+"\">GNU GPL</a>."
+msgstr ""
+
+#: theme/contentfooter.php:29
+#, php-format
+msgid ""
+"This installation of Bumblebee currently manages %s users, %s projects, %s "
+"instruments and %s bookings."
+msgstr ""
+
+#: theme/contentfooter.php:34
+#, php-format
+msgid "Running under %s (%s), %s (%s), PHP (%s, %s mode) with %s (%s)."
+msgstr ""
+
+#: theme/contentfooter.php:42
+#, php-format
+msgid "Email the <a href=\"mailto:%s\">system administrator</a> for help."
+msgstr ""
+
+#: theme/contentfooter.php:46
+#, php-format
+msgid "Booking information Copyright &copy; %s %s"
+msgstr ""
+
+#: theme/contentheader.php:28
+msgid "Bumblebee Instrument Bookings"
+msgstr ""
