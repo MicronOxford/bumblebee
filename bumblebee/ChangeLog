@@ -1,4 +1,9 @@
+2006-05-25 Stuart Prescott <bumblebee@nanonanonano.net>
+	* 1.1.1 release
+	* installer compliant with PHP5 now too
+
 2006-05-24 Stuart Prescott <bumblebee@nanonanonano.net>
+	* 1.1.0 release
 	* major changes to give PHP5 compatability to the code.
 
 2006-05-09 Stuart Prescott <bumblebee@nanonanonano.net>
