@@ -28,15 +28,20 @@ function issetSet(&$a, $k, $default=NULL) {
 /**
 * simple debugging function to print out arrays and objects
 *
-* uses print_r within HTML pre tags for easier inspection of classes and arrays
+* uses print_r/var_dump or dBug within HTML pre tags for easier inspection of classes and arrays
 * @param mixed $v  object or array to print 
 */
 function preDump($v) {
-  #echo "<pre>".print_r($v,1)."</pre>\n";
-  echo '<pre>';
-  var_dump($v);
-  #print_r($v);
-  echo '</pre>'."\n";
+  // either use the dBug class for pretty printing or var_dump/print_r 
+  global $CONFIG;
+  if ($CONFIG['error_handling']['UseDBug']) {
+    new dBug($v);
+  } else {
+    echo '<pre>';
+    var_dump($v);
+    #print_r($v);
+    echo '</pre>'."\n";
+  }
 }
 
 /**
