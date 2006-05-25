@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bumblebee\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-24 18:02+0100\n"
+"POT-Creation-Date: 2006-05-25 16:17+0100\n"
 "PO-Revision-Date: 2006-05-24 18:10+0100\n"
 "Last-Translator: Stuart Prescott <bumblebee@nanonanonano.net>\n"
 "Language-Team: \n"
@@ -302,7 +302,8 @@ msgstr "Verbrauchsmaterialien"
 
 #: inc/actions/consumables.php:52
 msgid "Select which Consumables to view"
-msgstr "W&auml;hlen Sie bitte vor, die Sie Verbrauchsmaterialien, welches zur Ansicht"
+msgstr ""
+"W&auml;hlen Sie bitte vor, die Sie Verbrauchsmaterialien, welches zur Ansicht"
 
 #: inc/actions/consumables.php:55 inc/actions/consumables.php:75
 msgid "Create new consumable"
@@ -382,7 +383,8 @@ msgstr "Benutzeren"
 
 #: inc/actions/consume.php:117
 msgid "Select which user is consuming"
-msgstr "W&auml;hlen Sie bitte vor, welcher Benutzer das Verbrauchsmaterial benutzt"
+msgstr ""
+"W&auml;hlen Sie bitte vor, welcher Benutzer das Verbrauchsmaterial benutzt"
 
 #: inc/actions/consume.php:139
 msgid "Select which Consumables to use"
@@ -471,7 +473,8 @@ msgstr "Kosten"
 
 #: inc/actions/costs.php:78
 msgid "Select which user class to view usage costs"
-msgstr "W&auml;hlen Sie vor, das Benutzerkategorie zum Ansehen von Verbrauchkosten"
+msgstr ""
+"W&auml;hlen Sie vor, das Benutzerkategorie zum Ansehen von Verbrauchkosten"
 
 #: inc/actions/costs.php:99 inc/actions/specialcosts.php:168
 msgid "Cost schedule created"
@@ -507,7 +510,8 @@ msgstr "Verursachen Sie neue Benutzerkategorie"
 
 #: inc/actions/instrumentclass.php:77
 msgid "Select which instrument class to view"
-msgstr "W&auml;hlen Sie bitte vor, die Sie Instrumentkategorie, welches zur Ansicht"
+msgstr ""
+"W&auml;hlen Sie bitte vor, die Sie Instrumentkategorie, welches zur Ansicht"
 
 #: inc/actions/instrumentclass.php:79
 msgid "Create new instrument class"
@@ -542,7 +546,8 @@ msgid "Value separator"
 msgstr "Wertseparator"
 
 #: inc/actions/emaillist.php:91
-msgid "Separates the returned values so you can paste them into your email client"
+msgid ""
+"Separates the returned values so you can paste them into your email client"
 msgstr ""
 "Trennt die zur&uuml;ckgebrachten Werte, also k&ouml;nnen Sie sie in Ihren "
 "emailklienten kleben"
@@ -716,7 +721,8 @@ msgstr "Anmelden angefordert"
 
 #: inc/actions/login.php:35
 msgid "Please login to view or book instrument usage"
-msgstr "Geben Sie bitte Ihr Benutzername und Passwort, um die Instrumente anzumelden."
+msgstr ""
+"Geben Sie bitte Ihr Benutzername und Passwort, um die Instrumente anzumelden."
 
 #: inc/actions/login.php:51
 msgid "Username:"
@@ -873,7 +879,8 @@ msgstr "Benutzerkategorie"
 
 #: inc/actions/userclass.php:75
 msgid "Select which user class to view"
-msgstr "W&auml;hlen Sie bitte vor, die Sie Benutzerkategorie, welches zur Ansicht"
+msgstr ""
+"W&auml;hlen Sie bitte vor, die Sie Benutzerkategorie, welches zur Ansicht"
 
 #: inc/actions/userclass.php:89
 msgid "User class deleted"
@@ -1646,7 +1653,8 @@ msgstr "Geb&uuml;hrenz&auml;hlungsdaten:  verbrauchbarer Verbrauch"
 #: inc/export/exporttypes.php:346
 #, php-format
 msgid "Billing data: consumable usage for %s - %s"
-msgstr "Geb&uuml;hrenz&auml;hlungsdaten:  verbrauchbarer Verbrauch f&uuml;r %s bis %s"
+msgstr ""
+"Geb&uuml;hrenz&auml;hlungsdaten:  verbrauchbarer Verbrauch f&uuml;r %s bis %s"
 
 #: inc/export/exporttypes.php:388
 msgid "Billing data: instrument usage"
@@ -1655,7 +1663,8 @@ msgstr "Geb&uuml;hrenz&auml;hlungsdaten:  Instrumentverbrauch"
 #: inc/export/exporttypes.php:389
 #, php-format
 msgid "Billing data: instrument usage for %s - %s"
-msgstr "Geb&uuml;hrenz&auml;hlungsdaten:  Instrumentverbrauch f&uuml;r %s bis %s"
+msgstr ""
+"Geb&uuml;hrenz&auml;hlungsdaten:  Instrumentverbrauch f&uuml;r %s bis %s"
 
 #: inc/export/exporttypes.php:407
 msgid "Days used"
@@ -1680,7 +1689,8 @@ msgstr "Geb&uuml;hrenz&auml;hlungsdaten:  komplett:  Instrumente"
 #: inc/export/exporttypes.php:440
 #, php-format
 msgid "Billing data: complete: instruments for %s - %s"
-msgstr "Geb&uuml;hrenz&auml;hlungsdaten:  komplett:  Instrumente f&uuml;r  %s bis %s"
+msgstr ""
+"Geb&uuml;hrenz&auml;hlungsdaten:  komplett:  Instrumente f&uuml;r  %s bis %s"
 
 #: inc/export/exporttypes.php:465
 msgid "Billing data: complete: consumable usage"
@@ -1732,7 +1742,8 @@ msgstr "Kontocode"
 
 #: inc/export/exporttypes.php:540
 msgid "Billing data: summary: consumable usage"
-msgstr "Geb&uuml;hrenz&auml;hlungsdaten:  Zusammenfassung:  verbrauchbarer Verbrauch"
+msgstr ""
+"Geb&uuml;hrenz&auml;hlungsdaten:  Zusammenfassung:  verbrauchbarer Verbrauch"
 
 #: inc/export/exporttypes.php:541
 #, php-format
@@ -1743,7 +1754,8 @@ msgstr ""
 
 #: inc/export/exporttypes.php:567
 msgid "Billing data: summary"
-msgstr "Geb&uuml;hrenz&auml;hlungsdaten:  Zusammenfassung:  verbrauchbarer Verbrauch"
+msgstr ""
+"Geb&uuml;hrenz&auml;hlungsdaten:  Zusammenfassung:  verbrauchbarer Verbrauch"
 
 #: inc/export/exporttypes.php:568
 #, php-format
@@ -1764,23 +1776,23 @@ msgstr "Datenexport"
 msgid "Open Window"
 msgstr "&ouml;ffnen Fenster"
 
-#: inc/export/pdfexport.php:377
+#: inc/export/pdfexport.php:378
 msgid "Bumblebee Report"
 msgstr "Bumblebee Report"
 
-#: inc/export/pdfexport.php:444
+#: inc/export/pdfexport.php:445
 msgid "Error generating PDF output:"
 msgstr "St&ouml;rung als, PDF erzeugend, gab aus:"
 
-#: inc/export/pdfexport.php:445
+#: inc/export/pdfexport.php:446
 msgid "Sorry things didn't work out for you."
 msgstr "Traurige Sachen arbeiteten nicht f&uuml;r Sie aus."
 
-#: inc/export/pdfexport.php:449
+#: inc/export/pdfexport.php:450
 msgid "Exiting with error"
 msgstr "Herausnehmen mit St&ouml;rung"
 
-#: inc/export/pdfexport.php:509
+#: inc/export/pdfexport.php:510
 msgid "(continued)"
 msgstr "(fortgefahren)"
 
@@ -1901,4 +1913,3 @@ msgstr "Anmeldungsinformations-copyright &copy; %s %s"
 #: theme/contentheader.php:28
 msgid "Bumblebee Instrument Bookings"
 msgstr "Bumblebee InstrumentAnmeldungen"
-

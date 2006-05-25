@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-24 18:11+0100\n"
+"POT-Creation-Date: 2006-05-25 17:28+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1715,23 +1715,23 @@ msgstr ""
 msgid "Open Window"
 msgstr ""
 
-#: inc/export/pdfexport.php:377
+#: inc/export/pdfexport.php:378
 msgid "Bumblebee Report"
 msgstr ""
 
-#: inc/export/pdfexport.php:444
+#: inc/export/pdfexport.php:445
 msgid "Error generating PDF output:"
 msgstr ""
 
-#: inc/export/pdfexport.php:445
+#: inc/export/pdfexport.php:446
 msgid "Sorry things didn't work out for you."
 msgstr ""
 
-#: inc/export/pdfexport.php:449
+#: inc/export/pdfexport.php:450
 msgid "Exiting with error"
 msgstr ""
 
-#: inc/export/pdfexport.php:509
+#: inc/export/pdfexport.php:510
 msgid "(continued)"
 msgstr ""
 
