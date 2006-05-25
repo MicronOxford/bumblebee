@@ -45,6 +45,8 @@ Features:
 
   * email ics file for booking to user
   
+  * be more picky about making bookings with no project defined.
+  
 i18n:
   * day and month names not translated now not using LC_ALL/locale
   * HOWTO:
