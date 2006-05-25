@@ -103,7 +103,7 @@ if (!empty($CONFIG['main']['ExtraIncludePath'])) {
   set_include_path($REBASE_INSTALL.$CONFIG['main']['ExtraIncludePath'].PATH_SEPARATOR.get_include_path());
 }
 
-if ($CONFIG['error_handling']['UseDBug']) {
+if (isset($CONFIG['error_handling']['UseDBug']) && $CONFIG['error_handling']['UseDBug']) {
   // include the dBug pretty printer for error and debugging dumps
   // http://dbug.ospinto.com/
   include_once 'dBug.php';
