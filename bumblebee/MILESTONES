@@ -1,44 +1,48 @@
 
-
-
-2.0
+The Distant Future
   * full, user-configurable billing support included
+
+
+2.4
   * can export invoices or statements of usage
   * can email invoices or statements of usage to groups
-  * unbooking an instrument causes an email to be sent to admin for some timeslots
-  * unbooking an instrument causes an email to be sent to the unbook list for some timeslots
 
-
-.
-.
-.
-
-1.6
-  * email users with notification of booking 
+2.2
+  * email users with notification of booking (ics attachment?)
   * email users a reminder that bookings are coming up (cron job)
 
-1.4 
+2.0 (new database structure)
   * heirarchical+fine-grained permission system 
     - groups of instruments
     - groups of users (groups? projects?)
   * group of instruments:
     - calendar displays
-    - billing reports
-  * confirmation of booking on some instruments
-  * different booking slots for different types of user on same instrument (overlay calendar?)
-  * improve timeslot config
-    - validation on the timeslotrule input e.g. making sure every hour is accounted for
-    - better UI for setting timeslots
-
-1.2
-  * internationalisation
+    - billing reports (UI improvement)
+  * timeslot management improvements
+    - require admin confirmation of booking on some instruments or for some timeslots
+    - different booking slots for different types of user on same instrument (overlay calendar?)
+    - unbooking an instrument causes an email to be sent to admin for some timeslots
+    - unbooking an instrument causes an email to be sent to the unbook list for some timeslots
   * bring email templates into the database (+ interface to edit)
+  * bring config file into database (+ interface to edit)
+
+
+
+1.4
   * more reporting functions: 
     - future bookings by a user or group
     - summary of bookings for each user
     - summary of bookings for a set of instruments 
   * book instruments for weeks/months
   * better drop-down time listing for booking screen
+  * improve timeslot config
+    - validation on the timeslotrule input e.g. making sure every hour is accounted for
+    - better UI for setting timeslots
+  * improve HTML and PDF output (column widths algorithm)
+
+1.2
+  * internationalisation
+  * PHP5 support
 
 1.0: Initial public release
   * permit admin user to masquerade as another user like 'su' to make bookings
