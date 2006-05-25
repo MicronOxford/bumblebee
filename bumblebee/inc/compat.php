@@ -42,7 +42,7 @@
 
 if (version_compare(phpversion(), '5.0') === -1) {
   /** php-compat implementation of clone for PHP4 */
-  include_once 'Compat/Function/clone.php';
+  include_once 'PHP/Compat/Function/clone.php';
 }
 
 ?> 
