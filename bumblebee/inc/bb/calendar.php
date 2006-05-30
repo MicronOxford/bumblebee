@@ -428,7 +428,7 @@ class Calendar {
     for ($day=0; $day<7; $day++) {
       $current = clone($weekstart);
       $current->addDays($day);
-      $t .= '<th class="caldow">'.date('D', $current->ticks).'</th>';
+      $t .= '<th class="caldow">'.T_($current->dowShortStr()).'</th>';
     }
     $t .= '</tr>';
     for ($row = 0; $row < $numRows; $row++) {
@@ -450,11 +450,11 @@ class Calendar {
           $t .= '<div class="caldate">' 
                 //. strftime("%e", $current->ticks);    // works on linux
                 //. strftime("%d", $current->ticks);    // works on windows & linux but zero-pads dates
-                . intval(strftime("%d", $current->ticks));    // works on windows & linux removing the leading zero
+                . intval($current->dom());    // works on windows & linux removing the leading zero
           $t .= '<span class="calmonth '
           #.($month == $lastmonth ? "contmonth" : "startmonth") . "'> "
             .'startmonth' . '"> '
-            . strftime("%B", $current->ticks)
+            . T_($current->moyStr())
           .'</span>';
           $t .= '</div>';
           $t .= '</td>';

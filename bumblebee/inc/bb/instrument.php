@@ -149,9 +149,9 @@ class Instrument extends DBRow {
     $weekstart = new SimpleDate(time());
     $weekstart->weekRound();
     for ($day=0; $day<7; $day++) {
-      $today = $weekstart;
+      $today = clone($weekstart);
       $today->addDays($day);
-      $f = new TextArea('tsr-'.$day, $today->dowStr(), T_('Slots in day, one per line'));
+      $f = new TextArea('tsr-'.$day, T_($today->dowStr()), T_('Slots in day, one per line'));
       $f->sqlHidden = 1;
       $f->setAttr(array('rows' =>3, 'cols' => 30));
       $f->required = 1;
