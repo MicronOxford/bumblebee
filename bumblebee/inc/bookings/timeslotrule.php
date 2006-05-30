@@ -220,7 +220,7 @@ class TimeSlotRule {
    * perform the above operations with no code duplication
    */
   function _isValidStartStop($date, $type, $daysdate=0) {
-    return $this->_findSlot($date, $type, $daysdate) != 0;
+    return ! is_object($this->_findSlot($date, $type, $daysdate));
   }
   
   /**
