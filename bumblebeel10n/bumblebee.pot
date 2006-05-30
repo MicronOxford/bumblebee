@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-25 17:29+0100\n"
+"POT-Creation-Date: 2006-05-31 00:01+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1777,6 +1777,162 @@ msgstr ""
 
 #: inc/formslib/timefield.php:244
 msgid "edit times"
+msgstr ""
+
+#: inc/date.php:694
+msgid "Monday"
+msgstr ""
+
+#: inc/date.php:694
+msgid "Mon"
+msgstr ""
+
+#: inc/date.php:695
+msgid "Tuesday"
+msgstr ""
+
+#: inc/date.php:695
+msgid "Tue"
+msgstr ""
+
+#: inc/date.php:695
+msgid "Tues"
+msgstr ""
+
+#: inc/date.php:696
+msgid "Wednesday"
+msgstr ""
+
+#: inc/date.php:696
+msgid "Wed"
+msgstr ""
+
+#: inc/date.php:697
+msgid "Thursday"
+msgstr ""
+
+#: inc/date.php:697
+msgid "Thu"
+msgstr ""
+
+#: inc/date.php:697
+msgid "Thurs"
+msgstr ""
+
+#: inc/date.php:698
+msgid "Friday"
+msgstr ""
+
+#: inc/date.php:698
+msgid "Fri"
+msgstr ""
+
+#: inc/date.php:699
+msgid "Saturday"
+msgstr ""
+
+#: inc/date.php:699
+msgid "Sat"
+msgstr ""
+
+#: inc/date.php:700
+msgid "Sunday"
+msgstr ""
+
+#: inc/date.php:700
+msgid "Sun"
+msgstr ""
+
+#: inc/date.php:702
+msgid "January"
+msgstr ""
+
+#: inc/date.php:702
+msgid "Jan"
+msgstr ""
+
+#: inc/date.php:703
+msgid "February"
+msgstr ""
+
+#: inc/date.php:703
+msgid "Feb"
+msgstr ""
+
+#: inc/date.php:704
+msgid "March"
+msgstr ""
+
+#: inc/date.php:704
+msgid "Mar"
+msgstr ""
+
+#: inc/date.php:705
+msgid "April"
+msgstr ""
+
+#: inc/date.php:705
+msgid "Apr"
+msgstr ""
+
+#: inc/date.php:706
+msgid "May"
+msgstr ""
+
+#: inc/date.php:707
+msgid "June"
+msgstr ""
+
+#: inc/date.php:707
+msgid "Jun"
+msgstr ""
+
+#: inc/date.php:708
+msgid "July"
+msgstr ""
+
+#: inc/date.php:708
+msgid "Jul"
+msgstr ""
+
+#: inc/date.php:709
+msgid "August"
+msgstr ""
+
+#: inc/date.php:709
+msgid "Aug"
+msgstr ""
+
+#: inc/date.php:710
+msgid "September"
+msgstr ""
+
+#: inc/date.php:710
+msgid "Sep"
+msgstr ""
+
+#: inc/date.php:711
+msgid "October"
+msgstr ""
+
+#: inc/date.php:711
+msgid "Oct"
+msgstr ""
+
+#: inc/date.php:712
+msgid "November"
+msgstr ""
+
+#: inc/date.php:712
+msgid "Nov"
+msgstr ""
+
+#: inc/date.php:713
+msgid "December"
+msgstr ""
+
+#: inc/date.php:713
+msgid "Dec"
 msgstr ""
 
 #: inc/db.php:29
