@@ -422,6 +422,14 @@ class SimpleDate {
   }
   
   /**
+  * return the (short) day of week of the current date as a string (always in English)
+  * @return string day of week (Sun, Mon, etc)
+  */
+  function dowShortStr() {
+    return date('D', $this->ticks);
+  }
+  
+  /**
   * return the day of month
   * @return integer day of month (1..31)
   */
@@ -435,6 +443,22 @@ class SimpleDate {
   */
   function moy() {
     return date('m', $this->ticks);
+  }
+  
+  /**
+  * return the month of year of the current date as a string (always in English)
+  * @return string month of the year (January, February etc)
+  */
+  function moyStr() {
+    return date('F', $this->ticks);
+  }
+  
+  /**
+  * return the (short) month of the year of the current date as a string (always in English)
+  * @return string month of the year (Jan, Feb etc)
+  */
+  function moyShortStr() {
+    return date('M', $this->ticks);
   }
   
   /**
@@ -674,5 +698,35 @@ class SimpleTime {
     return $s;
   }
 } // class SimpleTime
+
+// We need to define these just so that the date formatting routines can always
+// return English names for the days and dates and the translation layer will 
+// provide the correct translation. We can't just use setlocale() and strftime()
+// to do this because they only work if the locale is installed on the server and
+// this is frequently not the case (which is why we are using gettext emulation
+// to begin with!)
+
+if (false) { // never run this code, but define the constants so that msgformat finds them
+  $s = T_('Monday');     $s = T_('Mon'); 
+  $s = T_('Tuesday');    $s = T_('Tue'); $s = T_('Tues');
+  $s = T_('Wednesday');  $s = T_('Wed'); 
+  $s = T_('Thursday');   $s = T_('Thu'); $s = T_('Thurs'); 
+  $s = T_('Friday');     $s = T_('Fri'); 
+  $s = T_('Saturday');   $s = T_('Sat'); 
+  $s = T_('Sunday');     $s = T_('Sun'); 
+  
+  $s = T_('January');    $s = T_('Jan'); 
+  $s = T_('February');   $s = T_('Feb'); 
+  $s = T_('March');      $s = T_('Mar'); 
+  $s = T_('April');      $s = T_('Apr'); 
+  $s = T_('May');
+  $s = T_('June');       $s = T_('Jun'); 
+  $s = T_('July');       $s = T_('Jul'); 
+  $s = T_('August');     $s = T_('Aug'); 
+  $s = T_('September');  $s = T_('Sep'); 
+  $s = T_('October');    $s = T_('Oct'); 
+  $s = T_('November');   $s = T_('Nov'); 
+  $s = T_('December');   $s = T_('Dec'); 
+}
 
 ?> 
