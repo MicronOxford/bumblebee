@@ -226,7 +226,7 @@ class DBRow extends DBO {
       $row->addElement($f);
       foreach ($this->fields as $field) {
         if ($field->requiredTwoStage) {
-          $row->addElement($field);
+          $row->addElement(clone($field));
         }
       }
       $row->isValid = 1;
