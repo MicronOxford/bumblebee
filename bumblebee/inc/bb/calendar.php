@@ -448,9 +448,7 @@ class Calendar {
               .'<img src="'.$BASEPATH.'/theme/images/zoom.png" '
                   .'alt="'.$zoomwords .'" class="calicon" /></a></div>'."\n";
           $t .= '<div class="caldate">' 
-                //. strftime("%e", $current->ticks);    // works on linux
-                //. strftime("%d", $current->ticks);    // works on windows & linux but zero-pads dates
-                . intval($current->dom());    // works on windows & linux removing the leading zero
+                . $current->dom();  
           $t .= '<span class="calmonth '
           #.($month == $lastmonth ? "contmonth" : "startmonth") . "'> "
             .'startmonth' . '"> '
@@ -526,13 +524,11 @@ class Calendar {
     $t .= '<tr><td class="dummy"></td><th></th>';
     $t .= '<td class="caldayzoom">';
     $t .= '<div class="caldate">' 
-          //. strftime("%e", $current->ticks);    // works on linux
-          //. strftime("%d", $current->ticks);    // works on windows & linux but zero-pads dates
-          . intval(strftime("%d", $this->start->ticks));    // works on windows & linux removing the leading zero
+          . $this->start->dom();
     $t .= '<span class="calmonth '
     #.($month == $lastmonth ? "contmonth" : "startmonth") . "'> "
       .'startmonth' . '"> '
-      . strftime('%B', $this->start->ticks)
+      .T_($this->start->moyStr())
     .'</span>';
     $t .= '</div>';
     $t .= '</td>';
