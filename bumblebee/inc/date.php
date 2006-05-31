@@ -434,7 +434,7 @@ class SimpleDate {
   * @return integer day of month (1..31)
   */
   function dom() {
-    return date('d', $this->ticks);
+    return intval(date('d', $this->ticks));  // use intval to remove the leading zero
   }
   
   /**
