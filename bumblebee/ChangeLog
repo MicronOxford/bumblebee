@@ -1,3 +1,8 @@
+2006-05-31 Stuart Prescott <bumblebee@nanonanonano.net>
+	* 1.1.2 release
+	* i18n: translate days of week and months of year
+	* bugfix: PHP5 tweaks for instrument editing component and timeslot management
+
 2006-05-25 Stuart Prescott <bumblebee@nanonanonano.net>
 	* 1.1.1 release
 	* installer compliant with PHP5 now too
