@@ -54,6 +54,7 @@ include 'theme/contentheader.php';
 ?>
   <div id="bumblebeecontent">
     <form method="post" 
+      accept-charset="utf-8"
       action="<?php echo makeURL($action->nextaction); ?>" 
       id="bumblebeeform"
       <?php 
