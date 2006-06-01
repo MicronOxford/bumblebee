@@ -228,6 +228,7 @@ function check_postinst($data) {
       $error = true;
     } else {
       $s[] .= "GOOD: Admin can log in to Bumblebee with this username and password.";
+      $auth->logout();  // destroy the session cookie so the user has to log in
     }
   }
 
@@ -396,8 +397,8 @@ function constructSQL($source, $replacements, $includeAdmin) {
   $sql = preg_replace("/(REVOKE .+ FROM) $sqlDefaultUser;/",
                       "\$1 $sqlUser;", $sql);
   // CREATE OR DROP DATABASE                     
-  $sql = preg_replace("/^(.+) DATABASE(.*) $sqlDefaultDB;/",
-                      "\$1 DATABASE\$2 $sqlDB;", $sql);
+  $sql = preg_replace("/^(.+) DATABASE(.*) $sqlDefaultDB/",
+                      "\$1 DATABASE\$2 $sqlDB", $sql);
   $sql = preg_replace("/USE $sqlDefaultDB;/",
                       "USE $sqlDB;", $sql);
   $sql = preg_replace("/DROP TABLE IF EXISTS (.+)?;/",
