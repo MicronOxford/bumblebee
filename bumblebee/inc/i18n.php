@@ -28,6 +28,10 @@ include_once 'php-gettext/gettext.inc';
 /** logging routine */
 require_once 'inc/logging.php';
 
+// get PHP to send a UTF-8 header for the content-type charset rather
+// than the PHP4 default iso8859-1
+ini_set('default_charset', 'utf-8');
+
 // this could be done per-user, but that would be more difficult...
 //$locale = (isset($_GET['lang']))? $_GET['lang'] : DEFAULT_LOCALE;
 $locale = $CONFIG['language']['locale'];
@@ -58,5 +62,6 @@ if (function_exists('T_setlocale') && function_exists('T_')) {
   logmsg(9, "Cannot find php-gettext so ignoring request for locale '$locale'");
   function T_($s) { return $s; }
 }
+
 
 ?> 
