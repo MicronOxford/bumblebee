@@ -26,25 +26,23 @@ $CONFIG['database']['dbname']     = $db_ini['database'];
 */
 $TABLEPREFIX = $db_ini['tableprefix'];
 
+/**
+* import SQL functions for database lookups
+*/
+require_once 'inc/formslib/sql.php';
+
 $dberrmsg = sprintf(T_('<p>Sorry, I couldn\'t connect to the database, so there\'s nothing I can presently do. This could be due to a booking system misconfiguration, or a failure of the database subsystem.</p><p>If this persists, please contact the <a href="mailto:%s">booking system administrator</a>.</p>'), $ADMINEMAIL);
 
 $DB_CONNECT_DEBUG = isset($DB_CONNECT_DEBUG) ? $DB_CONNECT_DEBUG : false;
 $NON_FATAL_DB     = isset($NON_FATAL_DB)     ? $NON_FATAL_DB     : false;
 
-// $connection = mysql_pconnect($CONFIG['database']['dbhost'], 
-//                              $CONFIG['database']['dbusername'], 
-//                              $CONFIG['database']['dbpasswd'])
-//               or (! $NON_FATAL_DB && die ($dberrmsg.($DB_CONNECT_DEBUG ? mysql_error() : '')))
-//               or                     trigger_error($dberrmsg.($DB_CONNECT_DEBUG ? mysql_error() : ''), E_USER_NOTICE);
-// $db = mysql_select_db($CONFIG['database']['dbname'], $connection)
-//               or (! $NON_FATAL_DB && die ($dberrmsg.($DB_CONNECT_DEBUG ? mysql_error() : '')))
-//               or                     trigger_error($dberrmsg.($DB_CONNECT_DEBUG ? mysql_error() : ''), E_USER_NOTICE);
-
 if (($connection = mysql_pconnect($CONFIG['database']['dbhost'], 
                              $CONFIG['database']['dbusername'], 
                              $CONFIG['database']['dbpasswd']) )
     && ($db = mysql_select_db($CONFIG['database']['dbname'], $connection)) ) {
-  // then we successfully logged on to the database
+  // we successfully logged on to the database
+  // automatically use UTF-8 for the connection encoding
+  db_quiet("SET NAMES 'utf8'");
 } else {
   $errcode = $NON_FATAL_DB ? E_USER_NOTICE : E_USER_ERROR;
   $errmsg  = $dberrmsg;
@@ -56,9 +54,5 @@ if (($connection = mysql_pconnect($CONFIG['database']['dbhost'],
   trigger_error($errmsg, $errcode);
 }
 
-/**
-* import SQL functions for database lookups
-*/
-require_once 'inc/formslib/sql.php';
 
 ?> 
