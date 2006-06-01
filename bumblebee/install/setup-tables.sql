@@ -7,7 +7,7 @@
 -- $Id$
 
 DROP DATABASE IF EXISTS bumblebeedb;
-CREATE DATABASE bumblebeedb;
+CREATE DATABASE bumblebeedb DEFAULT CHARACTER SET utf8;
 
 USE mysql;
 
@@ -27,67 +27,67 @@ USE bumblebeedb;
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
   id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  username VARCHAR(63) NOT NULL,
-  name VARCHAR(63) NOT NULL,
-  passwd CHAR(32) NOT NULL,
-  email VARCHAR(63),
-  phone VARCHAR(20),
+  username VARCHAR(127) CHARACTER SET utf8 NOT NULL,
+  name VARCHAR(255) CHARACTER SET utf8 NOT NULL,
+  passwd CHAR(32) CHARACTER SET utf8 NOT NULL,
+  email VARCHAR(255) CHARACTER SET utf8,
+  phone VARCHAR(20) CHARACTER SET utf8,
   suspended BOOL DEFAULT 0,
   isadmin BOOL DEFAULT 0,
   deleted BOOL DEFAULT 0,
   PRIMARY KEY (id),
   UNIQUE KEY username (username)
-);
+) DEFAULT CHARACTER SET utf8;
 -- password contains MD5 hash
 
 DROP TABLE IF EXISTS projects;
 CREATE TABLE projects (
   id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  name VARCHAR(31) NOT NULL,
-  longname VARCHAR(255) NOT NULL,
+  name VARCHAR(255) CHARACTER SET utf8 NOT NULL,
+  longname TEXT CHARACTER SET utf8 NOT NULL,
   defaultclass SMALLINT UNSIGNED NOT NULL,
   deleted BOOL DEFAULT 0,
   PRIMARY KEY (id)
-);
+) DEFAULT CHARACTER SET utf8;
 
 DROP TABLE IF EXISTS groups;
 CREATE TABLE groups (
   id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  name VARCHAR(31) NOT NULL,
-  longname VARCHAR(255) NOT NULL,
-  addr1 VARCHAR(127),
-  addr2 VARCHAR(127),
-  suburb VARCHAR(63),
-  state VARCHAR(31),
-  code VARCHAR(15),
-  country VARCHAR(31),
-  email VARCHAR(63),
-  fax VARCHAR(20),
-  account VARCHAR(255),
+  name VARCHAR(255) CHARACTER SET utf8 NOT NULL,
+  longname TEXT CHARACTER SET utf8 NOT NULL,
+  addr1 TEXT CHARACTER SET utf8,
+  addr2 TEXT CHARACTER SET utf8,
+  suburb TEXT CHARACTER SET utf8,
+  state VARCHAR(127) CHARACTER SET utf8,
+  code VARCHAR(63) CHARACTER SET utf8,
+  country VARCHAR(255) CHARACTER SET utf8,
+  email VARCHAR(255) CHARACTER SET utf8,
+  fax VARCHAR(63) CHARACTER SET utf8,
+  account TEXT CHARACTER SET utf8,
   deleted BOOL DEFAULT 0,
   PRIMARY KEY (id)
-);
+) DEFAULT CHARACTER SET utf8;
 
 DROP TABLE IF EXISTS userprojects;
 CREATE TABLE userprojects (
   userid SMALLINT UNSIGNED NOT NULL,
   projectid SMALLINT UNSIGNED NOT NULL,
   isdefault BOOL DEFAULT 0
-);
+) DEFAULT CHARACTER SET utf8;
 
 DROP TABLE IF EXISTS projectgroups;
 CREATE TABLE projectgroups (
   projectid SMALLINT UNSIGNED NOT NULL,
   groupid SMALLINT UNSIGNED NOT NULL,
   grouppc FLOAT(16)
-);
+) DEFAULT CHARACTER SET utf8;
 
 DROP TABLE IF EXISTS instruments;
 CREATE TABLE instruments (
   id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  name VARCHAR(31) NOT NULL,
-  longname VARCHAR(255) NOT NULL,
-  location VARCHAR(127),
+  name VARCHAR(255) CHARACTER SET utf8 NOT NULL,
+  longname TEXT CHARACTER SET utf8 NOT NULL,
+  location TEXT CHARACTER SET utf8,
   class SMALLINT UNSIGNED NOT NULL,
   usualopen TIME NOT NULL,
   usualclose TIME NOT NULL,
@@ -96,16 +96,16 @@ CREATE TABLE instruments (
   callength SMALLINT UNSIGNED NOT NULL,
   calhistory SMALLINT UNSIGNED NOT NULL,
   calfuture SMALLINT UNSIGNED DEFAULT '365' NOT NULL,
-  timeslotpicture TEXT NOT NULL,
+  timeslotpicture TEXT CHARACTER SET utf8 NOT NULL,
   halfdaylength FLOAT(16) NOT NULL,
   fulldaylength FLOAT(16) NOT NULL,
   mindatechange FLOAT(16) NOT NULL,
   calendarcomment TEXT NOT NULL,
-  supervisors VARCHAR(255),
+  supervisors TEXT CHARACTER SET utf8,
   emailonbooking BOOL DEFAULT 0,
   deleted BOOL DEFAULT 0,
   PRIMARY KEY (id)
-);
+) DEFAULT CHARACTER SET utf8;
 
 DROP TABLE IF EXISTS permissions;
 CREATE TABLE permissions (
@@ -117,7 +117,7 @@ CREATE TABLE permissions (
   haspriority BOOL DEFAULT 0,
   points SMALLINT UNSIGNED,
   pointsrecharge SMALLINT UNSIGNED
-);
+) DEFAULT CHARACTER SET utf8;
 -- announce: receive announcement emails
 -- unbook: receive unbook announcement emails
 -- haspriority: is a priority user  (unused)
@@ -127,18 +127,18 @@ CREATE TABLE permissions (
 DROP TABLE IF EXISTS instrumentclass;
 CREATE TABLE instrumentclass (
   id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  name VARCHAR(63) NOT NULL,
+  name VARCHAR(127) CHARACTER SET utf8 NOT NULL,
   deleted BOOL DEFAULT 0,
   PRIMARY KEY (id)
-);
+) DEFAULT CHARACTER SET utf8;
 
 DROP TABLE IF EXISTS userclass;
 CREATE TABLE userclass (
   id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  name VARCHAR(63) NOT NULL,
+  name VARCHAR(127) CHARACTER SET utf8 NOT NULL,
   deleted BOOL DEFAULT 0,
   PRIMARY KEY (id)
-);
+) DEFAULT CHARACTER SET utf8;
 
 DROP TABLE IF EXISTS costs;
 CREATE TABLE costs (
@@ -150,7 +150,7 @@ CREATE TABLE costs (
   costfullday FLOAT(16),
   dailymarkdown FLOAT(16) DEFAULT '0' NOT NULL,
   PRIMARY KEY (id)
-);
+) DEFAULT CHARACTER SET utf8;
 
 DROP TABLE IF EXISTS projectrates;
 CREATE TABLE projectrates (
@@ -158,7 +158,7 @@ CREATE TABLE projectrates (
   instrid SMALLINT UNSIGNED NOT NULL,
   rate SMALLINT UNSIGNED,
   UNIQUE KEY rate (projectid,instrid)
-);
+) DEFAULT CHARACTER SET utf8;
 
 DROP TABLE IF EXISTS bookings;
 CREATE TABLE bookings (
@@ -175,12 +175,12 @@ CREATE TABLE bookings (
   userid SMALLINT UNSIGNED NOT NULL,
   projectid SMALLINT UNSIGNED NOT NULL,
   discount FLOAT(16) DEFAULT '0', -- as a percentage
-  ip CHAR(16),
-  comments VARCHAR(255),
-  log TEXT,
+  ip CHAR(16) CHARACTER SET utf8,
+  comments TEXT CHARACTER SET utf8,
+  log TEXT CHARACTER SET utf8,
   deleted BOOL DEFAULT 0,
   PRIMARY KEY (id)
-);
+) DEFAULT CHARACTER SET utf8;
 
 -- DROP TABLE IF EXISTS adminconfirm;
 -- CREATE TABLE adminconfirm (
@@ -209,12 +209,12 @@ CREATE TABLE bookings (
 DROP TABLE IF EXISTS consumables;
 CREATE TABLE consumables (
   id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  name VARCHAR(31) NOT NULL,
-  longname VARCHAR(255) NOT NULL,
+  name VARCHAR(255) CHARACTER SET utf8 NOT NULL,
+  longname TEXT CHARACTER SET utf8 NOT NULL,
   cost FLOAT(16) NOT NULL,
   deleted BOOL DEFAULT 0,
   PRIMARY KEY (id)
-);
+) DEFAULT CHARACTER SET utf8;
 
 DROP TABLE IF EXISTS consumables_use;
 CREATE TABLE consumables_use (
@@ -225,11 +225,11 @@ CREATE TABLE consumables_use (
   addedby SMALLINT UNSIGNED NOT NULL,
   userid SMALLINT UNSIGNED NOT NULL,
   projectid SMALLINT UNSIGNED NOT NULL,
-  ip CHAR(16),
-  comments VARCHAR(31),
-  log VARCHAR(255),
+  ip CHAR(16) CHARACTER SET utf8,
+  comments VARCHAR(127) CHARACTER SET utf8,
+  log TEXT CHARACTER SET utf8,
   PRIMARY KEY (id)
-);
+) DEFAULT CHARACTER SET utf8;
 
 -- DROP TABLE IF EXISTS billing_formats;
 -- CREATE TABLE billing_formats (
