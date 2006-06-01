@@ -234,7 +234,7 @@ function is_valid_time($v) {
 /**
 * tests if string is valid time expression HH:MM or HH:MM:SS format other than 00:00:00
 *
-* @param string $v string to test it is a time string
+* @param string $v string to test if it is a time string
 * @return boolean
 * @todo can this be relaxed to be more user-friendly without introducing errors
 */
@@ -259,6 +259,18 @@ function sum_is_100($vs) {
   return ($sum == 100);
 }
 
+/**
+* tests if string is a valid username as per the config setting for usernames
+*
+* @param string $v string to test if it is a valid username
+* @global system config array
+* @return boolean username is valid
+*/
+function is_valid_username($v) {
+  global $CONFIG;
+  $validUserRegexp = issetSet($CONFIG['auth'], 'validUserRegexp');
+  return (empty($validUserRegexp) || preg_match($validUserRegexp, $v));
+}
 
 /*
 echo "<pre>qw test\n";

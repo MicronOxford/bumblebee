@@ -179,9 +179,7 @@ class BumblebeeAuth {
       return false;
     }
     // test the username to make sure it looks valid
-    $validUserRegexp = $CONFIG['auth']['validUserRegexp'];
-    if (isset($validUserRegexp) && ! empty($validUserRegexp) 
-        && ! preg_match($validUserRegexp, $_POST['username'])) {
+    if (! is_valid_username($_POST['username'])) {
       $this->_error = T_('Login failed: bad username') .' -- '
                      .T_('Either change the username using phpMyAdmin or change how you define a valid username in config/bumblebee.ini (see the value "validUserRegexp")');
       return false;
