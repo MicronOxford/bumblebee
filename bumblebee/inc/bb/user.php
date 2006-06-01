@@ -48,7 +48,7 @@ class User extends DBRow {
     $attrs = array('size' => '48');
     $f->required = 1;
     $f->requiredTwoStage = 1;
-    $f->isValidTest = 'is_empty_string';
+    $f->isValidTest = 'is_valid_username';
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new TextField('name', T_('Name'));
