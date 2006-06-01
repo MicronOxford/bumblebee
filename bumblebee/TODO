@@ -23,6 +23,7 @@ Bugs:
 * 1.2 series
 ------------
   * upgrade howto upgrade.php?
+    - alter the db structure for i18n: only need to change UTF8 and backwards compatible
   * installer more step-wise rather than all-at-once on the page
   * installer artwork?
 Features:
@@ -64,7 +65,7 @@ i18n:
 
 *recurring scheduling
   
-  
+  * graceful handling of duplicate usernames (Not "oops.... message")
   
 
 * a much more sophisticated permissions system that gives fine grained
