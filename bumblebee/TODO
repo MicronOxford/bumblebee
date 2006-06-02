@@ -5,8 +5,6 @@ $Id$
 Bugs:  
   book dropdown on 10:00-16:00/6 includes times that would overlap bookings
 * double entry password in change passwd
-* ff1.5 autosaving passwd in user form; not showing username by default.
-* suppress autofill features on some forms?
 
 * custom info page on login screen (e.g. secured by...)
 
@@ -34,8 +32,6 @@ Features:
   * internationalisation
   * bring email templates into the database
   * limit certain users to specific ranges of time on a particular instrument (Gordon Holtslander)
-
-  * option to run the sql code given the username and password of the sql user
 
   * use fieldset and label to beautify forms
 
