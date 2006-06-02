@@ -1,3 +1,11 @@
+2006-06-01 Stuart Prescott <bumblebee@nanonanonano.net>
+	* 1.1.3 release
+	* i18n: relax default valid-user-regexp to make life easier for non-English speaking users
+	* i18n: use UTF-8 encoding when talking to MySQL
+	* feature: enforce the username validity test when creating new users
+	* feature: reworked installer (much easier to understand)
+	* feature: upgrade script to manage database changes
+
 2006-05-31 Stuart Prescott <bumblebee@nanonanonano.net>
 	* 1.1.2 release
 	* i18n: translate days of week and months of year
