@@ -54,7 +54,7 @@ include 'theme/contentheader.php';
       action="<?php echo makeURL($action->nextaction); ?>" 
       id="bumblebeeform"
       <?php 
-        if (! isset($CONFIG['main']['AllowAutocomplete']) || ! $CONFIG['main']['AllowAutocomplete']) 
+        if (! isset($CONFIG['display']['AllowAutocomplete']) || ! $CONFIG['display']['AllowAutocomplete']) 
           echo "AUTOCOMPLETE='off'";
       ?>>
     <?php
