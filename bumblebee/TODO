@@ -45,12 +45,29 @@ Features:
   * be more picky about making bookings with no project defined.
   
 i18n:
-  * day and month names not translated now not using LC_ALL/locale
+  * date/time customisation
+  * week start on Sun/Mon 
   * HOWTO:
       ./update-translations.sh
       php-gettext: gettext.inc: $enable_cache=false  CachedFileReader
 
+
+
+  * list view of bookings
+  * jump to dropdowns on calendar
+  * send email reminder at configurable interval before (cron job?)
+  * ical export, free/busy
+  * timezone of server rel user
+  * overlay multiple instruments on one calendar
+  * show multiple instruments side-by-side in columns
+  * jump to day calendar on day view
+  * use http-refresh or js timeout to refresh calendar after n mins
+  * hold bookings for approval / display on calendar or not?
+  * onMouseOver info window with more information about booking than current tooltip?
+  
   * reportbug script that includes phpinfo() etc
+  
+  * activity log in db rather than flat file?
 
   * report generation memory usage (can't generate NMR report for Q1 2006)
 * Later

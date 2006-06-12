@@ -31,6 +31,10 @@ class ActionPrintLoginForm extends ActionAction {
   }
 
   function go() {
+    global $CONFIG;
+    if (isset($CONFIG['display']['LoginPage']) && ! empty($CONFIG['display']['LoginPage'])) {
+      echo $CONFIG['display']['LoginPage'];
+    }
     echo '<h2>' . T_('Login required').'</h2>';
     echo '<p>'  . T_('Please login to view or book instrument usage') . '</p>';
     printf('
