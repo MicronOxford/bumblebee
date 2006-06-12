@@ -1,4 +1,10 @@
-2006-06-13  Stuart Prescott <bumblebee@nanonanonano.net>
+2006-06-25  Stuart Prescott <bumblebee@nanonanonano.net>
+	* 1.0.5 release
+	* bugfix: turn off web browser form autocompletion by default (closes #1494893) 
+	* bugfix: try to provide more helpful error messages when mail() fails (closes #1504704)
+	* feature: include user-specified text on the login page (closes #1494989) 
+
+2006-05-13  Stuart Prescott <bumblebee@nanonanonano.net>
 	* 1.0.4 release
 	* bugfix: fix "Calendar" link after editing/deleting bookings (closes #1487332)
 	* bugfix: sanity check that the BasePath is a directory for session handling (closes: #1487330);

@@ -103,6 +103,6 @@ if (!empty($CONFIG['main']['ExtraIncludePath'])) {
 * @global string $BUMBLEBEEVERSION
 */
 global $BUMBLEBEEVERSION;
-$BUMBLEBEEVERSION = '1.0.4';
+$BUMBLEBEEVERSION = '1.0.5';
 
 ?> 
