@@ -93,7 +93,7 @@ class PDFExport {
   
   function makePDFBuffer() {
     $this->render();
-    $this->export =& $this->Output();
+    $this->export = $this->Output();
   }
   
   function render() {
