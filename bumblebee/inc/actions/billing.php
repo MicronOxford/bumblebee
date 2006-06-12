@@ -33,6 +33,11 @@ class ActionBilling extends ActionExport {
   * @var boolean
   */
   var $emailIndividuals = false;
+  /** 
+  * mail error message (if sending mail went wrong)
+  * @var string
+  */
+  var $mail_error = NULL;
   /**
   * enable additional debugging information for PDF generation
   * @var boolean
@@ -173,7 +178,11 @@ class ActionBilling extends ActionExport {
         echo $s;
       } else {
         $s = '<div class="msgerror">'
-            .'Unknown error sending reports by email.'.'</div>';
+            .'An error occured sending reports by email. '
+            .(empty($this->mail_error)
+                  ? 'An unknown error occured.'
+                  : 'The mail function said: <pre>'.$this->mail_error.'</pre>')
+            .'</div>';
         echo $s;
       }
       if (count($nopdfs)) {
@@ -216,16 +225,20 @@ class ActionBilling extends ActionExport {
   function _sendPDFbyEmail($toName, $toEmail, $group, $data) {
     global $CONFIG;
     $eol = "\r\n";
-    $from = $CONFIG['billing']['emailFromName']
-            .' <'.$CONFIG['main']['SystemEmail'].'>';
+    //$from = $CONFIG['billing']['emailFromName'].' <'.$CONFIG['main']['SystemEmail'].'>';
+    $from = $CONFIG['main']['SystemEmail'];
+    $returnpath = $CONFIG['main']['SystemEmail'];
     $replyto = $this->auth->name.' <'.$this->auth->email.'>';
     $cc   = $this->auth->name.' <'.$this->auth->email.'>';    // CC a copy to the sender
     $to   = $toName.' <'.$toEmail.'>';
+    $recipient_list = array($this->auth->email, $toEmail);
     srand(time());
     $id   = '<bumblebee-'.time().'-'.rand().'@'.$_SERVER['SERVER_NAME'].'>';
     
-    $headers  = 'From: '.$from .$eol;
+    $headers  = 'Return-path: '.$returnpath .$eol;
+    $headers .= 'From: '.$from .$eol;
     //$headers .= 'To: '.$to .$eol;    // automatically added by mail()
+    //$headers .= 'Cc: '.$cc .$eol;    // automatically added by mail() ?
     $headers .= 'Reply-To: '.$replyto.$eol;
     $headers .= 'Message-id: ' .$id .$eol;
 
@@ -278,7 +291,14 @@ class ActionBilling extends ActionExport {
     fwrite($fh, $headers.$eol.$message);
     fclose($fh);
     return 1;*/
-    $ok = @mail("$to, $cc", $subject, $message, $headers);
+
+    // try to get more useful error messages from the mail() function
+    ini_set('track_errors', true);
+    $php_errormsg = '';
+    $ok =  mail(join(', ', $recipient_list), $subject, $message, $headers);
+    if ($ok === false) {   // error sending mail
+      $this->mail_error = $php_errormsg;
+    }
     #print "sent mail to $to, $cc\n";
     return $ok;
   }
