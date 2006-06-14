@@ -237,7 +237,7 @@ class BumblebeeAuth {
       $this->_error = T_('Login failed: unknown username');
       return 0;
     }
-    //$row = mysql_fetch_array($sql);
+    //$row = db_fetch_array($sql);
     return $row;
   }
   
