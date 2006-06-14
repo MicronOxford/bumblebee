@@ -6,47 +6,53 @@ Bugs:
   book dropdown on 10:00-16:00/6 includes times that would overlap bookings
 * double entry password in change passwd
 
-* custom info page on login screen (e.g. secured by...)
-
-* installer test suite
-  All tests in the test suite should report their outcome in a consistent manner, making it easy for humans or computer programs to understand and to process them. The following test states, defined by EARL (the Evaluation And Report Language), have proved useful:
-
-    * cannotTell
-    * fail
-    * notApplicable
-    * notTested
-    * pass
-
 
 * 1.2 series
 ------------
-  * upgrade howto upgrade.php?
-    - alter the db structure for i18n: only need to change UTF8 and backwards compatible
-  * installer more step-wise rather than all-at-once on the page
-  * installer artwork?
+Installer 
+  * artwork?
+  * installer test suite as object suite?
+        All tests in the test suite should report their outcome in a consistent manner, making it easy for humans or computer programs to understand and to process them. The following test states, defined by EARL (the Evaluation And Report Language), have proved useful:
+          * cannotTell
+          * fail
+          * notApplicable
+          * notTested
+          * pass
+
+
 Features:
-  * heirarchical+fine-grained permission system 
+
+  * double entry password in change passwd
+  * be more picky about making bookings with no project defined.
+
   * longer bookings
   * IE5Mac compatability?
+  * use fieldset and label to beautify forms
+  * beautify calendar
+  * fix dropdown truncation
+  * db hardening:
+    - put all column names and table names in back ticks, 
+    - integers in quotes
+    - check UTF8-ness of strings
+  * i18n:
+    - date/time customisation
+    - week start on Sun/Mon 
+  
+  * heirarchical+fine-grained permission system 
   * groups of instruments
-  * internationalisation
   * bring email templates into the database
   * limit certain users to specific ranges of time on a particular instrument (Gordon Holtslander)
 
-  * use fieldset and label to beautify forms
 
   * combine instruments onto the one calendar in some way. even just a free/busy with name
   
-  * put all column names and table names in back ticks
   * change all boolean fields to !fieldname instead of fieldname = true
 
   * email ics file for booking to user
   
-  * be more picky about making bookings with no project defined.
-  
+
+
 i18n:
-  * date/time customisation
-  * week start on Sun/Mon 
   * HOWTO:
       ./update-translations.sh
       php-gettext: gettext.inc: $enable_cache=false  CachedFileReader
@@ -70,6 +76,8 @@ i18n:
   * activity log in db rather than flat file?
 
   * report generation memory usage (can't generate NMR report for Q1 2006)
+
+
 * Later
 ------------
   * in-place booking (js mouse commands, DOM+js/ajax?)
@@ -128,7 +136,6 @@ configure exporttypes from files?
 * installer
   - create bumblebee.ini file?
   - can only run once? delete itself?
-  - actually do the sql stuff?
 
 * ini file
   - move bumblebee.ini to a db table? 
@@ -148,27 +155,19 @@ create a real db with no bogus booking data and no dodgy invalid users etc
 -> sf.net 
 
 
-document radius install and config
-
 * theme
-  - design new theme, bg etc (not NANO, PFPC, UoM)
   - clean up CSS, images etc for theme
   - icon location, also for export
-
-* clean up action functions.
-  - should groups, projects, users actions etc be invocations of the *same* obj?
-
 
 
 ->layout switch? use as call back function?
 
 radiolist always returns ischanged on update()
 
-make sure large data structures are being passed by reference not value
-(speed up)
-
 reflect postdata in case of re-login
  - when do sessions die?
+
+
 
 $string = strip_tags($string, '<a><b><i><u>')
 also do this in qw? $string = strip_tags($string, '')
@@ -176,10 +175,7 @@ also do this in qw? $string = strip_tags($string, '')
 
 $_SERVER['PHP_SELF']
 
-check for noise in error logs
 
-
-permit deletion of instrument classes
 
 
 streamline creation of project with only one group
@@ -206,52 +202,6 @@ for billing analysis, write a smart parser that scans the template for keys to w
 
 
 
-install?
------------
-<?
-$dbhost = "localhost";    
-$dbusername = "root";     
-$dbpass = "";    
-$dbname    = "dbname";     
-$connection = mysql_connect($dbhost, $dbusername, $dbpass);
-$SelectedDB = mysql_select_db($dbname);
-$filename = "createdb.sql";
-$fd = fopen ($filename, "r");
-$contents = fread ($fd, filesize ($filename));
-fclose ($fd);
-mysql_query ("$contents");
-?>
-
-
-
-
-
-
-flat file logging?
-
-<?php
-    $agent = $_SERVER['HTTP_USER_AGENT'];
-    $uri = $_SERVER['REQUEST_URI'];
-    $user = $_SERVER['PHP_AUTH_USER'];
-    $ip = $_SERVER['REMOTE_ADDR'];
-    $ref = $_SERVER['HTTP_REFERER'];
-    $dtime = date('r');
-    
-    if($ref == ""){
-        $ref = "None";
-    }
-    if($user == ""){
-        $user = "None";
-    }
-    
-    $entry_line = "$dtime - IP: $ip | Agent: $agent  | URL: $uri | Referrer: $ref | Username: $user n";
-    $fp = fopen("logs.txt", "a");
-    fputs($fp, $entry_line);
-    fclose($fp);
-?> 
-
-
-
 ------------
 
 see also:
@@ -268,19 +218,4 @@ records are not locked while edited (update is atomic, but last-submitted change
 
 
 
-
-
------------
-
-HISTORY
-=======
-
-BB0970: 2005-06-17
-Released on instruments.c.u.e.a for testing
-
-BB0959: 2005-05-25
-Released on instruments.c.u.e.a for testing
-
-
-
-
+\
