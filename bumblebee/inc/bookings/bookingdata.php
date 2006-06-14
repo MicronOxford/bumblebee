@@ -67,7 +67,6 @@ class BookingData {
   * Interrogate the database to get the bookings
   *
   * @global string  prefix prepended to all table names in database
-  8 @todo mysql specific function
   */
   function _fill() {
     global $TABLEPREFIX;
@@ -107,8 +106,7 @@ class BookingData {
     } else {
       $this->bookinglist = array();
       $sql = db_get($q, $this->fatal_sql);
-      //FIXME: mysql specific function
-      while ($g = mysql_fetch_array($sql)) {
+      while ($g = db_fetch_array($sql)) {
         $this->bookinglist[] = new Booking($g); 
       }
     }

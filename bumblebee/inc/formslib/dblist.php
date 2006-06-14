@@ -78,8 +78,6 @@ class DBList {
 
   /**
   * Fill the object from the database
-  *
-  * @todo mysql specific function
   */
   function fill() {
     // construct the query
@@ -97,8 +95,7 @@ class DBList {
     }
     $sql = db_get($q, $this->fatal_sql);
     $data = array();
-    // FIXME: mysql specific functions
-    while ($g = mysql_fetch_array($sql)) {
+    while ($g = db_fetch_array($sql)) {
       $data[] = $g;
     }
     if (isset($this->manualGroup) && $this->manualGroup != '') {

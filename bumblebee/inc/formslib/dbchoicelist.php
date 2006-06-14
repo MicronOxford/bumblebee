@@ -118,7 +118,6 @@ class DBChoiceList extends DBO {
   /**
   * Fill the object from the database using the already initialised
   * members (->table etc).
-  * @todo mysql specific function
   */
   function fill() {
     //preDump($this);
@@ -156,8 +155,7 @@ class DBChoiceList extends DBO {
       return 0;
     } else {
       $this->choicelist = array();
-      //FIXME mysql specific array
-      while ($g = mysql_fetch_array($sql)) {
+      while ($g = db_fetch_array($sql)) {
         $this->choicelist[] = $g; #['key']] = $g['value'];
       }
       $this->length = count($this->choicelist);

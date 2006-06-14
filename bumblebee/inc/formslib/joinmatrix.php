@@ -160,7 +160,6 @@ class JoinMatrix extends Field {
   * populates the matrix from the database
   *
   * @global string prefix to table names
-  * @todo mysql specific functions
   */
   function _populateList() {
     global $TABLEPREFIX;
@@ -169,12 +168,11 @@ class JoinMatrix extends Field {
         .' FROM '.$TABLEPREFIX.$this->table2.' AS '.$this->table2
         .' ORDER BY '.$this->key2->name;
     $sql = db_get($q, $this->fatal_sql);
-    // FIXME: mysql specific functions
-    if (mysql_num_rows($sql)==0) {
+    if (db_num_rows($sql)==0) {
       $this->number = 0;
       return;
     } else {
-      while ($g = mysql_fetch_array($sql)) {
+      while ($g = db_fetch_array($sql)) {
         $this->table2All[] = $g;
       }
     }
