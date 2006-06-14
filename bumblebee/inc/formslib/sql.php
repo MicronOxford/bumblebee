@@ -2,14 +2,11 @@
 /**
 * SQL interface functions, return statuscodes as appropriate
 *
-* <b>Most</b> of the SQL functions are encapsulated here to make it easier
+* The SQL functions are encapsulated here to make it easier
 * to keep track of them, particularly for porting to other databases. Encapsulation is
 * done here with a functional interface not an object interface.
 *
-* Note that thre are a number of mysql_fetch_array calls in other places where
-* there are a number of rows in the query so the encapsulation is not that good.
-*
-* @todo provide a sensible function to allow full db encapsulation and remove mysql specific functions from code.
+* @todo work out why we didn't just use PEAR::DB and be done with it right from the beginning
 *
 * @author    Stuart Prescott
 * @copyright  Copyright Stuart Prescott
@@ -45,10 +42,10 @@ function db_quiet($q, $fatal_sql=0) {
 *
 * @param string $q       the sql query, properly constructed and quoted
 * @param boolean $fatal_sql   db errors are fatal
-* @return resource mysql handle
+* @return resource mysql query handle
 */
 function db_get($q, $fatal_sql=0) {
-  // returns from statuscodes
+  // returns from statuscodes or a db handle
   $sql = mysql_query($q);
   echoSQL($q);
   if (! $sql) {
@@ -73,9 +70,31 @@ function db_get_single($q, $fatal_sql=0) {
 
 /**
 * return the last insert ID from the database
+* @return integer id (row number) of previous insert operation
 */
 function db_new_id() {
   return mysql_insert_id();
+}
+
+/**
+* return the next row from a query
+*
+* @param resource db query handle
+* @return array next row from query
+*/
+function db_fetch_array($sql) {
+  return mysql_fetch_array($sql);
+}
+
+
+/**
+* get the number of rows returned by a query
+*
+* @param resource db query handle
+* @return integer number of rows
+*/
+function db_num_rows($sql) {
+  return mysql_num_rows($sql);
 }
 
 /**
@@ -113,7 +132,12 @@ function echoSQLerror($echo, $fatal=0) {
       echo "<div class='sql error'>"
         .sprintf(T_("Ooops. Something went very wrong. Please send the following log information to <a href='mailto:%s'>your Bumblebee Administrator</a> along with a description of what you were doing and ask them to pass it on to the Bumblebee developers. Thanks!"), $ADMINEMAIL)
         .'</div>';
-      preDump(debug_backtrace());
+      if ($VERBOSESQL) {
+        preDump(debug_backtrace());
+      } else {
+        logmsg(1, "SQL ERROR=[$echo]");
+        logmsg(1, join("//", debug_backtrace()));
+      }
       die('<b>'.T_('Fatal SQL error. Aborting.').'</b>');
     }
   }
