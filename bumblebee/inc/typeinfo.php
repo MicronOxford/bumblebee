@@ -72,10 +72,41 @@ function is_alphabetic($var) {
 * Fixes programatically generated data so that it is correctly escaped. Deals
 * with magic_quotes_gpc to remove slashes so that the input is sensible and
 * doesn't end up accummulating escape characters with multiple submissions.
+*
+* Also tests that the supplied string is actually UTF-8 encoded, as if it is
+* correctly UTF-8 encoded then we can be sure that we are protected against
+* byte munging multibyte attacks that addslashes() is normally susceptible to.
+* (that is where the last byte of a multibyte sequence is 0x5c (\) so
+* addslashes() is braindead enough to try and escape it creating a multibyte
+* character followed by a backslash.... thus addslashes() has created a SQL
+* injection vector rather than closing it.
+* For more info see:          http://shiflett.org/archive/184
+*
 * @param string $v string to be quoted
 * @return string '$v' with slashes added as appropriate.
 */
 function qw($v) {
+  if (! isUTF8($v)) {
+    $orig = $v;
+    // badness is here. this means that the user has tried to change the input
+    // encoding to something other than the UTF-8 that was requested.
+    // We will *try* to fix the string:
+    if (function_exists("mb_convert_encoding")) {
+      $v = mb_convert_encoding($v, 'UTF-8');
+    } elseif (function_exists("iconv")) {
+      $v = iconv('', 'UTF-8//IGNORE', $v);
+    } else {
+      // try converting from windows encoding to UTF-8
+      $v = cp1252_to_utf8($v);
+    }
+    if (!isUTF8($v)) {  
+      // then we really don't know what to do so kill the data
+      // better not to have a compromised db, really...
+      $v = '';
+    }
+    logmsg(9, "Non UTF-8 data received. '$orig' was converted to '$v'.");
+    //logmsg(9, "Bacon saved? '".addslashes($orig)."' was converted to '".addslashes($v)."'.");
+  }
   // magic-quotes-gpc is a pain in the backside: I would rather I was just given
   // the data the user entered.
   // We can't just return the data if magic_quotes_gpc is turned on because 
@@ -102,6 +133,90 @@ function unqw($v) {
   }
   return stripslashes($v);
 }
+
+/**
+* Verifies that the supplied string is correctly UTF-8 encoded
+*
+* Two versions are presented here -- the simple version with just the
+* /u regexp is significantly faster than the more complicated byte-checking
+* version but the /u regexp doesn't always catch bad UTF-8 sequences.
+*
+* PCRE /u version from:  
+*      http://www.phpwact.org/php/i18n/charsets%23checking_utf-8_for_well_formedness
+*
+* Regexp version from 
+*      http://w3.org/International/questions/qa-forms-utf-8.html
+*
+* @param string $v string to be tested
+* @return boolean string is UTF-8 encoded
+*/
+function isUTF8($v) {
+  return preg_match('@^(?:
+          [\x09\x0A\x0D\x20-\x7E]            # ASCII
+        | [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte
+        |  \xE0[\xA0-\xBF][\x80-\xBF]        # excluding overlongs
+        | [\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}  # straight 3-byte
+        |  \xED[\x80-\x9F][\x80-\xBF]        # excluding surrogates
+        |  \xF0[\x90-\xBF][\x80-\xBF]{2}     # planes 1-3
+        | [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15
+        |  \xF4[\x80-\x8F][\x80-\xBF]{2}     # plane 16
+  )*$@x', $v);
+
+/*
+  if ( strlen($str) == 0 ) {
+      return TRUE;
+  }
+  // If even just the first character can be matched, when the /u
+  // modifier is used, then it's valid UTF-8. If the UTF-8 is somehow
+  // invalid, nothing at all will match, even if the string contains
+  // some valid sequences
+  return (preg_match('/^.{1}/us',$str,$ar) == 1);
+*/
+}
+
+/**
+* Converts Windows characters (charset cp-1252 or windows-1252) to UTF-8
+*
+* @param string $v string to be tested
+* @return string UTF-8 string
+*/
+function cp1252_to_utf8($str) {
+  if (! function_exists('utf8_encode')) return $str;
+  $cp1252_map = array(
+    "\xc2\x80" => "\xe2\x82\xac", /* EURO SIGN */
+    "\xc2\x82" => "\xe2\x80\x9a", /* SINGLE LOW-9 QUOTATION MARK */
+    "\xc2\x83" => "\xc6\x92",     /* LATIN SMALL LETTER F WITH HOOK */
+    "\xc2\x84" => "\xe2\x80\x9e", /* DOUBLE LOW-9 QUOTATION MARK */
+    "\xc2\x85" => "\xe2\x80\xa6", /* HORIZONTAL ELLIPSIS */
+    "\xc2\x86" => "\xe2\x80\xa0", /* DAGGER */
+    "\xc2\x87" => "\xe2\x80\xa1", /* DOUBLE DAGGER */
+    "\xc2\x88" => "\xcb\x86",     /* MODIFIER LETTER CIRCUMFLEX ACCENT */
+    "\xc2\x89" => "\xe2\x80\xb0", /* PER MILLE SIGN */
+    "\xc2\x8a" => "\xc5\xa0",     /* LATIN CAPITAL LETTER S WITH CARON */
+    "\xc2\x8b" => "\xe2\x80\xb9", /* SINGLE LEFT-POINTING ANGLE QUOTATION */
+    "\xc2\x8c" => "\xc5\x92",     /* LATIN CAPITAL LIGATURE OE */
+    "\xc2\x8e" => "\xc5\xbd",     /* LATIN CAPITAL LETTER Z WITH CARON */
+    "\xc2\x91" => "\xe2\x80\x98", /* LEFT SINGLE QUOTATION MARK */
+    "\xc2\x92" => "\xe2\x80\x99", /* RIGHT SINGLE QUOTATION MARK */
+    "\xc2\x93" => "\xe2\x80\x9c", /* LEFT DOUBLE QUOTATION MARK */
+    "\xc2\x94" => "\xe2\x80\x9d", /* RIGHT DOUBLE QUOTATION MARK */
+    "\xc2\x95" => "\xe2\x80\xa2", /* BULLET */
+    "\xc2\x96" => "\xe2\x80\x93", /* EN DASH */
+    "\xc2\x97" => "\xe2\x80\x94", /* EM DASH */
+    "\xc2\x98" => "\xcb\x9c",     /* SMALL TILDE */
+    "\xc2\x99" => "\xe2\x84\xa2", /* TRADE MARK SIGN */
+    "\xc2\x9a" => "\xc5\xa1",     /* LATIN SMALL LETTER S WITH CARON */
+    "\xc2\x9b" => "\xe2\x80\xba", /* SINGLE RIGHT-POINTING ANGLE QUOTATION*/
+    "\xc2\x9c" => "\xc5\x93",     /* LATIN SMALL LIGATURE OE */
+    "\xc2\x9e" => "\xc5\xbe",     /* LATIN SMALL LETTER Z WITH CARON */
+    "\xc2\x9f" => "\xc5\xb8"      /* LATIN CAPITAL LETTER Y WITH DIAERESIS*/
+  );
+  // utf8_encode() converts from ISO-8859-1 to UTF-8; the strtr() converts the 
+  // differences between Windows-1252 and ISO-8859-1.
+  return  strtr(utf8_encode($str), $cp1252_map);
+}
+
+
 
 /**
 * quote words against XSS attacks by converting tags to html entities
