@@ -181,7 +181,7 @@ class ActionBilling extends ActionExport {
             .T_('An error occured sending reports by email.').' '
             .(empty($this->mail_error)
                   ? T_('An unknown error occured.')
-                  : sprintf(T_('The mail function said: <pre>%s</pre>'), $this->mail_error)
+                  : sprintf(T_('The mail function said: <pre>%s</pre>'), $this->mail_error))
             .'</div>';
         echo $s;
       }
