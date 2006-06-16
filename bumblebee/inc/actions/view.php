@@ -177,7 +177,7 @@ class ActionView extends ActionAction {
     // check to see if this is an allowable calendar view (not too far into the future)
     $callength = 7*$row['callength'];
     $totaloffset = $offset + $callength - 7*$row['calhistory'] - $start->dow();
-    $this->log("Found total offset of $totaloffset, ".$row['calfuture']);
+    $this->log("Found total offset of $totaloffset, calfuture=".$row['calfuture']." calhistory=".$row['calhistory']);
     
     //admin users are allowed to see further into the future.
     $this->_checkBookingAuth(-1);
@@ -190,8 +190,11 @@ class ActionView extends ActionAction {
     }
     
     // jump backwards to the start of that week.
-    $day = $start->dow(); // the day of the week, 0=Sun, 6=Sat
-    $start->addDays(1-7*$row['calhistory']-$day);
+    //$day = $start->dow(); // the day of the week, 0=Sun, 6=Sat
+    $week_offset = issetSet($CONFIG['language'], 'week_offset', 1);
+    $start->weekRound();
+    if ($now->dow() < $week_offset) $start->addDays(-7);
+    $start->addDays($week_offset-7*$row['calhistory']);
         
     $stop = clone($start);
     $stop->addDays($callength);

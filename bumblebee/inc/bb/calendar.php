@@ -400,6 +400,7 @@ class Calendar {
   * @param SimpleTime $daystop     time up until which bookings should be displayed
   * @param integer    $granularity seconds per row in display
   * @param integer    $reportPeriod  seconds between reporting the time in a column down the side
+  * @global base path the installation (for icons)
   * @return string   html representation of the calendar
   */
   function displayMonthAsTable($daystart, $daystop, $granularity, 
@@ -420,7 +421,7 @@ class Calendar {
     }
 
     $today = new SimpleDate(time());
-    
+
     $t = '<table class="tabularobject calendar">';
     $weekstart = clone($this->start);
     $weekstart->addDays(-7);
