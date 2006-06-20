@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-31 00:01+0100\n"
+"POT-Creation-Date: 2006-06-14 22:57+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -188,35 +188,44 @@ msgstr ""
 msgid "Backup database"
 msgstr ""
 
-#: inc/actions/billing.php:73
+#: inc/actions/billing.php:78
 msgid "Email report to me"
 msgstr ""
 
-#: inc/actions/billing.php:77
+#: inc/actions/billing.php:82
 msgid "Email report to each group leader"
 msgstr ""
 
-#: inc/actions/billing.php:150 inc/actions/export.php:248
+#: inc/actions/billing.php:155 inc/actions/export.php:248
 msgid "No data found for those criteria"
 msgstr ""
 
-#: inc/actions/billing.php:172
+#: inc/actions/billing.php:177
 msgid "Reports sent by email."
 msgstr ""
 
-#: inc/actions/billing.php:176
-msgid "Unknown error sending reports by email."
+#: inc/actions/billing.php:181
+msgid "An error occured sending reports by email."
 msgstr ""
 
-#: inc/actions/billing.php:181
+#: inc/actions/billing.php:183
+msgid "An unknown error occured."
+msgstr ""
+
+#: inc/actions/billing.php:184
+#, php-format
+msgid "The mail function said: <pre>%s</pre>"
+msgstr ""
+
+#: inc/actions/billing.php:190
 msgid "<b>Note:</b> no billing data was found for some groups."
 msgstr ""
 
-#: inc/actions/billing.php:188
+#: inc/actions/billing.php:197
 msgid "Regenerate reports:"
 msgstr ""
 
-#: inc/actions/billing.php:239
+#: inc/actions/billing.php:252
 msgid "Instrument usage summary"
 msgstr ""
 
@@ -525,8 +534,7 @@ msgid "Value separator"
 msgstr ""
 
 #: inc/actions/emaillist.php:91
-msgid ""
-"Separates the returned values so you can paste them into your email client"
+msgid "Separates the returned values so you can paste them into your email client"
 msgstr ""
 
 #: inc/actions/emaillist.php:97 inc/actions/export.php:236
@@ -638,16 +646,12 @@ msgstr ""
 
 #: inc/actions/unknownaction.php:47
 #, php-format
-msgid ""
-"An unknown error occurred. I was asked to perform the action \"%s\", but I "
-"don't know how to do that."
+msgid "An unknown error occurred. I was asked to perform the action \"%s\", but I don't know how to do that."
 msgstr ""
 
 #: inc/actions/unknownaction.php:51
 #, php-format
-msgid ""
-"Please contact <a href=\"mailto:%s\">the system administrator</a> for more "
-"information."
+msgid "Please contact <a href=\"mailto:%s\">the system administrator</a> for more information."
 msgstr ""
 
 #: inc/actions/instruments.php:47
@@ -686,23 +690,23 @@ msgstr ""
 msgid "Instrument could not be deleted:"
 msgstr ""
 
-#: inc/actions/login.php:34
+#: inc/actions/login.php:38
 msgid "Login required"
 msgstr ""
 
-#: inc/actions/login.php:35
+#: inc/actions/login.php:39
 msgid "Please login to view or book instrument usage"
 msgstr ""
 
-#: inc/actions/login.php:51
+#: inc/actions/login.php:55
 msgid "Username:"
 msgstr ""
 
-#: inc/actions/login.php:52
+#: inc/actions/login.php:56
 msgid "Password:"
 msgstr ""
 
-#: inc/actions/login.php:53 inc/actions/logout.php:41
+#: inc/actions/login.php:57 inc/actions/logout.php:41
 msgid "login"
 msgstr ""
 
@@ -1008,9 +1012,7 @@ msgid "booking #"
 msgstr ""
 
 #: inc/bb/bookingentry.php:518
-msgid ""
-"Sorry, the timeslot you have selected is not valid, due to restrictions "
-"imposed by the instrument administrator."
+msgid "Sorry, the timeslot you have selected is not valid, due to restrictions imposed by the instrument administrator."
 msgstr ""
 
 #: inc/bb/bookingentry.php:598
@@ -1026,41 +1028,39 @@ msgstr ""
 msgid "Login failed: SESSION INVALID!"
 msgstr ""
 
-#: inc/bb/auth.php:185
+#: inc/bb/auth.php:183
 msgid "Login failed: bad username"
 msgstr ""
 
-#: inc/bb/auth.php:186
-msgid ""
-"Either change the username using phpMyAdmin or change how you define a valid "
-"username in config/bumblebee.ini (see the value \"validUserRegexp\")"
+#: inc/bb/auth.php:184
+msgid "Either change the username using phpMyAdmin or change how you define a valid username in config/bumblebee.ini (see the value \"validUserRegexp\")"
 msgstr ""
 
-#: inc/bb/auth.php:215
+#: inc/bb/auth.php:213
 msgid "System has no login method enabled"
 msgstr ""
 
-#: inc/bb/auth.php:221
+#: inc/bb/auth.php:219
 msgid "Login failed: this account is suspended, please contact us about this."
 msgstr ""
 
-#: inc/bb/auth.php:239
+#: inc/bb/auth.php:237
 msgid "Login failed: unknown username"
 msgstr ""
 
-#: inc/bb/auth.php:271
+#: inc/bb/auth.php:269
 msgid "Login failed: radius auth failed"
 msgstr ""
 
-#: inc/bb/auth.php:303
+#: inc/bb/auth.php:301
 msgid "Login failed: ldap auth failed"
 msgstr ""
 
-#: inc/bb/auth.php:314
+#: inc/bb/auth.php:312
 msgid "Login failed: bad password"
 msgstr ""
 
-#: inc/bb/auth.php:318
+#: inc/bb/auth.php:316
 msgid "Login failed: no crypt method"
 msgstr ""
 
@@ -1291,9 +1291,7 @@ msgid "Advisory text"
 msgstr ""
 
 #: inc/bb/instrument.php:102
-msgid ""
-"Displayed at the bottom of instrument calendar and on booking form. HTML "
-"permitted."
+msgid "Displayed at the bottom of instrument calendar and on booking form. HTML permitted."
 msgstr ""
 
 #: inc/bb/instrument.php:108
@@ -1743,35 +1741,29 @@ msgstr ""
 msgid "select all"
 msgstr ""
 
-#: inc/formslib/dbchoicelist.php:316 inc/formslib/dbrow.php:142
+#: inc/formslib/dbchoicelist.php:314 inc/formslib/dbrow.php:142
 #: inc/formslib/nondbrow.php:133
 msgid "Invalid data:"
 msgstr ""
 
 #: inc/formslib/dbrow.php:151 inc/formslib/nondbrow.php:142
-msgid ""
-"Some values entered into the form are not valid and should be highlighted in "
-"the form below. Please check your data entry and try again."
+msgid "Some values entered into the form are not valid and should be highlighted in the form below. Please check your data entry and try again."
 msgstr ""
 
 #: inc/formslib/dbrow.php:260
 msgid "Cannot delete this item. Permission denied."
 msgstr ""
 
-#: inc/formslib/sql.php:92
+#: inc/formslib/sql.php:111
 msgid "(successful)"
 msgstr ""
 
-#: inc/formslib/sql.php:114
+#: inc/formslib/sql.php:133
 #, php-format
-msgid ""
-"Ooops. Something went very wrong. Please send the following log information "
-"to <a href='mailto:%s'>your Bumblebee Administrator</a> along with a "
-"description of what you were doing and ask them to pass it on to the "
-"Bumblebee developers. Thanks!"
+msgid "Ooops. Something went very wrong. Please send the following log information to <a href='mailto:%s'>your Bumblebee Administrator</a> along with a description of what you were doing and ask them to pass it on to the Bumblebee developers. Thanks!"
 msgstr ""
 
-#: inc/formslib/sql.php:117
+#: inc/formslib/sql.php:141
 msgid "Fatal SQL error. Aborting."
 msgstr ""
 
@@ -1779,169 +1771,165 @@ msgstr ""
 msgid "edit times"
 msgstr ""
 
-#: inc/date.php:694
+#: inc/date.php:710
 msgid "Monday"
 msgstr ""
 
-#: inc/date.php:694
+#: inc/date.php:710
 msgid "Mon"
 msgstr ""
 
-#: inc/date.php:695
+#: inc/date.php:711
 msgid "Tuesday"
 msgstr ""
 
-#: inc/date.php:695
+#: inc/date.php:711
 msgid "Tue"
 msgstr ""
 
-#: inc/date.php:695
+#: inc/date.php:711
 msgid "Tues"
 msgstr ""
 
-#: inc/date.php:696
+#: inc/date.php:712
 msgid "Wednesday"
 msgstr ""
 
-#: inc/date.php:696
+#: inc/date.php:712
 msgid "Wed"
 msgstr ""
 
-#: inc/date.php:697
+#: inc/date.php:713
 msgid "Thursday"
 msgstr ""
 
-#: inc/date.php:697
+#: inc/date.php:713
 msgid "Thu"
 msgstr ""
 
-#: inc/date.php:697
+#: inc/date.php:713
 msgid "Thurs"
 msgstr ""
 
-#: inc/date.php:698
+#: inc/date.php:714
 msgid "Friday"
 msgstr ""
 
-#: inc/date.php:698
+#: inc/date.php:714
 msgid "Fri"
 msgstr ""
 
-#: inc/date.php:699
+#: inc/date.php:715
 msgid "Saturday"
 msgstr ""
 
-#: inc/date.php:699
+#: inc/date.php:715
 msgid "Sat"
 msgstr ""
 
-#: inc/date.php:700
+#: inc/date.php:716
 msgid "Sunday"
 msgstr ""
 
-#: inc/date.php:700
+#: inc/date.php:716
 msgid "Sun"
 msgstr ""
 
-#: inc/date.php:702
+#: inc/date.php:718
 msgid "January"
 msgstr ""
 
-#: inc/date.php:702
+#: inc/date.php:718
 msgid "Jan"
 msgstr ""
 
-#: inc/date.php:703
+#: inc/date.php:719
 msgid "February"
 msgstr ""
 
-#: inc/date.php:703
+#: inc/date.php:719
 msgid "Feb"
 msgstr ""
 
-#: inc/date.php:704
+#: inc/date.php:720
 msgid "March"
 msgstr ""
 
-#: inc/date.php:704
+#: inc/date.php:720
 msgid "Mar"
 msgstr ""
 
-#: inc/date.php:705
+#: inc/date.php:721
 msgid "April"
 msgstr ""
 
-#: inc/date.php:705
+#: inc/date.php:721
 msgid "Apr"
 msgstr ""
 
-#: inc/date.php:706
+#: inc/date.php:722
 msgid "May"
 msgstr ""
 
-#: inc/date.php:707
+#: inc/date.php:723
 msgid "June"
 msgstr ""
 
-#: inc/date.php:707
+#: inc/date.php:723
 msgid "Jun"
 msgstr ""
 
-#: inc/date.php:708
+#: inc/date.php:724
 msgid "July"
 msgstr ""
 
-#: inc/date.php:708
+#: inc/date.php:724
 msgid "Jul"
 msgstr ""
 
-#: inc/date.php:709
+#: inc/date.php:725
 msgid "August"
 msgstr ""
 
-#: inc/date.php:709
+#: inc/date.php:725
 msgid "Aug"
 msgstr ""
 
-#: inc/date.php:710
+#: inc/date.php:726
 msgid "September"
 msgstr ""
 
-#: inc/date.php:710
+#: inc/date.php:726
 msgid "Sep"
 msgstr ""
 
-#: inc/date.php:711
+#: inc/date.php:727
 msgid "October"
 msgstr ""
 
-#: inc/date.php:711
+#: inc/date.php:727
 msgid "Oct"
 msgstr ""
 
-#: inc/date.php:712
+#: inc/date.php:728
 msgid "November"
 msgstr ""
 
-#: inc/date.php:712
+#: inc/date.php:728
 msgid "Nov"
 msgstr ""
 
-#: inc/date.php:713
+#: inc/date.php:729
 msgid "December"
 msgstr ""
 
-#: inc/date.php:713
+#: inc/date.php:729
 msgid "Dec"
 msgstr ""
 
-#: inc/db.php:29
+#: inc/db.php:34
 #, php-format
-msgid ""
-"<p>Sorry, I couldn't connect to the database, so there's nothing I can "
-"presently do. This could be due to a booking system misconfiguration, or a "
-"failure of the database subsystem.</p><p>If this persists, please contact "
-"the <a href=\"mailto:%s\">booking system administrator</a>.</p>"
+msgid "<p>Sorry, I couldn't connect to the database, so there's nothing I can presently do. This could be due to a booking system misconfiguration, or a failure of the database subsystem.</p><p>If this persists, please contact the <a href=\"mailto:%s\">booking system administrator</a>.</p>"
 msgstr ""
 
 #: inc/menu.php:124
@@ -1958,17 +1946,12 @@ msgstr ""
 
 #: theme/contentfooter.php:26
 #, php-format
-msgid ""
-"System managed by <a href=\"http://bumblebeeman.sf.net/\">Bumblebee</a> "
-"version %s, released under the <a href=\"http://www.gnu.org/licenses/gpl.html"
-"\">GNU GPL</a>."
+msgid "System managed by <a href=\"http://bumblebeeman.sf.net/\">Bumblebee</a> version %s, released under the <a href=\"http://www.gnu.org/licenses/gpl.html\">GNU GPL</a>."
 msgstr ""
 
 #: theme/contentfooter.php:29
 #, php-format
-msgid ""
-"This installation of Bumblebee currently manages %s users, %s projects, %s "
-"instruments and %s bookings."
+msgid "This installation of Bumblebee currently manages %s users, %s projects, %s instruments and %s bookings."
 msgstr ""
 
 #: theme/contentfooter.php:34
