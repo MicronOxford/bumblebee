@@ -88,13 +88,14 @@ class ActionBilling extends ActionExport {
   * get all the data and send it back to the user
   */
   function returnExport() {
-    //$this->DEBUG=10;
+    #$this->DEBUG=10;
     $lists = array();
     $pdfs = array();
     $nopdfs = array();
     foreach ($this->reportSet as $report => $pivot) {
       $this->PD['pivot'] = $pivot;
       $lists[] = $this->_getDataList($report);
+      # preDump($lists);
     }
     $groups = $this->_limitationSet(array('groups'), count($this->reportSet)-1, false);
     #preDump($groups);
@@ -106,7 +107,7 @@ class ActionBilling extends ActionExport {
       $exportArray->author = $this->auth->name;
       for ($r = 0; $r < count($lists); $r++) {
         // put a restriction on what to return for this incarnation
-        $l = $lists[$r];
+        $l = clone($lists[$r]);
         $l->unionrestriction[] = 'groups.id = '.$g;   // $g is already qw($g)
         $l->restriction[] = 'groups.id = '.$g;   // $g is already qw($g)
         $l->fill();
