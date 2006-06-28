@@ -30,7 +30,7 @@ class ArrayExport {
   /** @var         unknown? unused? */
   var $exporter;
   /** @var array   data array of exported data */
-  var $export;
+  var $export = array();
   /** @var string  header for the report */
   var $header;
   /** @var string  report Author (report metadata) */
@@ -222,7 +222,7 @@ class ArrayExport {
     global $CONFIG;
     switch ($format & EXPORT_HTML_NUMBER_MASK) {
       case EXPORT_HTML_MONEY:
-        $val = sprintf($CONFIG['export']['moneyFormat'], $val);
+        $val = sprintf($CONFIG['language']['moneyFormat'], $val);
         break;
       case EXPORT_HTML_DECIMAL_1:
         $val = sprintf('%.1f', $val);

@@ -63,5 +63,7 @@ if (function_exists('T_setlocale') && function_exists('T_')) {
   function T_($s) { return $s; }
 }
 
+if (! isset($CONFIG['language']['moneyFormat'])) $CONFIG['language']['moneyFormat'] = "$%.2f";
+
 
 ?> 
