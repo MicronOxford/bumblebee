@@ -11,6 +11,7 @@ Bugs:
 ------------
 Installer 
   * artwork?
+  * test log file exists, writable
   * installer test suite as object suite?
         All tests in the test suite should report their outcome in a consistent manner, making it easy for humans or computer programs to understand and to process them. The following test states, defined by EARL (the Evaluation And Report Language), have proved useful:
           * cannotTell
@@ -23,7 +24,10 @@ Installer
 Features:
 
   * double entry password in change passwd
-  * be more picky about making bookings with no project defined.
+  * more flexible data entry (amounts including currency symbols)
+  
+  * use better password hashing algorithm
+  * keep our session away from others' $_SESSION[md5(dirname(__FILE__))]['var']
 
   * longer bookings
   * IE5Mac compatability?
@@ -50,6 +54,7 @@ Features:
 
   * email ics file for booking to user
   
+  * mark some pages as cachable so that back button doesn't lose user input; provide reset button
 
 
 i18n:
