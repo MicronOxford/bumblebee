@@ -130,6 +130,7 @@ class BookingEntry extends DBRow {
                   NULL, 
                   array('userprojects'=>'projectid=id'));
     $f->setFormat('id', '%s', array('name'), ' (%35.35s)', array('longname'));
+    $f->isValidTest = 'is_valid_radiochoice';
     $this->addElement($f);
     $attrs = array('size' => '48');
     $f = new TextField('comments', T_('Comment to show on calendar'));
@@ -385,7 +386,11 @@ class BookingEntry extends DBRow {
   function checkValid() {
     //$this->DEBUG = 10;
     parent::checkValid();
-    $this->log('Individual fields are '.($this->isValid ? 'VALID' : 'INVALID'));
+    if (! $this->isValid) {
+      $this->log('Fields are INVALID; bailing out');
+      return $this->isValid;
+    }
+    $this->log('Individual fields are VALID');
     $this->isValid = $this->_isadmin || ($this->isValid && $this->_legalSlot());
     $this->log('After checking for legality of timeslot: '.($this->isValid ? 'VALID' : 'INVALID'));
     $this->isValid = $this->isValid && $this->_checkIsFree();

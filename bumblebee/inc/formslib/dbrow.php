@@ -106,7 +106,7 @@ class DBRow extends DBO {
     // user about to fill the form in?
     $this->newObject = 1;
     foreach (array_keys($this->fields) as $k) {
-      if ($k != $this->idfield && isset($data[$this->namebase.$k])) {
+      if ($k != $this->idfield && isset($data[$this->namebase.$k]) && ! $this->fields[$k]->hidden) {
         $this->log('I AM NOT NEW '.$k.':changed');
         $this->newObject = 0;
         break;
