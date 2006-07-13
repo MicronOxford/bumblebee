@@ -40,6 +40,8 @@ class Booking extends TimeSlot {
   var $name;
   /** @var string     email address for user that will use instrument */
   var $useremail;
+  /** @var string     phone number for user that will use instrument */
+  var $userphone;
   /** @var integer    user id number for user that booked the instrument */
   var $masquserid;
   /** @var integer    full name of user for user that booked the instrument */
@@ -66,6 +68,7 @@ class Booking extends TimeSlot {
     $this->username = $arr['username'];
     $this->name = $arr['name'];
     $this->useremail = $arr['email'];
+    $this->userphone = $arr['phone'];
     $this->masquserid = $arr['masquserid'];
     $this->masquser = $arr['masquser'];
     $this->masqusername = $arr['masqusername'];
@@ -119,10 +122,12 @@ class Booking extends TimeSlot {
   * display the booking as a single cell in a calendar
   *
   * @global string base path to the installation
+  * @global array  system config
+  *
   * @return string html representation of booking
   */
   function displayInCell(/*$isadmin=0*/) {
-    global $BASEPATH;
+    global $BASEPATH, $CONFIG;
     $start = isset($this->displayStart) ? $this->displayStart : $this->start;
     $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
     $timedescription = $start->datetimestring.' - '.$stop->datetimestring;
@@ -134,6 +139,11 @@ class Booking extends TimeSlot {
     $t .= '<div class="calbookperson">'
          .'<a href="mailto:'.$this->useremail.'">'
          .$this->name.'</a></div>';
+    if (isset($CONFIG['calendar']['showphone']) && $CONFIG['calendar']['showphone']) {
+      $t .= '<div class="calphone">'
+          .xssqw($this->userphone)
+          .'</div>';
+    }
     if ($this->comments) {
       $t .= '<div class="calcomment">'
           .xssqw($this->comments)
