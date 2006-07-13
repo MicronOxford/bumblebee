@@ -77,6 +77,7 @@ class BookingData {
         .'users.name AS name, '
         .'users.username AS username, '
         .'users.email AS email, '
+        .'users.phone AS phone, '
         .'bookedby AS masquserid, '
         .'masq.name AS masquser, '
         .'masq.username AS masqusername, '

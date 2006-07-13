@@ -243,7 +243,7 @@ class Calendar {
     for ($bv=0; $bv < count($bl); $bv++) {
 /*      $this->log('considering timeslot #'.$bv.': '
                       .$bl[$bv]->start->dateTimeString().' - '.$bl[$bv]->stop->dateTimeString(), 8);*/
-      $cbook = $bl[$bv];
+      $cbook =& $bl[$bv];
       $cbook->original = clone($cbook);
       $isStart = START_BOOKING;
       $slotrule = $list->findSlotFromWithin($bl[$bv]->start);  
@@ -253,6 +253,7 @@ class Calendar {
         $slotrule = $list->findNextSlot($bl[$bv]->start);
       }
       do {  //until the current booking has been broken up across list boundaries
+        //echo "memusage=".memory_get_usage()."<br />";
         $this->slotlog('bookingo', $bl[$bv]);
         $this->slotlog('timeslot', $slotrule);
         // push the new booking onto the stack; record if it's the start of a booking or not
