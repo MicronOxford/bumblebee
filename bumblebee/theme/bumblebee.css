@@ -457,6 +457,9 @@ input.radioitem {
   color: #cc6666;
 }
 
+.calendarcomment {
+   padding-top: 2em;
+}
 
 #masquerade {
   border: 2px solid #cc6666;

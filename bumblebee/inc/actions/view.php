@@ -396,12 +396,11 @@ class ActionView extends ActionAction {
   */
   function displayInstrumentHeader($row) {
     $t = '<h2 class="instrumentname">'
-        //.$row['name']
         .$row['longname']
         .'</h2>'
        .'<p class="instrumentlocation">'
-       //. $row['longname'] .'; '
        .$row['location'].'</p>'."\n";
+    $t .= $this->_instrumentNotes($row, false);
     return $t;
   }
   
@@ -410,10 +409,7 @@ class ActionView extends ActionAction {
   */
   function displayInstrumentFooter($row) {
     $t = '';
-    if ($row['calendarcomment']) {
-      $t = '<h3 style="padding-top: 2em;">Notes</h3>'
-         .'<p>'.preg_replace("/\n+/", '</p><p>', $row['calendarcomment']).'</p>';
-    }
+    $t .= $this->_instrumentNotes($row, true);
     if ($row['supervisors']) {
       $t .= '<h3>Instrument supervisors</h3>';
       $t .= '<ul>';
@@ -422,6 +418,26 @@ class ActionView extends ActionAction {
         $t .= '<li><a href="mailto:'. $user['email'] .'">'. $user['name'] .'</a></li>';
       }
       $t .= '</ul>';
+    }
+    return $t;
+  }
+
+  /**
+  * Display the instrument comment in either header or footer as configured
+  *
+  * @param array $row        instrument db row
+  * @param boolean $footer   called in the footer
+  * @returns string          header/footer to display for notes section
+  *
+  * @global array system config 
+  */
+  function _instrumentNotes($row, $footer=true) {
+    global $CONFIG;
+    $t = '';
+    $notesbottom = issetSet($CONFIG['calendar'], 'notesbottom', true);
+    if ($notesbottom == $footer && $row['calendarcomment']) {
+      $t = '<div class="calendarcomment">'
+          .'<p>'.preg_replace("/\n+/", '</p><p>', $row['calendarcomment']).'</p></div>';
     }
     return $t;
   }
