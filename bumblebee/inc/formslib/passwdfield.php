@@ -14,6 +14,8 @@
 require_once 'textfield.php';
 /** type checking and data manipulation */
 require_once 'inc/typeinfo.php';
+/** username and password checks */
+require_once 'inc/passwords.php';
 
 /**
 * a text field that is designed to hold passwords
@@ -23,8 +25,8 @@ require_once 'inc/typeinfo.php';
 * @todo old-passwd? retype passwd? js to check same? code to check same?
 */
 class PasswdField extends TextField {
-  /** @var string  function used to encrypt the data  (set to '' to use plaintext passwords) */
-  var $crypt_method = 'md5';
+  /** @var string  algorithm used to encrypt the data  */
+  var $crypt_method = 'md5_compat';
 
   /**
   *  Create a new password field object
@@ -80,12 +82,7 @@ class PasswdField extends TextField {
       $name = $this->name;
     }
     if (! $this->sqlHidden && $this->value != '') {
-      if ($this->crypt_method != '' && is_callable($this->crypt_method)) {
-        $crypt_method = $this->crypt_method;
-        $pass = $crypt_method($this->value);
-      } else {
-        $pass = $this->value;
-      }
+      $pass = makePasswordHash($this->value);
       return $name ."='$pass'";
     } else {
       return '';
