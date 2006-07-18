@@ -26,9 +26,6 @@ Features:
   * double entry password in change passwd
   * more flexible data entry (amounts including currency symbols)
   
-  * use better password hashing algorithm
-  * keep our session away from others' $_SESSION[md5(dirname(__FILE__))]['var']
-
   * longer bookings
   * IE5Mac compatability?
   * use fieldset and label to beautify forms
@@ -40,7 +37,6 @@ Features:
     - check UTF8-ness of strings
   * i18n:
     - date/time customisation
-    - week start on Sun/Mon 
   
   * heirarchical+fine-grained permission system 
   * groups of instruments
