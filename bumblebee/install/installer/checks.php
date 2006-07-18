@@ -77,8 +77,9 @@ function check_preinst($data) {
     $s[] = "GOOD: FPDF library found for generating PDF reports.";
   }
 
-  // check username: make sure admin username meets Bumblebee requirements
-  if (! preg_match($CONFIG['auth']['validUserRegexp'], $data['bbAdmin'])) {
+  // check username: make sure admin username meets Bumblebee requirements\
+  include('inc/passwords.php');
+  if (! is_valid_username($data['bbAdmin'])) {
     $s[] = "ERROR: The username you have chosen for your Admin user ('".$data['bbAdmin']."') "
           ."will not be able to log into Bumblebee due to restrictions on valid usernames in "
           ."<code>config/bumblebee.ini</code>. Either change the username you have chosen or "
