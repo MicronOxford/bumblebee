@@ -24,7 +24,7 @@ require_once 'inc/compat.php';
 require_once 'inc/db.php'; 
 /** check the user's credentials, create a session to record them */
 require_once 'inc/bb/auth.php';
-$auth = new BumblebeeAuth();
+$auth = new BumblebeeAuth($_POST);
 
 
 /** Load the action factory to work out what should be done in this instance of the script */
