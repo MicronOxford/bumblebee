@@ -47,7 +47,7 @@ if (empty($_POST['old_db_version']) || isset($_POST['do_checkdb'])) {
   $data['old_db_version'] = getCurrentDBVersion();
   $data['old_version']    = $data['old_db_version'];
   $data['new_version']    = $BUMBLEBEEVERSION;
-  $data['new_db_version'] = substr($data['new_version'], 0, strrpos($data['new_version'], '.'));
+  $data['new_db_version'] = $data['new_version']; #substr($data['new_version'], 0, strrpos($data['new_version'], '.'));
   if (version_compare($data['old_db_version'], $data['new_db_version']) == -1) {
     // then the db needs upgrading
     $data['db_upgrade'] = true;

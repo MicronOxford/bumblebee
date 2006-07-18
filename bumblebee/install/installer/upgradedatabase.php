@@ -16,31 +16,34 @@
 
 function getCurrentDBVersion() {
   // there is no defined way of working out what version of the database the installation
-  // is using (at least not for anything in the 1.x sries). We'll have to guess.
+  // is using (at least not for anything in the 1.x series). We'll have to guess.
   $structure = db_get_single('SHOW CREATE TABLE users');
   #print "Apparent structure is ".$structure[1]."<br />";
   if (strpos($structure[1], 'utf8') === false) {
     return "1.0";
   }
-  return "1.1";
+  if (strpos($structure[1], '`passwd` varchar(50) NOT NULL') === false) {
+    return "1.1.3";
+  }
+  return "1.1.9";
 }
 
 function makeUpgradeSQL($initial) {
   $u = array();
   $u['1.1'] = "DB_upgrade_BB_1_1";
+  $u['1.1.4'] = "DB_upgrade_BB_1_1_passwd";
   #$u['1.2'] = "DB_upgrade_BB_1_2";
   #$u['1.3'] = "DB_upgrade_BB_1_3";
   $sql = '';
   $releasenotes = array();
   foreach ($u as $version => $function) {
-    if (version_compare($initial, $version) == -1) {
+    print "Considering $version and $initial\n";
+    if (version_compare($initial, $version) <= 0) {
       // initial version is older than the current version so run the upgrade
       $upgrade = $function();
       $sql .= $upgrade[0];
       $releasenotes[] = $upgrade[1];
-    } else {
-      break;
-    }
+    } 
   }
   $settingComment = "-- Bumblebee SQL load file for ".$_SERVER['SERVER_NAME']."\n"
                    ."-- date: ".date('r', time())."\n"
@@ -85,6 +88,14 @@ function DB_upgrade_BB_1_1() {
       $s .= "ALTER TABLE $TABLEPREFIX$table CHANGE $column $column TEXT;\n" */
   }
   $notes = "Note: if you have (somehow) managed to insert non-ASCII data (i.e. characters other than those found on a standard US keyboard) into your database this operation will probably corrupt it. Since previous versions of Bumblebee couldn't do this for you, you would have had to work pretty hard to achieve this.";
+  return array($s, $notes);
+}
+
+function DB_upgrade_BB_1_1_passwd() {
+  global $CONFIG, $TABLEPREFIX;
+  $s = "USE {$CONFIG['database']['dbname']};\n";
+  $s .= "ALTER TABLE {$TABLEPREFIX}users CHANGE passwd passwd VARCHAR(50) NOT NULL\n";
+  $notes = "The password field is made larger to accommodate more secure methods for storing encode passwods.";
   return array($s, $notes);
 }
 
