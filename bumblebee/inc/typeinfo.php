@@ -374,31 +374,4 @@ function sum_is_100($vs) {
   return ($sum == 100);
 }
 
-/**
-* tests if string is a valid username as per the config setting for usernames
-*
-* @param string $v string to test if it is a valid username
-* @global system config array
-* @return boolean username is valid
-*/
-function is_valid_username($v) {
-  global $CONFIG;
-  $validUserRegexp = issetSet($CONFIG['auth'], 'validUserRegexp');
-  return (empty($validUserRegexp) || preg_match($validUserRegexp, $v));
-}
-
-/*
-echo "<pre>qw test\n";
-$test = array();
-$test[] = "test";
-$test[] = "test data";
-$test[] = "stuart's data";
-$test[] = "magic quoted stuart\\'s data";
-$test[] = "test";
-
-foreach ($test as $t) {
-  echo "$t => ". qw($t) ."\n";
-}
-*/
-
 ?> 
