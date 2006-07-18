@@ -1,6 +1,6 @@
 <?php
 /**
-* Test of authorisation object logic
+* Test of authentication object logic -- username validation
 *
 * @author    Stuart Prescott
 * @copyright  Copyright Stuart Prescott
