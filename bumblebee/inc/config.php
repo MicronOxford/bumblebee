@@ -84,6 +84,13 @@ $VERBOSESQL = $CONFIG['error_handling']['VerboseSQL'];
 global $VERBOSEDATA;
 $VERBOSEDATA = $CONFIG['error_handling']['VerboseData'];
 
+/**
+* Location of the session array (make sure the session variables don't clash with others systems
+* that are setting session vars)
+* @global string $SESSIDX
+*/
+global $SESSIDX;
+$SESSIDX = md5(dirname(__FILE__));
 
 
 ini_set("session.use_only_cookies",1); #don't permit ?PHPSESSID= stuff
@@ -121,6 +128,6 @@ if (! $NON_FATAL_CONFIG) {
 * @global string $BUMBLEBEEVERSION
 */
 global $BUMBLEBEEVERSION;
-$BUMBLEBEEVERSION = '1.1.3';
+$BUMBLEBEEVERSION = '1.1.4';
 
 ?> 
