@@ -159,7 +159,7 @@ class ActionBilling extends ActionExport {
       $this->unbuffer();
       if ($this->emailIndividuals) {
         $success = 1;
-        for ($group=1; $group<count($pdfs); $group++) {
+        for ($group=0; $group<count($pdfs); $group++) {
           $success &= $this->_sendPDFbyEmail($pdfs[$group]['groupdata']['name'],
                                             $pdfs[$group]['groupdata']['email'],
                                             $pdfs[$group]['groupdata'],
@@ -167,7 +167,7 @@ class ActionBilling extends ActionExport {
         }
       } else {
         $grouplist = array();
-        for ($group=1; $group<count($pdfs); $group++) { 
+        for ($group=0; $group<count($pdfs); $group++) { 
           $grouplist[] = $pdfs[$group]['groupdata']['longname'];
         }
         $gpinfo = array('name' => $this->auth->name, 'longname' => "\n".join($grouplist, "\n"));
@@ -235,7 +235,18 @@ class ActionBilling extends ActionExport {
     $recipient_list = array($this->auth->email, $toEmail);
     srand(time());
     $id   = '<bumblebee-'.time().'-'.rand().'@'.$_SERVER['SERVER_NAME'].'>';
-    
+
+    // Try to work around various PHP bugs in sending mail 
+    // see: http://marc.theaimsgroup.com/?l=php-dev&m=109286883222906&w=2
+    //      http://bugs.php.net/bug.php?id=28976
+    if(strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' && ! ini_get("sendmail_from")){
+      ini_set("sendmail_from", $from);
+      $server = issetSet($CONFIG['email'], 'smtp_server');
+      if ($server) ini_set('SMTP', $server);
+      $port = issetSet($CONFIG['email'], 'smtp_port');
+      if ($port) ini_set('smtp_port', $port);
+    }
+
     $headers  = 'Return-path: '.$returnpath .$eol;
     $headers .= 'From: '.$from .$eol;
     //$headers .= 'To: '.$to .$eol;    // automatically added by mail()
