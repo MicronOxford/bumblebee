@@ -1,3 +1,14 @@
+2006-08-01 Stuart Prescott <bumblebee@nanonanonano.net>
+	* 1.0.6 release
+	* feature: phone numbers can be included in the calendar too 
+	  (closes #1517835)
+	* feature: allow the comment field on the calendar page to be moved to the 
+	  top (closes #1517836)
+	* feature: provide additional config options for sending mail under win32 
+	  (closes #1532742)
+	* bugfix: fix off-by-one error in list of groups whose reports are attached 
+	  to the email (closes #1532744)
+
 2006-06-25  Stuart Prescott <bumblebee@nanonanonano.net>
 	* 1.0.5 release
 	* bugfix: turn off web browser form autocompletion by default (closes #1494893) 
