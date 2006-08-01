@@ -6,7 +6,7 @@
 	* reduce memory consumption for calendar rendering under PHP4
 	* push session information into a unique slot to prevent session clashes
 	* feature: give option of different password hashing schemes for the users table
-	* vastly improved Germann translation thanks to Jürgen Fricke
+	* vastly improved German translation thanks to Jürgen Fricke
 
 2006-06-01 Stuart Prescott <bumblebee@nanonanonano.net>
 	* 1.1.3 release
