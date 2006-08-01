@@ -1,3 +1,12 @@
+2006-08-01 Stuart Prescott <bumblebee@nanonanonano.net>
+	* 1.1.4 release
+	* i18n: first day of week in calendar view is now customisable 
+	* bugfix: billing reports now work under PHP5
+	* bugfix: don't make bookings if no project is set
+	* reduce memory consumption for calendar rendering under PHP4
+	* push session information into a unique slot to prevent session clashes
+	* feature: give option of different password hashing schemes for the users table
+
 2006-06-01 Stuart Prescott <bumblebee@nanonanonano.net>
 	* 1.1.3 release
 	* i18n: relax default valid-user-regexp to make life easier for non-English speaking users
@@ -33,6 +42,17 @@
 	* use php-gettext to support locales 
 	* gettext-ised for i18n 
 
+2006-08-01 Stuart Prescott <bumblebee@nanonanonano.net>
+	* 1.0.6 release
+	* feature: phone numbers can be included in the calendar too 
+	  (closes #1517835)
+	* feature: allow the comment field on the calendar page to be moved to the 
+	  top (closes #1517836)
+	* feature: provide additional config options for sending mail under win32 
+	  (closes #1532742)
+	* bugfix: fix off-by-one error in list of groups whose reports are attached 
+	  to the email (closes #1532744)
+
 2006-06-25  Stuart Prescott <bumblebee@nanonanonano.net>
 	* 1.0.5 release
 	* bugfix: turn off web browser form autocompletion by default (closes #1494893) 
@@ -43,22 +63,22 @@
 	* 1.0.4 release
 	* bugfix: fix "Calendar" link after editing/deleting bookings (closes #1487332)
 	* bugfix: sanity check that the BasePath is a directory for session handling (closes: #1487330);
-		include same sanity checks in installer script
+	  include same sanity checks in installer script
 	* bugfix: fix startticks error on editing bookings by initialising field properly (closes #1487399)
 
 2006-04-28  Stuart Prescott <bumblebee@nanonanonano.net>
 	* 1.0.3 release
 	* bugfix: allow timeslot discount and comment to work on the same slot 
 	* bugfix: change action calculation to not use PATH_INFO at all; 
-    now works under PHP CGI module (closes #1477103) 
+	  now works under PHP CGI module (closes #1477103) 
 	* bugfix: assume that a null value for discount means 0. 
 	* bugfix: work around PHP session.auto_start; also allow for externally 
-    started sessions (from some CMS framework) and make sure the session 
-    cookie is only available to the Bumblebee installation (closes #1473112)
+	  started sessions (from some CMS framework) and make sure the session 
+	  cookie is only available to the Bumblebee installation (closes #1473112)
 	* bugfix: change the default mysqldump command line so that it doesn't 
-    require grant LOCK TABLES do backup the database under MySQL 4.1 and MySQL 5. 
+	  require grant LOCK TABLES do backup the database under MySQL 4.1 and MySQL 5. 
 	* feature: new installer script with error checking on user values and 
-    compatability with MySQL5 (closes #1473020)
+	  compatability with MySQL5 (closes #1473020)
 	* feature: allow admin to reset password and turn on extra login debugging info just using the config file
 	* bugfix: user can now change password if email or phone number is not set
 
@@ -87,8 +107,10 @@
 
 2005-08-12 Stuart Prescott <bumblebee@nanonanonano.net>
 	* Fix calendar display so that out-of-slot bookings made by admin don't break grid pattern 
-	* Fix booking validation so that non-admin users can make bookings that start or stop at non-slot times if those times but up against another out-of-slot booking 
-	* Change CSS to reduce problems of half-hour table cells being given zero-height and rounded back to previous hour 
+	* Fix booking validation so that non-admin users can make bookings that start or stop at 
+	  non-slot times if those times but up against another out-of-slot booking 
+	* Change CSS to reduce problems of half-hour table cells being given zero-height and 
+	  rounded back to previous hour 
 	* include location of instruments in the view instrument list 
 
 2005-07-06 Stuart Prescott <bumblebee@nanonanonano.net>
@@ -96,7 +118,8 @@
 	* bugfix: max days in future settings on calendar and day views now do as intended 
 	* feature: max days in future now enforced on calendars not just optional, admin override 
 	* bugfix: time handling now correct for times less than one hour (SimpleDate/Time -> TimeSlotRule) 
-	* bugfix: overnight bookings now appear at end of day and beginning of next day on calendar view (change order of booking normalisation to do TimeSlotsRule first then BreakByDay) 
+	* bugfix: overnight bookings now appear at end of day and beginning of next day on calendar view 
+	  (change order of booking normalisation to do TimeSlotsRule first then BreakByDay) 
 	* feature: make subscribe-announce on by default in the forms 
 
 2005-07-01 Stuart Prescott <bumblebee@nanonanonano.net>
@@ -104,7 +127,8 @@
 	* enabled a maximum number of days into the future that calendars are displayed for 
 
 2005-06-29 Stuart Prescott <bumblebee@nanonanonano.net>
-	* change email functions to use the From address of the server and a reply-to of the user that triggered the email to be sent. 
+	* change email functions to use the From address of the server and a reply-to of the user 
+	  that triggered the email to be sent. 
 
 2005-06-27 Stuart Prescott <bumblebee@nanonanonano.net>
 	* 0.9.9.0-1.0rc1
@@ -176,7 +200,6 @@
 
 2005-05-20 Stuart Prescott <bumblebee@nanonanonano.net>
 	* initial attempt for exporting data from database in various formats added 
-	 
 
 2005-05-19 Stuart Prescott <bumblebee@nanonanonano.net>
 	* fix up to magic_quotes_gpc handling (wouldn't it be nice if it could be turned off at runtime?) 
@@ -237,7 +260,8 @@
 	* admin can now view a list of deleted bookings for each instrument 
 
 2005-05-09 Stuart Prescott <bumblebee@nanonanonano.net>
-	* enabled admin to prevent users from changing the times of bookings or deleting bookings within a given time period of the booking (log/book paradigm) 
+	* enabled admin to prevent users from changing the times of bookings or deleting bookings 
+	  within a given time period of the booking (log/book paradigm) 
 
 2005-05-09 Stuart Prescott <bumblebee@nanonanonano.net>
 	* Bugfixes and clean-ups for $TABLEPREFIX 
@@ -247,7 +271,6 @@
 
 2005-05-07 Stuart Prescott <bumblebee@nanonanonano.net>
 	* bugfix: fix timeslotrule/bookingentry validation with FreeTime slots 
-	 
 
 2005-05-07 Stuart Prescott <bumblebee@nanonanonano.net>
 	* include per-instrument comment field  

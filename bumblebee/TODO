@@ -12,6 +12,7 @@ Bugs:
 Installer 
   * artwork?
   * test log file exists, writable
+  * test suite as 
   * installer test suite as object suite?
         All tests in the test suite should report their outcome in a consistent manner, making it easy for humans or computer programs to understand and to process them. The following test states, defined by EARL (the Evaluation And Report Language), have proved useful:
           * cannotTell
@@ -25,19 +26,33 @@ Features:
 
   * double entry password in change passwd
   * more flexible data entry (amounts including currency symbols)
-  
+  * report generation memory usage (can't generate NMR report for Q1 2006)
   * longer bookings
-  * IE5Mac compatability?
-  * use fieldset and label to beautify forms
-  * beautify calendar
-  * fix dropdown truncation
+  * list view of bookings
+  * jump to dropdowns on calendar
+  * polite "offline" mode
+  * trap unconfigured and send to installer
+  * trap configured and get out of installer
+  
+  * i18n:
+    - date/time customisation
+    
+  * logging
+    - include in more places
+    - include in installer/upgrader
+  
+  * fix dropdown truncation (also for multi-byte chars)
   * db hardening:
     - put all column names and table names in back ticks, 
     - integers in quotes
     - check UTF8-ness of strings
-  * i18n:
-    - date/time customisation
+  * use fieldset and label to beautify forms
+  * beautify calendar
+  * onMouseOver info window with more information about booking than current tooltip?
   
+  
+  
+  * IE5Mac compatability?
   * heirarchical+fine-grained permission system 
   * groups of instruments
   * bring email templates into the database
@@ -60,8 +75,6 @@ i18n:
 
 
 
-  * list view of bookings
-  * jump to dropdowns on calendar
   * send email reminder at configurable interval before (cron job?)
   * ical export, free/busy
   * timezone of server rel user
@@ -70,13 +83,11 @@ i18n:
   * jump to day calendar on day view
   * use http-refresh or js timeout to refresh calendar after n mins
   * hold bookings for approval / display on calendar or not?
-  * onMouseOver info window with more information about booking than current tooltip?
   
   * reportbug script that includes phpinfo() etc
   
   * activity log in db rather than flat file?
 
-  * report generation memory usage (can't generate NMR report for Q1 2006)
 
 
 * Later
