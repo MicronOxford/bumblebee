@@ -101,18 +101,18 @@ class Booking extends TimeSlot {
        . '<tr><td>'.T_('Start').'</td><td>'.$this->start->dateTimeString().'</td></tr>'."\n"
        . '<tr><td>'.T_('Stop').'</td><td>'.$this->stop->dateTimeString().'</td></tr>'."\n"
        . '<tr><td>'.T_('Duration').'</td><td>'.$this->duration->timeString()/*.$bookinglength*/.'</td></tr>'."\n"
-       . '<tr><td>'.T_('User').'</td><td><a href="mailto:'.$this->useremail.'">'.$this->name.'</a> ('.$this->username.')</td></tr>'."\n"
-       . '<tr><td>'.T_('Comments').'</td><td>'.$this->comments.'</td></tr>'."\n"
-       . '<tr><td>'.T_('Log').'</td><td>'.$this->log.'</td></tr>'."\n";
+       . '<tr><td>'.T_('User').'</td><td><a href="mailto:'.xssqw($this->useremail).'">'.xssqw($this->name).'</a> ('.xssqw($this->username).')</td></tr>'."\n"
+       . '<tr><td>'.T_('Comments').'</td><td>'.xssqw($this->comments).'</td></tr>'."\n"
+       . '<tr><td>'.T_('Log').'</td><td>'.xssqw($this->log).'</td></tr>'."\n";
     if ($displayAdmin) {
       if ($this->masquser) {
-        $t .= '<tr><td>'.T_('Booked by').'</td><td><a href="mailto:'.$this->masqemail.'">'.$this->masquser.'</a> ('.$this->masqusername.')</td></tr>'."\n";
+        $t .= '<tr><td>'.T_('Booked by').'</td><td><a href="mailto:'.xssqw($this->masqemail).'">'.xssqw($this->masquser).'</a> ('.xssqw($this->masqusername).')</td></tr>'."\n";
       }
     }
     if ($displayAdmin || $displayOwner) {
-      $t .= '<tr><td>'.T_('Project').'</td><td>'.$this->project.'</td></tr>'."\n";
+      $t .= '<tr><td>'.T_('Project').'</td><td>'.xssqw($this->project).'</td></tr>'."\n";
       if ($this->discount) {
-        $t .= '<tr><td>'.T_('Discount').'</td><td>'.$this->discount.'</td></tr>'."\n";
+        $t .= '<tr><td>'.T_('Discount').'</td><td>'.xssqw($this->discount).'</td></tr>'."\n";
       }
     }
     return $t;
@@ -139,8 +139,8 @@ class Booking extends TimeSlot {
               ."alt='$timedescription' class='calicon' /></a></div>";
     // Finally include details of the booking:
     $t .= '<div class="calbookperson">'
-         .'<a href="mailto:'.$this->useremail.'">'
-         .$this->name.'</a></div>';
+         .'<a href="mailto:'.xssqw($this->useremail).'">'
+         .xssqw($this->name).'</a></div>';
     if (isset($CONFIG['calendar']['showphone']) && $CONFIG['calendar']['showphone']) {
       $t .= '<div class="calphone">'
           .xssqw($this->userphone)

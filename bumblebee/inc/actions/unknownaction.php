@@ -40,11 +40,11 @@ class ActionUnknown extends ActionAction {
     echo '<h2>'.T_('Error').'</h2><div class="msgerror">';
     if ($this->forbidden) {
       echo '<p>'
-          .sprintf(T_('Sorry, you don\'t have permission to perform the action "%s".'), $this->action) 
+          .sprintf(T_('Sorry, you don\'t have permission to perform the action "%s".'), xssqw($this->action)) 
           .'</p>';
     } else {
       echo '<p>'
-          .sprintf(T_('An unknown error occurred. I was asked to perform the action "%s", but I don\'t know how to do that.'), $this->action)
+          .sprintf(T_('An unknown error occurred. I was asked to perform the action "%s", but I don\'t know how to do that.'), xssqw($this->action))
           .'</p>';
     }
     echo '<p>'
