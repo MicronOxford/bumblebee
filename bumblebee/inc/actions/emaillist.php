@@ -32,8 +32,8 @@ require_once 'inc/actions/actionaction.php';
 
 /**
 * Generate a list of email addresses for users of particular instruments
-*  
-* An Action to find out what instruments the lists should be prepared for 
+*
+* An Action to find out what instruments the lists should be prepared for
 * and then return the email list.
 * Designed to be use as a per instrument "announce" list.
 *
@@ -49,8 +49,8 @@ class ActionEmailList extends ActionAction {
   var $fatal_sql = 1;
 
   /**
-  * Initialising the class 
-  * 
+  * Initialising the class
+  *
   * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
@@ -73,11 +73,11 @@ class ActionEmailList extends ActionAction {
   *
   * - do DB look-ups on what instruments exist
   * - construct a table of checkboxes to allow the user to select the lists
-  * 
+  *
   * @return void nothing
   */
   function selectLists() {
-    $selectRow = new nonDBRow('listselect', T_('Select email lists'), 
+    $selectRow = new nonDBRow('listselect', T_('Select email lists'),
               T_('Select which email lists you want to return'));
     $select = new CheckBoxTableList(T_('Instrument'), T_('Select which instrument to view'));
     $hidden = new TextField('instrument');
@@ -108,9 +108,9 @@ class ActionEmailList extends ActionAction {
   * - work out which instruments the user has requested for inclusion
   * - construct an SQL query to get the email list
   * - return the formatted data to the user
-  * 
+  *
   * @return void nothing
-  */  
+  */
   function returnLists() {
     $where = array('0');  //start the WHERE with 0 in case nothing was selected (always get valid SQL)
     $namebase = 'Instrument-';
@@ -141,9 +141,9 @@ class ActionEmailList extends ActionAction {
       } elseif ($this->PD['separator'] == '\t') {
         $this->PD['separator'] = "\t";
       }
-      echo join($list->formatdata, xssqw($this->PD['separator']).'<br />');
+      echo join(array_xssqw($list->formatdata), xssqw($this->PD['separator']).'<br />');
     }
   }
 
 }
-?> 
+?>

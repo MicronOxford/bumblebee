@@ -42,7 +42,7 @@ function check_password($test, $real) {
 }
 
 /**
-* encode a password according to the specified hash method (or using the requested 
+* encode a password according to the specified hash method (or using the requested
 *
 * @param string $passwd     unencoded password string
 * @param string $salt       salt used to hash the password
@@ -57,18 +57,24 @@ function makePasswordHash($passwd, $salt=NULL, $method=NULL) {
 
   $tmp = explode('$', $salt);
   if (count($tmp) > 3) $saltpart = '$'.$tmp[1].'$'.$tmp[2].'$';
-  
+
+  # echo "salt=$salt";
   switch(passwordHashType($salt)) {
     case 'des':
     case 'md5':
+      # echo "using crypt()";
       return crypt($passwd, $salt);
     case 'md5_emulated':
+      # echo "emulating salted md5";
       return $saltpart.md5($tmp[2].$passwd);  // custom bogo md5
     case 'md5_compat':
+      # echo "using bogo MD5";
       return md5($passwd);
     case 'sha1':
+      # echo "using simple sha1";
       return $saltpart.base64_encode(pack('H*',sha1($tmp[2].$passwd)));  // custom bogo sha1
     case 'sha1_binary':
+      # echo "using binary sha1";
       return $saltpart.base64_encode(sha1($tmp[2].$passwd, true));  // custom bogo sha1
   }
 }
@@ -76,30 +82,30 @@ function makePasswordHash($passwd, $salt=NULL, $method=NULL) {
 function makeHashSalt($type='md5') {
   switch($type) {
     case 'md5':
-      $len=9; 
-      $prefix='$1$'; 
-      $suffix='$'; 
+      $len=9;
+      $prefix='$1$';
+      $suffix='$';
       break;
     case 'md5_emulated':
-      $len=9; 
-      $prefix='$md5$'; 
-      $suffix='$'; 
+      $len=9;
+      $prefix='$md5$';
+      $suffix='$';
       break;
     case 'md5_compat':
       return '';
     case 'des':
-      $len=2; 
-      $prefix=''; 
-      $suffix=''; 
+      $len=2;
+      $prefix='';
+      $suffix='';
       break;
     case 'sha1':
-      $len=10; 
-      $prefix='$sha1$'; 
+      $len=10;
+      $prefix='$sha1$';
       $suffix='$';
       break;
     case 'sha1_binary':
-      $len=10; 
-      $prefix='$sha1$'; 
+      $len=10;
+      $prefix='$sha1$';
       $suffix='$';
       break;
   }
@@ -121,4 +127,4 @@ function passwordHashType($pass) {
   if ($tmp[1] == 'sha1_binary') return 'sha1_binary';
 }
 
-?> 
+?>

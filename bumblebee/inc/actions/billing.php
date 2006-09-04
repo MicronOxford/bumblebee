@@ -37,7 +37,7 @@ class ActionBilling extends ActionExport {
   * @var boolean
   */
   var $emailIndividuals = false;
-  /** 
+  /**
   * mail error message (if sending mail went wrong)
   * @var string
   */
@@ -47,10 +47,10 @@ class ActionBilling extends ActionExport {
   * @var boolean
   */
   var $DEBUG_PDF = false;
-  
+
   /**
-  * Initialising the class 
-  * 
+  * Initialising the class
+  *
   * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
@@ -61,12 +61,12 @@ class ActionBilling extends ActionExport {
     $this->format = EXPORT_FORMAT_PDF;
     $this->_verb = 'billing';
     $this->PD['what'] = 'billing';
-    $this->reportSet = array('group' => 'users', 
+    $this->reportSet = array('group' => 'users',
                              'bookingbilling' => 'groups',
                              'consumablegroup' => 'users',
                              'billing' => '');
   }
-  
+
   function mungeInputData() {
     $this->emailIndividuals = issetSet($_POST, 'emailToGroups');
     //echo $this->emailIndividuals ? 'true' : 'false';
@@ -75,11 +75,11 @@ class ActionBilling extends ActionExport {
 
   /**
   * convenience function to generate a submit button
-  */  
+  */
   function _goButton() {
     echo '<label>'
           .'<input type="radio" name="emailToGroups" value="0" checked="checked" /> '
-          .T_('Email report to me').' ('.$this->auth->email.')'
+          .T_('Email report to me').' ('.xssqw($this->auth->email).')'
         .'</label><br/>';
     echo '<label>'
           .'<input type="radio" name="emailToGroups" value="1" /> '
@@ -87,7 +87,7 @@ class ActionBilling extends ActionExport {
         .'</label><br/><br/>';
     parent::_goButton();
   }
-  
+
   /**
   * get all the data and send it back to the user
   */
@@ -104,7 +104,7 @@ class ActionBilling extends ActionExport {
     $groups = $this->_limitationSet(array('groups'), count($this->reportSet)-1, false);
     #preDump($groups);
     $noData = true;
-    foreach ($groups['groups'] as $g) { 
+    foreach ($groups['groups'] as $g) {
       $noGroupData = true;
       $exportArray = new ArrayExport($lists[0], '');
       $exportArray->header = $this->_reportHeader();
@@ -118,11 +118,11 @@ class ActionBilling extends ActionExport {
         $noData = $noData && ! count($l->data);
         $noGroupData = $noGroupData && ! count($l->data);
         $this->log('Found '. count($l->data) .' rows');
-        
+
         if (count($l->data)) {
           // start rendering the data
           $l->outputFormat = $this->format;
-          $l->formatList();   
+          $l->formatList();
           $this->log('Creating new AE');
           //preDump($lists[$r]);
           $ea = new ArrayExport($l, $l->breakfield);
@@ -147,8 +147,8 @@ class ActionBilling extends ActionExport {
           $pdfExport->writeToFile = false;
         }
         $pdfExport->makePDFBuffer();
-        $pdfs[] = array('filename'  => $filename, 
-                        'mimetype'  => $this->mimetype, 
+        $pdfs[] = array('filename'  => $filename,
+                        'mimetype'  => $this->mimetype,
                         'data'      => $pdfExport->export,
                         'groupdata' => $who);
       } else {
@@ -171,7 +171,7 @@ class ActionBilling extends ActionExport {
         }
       } else {
         $grouplist = array();
-        for ($group=0; $group<count($pdfs); $group++) { 
+        for ($group=0; $group<count($pdfs); $group++) {
           $grouplist[] = $pdfs[$group]['groupdata']['longname'];
         }
         $gpinfo = array('name' => $this->auth->name, 'longname' => "\n".join($grouplist, "\n"));
@@ -194,7 +194,8 @@ class ActionBilling extends ActionExport {
         $s = '<div class="msgerror">'
             .T_('<b>Note:</b> no billing data was found for some groups.').'<br/><br/>';
         foreach ($nopdfs as $group) {
-          $s .= $group['groupdata']['name'].': '.$group['groupdata']['longname'].'<br/>';
+          $s .= xssqw($group['groupdata']['name']).': '
+               .xssqw($group['groupdata']['longname']).'<br/>';
         }
         $s .= '</div>';
         echo $s;
@@ -204,7 +205,7 @@ class ActionBilling extends ActionExport {
       echo '</div>';
     }
   }
-  
+
   /**
   * obtain an appropriate filename for the data export
   */
@@ -240,7 +241,7 @@ class ActionBilling extends ActionExport {
     srand(time());
     $id   = '<bumblebee-'.time().'-'.rand().'@'.$_SERVER['SERVER_NAME'].'>';
 
-    // Try to work around various PHP bugs in sending mail 
+    // Try to work around various PHP bugs in sending mail
     // see: http://marc.theaimsgroup.com/?l=php-dev&m=109286883222906&w=2
     //      http://bugs.php.net/bug.php?id=28976
     if(strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' && ! ini_get("sendmail_from")){
@@ -260,20 +261,20 @@ class ActionBilling extends ActionExport {
 
     $start = $this->_daterange->getStart();
     $stop  = $this->_daterange->getStop();
-    
+
     $textmessage = $this->_getEmailText($group, $start->dateString(), $stop->dateString());
-    
+
     //$textmessage = 'Please find attached PDF billing summaries for instrument usage.';
-    $subject = ($CONFIG['billing']['emailSubject'] 
+    $subject = ($CONFIG['billing']['emailSubject']
                     ? $CONFIG['billing']['emailSubject'] : T_('Instrument usage summary'));
 
-    //Having read in the data for the file attachment, 
+    //Having read in the data for the file attachment,
     //we need to set up the message headers to send a multipart/mixed message:
 
     // Generate a boundary string
     $semi_rand = md5(time());
     $mime_boundary = "==Multipart_Boundary_x{$semi_rand}x";
- 
+
     // Add the headers for a file attachment
     $headers .= 'MIME-Version: 1.0'.$eol
                .'Content-Type: multipart/mixed;'.$eol
@@ -290,7 +291,7 @@ class ActionBilling extends ActionExport {
       //echo strlen($data[$att]['data']);
       // Base64 encode the file data
       $attdata = chunk_split(base64_encode($data[$att]['data']));
-  
+
       // Add file attachment to the message
       $message .= '--'.$mime_boundary . $eol
                  .'Content-Type: '.$data[$att]['mimetype'].';'.$eol
@@ -318,7 +319,7 @@ class ActionBilling extends ActionExport {
     #print "sent mail to $to, $cc\n";
     return $ok;
   }
-  
+
   /**
   * Reads the boilerplate text for the email and customise it for this email
   *
@@ -345,7 +346,7 @@ class ActionBilling extends ActionExport {
                         $txt);
     return $txt;
   }
-  
+
 } // ActionBilling
 
 ?>

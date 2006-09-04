@@ -34,7 +34,7 @@ require_once 'inc/actions/actionaction.php';
 */
 class ActionView extends ActionAction {
   /**
-  * booking is for the logged in user 
+  * booking is for the logged in user
   * @var boolean
   */
   var $_isOwnBooking    = false;
@@ -51,8 +51,8 @@ class ActionView extends ActionAction {
 
 
   /**
-  * Initialising the class 
-  * 
+  * Initialising the class
+  *
   * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
@@ -73,7 +73,7 @@ class ActionView extends ActionAction {
     if (isset($this->PD['delete']) && isset($this->PD['bookid'])) {
       $this->deleteBooking();
       echo $this->_calendarViewLink($instrument);
-    } elseif (isset($this->PD['isodate']) && 
+    } elseif (isset($this->PD['isodate']) &&
                     ! isset($this->PD['bookid']) && ! isset($this->PD['startticks']) ) {
       $this->instrumentDay();
       echo $this->_calendarViewLink($instrument);
@@ -108,7 +108,7 @@ class ActionView extends ActionAction {
     }
     echoData($this->PD, 0);
   }
-  
+
   /**
   * Calculate calendar offset in days
   *
@@ -129,7 +129,7 @@ class ActionView extends ActionAction {
       return floor($then->dsDaysBetween($now));
     }
   }
-    
+
   /**
   * Makes a link back to the current calendar
   *
@@ -147,16 +147,16 @@ class ActionView extends ActionAction {
   function selectInstrument() {
     $instrselect = new AnchorTableList('Instrument', T_('Select which instrument to view'), 3);
     if ($this->auth->isSystemAdmin()) {
-      $instrselect->connectDB('instruments', 
+      $instrselect->connectDB('instruments',
                             array('id', 'name', 'longname', 'location')
                             );
     } else {
-      $instrselect->connectDB('instruments', 
+      $instrselect->connectDB('instruments',
                             array('id', 'name', 'longname', 'location'),
                             'userid='.qw($this->auth->getEUID()),
-                            'name', 
-                            'id', 
-                            NULL, 
+                            'name',
+                            'id',
+                            NULL,
                             array('permissions'=>'instrid=id'));
     }
     $instrselect->hrefbase = makeURL('view', array('instrid'=>'__id__'));
@@ -170,19 +170,19 @@ class ActionView extends ActionAction {
   function instrumentMonth() {
     global $CONFIG;
     $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
-    // Show a window $row['calendarlength'] weeks long starting $row['calendarhistory'] weeks 
+    // Show a window $row['calendarlength'] weeks long starting $row['calendarhistory'] weeks
     // before the current date. Displayed week always starts on Monday
     $offset = issetSet($this->PD, 'caloffset');
     $now = new SimpleDate(time());
     $now->dayRound();
     $start = clone($now);
     $start->addDays($offset);
-    
+
     // check to see if this is an allowable calendar view (not too far into the future)
     $callength = 7*$row['callength'];
     $totaloffset = $offset + $callength - 7*$row['calhistory'] - $start->dow();
     $this->log("Found total offset of $totaloffset, calfuture=".$row['calfuture']." calhistory=".$row['calhistory']);
-    
+
     //admin users are allowed to see further into the future.
     $this->_checkBookingAuth(-1);
     if ($totaloffset > $row['calfuture'] && !$this->_isAdminView) {
@@ -192,17 +192,17 @@ class ActionView extends ActionAction {
       $start->addDays($offset);
       #echo $start->dateTimeString();
     }
-    
+
     // jump backwards to the start of that week.
     //$day = $start->dow(); // the day of the week, 0=Sun, 6=Sat
     $week_offset = issetSet($CONFIG['language'], 'week_offset', 1);
     $start->weekRound();
     if ($now->dow() < $week_offset) $start->addDays(-7);
     $start->addDays($week_offset-7*$row['calhistory']);
-        
+
     $stop = clone($start);
     $stop->addDays($callength);
-    
+
     $cal = new Calendar($start, $stop, $this->PD['instrid']);
 
     $daystart    = new SimpleTime($row['usualopen']);
@@ -215,7 +215,7 @@ class ActionView extends ActionAction {
 //     echo $cal->display();
     $cal->href=makeURL('view', array('instrid'=>$this->PD['instrid']));
     $cal->isAdminView = $this->_isAdminView;
-    $cal->setOutputStyles('', $CONFIG['calendar']['todaystyle'], 
+    $cal->setOutputStyles('', $CONFIG['calendar']['todaystyle'],
                 preg_split('{/}',$CONFIG['calendar']['monthstyle']), 'm');
     echo $this->displayInstrumentHeader($row);
     echo $this->_linksForwardBack(($offset-$callength),
@@ -233,7 +233,7 @@ class ActionView extends ActionAction {
     return '<div style="text-align:center">'
         .'<a href="'.makeURL('view', array_merge(array('instrid'=>$this->PD['instrid'], 'caloffset'=>$back), $extra)).'">&laquo; '. T_('earlier') .'</a> | '
         .'<a href="'.makeURL('view', array_merge(array('instrid'=>$this->PD['instrid'], 'caloffset'=>$today), $extra)).'">'. T_('today') .'</a> '
-        .($showForward ? 
+        .($showForward ?
                 ' | '
                 .'<a href="'.makeURL('view', array_merge(array('instrid'=>$this->PD['instrid'], 'caloffset'=>$forward), $extra)).'">'. T_('later') .' &raquo;</a>'
                 : ''
@@ -248,7 +248,7 @@ class ActionView extends ActionAction {
     $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
     $granularity = $row['calprecision'];
     $timelines   = $row['caltimemarks'];
-    
+
     $today = new SimpleDate(time());
     $today->dayRound();
     $start = new SimpleDate($this->PD['isodate']);
@@ -279,8 +279,8 @@ class ActionView extends ActionAction {
     $cal->isAdminView = $this->_isAdminView;
     $cal->setOutputStyles('', 'caltoday', array('monodd', 'moneven'), 'm');
     echo $this->displayInstrumentHeader($row);
-    echo $this->_linksForwardBack('-1', -1*$totaloffset, '+1', 
-                                $maxfuture > $totaloffset || $this->_isAdminView, 
+    echo $this->_linksForwardBack('-1', -1*$totaloffset, '+1',
+                                $maxfuture > $totaloffset || $this->_isAdminView,
                                 array('isodate'=>$start->dateString()));
     echo $cal->displayDayAsTable($daystart,$daystop,$granularity,$timelines);
     echo $this->displayInstrumentFooter($row);
@@ -312,7 +312,7 @@ class ActionView extends ActionAction {
     $ip = $this->auth->getRemoteIP();
     //echo $ip;
     $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
-    $booking = new BookingEntry($bookid,$this->auth,$this->PD['instrid'], $row['mindatechange'],$ip, 
+    $booking = new BookingEntry($bookid,$this->auth,$this->PD['instrid'], $row['mindatechange'],$ip,
                                 $start, $duration, $row['timeslotpicture']);
     $this->_checkBookingAuth($booking->fields['userid']->getValue());
     if (! $this->_haveWriteAccess) {
@@ -321,7 +321,7 @@ class ActionView extends ActionAction {
     $booking->update($this->PD);
     $booking->checkValid();
     echo $this->displayInstrumentHeader($row);
-    echo $this->reportAction($booking->sync(), 
+    echo $this->reportAction($booking->sync(),
               array(
                   STATUS_OK =>   ($bookid < 0 ? T_('Booking made') : T_('Booking updated')),
                   STATUS_ERR =>  T_('Booking could not be made:').'<br/><br/>'.$booking->errorMessage
@@ -346,15 +346,15 @@ class ActionView extends ActionAction {
     echo $booking->display($this->_isAdminView, $this->_isOwnBooking);
     if ($this->_isOwnBooking || $this->_isAdminView) {
       echo "<p><a href='"
-            .makeURL('view', 
-                array('instrid' => $this->PD['instrid'], 
-                      'bookid'  => $this->PD['bookid'], 
+            .makeURL('view',
+                array('instrid' => $this->PD['instrid'],
+                      'bookid'  => $this->PD['bookid'],
                       'edit'    => 1,
                       'isodate' => $this->PD['isodate']))
             ."'>". T_('Edit booking') ."</a></p>\n";
     }
   }
-  
+
   /**
   * Delete a booking
   */
@@ -366,12 +366,12 @@ class ActionView extends ActionAction {
       return $this->_forbiddenError(T_('Delete booking'));
     }
     echo $this->displayInstrumentHeader($row);
-    echo $this->reportAction($booking->delete(), 
+    echo $this->reportAction($booking->delete(),
               array(
                   STATUS_OK =>   T_('Booking deleted'),
                   STATUS_ERR =>  T_('Booking could not be deleted:').'<br/><br/>'.$booking->errorMessage
               )
-            );  
+            );
   }
 
   /**
@@ -380,7 +380,7 @@ class ActionView extends ActionAction {
   */
   function _checkBookingAuth($userid) {
     $this->_isOwnBooking = $this->auth->isMe($userid);
-    $this->_isAdminView = $this->auth->isSystemAdmin() 
+    $this->_isAdminView = $this->auth->isSystemAdmin()
                   || $this->auth->isInstrumentAdmin($this->PD['instrid']);
     $this->_haveWriteAccess = $this->_isOwnBooking || $this->_isAdminView;
   }
@@ -390,27 +390,27 @@ class ActionView extends ActionAction {
   */
   function _forbiddenError($msg) {
     $this->log('Action forbidden: '.$msg);
-    echo $this->reportAction(STATUS_FORBIDDEN, 
+    echo $this->reportAction(STATUS_FORBIDDEN,
               array(
                   STATUS_FORBIDDEN => $msg.': <br/>'.T_('Sorry, you do not have permission to do this.'),
               )
             );
     return STATUS_FORBIDDEN;
   }
-    
+
   /**
   * Display a heading on the page with the instrument name and location
   */
   function displayInstrumentHeader($row) {
     $t = '<h2 class="instrumentname">'
-        .$row['longname']
+        .xssqw($row['longname'])
         .'</h2>'
        .'<p class="instrumentlocation">'
-       .$row['location'].'</p>'."\n";
+       .xssqw($row['location']).'</p>'."\n";
     $t .= $this->_instrumentNotes($row, false);
     return $t;
   }
-  
+
   /**
   * Display a footer for the page with the instrument comments and who looks after the instrument
   */
@@ -422,7 +422,7 @@ class ActionView extends ActionAction {
       $t .= '<ul>';
       foreach(preg_split('/,\s*/', $row['supervisors']) as $username) {
         $user = quickSQLSelect('users', 'username', $username);
-        $t .= '<li><a href="mailto:'. $user['email'] .'">'. $user['name'] .'</a></li>';
+        $t .= '<li><a href="mailto:'. xssqw($user['email']) .'">'. xssqw($user['name']) .'</a></li>';
       }
       $t .= '</ul>';
     }
@@ -436,7 +436,7 @@ class ActionView extends ActionAction {
   * @param boolean $footer   called in the footer
   * @returns string          header/footer to display for notes section
   *
-  * @global array system config 
+  * @global array system config
   */
   function _instrumentNotes($row, $footer=true) {
     global $CONFIG;
@@ -444,11 +444,15 @@ class ActionView extends ActionAction {
     $notesbottom = issetSet($CONFIG['calendar'], 'notesbottom', true);
     if ($notesbottom == $footer && $row['calendarcomment']) {
       $t = '<div class="calendarcomment">'
-          .'<p>'.preg_replace("/\n+/", '</p><p>', $row['calendarcomment']).'</p></div>';
+          .'<p>'
+          .preg_replace("/\n+/",
+                        '</p><p>',
+                          xssqw_relaxed($row['calendarcomment']))
+          .'</p></div>';
     }
     return $t;
   }
 
 
 } // class ActionView
-?> 
+?>

@@ -224,8 +224,6 @@ function cp1252_to_utf8($str) {
   return  strtr(utf8_encode($str), $cp1252_map);
 }
 
-
-
 /**
 * quote words against XSS attacks by converting tags to html entities
 *
@@ -244,12 +242,63 @@ function xssqw($v) {
   }
   $replace = array(
         "/'/"                             =>   "&#039;",
+        '/"/'                             =>   "&#034;",
         '@<@'                             =>   '&lt;',
         '@>@'                             =>   '&gt;',
         '@&(?!(\#\d{1,4})|(\w{2,4});)@'   =>   '&amp;'  // allow &#123; and &lt; through
   );
   return preg_replace(array_keys($replace), array_values($replace), $v);
   #return htmlentities($v, ENT_QUOTES);
+}
+
+
+/**
+* quote words against XSS attacks but allow some html tags through
+* (unsafe attributes are removed)
+*
+* @param string $v string to be quoted
+* @return string $v with html converted to entities
+*/
+function xssqw_relaxed($v) {
+  // once again magic_quotes_gpc gets in the way
+  if (get_magic_quotes_gpc()) {
+    // first remove any (partial or full) escaping then we'll do it properly below
+    $v = stripslashes($v);
+  }
+  $keep = array(
+          "i"     => array("style", "class"),
+          "u"     => array("style", "class"),
+          "b"     => array("style", "class"),
+          "a"     => array("style", "class", "href", "id", "name"),
+          "div"   => array("style", "class", "id"),
+          "br"    => array(),
+          "hr"    => array("style", "class", "id")
+        );
+
+  $s = xssqw($v);
+  foreach ($keep as $tag => $attribs) {
+    $s = preg_replace("@&lt;\s*($tag)((?:(?!&gt;).)*)&gt;"
+                      ."((?:(?!&lt;\s*/\s*$tag).)*)"  // negative lookahead: no closing tag
+                      ."&lt;\s*/$tag\s*&gt;@ise",
+                      'xssqw_relaxed_helper($keep, "\1", "\2", "\3");',
+                      $s);
+    #echo $s;
+  }
+  return $s;
+}
+
+function xssqw_relaxed_helper($tags, $tag, $attribs, $content){
+  #echo "tag='$tag'; attribs='$attribs'; content='$content'<br />\n";
+  $attrlist = array();
+  foreach ($tags[$tag] as $a) {
+    $attrmatch = "@$a\s*=\s*(&#039;|&#034;)((?:[^\\1])*)\\1@";
+    $m = array();
+    if (preg_match($attrmatch, $attribs, $m)) {
+      $attrlist[] = "$a='$m[2]'";
+    }
+  }
+  $attrs = join($attrlist, " ");
+  return "<$tag $attrs>$content</$tag>";
 }
 
 /**

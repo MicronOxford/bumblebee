@@ -37,8 +37,8 @@ require_once 'inc/actions/actionaction.php';
 class ActionConsume extends ActionAction {
 
   /**
-  * Initialising the class 
-  * 
+  * Initialising the class
+  *
   * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
@@ -64,10 +64,10 @@ class ActionConsume extends ActionAction {
       }
     } elseif (isset($this->PD['delete'])) {
       $this->delete();
-    } elseif (  
-                (! isset($this->PD['id'])) && 
-                ( 
-                  (! isset($this->PD['user'])) || (! isset($this->PD['consumableid'])) 
+    } elseif (
+                (! isset($this->PD['id'])) &&
+                (
+                  (! isset($this->PD['user'])) || (! isset($this->PD['consumableid']))
                 )
              ) {
       if (! isset($this->PD['user'])) {
@@ -81,34 +81,6 @@ class ActionConsume extends ActionAction {
     }
     echo "<br /><br /><a href='".makeURL('consume')."'>".T_('Return to consumable use list')."</a>";
   }
-
-//   function mungeInputData() {
-//     $this->PD = array();
-//     foreach ($_POST as $k => $v) {
-//       $this->PD[$k] = $v;
-//     }
-//     $lPDATA = $this->PDATA;
-//     array_shift($lPDATA);
-//     while (count($lPDATA)) {
-//       if (isset($lPDATA[0]) && $lPDATA[0]=='user' && is_numeric($lPDATA[1])) {
-//         array_shift($lPDATA);
-//         $this->PD['user'] = array_shift($lPDATA);
-//       } elseif (isset($lPDATA[0]) && $lPDATA[0]=='consumable' && is_numeric($lPDATA[1])) {
-//         array_shift($lPDATA);
-//         $this->PD['consumableid'] = array_shift($lPDATA);
-//       } elseif (isset($lPDATA[0]) && $lPDATA[0]=='list') {
-//         $this->PD['list'] = 1;
-//         array_shift($lPDATA);
-//       } elseif (isset($lPDATA[0]) && is_numeric($lPDATA[0])) {
-//         $this->PD['id'] = array_shift($lPDATA);
-//       } else {
-//         //this record is unwanted... drop it
-//         array_shift($lPDATA);
-//       }
-//     }
-//     #$PD['defaultclass'] = 12;
-//     echoData($this->PD, 0);
-//   }
 
   /**
   * Select which user is consuming the item
@@ -125,7 +97,7 @@ class ActionConsume extends ActionAction {
     $userselect->setFormat('id', '%s', array('name'), ' %s', array('username'));
 
     if (isset($this->PD['consumableid']) && $this->PD['consumableid'] > 0) {
-      echo '<p>'.sprintf(T_('<a href="%s">View listing</a> for selected consumable'), 
+      echo '<p>'.sprintf(T_('<a href="%s">View listing</a> for selected consumable'),
                   makeURL('consume', array_merge($path, array('list'=>1))))."</p>\n";
     }
     echo $userselect->display();
@@ -145,7 +117,7 @@ class ActionConsume extends ActionAction {
     $consumableselect->connectDB('consumables', array('id', 'name', 'longname'));
     $consumableselect->hrefbase = makeURL('consume', array_merge($path, array('consumableid' => '__id__')));
     $consumableselect->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'));
-    
+
     if (isset($this->PD['user']) && $this->PD['user'] > 0) {
       echo '<p>'.sprintf(T_('<a href="%s">View listing</a> for selected user'),
                   makeURL('consume', array_merge($path, array('list'=>1))))."</p>\n";
@@ -164,9 +136,9 @@ class ActionConsume extends ActionAction {
                               $uid, $ip, $today->dateString());
     $rec->update($this->PD);
     $rec->checkValid();
-    echo $this->reportAction($rec->sync(), 
+    echo $this->reportAction($rec->sync(),
           array(
-              STATUS_OK =>   ($recordid < 0 ? T_('Consumption recorded') 
+              STATUS_OK =>   ($recordid < 0 ? T_('Consumption recorded')
                                             : T_('Consumption record updated')),
               STATUS_ERR =>  T_('Consumption record could not be changed:').' '.$rec->errorMessage
           )
@@ -185,13 +157,13 @@ class ActionConsume extends ActionAction {
 
   function delete() {
     $rec = new ConsumableUse($this->PD['id']);
-    echo $this->reportAction($rec->delete(), 
+    echo $this->reportAction($rec->delete(),
               array(
                   STATUS_OK =>   T_('Consumption record deleted'),
                   STATUS_ERR =>  T_('Consumption record could not be deleted:')
                                   .'<br/><br/>'.$rec->errorMessage
               )
-            );  
+            );
   }
 
   /**
@@ -209,7 +181,7 @@ class ActionConsume extends ActionAction {
     echo '<p>'
           .sprintf(T_('Consumption records for %s'), $consumable->fields['name']->value)
           ."</p>\n";
-    $recselect = new AnchorTableList(T_('Consumption Record'), 
+    $recselect = new AnchorTableList(T_('Consumption Record'),
                               T_('Select the consumption record to view'), 3);
     $recselect->deleted = NULL;
     $recselect->setTableHeadings(array(T_('Date'), T_('User'), T_('Quantity')));
@@ -241,11 +213,11 @@ class ActionConsume extends ActionAction {
     $stop->addDays(1);
     $user = new User($userID, true);
     echo '<p>'
-        .sprintf(T_('Consumption records for %s (%s)'), 
+        .sprintf(T_('Consumption records for %s (%s)'),
               $user->fields['username']->value,
               $user->fields['name']->value)
         .")</p>\n";
-    $recselect = new AnchorTableList(T_('Consumption Record'), 
+    $recselect = new AnchorTableList(T_('Consumption Record'),
                     T_('Select the consumption record to view'), 3);
     $recselect->deleted = NULL;
     $recselect->setTableHeadings(array(T_('Date'), T_('Item'), T_('Quantity')));
@@ -265,4 +237,4 @@ class ActionConsume extends ActionAction {
   }
 }
 
-?> 
+?>

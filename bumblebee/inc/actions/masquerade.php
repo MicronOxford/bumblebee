@@ -23,15 +23,15 @@ require_once 'inc/actions/actionaction.php';
 
 /**
 * Allow the admin user to masquerade as another user to make some bookings. A bit like "su".
-*  
+*
 * @package    Bumblebee
 * @subpackage Actions
 */
 class ActionMasquerade extends ActionAction {
 
   /**
-  * Initialising the class 
-  * 
+  * Initialising the class
+  *
   * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
@@ -54,7 +54,7 @@ class ActionMasquerade extends ActionAction {
 
   /**
   * Print an HTML list of users to allow the user to masquerade as for making bookings
-  *  
+  *
   */
   function selectUser() {
     $select = new AnchorTableList(T_('Users'), T_('Select which user to masquerade as'));
@@ -65,20 +65,20 @@ class ActionMasquerade extends ActionAction {
       $select->list->prepend(array('-1', T_('End current Masquerade')));
       echo T_('Currently wearing the mask of:')
         .'<blockquote class="highlight">'
-        .$this->auth->ename.' ('.$this->auth->eusername.')</blockquote>';
+        .xssqw($this->auth->ename).' ('.xssqw($this->auth->eusername).')</blockquote>';
     }
     echo $select->display();
   }
 
   /**
-  * Put on the selected mask 
+  * Put on the selected mask
   *  @todo i18n: block translation
   */
   function assumeMasquerade() {
     if ($row = $this->auth->assumeMasq($this->PD['id'])) {
       echo '<h3>Masquerade started</h3>'
             .'<p>The music has started and you are now wearing the mask that looks like:</p>'
-            .'<blockquote class="highlight">'.$row['name'].' ('.$row['username'].')</blockquote>'
+            .'<blockquote class="highlight">'.xssqw($row['name']).' ('.xssqw($row['username']).')</blockquote>'
             .'<p>Is that a scary thought?</p>'
             .'<p>When you are tired of wearing your mask, remove it by returning to the '
             .'Masquerade menu once more.</p>';
@@ -92,9 +92,9 @@ class ActionMasquerade extends ActionAction {
           .'<p>Are you sure you\'re allowed to do this?</p></div>';
     }
   }
-  
+
   /**
-  * Remove the mask 
+  * Remove the mask
   *  @todo i18n: block translation
   */
   function removeMasquerade() {
@@ -104,6 +104,6 @@ class ActionMasquerade extends ActionAction {
           .'The music has stopped and you have taken your mask off. </p>'
           .'<p>Hope you didn\'t get too much of a surprise when eveyrone else took their masks off too!</p>';
   }
-  
+
 } //ActionMasquerade
 ?>
