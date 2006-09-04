@@ -26,7 +26,7 @@ require_once 'inc/permissions.php';
 require_once 'inc/logging.php';
 
 /**
-* User *authorisation* and *authentication* object 
+* User *authorisation* and *authentication* object
 *
 * @package    Bumblebee
 * @subpackage DBObjects
@@ -50,12 +50,13 @@ class BumblebeeAuth extends BasicAuth {
   */
   function BumblebeeAuth($data, $recheck = false, $table='users') {
     parent::BasicAuth($data, $recheck, $table);
-    
+
     if ($this->_loggedin) {
       // set up Authorisation parts
       $this->isadmin = $this->user_row['isadmin'];
+      $this->_checkMasq();
     }
-    
+
     #FIXME
     if ($this->isadmin) {
       $this->system_permissions = BBPERM_ADMIN_ALL;
@@ -76,7 +77,6 @@ class BumblebeeAuth extends BasicAuth {
    * of time to make a bookings etc
   **/
   function _checkMasq() {
-    global $SESSIDX;
     if ($this->masqPermitted() && $this->_var_get('euid') != NULL) {
       $this->euid      = $this->_var_get('euid');
       $this->ename     = $this->_var_get('ename');
@@ -87,7 +87,7 @@ class BumblebeeAuth extends BasicAuth {
   function isSystemAdmin() {
     return $this->isadmin;
   }
-  
+
   function isInstrumentAdmin($instr) {
     if (isset($this->permissions[$instr])) {
       return $this->permissions[$instr];
@@ -100,7 +100,7 @@ class BumblebeeAuth extends BasicAuth {
       }
       // then we look at *any* instrument that we have this permission for
        $row = quickSQLSelect('permissions',
-                                array('userid',  'isadmin'), 
+                                array('userid',  'isadmin'),
                                 array($this->uid, 1)
                             );
       if (is_array($row)) {
@@ -110,7 +110,7 @@ class BumblebeeAuth extends BasicAuth {
       }
     } else {
       $row = quickSQLSelect('permissions',
-                              array('userid',   'instrid'), 
+                              array('userid',   'instrid'),
                               array($this->uid, $instr)
                            );
       $permission = (is_array($row) && $row['isadmin']);
@@ -119,11 +119,11 @@ class BumblebeeAuth extends BasicAuth {
     $this->permissions[$instr] = $permission;
     return $this->permissions[$instr];
   }
-  
+
   function getEUID() {
     return (isset($this->euid) ? $this->euid : $this->uid);
   }
-   
+
   function masqPermitted($instr=0) {
     return $this->isadmin || $this->isInstrumentAdmin($instr);
   }
@@ -131,8 +131,8 @@ class BumblebeeAuth extends BasicAuth {
   function amMasqed() {
     return (isset($this->euid) && $this->euid != $this->uid);
   }
-  
-  /** 
+
+  /**
   * start masquerading as another user
   */
   function assumeMasq($id) {
@@ -148,8 +148,8 @@ class BumblebeeAuth extends BasicAuth {
       return 0;
     }
   }
-   
-  /** 
+
+  /**
   * stop masquerading as another user
   */
   function removeMasq() {
@@ -168,7 +168,7 @@ class BumblebeeAuth extends BasicAuth {
       return $operation & $this->instrument_permission($instrument);
     }
   }
-  
+
 } //BumblebeeAuth
 
-?> 
+?>
