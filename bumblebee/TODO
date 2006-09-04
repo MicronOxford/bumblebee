@@ -30,6 +30,7 @@ Features:
   * longer bookings
   * list view of bookings
   * jump to dropdowns on calendar
+  * strip tags from admin strings too?
   * polite "offline" mode
   * trap unconfigured and send to installer
   * trap configured and get out of installer
