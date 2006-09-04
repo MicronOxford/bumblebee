@@ -15,6 +15,10 @@
 * @subpackage Export
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** use a user-defined function to create report */
 define('EXPORT_FORMAT_CUSTOM',         1);
 /** output format is a delimited format like CSV */

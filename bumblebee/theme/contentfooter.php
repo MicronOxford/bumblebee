@@ -17,6 +17,10 @@
 * @subpackage theme
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** use the SystemStats object to create some nice info about what the system does */
 include_once 'inc/systemstats.php';
 $stat = new SystemStats;

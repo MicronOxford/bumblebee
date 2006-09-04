@@ -10,6 +10,10 @@
 * @subpackage Misc
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 $perm = 1;
 // SYSTEM LEVEL FUNCTIONS: NORMAL USERS
 /** Permission: Anyone can do it */

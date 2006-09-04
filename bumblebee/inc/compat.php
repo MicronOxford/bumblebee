@@ -40,6 +40,10 @@
 * @subpackage Misc
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 if (version_compare(phpversion(), '5.0') === -1) {
   /** php-compat implementation of clone for PHP4 */
   #include_once 'PHP/Compat/Function/clone.php';

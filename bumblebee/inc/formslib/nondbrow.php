@@ -10,6 +10,10 @@
 * @subpackage FormsLibrary
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** database uber-object that we will emulate */
 require_once 'dbobject.php';
 /** status codes for success/failure of database actions */

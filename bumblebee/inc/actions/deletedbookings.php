@@ -10,6 +10,10 @@
 * @subpackage Actions
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** list of choices */
 require_once 'inc/formslib/anchortablelist.php';
 /** date manipulation routines */

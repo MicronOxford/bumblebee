@@ -10,6 +10,10 @@
 * @subpackage Bookings
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** cell is in the middle of a booking */
 define('MIDDLE_BOOKING',    1);
 /** cell is at the start of a booking */

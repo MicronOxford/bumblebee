@@ -10,6 +10,10 @@
 * @subpackage FormsLibrary
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /**
 * Output formatter object that controls output of other objects with sprintf statements
 *

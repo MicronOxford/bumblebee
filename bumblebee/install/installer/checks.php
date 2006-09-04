@@ -23,7 +23,7 @@ function check_preinst($data) {
   set_include_path($REBASE_INSTALL.PATH_SEPARATOR.get_include_path());
   $NON_FATAL_CONFIG = true;
   $php_errormsg = '';
-  if (@ include 'inc/config.php') {   // FIXME file moved for v1.2
+  if (@ include 'inc/config.php') {  
     $s[] = "GOOD: Found installation of Bumblebee version $BUMBLEBEEVERSION.";
   } else {
     $s[] = "ERROR: I couldn't find any evidence of a Bumblebee installation here. PHP said:<blockquote>\n$php_errormsg</blockquote>";

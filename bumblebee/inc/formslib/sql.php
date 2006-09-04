@@ -16,6 +16,10 @@
 * @subpackage FormsLibrary
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** status codes for success/failure of database actions */
 require_once('inc/statuscodes.php');
 

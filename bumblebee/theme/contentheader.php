@@ -12,8 +12,12 @@
 * @package    Bumblebee
 * @subpackage theme
 */
-  
-  $MENUCONTENTS = $usermenu->getMenu();
+
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
+$MENUCONTENTS = $usermenu->getMenu();
   
 ?>
 <body>

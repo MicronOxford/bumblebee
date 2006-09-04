@@ -10,6 +10,10 @@
 * @subpackage Actions
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** CheckBox object */
 require_once 'inc/formslib/checkbox.php';
 /** CheckBoxTableList object */

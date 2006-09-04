@@ -11,6 +11,10 @@
 *
 * @todo selectall code needs updating to include InstrumentGroups etc
 */
+
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
 ?>
 <script type='text/javascript'>
 <!--

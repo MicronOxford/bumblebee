@@ -10,6 +10,8 @@
 * @subpackage Installer
 */
 
+define('BUMBLEBEE', true);
+
 error_reporting(E_ALL);
 
 $sqlSetupFilename = 'bumbelebeeupgrade.sql';
@@ -66,13 +68,13 @@ if (isset($_POST['do_dbupgrade'])) {
   $data['db-notes'] = $notes;
   printStepDBUpgrade($data, $steps);
   exit;
-} 
+}
 if (isset($_POST['submitsql'])) {
   list($sql, $notes) = makeUpgradeSQL($old_db_version);
   ob_end_clean();
   outputTextFile($sqlSetupFilename, $sql);
   exit;
-} 
+}
 if (isset($_POST['submitsqlload'])) {
   list($sql, $notes) = makeUpgradeSQL($old_db_version);
   $results = loadSQL($sql, $CONFIG['database']['dbhost'], $_POST['sqlAdminUsername'], $_POST['sqlAdminPassword']);
@@ -80,14 +82,14 @@ if (isset($_POST['submitsqlload'])) {
   $data['db-results'] = $results;
   printStepDBUpgrade($data, $steps);
   exit;
-} 
+}
 
 $steps->increment();
 if (isset($_POST['do_cleanup'])) {
   $data['BASEURL'] = $BASEURL;
   printStepCleanup($data, $steps);
   exit;
-} 
+}
 
 
 
@@ -116,12 +118,12 @@ function printStepReleaseNotes($data, $steps) {
       <code>theme</code> and <code>config</code> directories back into the new installation
       (instead of using the new ones).
       You might find that many config options have been added to the <code>bumblebee.ini</code>
-      file that you won't even know about unless you at least look at the new file; 
+      file that you won't even know about unless you at least look at the new file;
       all new options have sensible defaults.</li>
     </ol>
       <p>After you have done these things, I'll guide you through the upgrade process.
       It shouldn't be too hard, but we'll see how we go.</p>
-      
+
   </fieldset>
     <div id='buttonbar'>
       <?php print $steps->getPrevNextButtons(); ?>
@@ -139,9 +141,9 @@ function printStepUpgradeCheck($data, $steps) {
       <legend>Upgrade information</legend>
       <p>Looking at your installation (you should have installed the new version of Bumblebee at this stage).</p>
       <p>It appears you are trying to upgrade to Bumblebee version <?php echo $data['new_version']; ?>.</p>
-      <p>Your old version of Bumblebee appears to be using the database format used with version 
+      <p>Your old version of Bumblebee appears to be using the database format used with version
       <?php echo $data['old_db_version']; ?>.</p>
-      <?php 
+      <?php
         if ($data['db_upgrade']) {
           echo "<p>Your database needs upgrading.</p>";
         } else {
@@ -181,7 +183,7 @@ function printStepDBUpgrade($data, $steps) {
         <blockquote>
           <?php print $data['db-results']; ?>
         </blockquote>
-        <p>If it all went well, then proceed to the next step. Otherwise, try to fix any 
+        <p>If it all went well, then proceed to the next step. Otherwise, try to fix any
         errors (wrong username and password, perhaps) in the forms and have another go using
         the script or try to fix it up using phpMyAdmin.</p>
       </fieldset>

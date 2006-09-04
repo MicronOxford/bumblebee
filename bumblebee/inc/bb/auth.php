@@ -10,6 +10,10 @@
 * @subpackage DBObjects
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** inherit from basic auth module */
 require_once 'inc/bb/basicauth.php';
 /** sql manipulation routines */

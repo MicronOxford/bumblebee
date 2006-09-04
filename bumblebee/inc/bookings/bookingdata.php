@@ -10,6 +10,10 @@
 * @subpackage Bookings
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** loads data into Booking objects */
 require_once 'booking.php';
 

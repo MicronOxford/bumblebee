@@ -10,6 +10,10 @@
 * @subpackage Misc
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /**
 * Simple date class to perform basic date calculations
 * 

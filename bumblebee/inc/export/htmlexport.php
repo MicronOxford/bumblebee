@@ -10,6 +10,10 @@
 * @subpackage Export
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** constants for defining export formatting and codes */
 require_once 'inc/exportcodes.php';
 

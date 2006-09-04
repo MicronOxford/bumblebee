@@ -10,6 +10,10 @@
 * @subpackage theme
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** there can be a contentfooter too */
 include 'theme/contentfooter.php';
 

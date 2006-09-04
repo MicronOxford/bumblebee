@@ -14,6 +14,10 @@
 * @subpackage Misc
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 $db_ini = parse_ini_file($CONFIGLOCATION.'db.ini');
 $CONFIG['database']['dbhost']     = $db_ini['host'];
 $CONFIG['database']['dbusername'] = $db_ini['username'];

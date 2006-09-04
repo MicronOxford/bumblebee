@@ -10,6 +10,10 @@
 * @subpackage Misc
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 function logmsg($priority, $message) {
   global $auth, $action, $CONFIG;
   if (! $CONFIG['error_handling']['UseLogFile'] ||

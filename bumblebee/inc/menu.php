@@ -10,6 +10,10 @@
 * @subpackage Misc
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** permission codes */
 require_once 'inc/permissions.php';
 
@@ -182,7 +186,7 @@ class UserMenu {
   */
   function _getMasqAlert() {  
     $t = '<'.$this->masqAlertTag.' id="'.$this->masqDivId.'">'
-             .'Mask: '.$this->_auth->eusername
+             .'Mask: '.xssqw($this->_auth->eusername)
              .' (<a href="'.makeURL('masquerade', array('id'=>-1)).'">end</a>)'
         .'</'.$this->masqAlertTag.'>';
     return $t;

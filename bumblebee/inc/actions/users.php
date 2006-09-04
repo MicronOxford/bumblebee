@@ -10,6 +10,10 @@
 * @subpackage Actions
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** User object */
 require_once 'inc/bb/user.php';
 /** list of choices */

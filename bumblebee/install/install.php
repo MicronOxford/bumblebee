@@ -10,6 +10,8 @@
 * @subpackage Installer
 */
 
+define('BUMBLEBEE', true);
+
 $sqlSourceFile = 'setup-tables.sql';
 $sqlSetupFilename = 'bumblebee.sql';
 $iniSourceFile = 'db.ini';
@@ -48,13 +50,13 @@ if (isset($_POST['do_preinst'])) {
   $userSubmitted['preinst-results'] = check_preinst($userSubmitted);
   printStepPreInst($userSubmitted, $steps);
   exit;
-} 
+}
 
 $steps->increment();
 if (isset($_POST['do_database'])) {
   printStepDatabase($userSubmitted, $steps);
   exit;
-} 
+}
 // do the database setup parts
 if (isset($_POST['submitsql'])) {
   $s = constructSQL($sqlSourceFile, $userSubmitted, $_POST['includeAdmin']);
@@ -73,7 +75,7 @@ $steps->increment();
 if (isset($_POST['do_dbini'])) {
   printStepDBini($userSubmitted, $steps);
   exit;
-} 
+}
 if (isset($_POST['submitini'])) {
   $s = constructini($iniSourceFile, $userSubmitted);
   outputTextFile($iniSetupFilename, $s);
@@ -84,7 +86,7 @@ $steps->increment();
 if (isset($_POST['do_customise'])) {
   printStepCustomise($userSubmitted, $steps);
   exit;
-} 
+}
 
 $steps->increment();
 if (isset($_POST['do_postinst'])) {
@@ -92,7 +94,7 @@ if (isset($_POST['do_postinst'])) {
   $userSubmitted['postinst-results'] = check_postinst($userSubmitted);
   printStepPostInst($userSubmitted, $steps);
   exit;
-} 
+}
 
 $steps->increment();
 if (isset($_POST['do_cleanup'])) {
@@ -101,7 +103,7 @@ if (isset($_POST['do_cleanup'])) {
   $userSubmitted['BASEURL'] = $BASEURL;
   printStepCleanup($userSubmitted, $steps);
   exit;
-} 
+}
 
 printErrorMessage("I can't work out what you want me to do");
 exit;
@@ -119,7 +121,7 @@ function printStepUserForm($values, $steps) {
     <fieldset>
       <legend>Input data</legend>
       <table>
-        <?php 
+        <?php
           printInstallFormFields($values, false);
         ?>
       </table>
@@ -179,7 +181,7 @@ function printStepDatabase($values, $steps) {
         <blockquote>
           <?php print $values['loadsql-results']; ?>
         </blockquote>
-        <p>If it all went well, then proceed to the next step. Otherwise, try to fix any 
+        <p>If it all went well, then proceed to the next step. Otherwise, try to fix any
         errors (wrong username and password, perhaps) in the forms and have another go using
         the script or try to fix it up using phpMyAdmin.</p>
       </fieldset>
@@ -220,7 +222,7 @@ function printStepCustomise($values, $steps) {
       <p>You now need to customise your <code>bumblebee.ini</code> file. This file can be found in
       the <code>config/</code> directory of your installation. The most important things for you
       to customise are in the first couple of sections of the file.</p>
-      <p>Please refer to the 
+      <p>Please refer to the
       <a href="http://bumblebeeman.sourceforge.net/documentation/configure">documentation</a>
       for more information on how to do this.</p>
     </fieldset>
@@ -237,7 +239,7 @@ function printStepPostInst($values, $steps) {
   ?>
     <fieldset>
       <legend>Post-installation check</legend>
-      <p>The setup script is having a look around your system to see if everything is OK for Bumblebee 
+      <p>The setup script is having a look around your system to see if everything is OK for Bumblebee
       (just as it did before) as well as looking at how your installation went...</p>
       <blockquote>
         <?php print $values['preinst-results']; ?>

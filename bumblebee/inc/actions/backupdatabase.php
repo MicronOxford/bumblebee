@@ -10,6 +10,10 @@
 * @subpackage Actions
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** parent object */
 require_once 'inc/actions/bufferedaction.php';
 /** status codes for success/failure of database actions */

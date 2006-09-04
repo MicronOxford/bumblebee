@@ -10,6 +10,10 @@
 * @subpackage Actions
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** instrument object */
 require_once 'inc/bb/instrumentclass.php';
 /** list of choices */

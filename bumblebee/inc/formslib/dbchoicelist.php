@@ -10,6 +10,10 @@
 * @subpackage FormsLibrary
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** DBO parent object */
 require_once 'dbobject.php';
 

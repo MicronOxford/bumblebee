@@ -10,6 +10,10 @@
 * @subpackage Misc
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /**
 * Collate some stats on the current usage of the system (number of bookings etc)
 *

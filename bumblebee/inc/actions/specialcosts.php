@@ -9,6 +9,10 @@
 * @package    Bumblebee
 * @subpackage Actions
 */
+
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
   
 /** specialcosts object */
 require_once 'inc/bb/specialcosts.php';

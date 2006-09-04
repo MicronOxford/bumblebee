@@ -23,6 +23,10 @@
 * @subpackage Misc
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** php-gettext base file for gettext emulation */
 include_once 'php-gettext/gettext.inc';
 /** logging routine */

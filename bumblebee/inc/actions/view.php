@@ -10,6 +10,10 @@
 * @subpackage Actions
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** calendar object */
 require_once 'inc/bb/calendar.php';
 /** generic booking entry object */

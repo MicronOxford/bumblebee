@@ -10,6 +10,10 @@
 * @subpackage Bookings
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /**
 * Booking matrix object for display in a table
 *

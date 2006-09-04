@@ -12,11 +12,15 @@
 * @subpackage Misc
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 $REBASE_INSTALL = isset($REBASE_INSTALL) ? $REBASE_INSTALL : '';
 $NON_FATAL_CONFIG = isset($NON_FATAL_CONFIG) ? $NON_FATAL_CONFIG : false;
 
 /** location of config files
-* 
+*
 * By default, config/ in the Bumblebee installation directory, but
 * can be moved into /etc, /usr/share/bumblebee ...
 * @global string $CONFIGLOCATION
@@ -116,7 +120,7 @@ if (isset($CONFIG['error_handling']['UseDBug']) && $CONFIG['error_handling']['Us
   // include the dBug pretty printer for error and debugging dumps
   // http://dbug.ospinto.com/
   include_once 'dBug.php';
-} 
+}
 
 if (! $NON_FATAL_CONFIG) {
   /** load the language pack */
@@ -130,4 +134,4 @@ if (! $NON_FATAL_CONFIG) {
 global $BUMBLEBEEVERSION;
 $BUMBLEBEEVERSION = '1.1.4';
 
-?> 
+?>

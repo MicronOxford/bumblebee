@@ -10,6 +10,10 @@
 * @subpackage DBObjects
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** sql manipulation routines */
 require_once 'inc/formslib/sql.php';
 /** type checking and data manipulation */

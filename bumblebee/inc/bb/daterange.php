@@ -12,6 +12,10 @@
 * @subpackage DBObjects
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** date manipulation routines */
 require_once 'inc/date.php';
 /** quick select javascript object */

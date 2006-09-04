@@ -10,6 +10,10 @@
 * @subpackage FormsLibrary
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** uses an OutputFormatter to format the data */
 require_once 'inc/formslib/outputformatter.php';
 /** export formatting codes */

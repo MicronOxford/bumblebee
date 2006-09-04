@@ -10,12 +10,20 @@
 * @subpackage Misc
 */
 
+checkValidInclude();
+
+function checkValidInclude() {
+  if (! defined('BUMBLEBEE')) {
+    die('Internal error: access denied to this location.');
+  }
+}
+
 /**
 * If an array key is set, return that value, else return a default
 *
 * Combines isset and ternary operator to make for cleaner code that
 * is quiet when run with E_ALL.
-* 
+*
 * @param array &$a (passed by ref for efficiency only) array to lookup
 * @param string $k  the key to be checked
 * @param mixed $default (optional) the default value to return if not index not set
@@ -29,10 +37,10 @@ function issetSet(&$a, $k, $default=NULL) {
 * simple debugging function to print out arrays and objects
 *
 * uses print_r/var_dump or dBug within HTML pre tags for easier inspection of classes and arrays
-* @param mixed $v  object or array to print 
+* @param mixed $v  object or array to print
 */
 function preDump($v) {
-  // either use the dBug class for pretty printing or var_dump/print_r 
+  // either use the dBug class for pretty printing or var_dump/print_r
   global $CONFIG;
   if ($CONFIG['error_handling']['UseDBug']) {
     new dBug($v);
@@ -60,7 +68,7 @@ function echoData($v, $DEBUG=0) {
 /**
 * is variable composed purely of alphabetic data [A-Za-z_-]
 * @param string $var string to be tested
-* @return boolean 
+* @return boolean
 */
 function is_alphabetic($var) {
   return preg_match('/^\w+$/', $var);
@@ -99,7 +107,7 @@ function qw($v) {
       // try converting from windows encoding to UTF-8
       $v = cp1252_to_utf8($v);
     }
-    if (!isUTF8($v)) {  
+    if (!isUTF8($v)) {
       // then we really don't know what to do so kill the data
       // better not to have a compromised db, really...
       $v = '';
@@ -109,9 +117,9 @@ function qw($v) {
   }
   // magic-quotes-gpc is a pain in the backside: I would rather I was just given
   // the data the user entered.
-  // We can't just return the data if magic_quotes_gpc is turned on because 
+  // We can't just return the data if magic_quotes_gpc is turned on because
   // that would be wrong if there was programatically set data in there.
-  if (get_magic_quotes_gpc()) { 
+  if (get_magic_quotes_gpc()) {
     // first remove any (partial or full) escaping then add it in properly
     $v = addslashes(stripslashes($v));
   } else {
@@ -141,10 +149,10 @@ function unqw($v) {
 * /u regexp is significantly faster than the more complicated byte-checking
 * version but the /u regexp doesn't always catch bad UTF-8 sequences.
 *
-* PCRE /u version from:  
+* PCRE /u version from:
 *      http://www.phpwact.org/php/i18n/charsets%23checking_utf-8_for_well_formedness
 *
-* Regexp version from 
+* Regexp version from
 *      http://w3.org/International/questions/qa-forms-utf-8.html
 *
 * @param string $v string to be tested
@@ -211,7 +219,7 @@ function cp1252_to_utf8($str) {
     "\xc2\x9e" => "\xc5\xbe",     /* LATIN SMALL LETTER Z WITH CARON */
     "\xc2\x9f" => "\xc5\xb8"      /* LATIN CAPITAL LETTER Y WITH DIAERESIS*/
   );
-  // utf8_encode() converts from ISO-8859-1 to UTF-8; the strtr() converts the 
+  // utf8_encode() converts from ISO-8859-1 to UTF-8; the strtr() converts the
   // differences between Windows-1252 and ISO-8859-1.
   return  strtr(utf8_encode($str), $cp1252_map);
 }
@@ -221,8 +229,8 @@ function cp1252_to_utf8($str) {
 /**
 * quote words against XSS attacks by converting tags to html entities
 *
-* replace some bad HTML characters with entities to protext against 
-* cross-site scripting attacks. the generated code should be clean of 
+* replace some bad HTML characters with entities to protext against
+* cross-site scripting attacks. the generated code should be clean of
 * nasty HTML
 *
 * @param string $v string to be quoted
@@ -230,7 +238,7 @@ function cp1252_to_utf8($str) {
 */
 function xssqw($v) {
   // once again magic_quotes_gpc gets in the way
-  if (get_magic_quotes_gpc()) { 
+  if (get_magic_quotes_gpc()) {
     // first remove any (partial or full) escaping then we'll do it properly below
     $v = stripslashes($v);
   }
@@ -354,7 +362,7 @@ function is_valid_time($v) {
 * @todo can this be relaxed to be more user-friendly without introducing errors
 */
 function is_valid_nonzero_time($v) {
-  return (preg_match('/^\d\d:\d\d/',$v) || preg_match('/^\d\d:\d\d:\d\d/',$v)) 
+  return (preg_match('/^\d\d:\d\d/',$v) || preg_match('/^\d\d:\d\d:\d\d/',$v))
             && ! preg_match('/^00:00/',$v) && ! preg_match('/^00:00:00/',$v);
 }
 
@@ -374,4 +382,4 @@ function sum_is_100($vs) {
   return ($sum == 100);
 }
 
-?> 
+?>

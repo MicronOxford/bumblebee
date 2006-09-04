@@ -1,6 +1,6 @@
 <?php
 /**
-* Create Action object that will do whatever category of work is required in this invocation 
+* Create Action object that will do whatever category of work is required in this invocation
 *
 * @author    Stuart Prescott
 * @copyright  Copyright Stuart Prescott
@@ -9,6 +9,10 @@
 * @package    Bumblebee
 * @subpackage Actions
 */
+
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
 
 /**  permissions definitions */
 require_once 'inc/permissions.php';
@@ -48,12 +52,12 @@ require_once 'actions.php';
 
 /**
 * Factory class for creating Action objects
-*  
+*
 * An Action is a single operation requested by the user. What action is to be performed
 * is determined by the action-triage mechanism in the class ActionFactory.
 *
-* Everything done by an application suite (e.g. edit/create a user) can be reduced to 
-* broad categories of actions (e.g. edituser) which can be encapsulated within an 
+* Everything done by an application suite (e.g. edit/create a user) can be reduced to
+* broad categories of actions (e.g. edituser) which can be encapsulated within an
 * object framework in which every object has the same interface.
 *
 * The invoking code is thus boiled down to something quite simple:
@@ -63,7 +67,7 @@ require_once 'actions.php';
 * </code>
 * where ActionFactory does the work of deciding what is to be done on this
 * invocation and instantiates the appropriate action object.
-* 
+*
 * The action object then actually performs the tasks desired by the user.
 *
 * Here, we use the data from the browser (a PATH_INFO variable from the URL in the form
@@ -74,7 +78,7 @@ require_once 'actions.php';
 */
 class ActionFactory {
   /** @var string          the user-supplied "verb" (name of the action) e.g. "edituser" */
-  var $_verb; 
+  var $_verb;
   /** @var string          the actual user-supplied verb... we may pretend to do something else due to permissions  */
   var $_original_verb;
   /**  @var string         Each action has a description associated with it that we will put into the HTML title tag  */
@@ -91,8 +95,8 @@ class ActionFactory {
   var $actionListing;
   /**  @var ActionData     The action data object for this action  */
   var $_actionData;
-  
-  /** 
+
+  /**
   * Constructor for the class
   *
   * - Parse the submitted data
@@ -113,15 +117,15 @@ class ActionFactory {
     $this->title = $this->_actionData->title();
     $this->_action = $this->_makeAction();
   }
-  
-  /** 
+
+  /**
   * Fire the action: make things actually happen now
   */
   function go() {
     $this->_action->go();
   }
 
-  /** 
+  /**
   * Determine what action should be performed.
   *
   * This is done by:
@@ -133,29 +137,29 @@ class ActionFactory {
   */
   function _checkActions() {
     $action = '';
-  
+
     # first, we need to determine if we are actually logged in or not
     # if we are not logged in, the the action *has* to be 'login'
     if (! $this->_auth->isLoggedIn()) return 'login';
-  
+
     #We can have action verbs past to us in three different ways.
     # 1. first PATH_INFO
     # 2. explicit PATH_INFO action=
-    # 3. action= form fields 
+    # 3. action= form fields
     # Later specifications are used in preference to earlier ones
-  
+
     $explicitaction = issetSet($this->PDATA, 'forceaction');
     $pathaction = issetSet($this->PDATA, 'action');
     $formaction = issetSet($_POST, 'action');
     #$pathaction = $PDATA['action'];
     #$formaction = $_POST['action'];
-  
+
     if ($explicitaction) $action = $explicitaction;
     if ($pathaction) $action = $pathaction;
     if ($formaction) $action = $formaction;
-  
+
     $this->_original_verb = $action;
-    
+
     // dump if unknown action
     if (! $this->actionListing->action_exists($action)) {
       return 'unknown';
@@ -164,14 +168,14 @@ class ActionFactory {
     if (! $this->_auth->permitted($this->actionListing->actions[$action]->permissions)) {
       return 'forbidden!';
     }
-  
+
     # We also need to check to see if we are trying to change privileges
     #if (isset($_POST['changemasq']) && $_POST['changemasq']) return 'masquerade';
-    
+
     return $action;
   }
 
-  /** 
+  /**
   * Trigger a restart of the action or a new action
   *
   * Sometimes, an action may need to be restarted or the action changed (e.g. logout => login)
@@ -183,8 +187,8 @@ class ActionFactory {
     $this->_action = $this->_makeAction();
     $this->go();
   }
-  
-  /** 
+
+  /**
   * Parse the user-supplied data in PATH_INFO part of URL
   *
   * @returns array  (key => $data)
@@ -210,8 +214,8 @@ class ActionFactory {
     }
     return $pd;
   }
-  
-  /** 
+
+  /**
   * Parse the user-supplied data from either the GET or POST data
   *
   * @returns array  (key => $data)
@@ -221,8 +225,8 @@ class ActionFactory {
     //return array_merge($pd, $_GET, $_POST);
     return array_merge($_GET, $_POST);
   }
-  
-  /** 
+
+  /**
   * Is it ok to allow the HTML template to dump to the browser from the output buffer?
   *
   * (see BufferedAction descendents)
@@ -232,8 +236,8 @@ class ActionFactory {
   function ob_flush_ok() {
     return $this->_action->ob_flush_ok;
   }
-  
-  /** 
+
+  /**
   * Cause buffered actions to output their data to the browser
   *
   * (see BufferedAction descendents)
@@ -244,7 +248,7 @@ class ActionFactory {
     }
   }
 
-  /** 
+  /**
   * create the action object (a descendent of ActionAction) for the user-defined verb
   */
   function _makeaction() {
@@ -316,8 +320,8 @@ class ActionFactory {
 //       default:
 //         return new ActionUnknown($this->_original_verb);
 //     }
-     
+
 }
  //class ActionFactory
- 
+
 ?>

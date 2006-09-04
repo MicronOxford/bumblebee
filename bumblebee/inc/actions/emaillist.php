@@ -10,6 +10,10 @@
 * @subpackage Actions
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** TextBox object */
 require_once 'inc/formslib/textfield.php';
 /** CheckBox object */

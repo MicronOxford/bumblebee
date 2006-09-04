@@ -10,6 +10,10 @@
 * @subpackage Export
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /**
 * Export type object -- contains all data for constructing SQL and interpretting output
 *

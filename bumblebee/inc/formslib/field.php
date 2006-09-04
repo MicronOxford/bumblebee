@@ -10,6 +10,10 @@
 * @subpackage FormsLibrary
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** type checking and data manipulation */
 require_once 'inc/typeinfo.php';
 /** type checking and data manipulation */

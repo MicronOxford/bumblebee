@@ -10,6 +10,10 @@
 * @subpackage Actions
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** Consumable object */
 require_once 'inc/bb/consumable.php';
 /** list of choices */

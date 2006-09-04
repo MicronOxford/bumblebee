@@ -19,6 +19,11 @@
 * @package    Bumblebee
 * @subpackage theme
 */
+
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">

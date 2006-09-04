@@ -10,6 +10,10 @@
 * @subpackage FormsLibrary
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** uses choice list object for examples */
 require_once 'dbchoicelist.php';
 /** sql manipulation routines */
