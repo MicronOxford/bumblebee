@@ -102,8 +102,8 @@ class Booking extends TimeSlot {
        . '<tr><td>Stop</td><td>'.$this->stop->datetimestring.'</td></tr>'."\n"
        . '<tr><td>Duration</td><td>'.$this->duration->timestring/*.$bookinglength*/.'</td></tr>'."\n"
        . '<tr><td>User</td><td><a href="mailto:'.$this->useremail.'">'.$this->name.'</a> ('.$this->username.')</td></tr>'."\n"
-       . '<tr><td>Comments</td><td>'.$this->comments.'</td></tr>'."\n"
-       . '<tr><td>Log</td><td>'.$this->log.'</td></tr>'."\n";
+       . '<tr><td>Comments</td><td>'.xssqw($this->comments).'</td></tr>'."\n"
+       . '<tr><td>Log</td><td>'.xssqw($this->log).'</td></tr>'."\n";
     if ($displayAdmin) {
       if ($this->masquser) {
         $t .= '<tr><td>Booked by</td><td><a href="mailto:'.$this->masqemail.'">'.$this->masquser.'</a> ('.$this->masqusername.')</td></tr>'."\n";

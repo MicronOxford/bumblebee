@@ -40,10 +40,10 @@ class ActionUnknown extends ActionAction {
     echo '<h2>Error</h2><div class="msgerror">';
     if ($this->forbidden) {
       echo '<p>Sorry, you don\'t have permission to perform the '
-          .'action "'.$this->action.'".</p>';
+          .'action "'.xssqw($this->action).'".</p>';
     } else {
       echo '<p>An unknown error occurred. I was asked to perform the '
-          .'action "'.$this->action.'" but I don\'t know how to do that.</p>';
+          .'action "'.xssqw($this->action).'" but I don\'t know how to do that.</p>';
     }
     echo '<p>Please contact <a href="mailto:'.$ADMINEMAIL.'">the system '
         .'administrator</a> for more information.</p></div>';
