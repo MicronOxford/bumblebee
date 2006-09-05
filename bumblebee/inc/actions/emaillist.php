@@ -37,7 +37,7 @@ require_once 'inc/actions/actionaction.php';
 * and then return the email list.
 * Designed to be use as a per instrument "announce" list.
 *
-* @todo should this class should be split some more, with some of the details abstracted?
+* @todo //TODO: should this class should be split some more, with some of the details abstracted?
 * @package    Bumblebee
 * @subpackage Actions
 */

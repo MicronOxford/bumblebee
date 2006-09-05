@@ -30,8 +30,8 @@ require_once 'inc/formslib/joindata.php';
 *
 * @package    Bumblebee
 * @subpackage DBObjects
-* @todo       Editing method for new permissions model
-* @todo       Double password entry and require them to be the same
+* @todo //TODO:       Editing method for new permissions model
+* @todo //TODO:       Double password entry and require them to be the same
 */
 class User extends DBRow {
   

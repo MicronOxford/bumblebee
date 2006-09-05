@@ -72,7 +72,7 @@ class ActionMasquerade extends ActionAction {
 
   /**
   * Put on the selected mask
-  *  @todo i18n: block translation
+  *  @todo //TODO: i18n: block translation
   */
   function assumeMasquerade() {
     if ($row = $this->auth->assumeMasq($this->PD['id'])) {
@@ -95,7 +95,7 @@ class ActionMasquerade extends ActionAction {
 
   /**
   * Remove the mask
-  *  @todo i18n: block translation
+  *  @todo //TODO: i18n: block translation
   */
   function removeMasquerade() {
     $this->auth->removeMasq();

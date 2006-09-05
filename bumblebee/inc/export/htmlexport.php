@@ -32,7 +32,7 @@ class HTMLExport {
   var $ea;
   /** @var string       header to the report  */
   var $header;
-  
+
   /**
   *  Create the HTMLExport object
   *
@@ -63,11 +63,11 @@ class HTMLExport {
             $buf .= '</div>';
             break;
           case EXPORT_REPORT_HEADER:
-            $buf .= '<div class="exportHeader">'.$ea[$i]['data'].'</div>'.$eol;
+            $buf .= '<div class="exportHeader">'.xssqw($ea[$i]['data']).'</div>'.$eol;
             $this->header = $ea[$i]['data'];
             break;
           case EXPORT_REPORT_SECTION_HEADER:
-            $buf .= '<div class="exportSectionHeader">'.$ea[$i]['data'].'</div>'.$eol;
+            $buf .= '<div class="exportSectionHeader">'.xssqw($ea[$i]['data']).'</div>'.$eol;
             break;
           case EXPORT_REPORT_TABLE_START:
             $tableMetaData = $ea[$i]['metadata'];
@@ -107,14 +107,14 @@ class HTMLExport {
             $buf .= '</table></div>';
             break;
           case EXPORT_REPORT_HEADER:
-            $buf .= '<div class="exportHeader">'.$ea[$i]['data'].'</div>'.$eol;
+            $buf .= '<div class="exportHeader">'.xssqw($ea[$i]['data']).'</div>'.$eol;
             $buf .= '<table class="exportdata">'.$eol;
             break;
           case EXPORT_REPORT_SECTION_HEADER:
             $tableMetaData = $ea[$i]['metadata'];
             $numcols = $tableMetaData['numcols'];
             $buf .= '<tr class="exportSectionHeader"><td colspan="'.$numcols.'" class="exportSectionHeader">'
-                        .$ea[$i]['data'].'</td></tr>'.$eol;
+                        .xssqw($ea[$i]['data']).'</td></tr>'.$eol;
             break;
           case EXPORT_REPORT_TABLE_START:
             break;
@@ -143,22 +143,22 @@ class HTMLExport {
         }
       }
       # unset($ea[$i]); //FIXME: try to free memory as we are using it
-    }      
+    }
     $this->export =& $buf;
   }
-  
+
   /**
   * generate the report header
   *
   * @return string report header
-  * @todo i18n: report header
+  * @todo //TODO: i18n: report header
   */
   function _reportHeader() {
     $start = $this->_daterange->getStart();
     $stop  = $this->_daterange->getStop();
-    $s = $this->_export->description .' for '. $start->dateString() .' - '. $stop->dateString(); //FIXME
+    $s = $this->_export->description .' for '. $start->dateString() .' - '. $stop->dateString(); //FIXME: i18n
     return $s;
-  }  
+  }
 
   /**
   * generate the header for a section
@@ -168,8 +168,8 @@ class HTMLExport {
   function _sectionHeader($row) {
     $s = $row[$this->_export->breakField];
     return $s;
-  }  
-  
+  }
+
   /**
   * generate the HTML for a row
   *
@@ -213,14 +213,14 @@ class HTMLExport {
     }
     return $t;
   }
-  
+
   /**
   * embed the html within a blank page to create the report in a separate window
   *
   * @global array   config settings
   * @global string  base URL for installation
   * @return string  html snippet that will open a new window with the html report
-  * @todo potential memory hog (stores HTML output in three places at once)
+  * @todo //TODO: potential memory hog (stores HTML output in three places at once)
   */
   function wrapHTMLBuffer() {
     global $CONFIG;
@@ -228,7 +228,7 @@ class HTMLExport {
     $filename = $CONFIG['export']['htmlWrapperFile'];
     $fd = fopen($filename, 'r');
     $contents = fread($fd, filesize ($filename));
-    fclose($fd); 
+    fclose($fd);
     $title = T_('Data export');
     $table = preg_replace('/\$/', '&#'.ord('$').';', $this->export);
     $contents = preg_replace('/__TITLE__/', $title, $contents);
@@ -247,11 +247,11 @@ class HTMLExport {
     bboutwin.document.write(unescape(data));
     bboutwin.document.close();
   }
-  
+
   data = "'.$enchtml.'";
-  
+
   BBwriteAll(data);
-  
+
 //-->
 </script><a href="javascript:BBwriteAll(data)">'.T_('Open Window').'</a>';
     return $jsbuf;
@@ -260,4 +260,4 @@ class HTMLExport {
 
 } // class HTMLExport
 
-?> 
+?>

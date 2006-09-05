@@ -52,7 +52,7 @@ class BookingEntry extends DBRow {
   var $minunbook;
   /** @var boolean          object not fully constructed (using short constructor for deleting booking only  */
   var $isShort = false;
-  
+
   /**
   *  Create a new BookingEntry object
   *
@@ -126,12 +126,12 @@ class BookingEntry extends DBRow {
     $durationf->setSlotStart($start);
     $this->addElement($durationf);
     $f = new DropList('projectid', T_('Project'));
-    $f->connectDB('projects', 
-                  array('id', 'name', 'longname'), 
+    $f->connectDB('projects',
+                  array('id', 'name', 'longname'),
                   'userid='.qw($this->euid),
-                  'name', 
-                  'id', 
-                  NULL, 
+                  'name',
+                  'id',
+                  NULL,
                   array('userprojects'=>'projectid=id'));
     $f->setFormat('id', '%s', array('name'), ' (%35.35s)', array('longname'));
     $f->isValidTest = 'is_valid_radiochoice';
@@ -213,7 +213,7 @@ class BookingEntry extends DBRow {
     }
   }
 
-  /** 
+  /**
   * override the default update() method with a custom one that allows us to:
   * - munge the start and finish times to fit in with the permitted granularity
   */
@@ -225,7 +225,7 @@ class BookingEntry extends DBRow {
     return $this->changed;
   }
 
-  /** 
+  /**
   * override the default fill() method with a custom one that allows us to...
   * - work out what the startticks parameter is for generating links to the current calendar
   * - check permissions on whether we should be allowed to change the dates
@@ -239,7 +239,7 @@ class BookingEntry extends DBRow {
     $this->_checkMinNotice();
   }
 
-  /** 
+  /**
   * override the default sync() method with a custom one that allows us to...
   * - send a booking confirmation email to the instrument supervisors
   * - update the representation of times
@@ -256,8 +256,8 @@ class BookingEntry extends DBRow {
     return $status;
   }
 
-  /** 
-  * Work out what the default discount for this timeslot is from the timeslotrules 
+  /**
+  * Work out what the default discount for this timeslot is from the timeslotrules
   */
   function _setDefaultDiscount() {
     if ($this->isShort) return;
@@ -269,7 +269,7 @@ class BookingEntry extends DBRow {
       $this->log('BookingEntry::_setDefaultDiscount value '.$starttime->dateTimeString().' '.$slot->discount.'%');
       return;
     }
-    
+
     if (! isset($this->fields['discount']->value)) {  // handle missing values in the submission
       //preDump($this->slotrules); preDump($slot);
       $this->fields['discount']->defaultValue = (isset($slot->discount) ? $slot->discount : 0);
@@ -277,7 +277,7 @@ class BookingEntry extends DBRow {
     }
   }
 
-  /** 
+  /**
   * make sure that a non-admin user is not trying to unbook the instrument with less than the minimum notice
   */
   function _checkMinNotice() {
@@ -304,7 +304,7 @@ class BookingEntry extends DBRow {
       $this->log('Booking changes not limited by time restrictions.',9);
     }
   }
-  
+
   /**
   *  if appropriate, send an email to the instrument supervisors to let them know that the
   *  booking has been made
@@ -330,11 +330,11 @@ class BookingEntry extends DBRow {
     $to   = join($emails, ',');
     srand(time());
     $id   = '<bumblebee-'.time().'-'.rand().'@'.$_SERVER['SERVER_NAME'].'>';
-    
+
     $headers  = 'From: '.$from .$eol;
     $headers .= 'Reply-To: '.$replyto.$eol;
     $headers .= 'Message-id: ' .$id .$eol;
-    $subject = $instrument['name']. ': '. ($CONFIG['instruments']['emailSubject'] 
+    $subject = $instrument['name']. ': '. ($CONFIG['instruments']['emailSubject']
                     ? $CONFIG['instruments']['emailSubject'] : 'Instrument booking notification');
     $message = $this->_getEmailText($instrument, $bookinguser);
 
@@ -347,16 +347,16 @@ class BookingEntry extends DBRow {
     return $ok;
 
   }
-  
+
   /**
   *  get the email text from the configured template with standard substitutions
-  *  
+  *
   * @param array  $instrument   instrument data (name => , longname => )
   * @param array  $user         user data (name => , username => )
-  * 
+  *
   * @global array   system config settings
   * @global string  base URL for installation
-  8 @todo  graceful error handling for fopen, fread
+  8 @todo //TODO:  graceful error handling for fopen, fread
   */
   function _getEmailText($instrument, $user) {
     global $CONFIG, $BASEURL;
@@ -379,8 +379,8 @@ class BookingEntry extends DBRow {
                         $txt);
     return $txt;
   }
-  
-  /** 
+
+  /**
   * override the default checkValid() method with a custom one that also checks that the
   * booking is permissible (i.e. the instrument is indeed free)
   *
@@ -408,14 +408,14 @@ class BookingEntry extends DBRow {
     $this->_checkMinNotice();
     return $this->displayAsTable();
   }
-  
+
   /**
   * check that the booking slot is indeed free before booking it
   *
-  * Here, we make a temporary booking and make sure that it is unique for that timeslot 
+  * Here, we make a temporary booking and make sure that it is unique for that timeslot
   * This is to prevent a race condition for checking and then making the new booking.
-  * 
-  * @global string prefix for table names 
+  *
+  * @global string prefix for table names
   **/
   function _checkIsFree() {
     global $TABLEPREFIX;
@@ -429,10 +429,10 @@ class BookingEntry extends DBRow {
     $duration = new SimpleTime($this->fields['duration']->getValue());
     $d->addTime($duration);
     $stop = $d->dateTimeString();
-    
+
     $tmpid = $this->_makeTempBooking($instrument, $start, $duration->getHMSstring());
     $this->log('Created temp row for locking, id='.$tmpid.'(origid='.$this->id.')');
-    
+
     $q = 'SELECT bookings.id AS bookid, bookwhen, duration, '
         .'DATE_ADD( bookwhen, INTERVAL duration HOUR_SECOND ) AS stoptime, '
         .'name AS username '
@@ -458,14 +458,8 @@ class BookingEntry extends DBRow {
                                   $row['username'],
                                   '<a href="'.makeURL('view', array('instrid'=>$instrument,'bookid'=>$row['bookid'])).'">'
                                       .T_('booking #').$row['bookid'].'</a>',
-                                  $row['bookwhen'],
-                                  $row['stoptime']);
-/*                          .'Instrument booked by ' .$row['username']
-                          .' (<a href="'.makeURL('view', array('instrid'=>$instrument,'bookid'=>$row['bookid'])).'">booking #'.$row['bookid'].'</a>)<br />'
-                          .'from '.$row['bookwhen'].' until ' .$row['stoptime'];*/
-      // The error should be displayed by the driver class, not us. We *never* echo.
-      //echo $this->errorMessage;
-      #preDump($row);
+                                  xssqw($row['bookwhen']),
+                                  xssqw($row['stoptime']));
     } else {
       // then the new booking should take over this one, and we delete the old one.
       $this->log('Booking slot OK, taking over tmp slot');
@@ -479,7 +473,7 @@ class BookingEntry extends DBRow {
     return ! $doubleBook;
   }
 
-  /** 
+  /**
   * Ensure that the entered data fits the granularity criteria specified for this instrument
   */
   function _legalSlot() {
@@ -529,10 +523,10 @@ class BookingEntry extends DBRow {
     return $validslot;
   }
 
-  /** 
-  * check if this booking is adjoining existing bookings -- it can explain why the booking 
+  /**
+  * check if this booking is adjoining existing bookings -- it can explain why the booking
   * is at funny times.
-  * 
+  *
   * @param string   $field        SQL name of the field to be checked (stoptime, bookwhen)
   * @param SimpleDate $checktime  time to check to see if it is adjoining the new booking
   *
@@ -553,9 +547,9 @@ class BookingEntry extends DBRow {
       $row = db_get_single($q, $this->fatal_sql);
       $this->log(is_array($row) ? 'Found a matching booking' : 'No matching booking');
       return (is_array($row));
-  }  
-  
-  /** 
+  }
+
+  /**
   * make a temporary booking for this slot to eliminate race conditions for this booking
   *
   * @param integer  $instrument  instrument id
@@ -584,8 +578,8 @@ class BookingEntry extends DBRow {
     return $row->id;
   }
 
-  /** 
-  * remove the temporary booking for this slot 
+  /**
+  * remove the temporary booking for this slot
   *
   * @param integer $tmpid   booking id number of the temporary booking
   */
@@ -594,16 +588,16 @@ class BookingEntry extends DBRow {
     $row = new DBRow('bookings', $tmpid, 'id');
     $row->delete();
   }
-  
+
   /**
-  *  delete the entry by marking it as deleted, don't actually delete the 
+  *  delete the entry by marking it as deleted, don't actually delete the
   *
   *  @return integer  from statuscodes
   */
   function delete() {
     $this->_checkMinNotice();
     if (! $this->deletable && ! $this->_isadmin) {
-      // we're not allowed to do so 
+      // we're not allowed to do so
       $this->errorMessage = T_('Sorry, this booking cannot be deleted due to booking policy.');
       return STATUS_FORBIDDEN;
     }
@@ -611,7 +605,7 @@ class BookingEntry extends DBRow {
     $today = new SimpleDate(time());
     $newlog = $this->fields['log']->value
                   .' '
-                  .sprintf(T_('Booking deleted by %s (user #%s) on %s.'), 
+                  .sprintf(T_('Booking deleted by %s (user #%s) on %s.'),
                         $this->_auth->username,
                         $this->uid,
                         $today->dateTimeString());
@@ -619,7 +613,7 @@ class BookingEntry extends DBRow {
                   .' (user #'.$this->uid.') on '.$today->dateTimeString().'.';*/
     return parent::delete('log='.qw($newlog));
   }
-  
-  
-     
+
+
+
 } //class BookingEntry

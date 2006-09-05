@@ -33,7 +33,7 @@ require_once 'inc/bookings/timeslotrule.php';
 */
 class Instrument extends DBRow {
 
-  var $_slotrule;  
+  var $_slotrule;
 
   function Instrument($id) {
     global $CONFIG;
@@ -102,12 +102,12 @@ class Instrument extends DBRow {
     $f->isValidTest = 'is_number';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextArea('calendarcomment', T_('Advisory text'), 
+    $f = new TextArea('calendarcomment', T_('Advisory text'),
           T_('Displayed at the bottom of instrument calendar and on booking form. HTML permitted.'));
     $f->setAttr(array('rows' =>5, 'cols' => 30));
     $f->required = 0;
     $this->addElement($f);
-    
+
     // associate with a charging class
     $f = new RadioList('class', T_('Charging class'));
     $f->connectDB('instrumentclass', array('id', 'name'));
@@ -161,7 +161,7 @@ class Instrument extends DBRow {
       $f->required = 1;
       $this->addElement($f);
     }
-    
+
     $f = new TextField('mindatechange', T_('Minimum notice for booking change (hours)'));
     $f->required = 1;
     $f->defaultValue = $CONFIG['instruments']['usualmindatechange'];
@@ -176,7 +176,7 @@ class Instrument extends DBRow {
     $f->defaultValue = 0;
     $f->setAttr($attrs);
     $this->addElement($f);
-    
+
     $this->fill();
     $this->dumpheader = 'Instrument object';
   }
@@ -186,12 +186,12 @@ class Instrument extends DBRow {
     //now edit the time slot representation fields
     $this->_calcSlotRepresentation();
   }
-  
+
   function sync() {
     //first construct a timeslot field from the submitted data, then do the sync
     $newslotrule = $this->_calcNewSlotRule();
     if ($this->fields['timeslotpicture']->value != $newslotrule /*&& $this->id > -1*/) {
-      $this->log('Instrument::sync(): indulging in timeslotrule munging: <br />'. 
+      $this->log('Instrument::sync(): indulging in timeslotrule munging: <br />'.
                     $newslotrule .'<br/>'.$this->fields['timeslotpicture']->value);
       $this->fields['timeslotpicture']->set($newslotrule);
       $this->fields['timeslotpicture']->changed = 1;
@@ -206,7 +206,7 @@ class Instrument extends DBRow {
    return parent::sync();
   }
 
-  function _calcSlotRepresentation() {  
+  function _calcSlotRepresentation() {
     $this->_slotrule = new TimeSlotRule($this->fields['timeslotpicture']->getValue());
     for ($day=0; $day<7; $day++) {
       $this->fields['tsr-'.$day]->value = '';
@@ -222,14 +222,14 @@ class Instrument extends DBRow {
       }
     }
   }
-  
+
   function _calcNewSlotRule() {
     $newslot = '';
     for ($day=0; $day<7; $day++) {
       //preDump($this->fields['tsr-'.$day]->value);
       $lines = preg_split('/[\n\r]+/', $this->fields['tsr-'.$day]->value);
       // get rid of blanks
-      $lines = preg_grep('/^\s*$/', $lines,PREG_GREP_INVERT);
+      $lines = preg_grep('/^\s*$/', $lines, PREG_GREP_INVERT);
       $rejects = preg_grep('{^\d\d:\d\d\-\d\d:\d\d/(\d+|\*)(\-\d+%)?(,.+)?$}', $lines,PREG_GREP_INVERT);
       if (count($rejects) > 0) {
         //then this input is invalid
@@ -240,9 +240,9 @@ class Instrument extends DBRow {
       $newslot .= '['.$day.']<'.join($lines,';').'>';
       $this->log('Calculated picture '. $newslot);
     }
-    return $newslot;    
+    return $newslot;
   }
-  
+
   function display() {
     return $this->displayAsTable();
   }

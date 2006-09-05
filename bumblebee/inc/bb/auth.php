@@ -30,8 +30,8 @@ require_once 'inc/logging.php';
 *
 * @package    Bumblebee
 * @subpackage DBObjects
-* @todo update permissions system
-* @todo documentation
+* @todo //TODO: update permissions system
+* @todo //TODO: documentation
 */
 class BumblebeeAuth extends BasicAuth {
   var $isadmin;

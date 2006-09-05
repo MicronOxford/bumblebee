@@ -114,8 +114,8 @@ class ActionData {
 * Create data structures that can describe both the action-word to be acted
 * on, as well as the title to be reflected in the HTML title tag.
 *
-* @todo this should be integrated with the Menu class
-* @todo document the fixed up version
+* @todo //TODO: this should be integrated with the Menu class
+* @todo //TODO: document the fixed up version
 * @package    Bumblebee
 * @subpackage Actions
 */
@@ -130,7 +130,7 @@ class ActionListing {
     $this->_initialise();
   }
 
-  /** @todo: conditionally initialise these -- at least limit the number of extraneous T_() calls for non admin users */
+  /** @todo //TODO:: conditionally initialise these -- at least limit the number of extraneous T_() calls for non admin users */
   function _populate() {
     $this->actions[] = new ActionData('ActionUnknown', 'unknownaction.php', 
         'unknown',    T_('Oops! I cannot do that!'), T_('Unknown'), BBPERM_USER_ALL, -1);

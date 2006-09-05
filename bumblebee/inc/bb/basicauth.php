@@ -30,8 +30,8 @@ require_once 'inc/logging.php';
 *
 * @package    Bumblebee
 * @subpackage DBObjects
-* @todo update permissions system
-* @todo documentation
+* @todo //TODO: update permissions system
+* @todo //TODO: documentation
 */
 class BasicAuth {
   var $uid;    //user id from table
@@ -85,7 +85,7 @@ class BasicAuth {
     }
   }
 
-  /** 
+  /**
   * test function to see if user is logge in
   *
   * @returns boolean  user is logged in
@@ -110,30 +110,30 @@ class BasicAuth {
   function loginError() {
     global $CONFIG;
     if ($this->DEBUG || ($CONFIG['auth']['authAdvancedSecurityHole'] && $CONFIG['auth']['verboseFailure'])) {
-      return $this->_error;
+      return xssqw($this->_error);
     } elseif (strpos($this->_error, ':') !== false) {
       // protect any additional info that is in the error string:
       // functions in this class can report the error in the format 'General error: details'
-      // Normally, we shouldn't reveal whether it was a bad username or password, 
+      // Normally, we shouldn't reveal whether it was a bad username or password,
       // but for debugging purposes, it's nice to have the extra info.
       list($public,$private) = preg_split('/:/', $this->_error);
-      return $public;
+      return xssqw($public);
     } else {
-      return $this->_error;
+      return xssqw($this->_error);
     }
   }
 
   /**
   * store a piece of data in the session for persistance across page calls
   *
-  * @param string $var    name to call the data in the session 
+  * @param string $var    name to call the data in the session
   * @param mixed  $value  value to store
   */
   function _var_put($var, $value) {
     global $SESSIDX;
     $_SESSION[$SESSIDX][$var] = $value;
   }
-  
+
   /**
   * retrieve a piece of data previously stored
   * @returns mixed  value stored
@@ -156,13 +156,13 @@ class BasicAuth {
     $this->_var_put('localLogin', $this->localLogin);
     logmsg(4, "User '$this->username' logged in");
   }
-  
+
   function _verifyLogin() {
     // check that the credentials contained in the session are OK
     $uid = $this->_var_get('uid');
     $row = $this->_retrieveUserInfo($uid, 0);
     $this->user_row = $row;
-    if ($row['username']  == $this->_var_get('username') && 
+    if ($row['username']  == $this->_var_get('username') &&
         $row['name']      == $this->_var_get('name') ) {
       $this->uid        = $uid;
       $this->username   = $this->_var_get('username');
@@ -179,7 +179,7 @@ class BasicAuth {
     }
   }
 
-  /** 
+  /**
   * check login details, if OK, set up a PHP SESSION to manage the login
   *
   * @returns boolean credentialsOK
@@ -211,7 +211,7 @@ class BasicAuth {
     }
 
     // the username has to exist in the users table for the login to be valid, so check that first
-    if ($row == '0') { 
+    if ($row == '0') {
       return false;
     }
 
@@ -237,7 +237,7 @@ class BasicAuth {
     $this->_createSession($row);
     return true;
   }
- 
+
   function _retrieveUserInfo($identifier, $type=1) {
     global $CONFIG;
     $row = quickSQLSelect('users',($type?'username':'id'),$identifier);
@@ -254,7 +254,7 @@ class BasicAuth {
     //$row = db_fetch_array($sql);
     return $row;
   }
-  
+
   /**
   * RADIUS auth method to login the user against a RADIUS server
   *
@@ -265,16 +265,16 @@ class BasicAuth {
     require_once 'Auth/Auth.php';
     $RADIUSCONFIG = parse_ini_file($CONFIGLOCATION.DIRECTORY_SEPARATOR.'radius.ini');
     $params = array(
-                "servers" => array(array($RADIUSCONFIG['host'], 
-                                         0, 
+                "servers" => array(array($RADIUSCONFIG['host'],
+                                         0,
                                          $RADIUSCONFIG['key'],
                                          3, 3)
                                   ),
                 "authtype" => $RADIUSCONFIG['authtype']
                 );
-    // start the PEAR::Auth system using RADIUS authentication with the parameters 
+    // start the PEAR::Auth system using RADIUS authentication with the parameters
     // we have defined here for this config. Do not display a login box on error.
-    $a = new Auth("RADIUS", $params, '', false); 
+    $a = new Auth("RADIUS", $params, '', false);
     $a->username = $username;
     $a->password = $password;
     $a->start();
@@ -304,9 +304,9 @@ class BasicAuth {
                 'version'    => intval($LDAPCONFIG['version']),          // for v 1.3
                 'start_tls'  => $LDAPCONFIG['start_tls'] ? true : false  // requires patched version of LDAP auth
                 );
-    // start the PEAR::Auth system using LDAP authentication with the parameters 
+    // start the PEAR::Auth system using LDAP authentication with the parameters
     // we have defined here for this config. Do not display a login box on error.
-    $a = new Auth("LDAP", $params, '', false); 
+    $a = new Auth("LDAP", $params, '', false);
     $a->username = $username;
     $a->password = $password;
     $a->start();
@@ -326,7 +326,7 @@ class BasicAuth {
     $passOK = check_password($password, $this->user_row['passwd']);
     if (! $passOK) {
       $this->_error = T_('Login failed: bad password');
-    } 
+    }
     if ($passOK && issetSet($CONFIG['auth'], 'convertEntries', false)
                 && passwordHashType($this->user_row['passwd']) != issetSet($CONFIG['auth'], 'LocalPassToken')) {
       $this->updatePassword($password);
@@ -354,8 +354,8 @@ class BasicAuth {
     $enc =qw(makePasswordHash($pass));
     db_quiet("UPDATE {$TABLEPREFIX}users SET passwd=$enc WHERE id='{$this->user_row['id']}'");
   }
-  
+
 } //BasicAuth
 
 
-?> 
+?>

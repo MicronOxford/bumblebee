@@ -84,7 +84,7 @@ class sqlFieldName {
 *
 * @package    Bumblebee
 * @subpackage Export
-* @todo create the ExportType objects from file or database not hard coded
+* @todo //TODO: create the ExportType objects from file or database not hard coded
 */
 class ExportTypeList {
   var $types = array();
@@ -108,7 +108,7 @@ class ExportTypeList {
     $this->types[$type->name] = $type;
   }
     
-  /** @todo i18n: file */
+  /** @todo //TODO: i18n: file */
   function _createLogbook() {
     $type = new ExportType('instrument', 'bookings', 
                             T_('Instrument usage log book'),

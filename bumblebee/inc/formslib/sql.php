@@ -6,7 +6,7 @@
 * to keep track of them, particularly for porting to other databases. Encapsulation is
 * done here with a functional interface not an object interface.
 *
-* @todo work out why we didn't just use PEAR::DB and be done with it right from the beginning
+* @todo //TODO: work out why we didn't just use PEAR::DB and be done with it right from the beginning
 *
 * @author    Stuart Prescott
 * @copyright  Copyright Stuart Prescott
@@ -111,12 +111,12 @@ function db_num_rows($sql) {
 function echoSQL($echo, $success=0) {
   global $VERBOSESQL;
   if ($VERBOSESQL) {
-    echo "<div class='sql'>$echo "
+    echo "<div class='sql'>".xssqw($echo)
         .($success ? '<div>'.T_('(successful)').'</div>' : '')
         ."</div>";
   }
 }
-  
+
 
 /**
 * echo the SQL query to the browser
@@ -130,7 +130,7 @@ function echoSQLerror($echo, $fatal=0) {
   global $VERBOSESQL, $ADMINEMAIL;
   if ($echo != '' && $echo) {
     if ($VERBOSESQL) {
-      echo "<div class='sql error'>$echo</div>";
+      echo "<div class='sql error'>". xssqw($echo) ."</div>";
     }
    if ($fatal) {
       echo "<div class='sql error'>"
@@ -147,9 +147,9 @@ function echoSQLerror($echo, $fatal=0) {
   }
   return STATUS_ERR;
 }
-  
+
 /**
-* construct and perform a simple SQL select 
+* construct and perform a simple SQL select
 *
 * @param string  $table  name of the table (will have TABLEPREFIX added to it
 * @param mixed   $key    single column name or list of columns for the WHERE clause
@@ -157,7 +157,7 @@ function echoSQLerror($echo, $fatal=0) {
 * @param boolean $fatal     die on error
 * @param boolean $countonly   run a COUNT(*) query not a SELECT query
 * @return mixed   array if successful, false if error
-* @global string prefix for tabl nname 
+* @global string prefix for tabl nname
 */
 function quickSQLSelect($table, $key, $value, $fatal=1, $countonly=0) {
   global $TABLEPREFIX;
@@ -202,4 +202,4 @@ function db_get_name() {
   return 'MySQL';
 }
 
-?> 
+?>

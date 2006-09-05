@@ -47,8 +47,8 @@ define('CAL_TIME_BOOKING',     2);
 *
 * @package    Bumblebee
 * @subpackage DBObjects
-* @todo display bugs for off-slot bookings?
-* @todo week-long / multi-day bookings
+* @todo //TODO: display bugs for off-slot bookings?
+* @todo //TODO: week-long / multi-day bookings
 */
 class Calendar {
   /** @var SimpleDate  start date/time for the calendar    */

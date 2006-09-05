@@ -375,7 +375,7 @@ function is_number($v) {
 *
 * @param string $v string to test if it is a valid cost
 * @return boolean
-* @todo strengthen this test?
+* @todo //TODO: strengthen this test?
 */
 function is_cost_amount($v) {
    return is_numeric($v);
@@ -386,7 +386,7 @@ function is_cost_amount($v) {
 *
 * @param string $v string to test it is a date-time string
 * @return boolean
-* @todo can this be relaxed to be more user-friendly without introducing errors
+* @todo //TODO: can this be relaxed to be more user-friendly without introducing errors
 */
 function is_valid_datetime($v) {
   return (preg_match('/^\d\d\d\d-\d\d-\d\d \d\d:\d\d/',$v));
@@ -397,7 +397,7 @@ function is_valid_datetime($v) {
 *
 * @param string $v string to test it is a time string
 * @return boolean
-* @todo can this be relaxed to be more user-friendly without introducing errors
+* @todo //TODO: can this be relaxed to be more user-friendly without introducing errors
 */
 function is_valid_time($v) {
   return (preg_match('/^\d\d:\d\d/',$v) || preg_match('/^\d\d:\d\d:\d\d/',$v));
@@ -408,7 +408,7 @@ function is_valid_time($v) {
 *
 * @param string $v string to test if it is a time string
 * @return boolean
-* @todo can this be relaxed to be more user-friendly without introducing errors
+* @todo //TODO: can this be relaxed to be more user-friendly without introducing errors
 */
 function is_valid_nonzero_time($v) {
   return (preg_match('/^\d\d:\d\d/',$v) || preg_match('/^\d\d:\d\d:\d\d/',$v))

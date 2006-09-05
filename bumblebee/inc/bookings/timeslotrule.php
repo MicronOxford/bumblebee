@@ -39,7 +39,7 @@ define('TS_SLOT_NOT_FOUND', -10000);
 *
 * @package    Bumblebee
 * @subpackage Bookings
-* @todo       more documentation
+* @todo //TODO:       more documentation
 */
 class TimeSlotRule {
   var $picture = '';
@@ -416,7 +416,7 @@ class TimeSlotRule {
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Bookings
-* @todo       more documentation
+* @todo //TODO:       more documentation
 */
 class RuleSlot {
   var $tstart;

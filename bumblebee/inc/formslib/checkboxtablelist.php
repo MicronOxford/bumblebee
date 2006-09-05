@@ -234,7 +234,7 @@ class CheckBoxTableList extends ChoiceList {
   * @uses jsfunctions.php
   * @param integer $col  the column number to run the quick select sequence on.
   * @return string html for links
-  * @todo include interface for groups of instruments.
+  * @todo //TODO: include interface for groups of instruments.
   */
   function _getSelectAllFooter($col) {
     return '(<a href="#" onclick="return deselectsome(\''.$this->name.'-\', '.$col.' ,'.$this->numcols.');">'.T_('deselect all').'</a>)<br />'

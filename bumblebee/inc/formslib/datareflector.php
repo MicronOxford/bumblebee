@@ -15,7 +15,7 @@ require_once 'inc/typeinfo.php';
 checkValidInclude();
 
 /**
-* Reflects all inputted data through hidden fields 
+* Reflects all inputted data through hidden fields
 *
 * Can optionally exclude some fields
 *
@@ -29,11 +29,11 @@ checkValidInclude();
 * @subpackage FormsLibrary
 */
 class DataReflector {
-  /** @var array   list of fields to exclude from the datareflector */ 
+  /** @var array   list of fields to exclude from the datareflector */
   var $excludes = array();
-  /** @var string  list of regexp fields to exclude from the datareflector  */ 
+  /** @var string  list of regexp fields to exclude from the datareflector  */
   var $excludesRegEx = array();
-  /** @var integer   debug level    */ 
+  /** @var integer   debug level    */
   var $DEBUG = 0;
 
   /**
@@ -41,11 +41,11 @@ class DataReflector {
   */
   function DataReflector() {
   }
-  
+
   /**
   *  Creates hidden fields html representation
   *
-  * @param array $PD  array of $field => $value 
+  * @param array $PD  array of $field => $value
   * @return string  html hidden fields
   */
   function display($PD) {
@@ -60,7 +60,7 @@ class DataReflector {
         }
       }
       // if we got this far then we should be included.
-      $t .= '<input type="hidden" name="'.$key.'" value="'.xssqw($val).'" />';
+      $t .= '<input type="hidden" name="'.xssqw($key).'" value="'.xssqw($val).'" />';
     }
     return $t;
   }
@@ -73,7 +73,7 @@ class DataReflector {
   function exclude($arr) {
     $this->excludes = $arr;
   }
-  
+
   /**
   *  Exclude the fields that match these regexps from the reflection
   *
@@ -82,7 +82,7 @@ class DataReflector {
   function excludeRegEx($arr) {
     $this->excludesRegEx = $arr;
   }
-  
+
 } // class DataReflector
 
-?> 
+?>

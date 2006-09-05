@@ -183,7 +183,7 @@ class PDFExport {
   /** 
   * calculate column widths
   * 
-  * @todo make sure PDF columns don't go over right side of page
+  * @todo //TODO: make sure PDF columns don't go over right side of page
   */
   function _calcColWidths($widths, $entry) {
     if ($this->useBigTable && count($this->cols)) return;
@@ -214,7 +214,7 @@ class PDFExport {
   /**
   * Calculate the width of an actual column
   *
-  * @todo calculate width of header from actual header data (bold) rather than 1.1 * non-bold 
+  * @todo //TODO: calculate width of header from actual header data (bold) rather than 1.1 * non-bold 
   */
   function _getColWidth($col, $entry) {
     //why are we doing lots of calls into the pdf here? is it bad encapsulation?

@@ -26,7 +26,7 @@ require_once 'inc/passwords.php';
 *
 * @package    Bumblebee
 * @subpackage FormsLibrary
-* @todo old-passwd? retype passwd? js to check same? code to check same?
+* @todo //TODO: old-passwd? retype passwd? js to check same? code to check same?
 */
 class PasswdField extends TextField {
   /** @var string  algorithm used to encrypt the data  */

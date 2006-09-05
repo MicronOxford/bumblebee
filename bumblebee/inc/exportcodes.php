@@ -66,7 +66,7 @@ define('EXPORT_REPORT_TABLE_ROW',          7);
 /** Totals row in a data table (HTML and PDF reports) */
 define('EXPORT_REPORT_TABLE_TOTAL',        8);
 /** Footer row in a data table (HTML and PDF reports) 
-* @todo EXPORT_REPORT_TABLE_FOOTER not implemented in styling */
+* @todo //TODO: EXPORT_REPORT_TABLE_FOOTER not implemented in styling */
 define('EXPORT_REPORT_TABLE_FOOTER',       9);
 /** End of data table (HTML and PDF reports) */
 define('EXPORT_REPORT_TABLE_END',         10);
@@ -86,7 +86,7 @@ define('EXPORT_HTML_ALIGN_MASK', EXPORT_HTML_CENTRE|EXPORT_HTML_RIGHT|EXPORT_HTM
 /** Formatting code: format as a number */
 define('EXPORT_HTML_NUMBER',       32);
 /** Formatting code: format as money (use defined currency symbol and 2 decimal places)
- * @todo 2d.p. isn't a good choice for all currencies
+ * @todo //TODO: 2d.p. isn't a good choice for all currencies
  */
 define('EXPORT_HTML_MONEY',        EXPORT_HTML_NUMBER|64);
 /** Formatting code: format to 1 decimal place, rounding appropriately */

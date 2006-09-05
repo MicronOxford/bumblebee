@@ -22,7 +22,7 @@ require_once 'inc/permissions.php';
 *
 * @package    Bumblebee
 * @subpackage Misc
-* @todo combine the data storage with action.php for cleaner implementation
+* @todo //TODO: combine the data storage with action.php for cleaner implementation
 */
 class UserMenu {
   /**

@@ -19,7 +19,7 @@ checkValidInclude();
 *
 * @package    Bumblebee
 * @subpackage Bookings
-* @todo       documentation
+* @todo //TODO:       documentation
 */
 class BookingMatrix {
   var $dayStart;

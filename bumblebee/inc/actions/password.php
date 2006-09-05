@@ -24,7 +24,7 @@ require_once 'inc/bb/user.php';
 *
 * @package    Bumblebee
 * @subpackage Actions
-* @todo extend form to include current password and duplicate password
+* @todo //TODO: extend form to include current password and duplicate password
 */
 class ActionPassword extends ActionAction {
 

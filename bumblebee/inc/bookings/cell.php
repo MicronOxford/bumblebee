@@ -42,7 +42,7 @@ class BookingCell {
   var $roton;
   /** @var string     class name to use if the cell is today  */
   var $todayClass;
-  
+
   /**
   *  Create a new display cell
   *
@@ -96,7 +96,7 @@ class BookingCell {
       $t .= $this->booking->displayInCell($isadmin);
       $t .= '</td>';
     } else {
-      $t .= '<!-- c:'.$this->booking->id.'-->';
+      $t .= '<!-- c:'.xssqw($this->booking->id).'-->';
     }
     return $t;
   }

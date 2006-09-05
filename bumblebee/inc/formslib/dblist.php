@@ -24,7 +24,7 @@ require_once 'inc/exportcodes.php';
 *
 * @package    Bumblebee
 * @subpackage FormsLibrary
-* @todo codedoc
+* @todo //TODO: codedoc
 */
 class DBList {
   var $restriction;

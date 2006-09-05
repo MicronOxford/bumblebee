@@ -376,7 +376,7 @@ class ActionView extends ActionAction {
 
   /**
   * Set flags according to the permissions of the logged in user
-  * @todo replace with new permissions system
+  * @todo //TODO: replace with new permissions system
   */
   function _checkBookingAuth($userid) {
     $this->_isOwnBooking = $this->auth->isMe($userid);

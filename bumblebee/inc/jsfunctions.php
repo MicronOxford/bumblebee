@@ -9,7 +9,7 @@
 * @package    Bumblebee
 * @subpackage Misc
 *
-* @todo selectall code needs updating to include InstrumentGroups etc
+* @todo //TODO: selectall code needs updating to include InstrumentGroups etc
 */
 
 /** Load ancillary functions */
@@ -50,7 +50,7 @@ function setcheckboxes (setval, targetname, offset, mod) {
       }
     }
     //alert(document.forms[0].elements[i].value);
-  } 
+  }
   return false;
 }
 -->
