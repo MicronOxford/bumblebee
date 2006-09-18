@@ -2,7 +2,7 @@
 /**
 * User Authentication and Authorisation (Login and Permissions object)
 *
-* @author    Stuart Prescott
+* @author     Stuart Prescott
 * @copyright  Copyright Stuart Prescott
 * @license    http://opensource.org/licenses/gpl-license.php GNU Public License
 * @version    $Id$

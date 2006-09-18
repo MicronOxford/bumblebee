@@ -2,7 +2,7 @@
 /**
 * Create Action object that will do whatever category of work is required in this invocation
 *
-* @author    Stuart Prescott
+* @author     Stuart Prescott
 * @copyright  Copyright Stuart Prescott
 * @license    http://opensource.org/licenses/gpl-license.php GNU Public License
 * @version    $Id$

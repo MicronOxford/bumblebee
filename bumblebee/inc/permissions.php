@@ -2,7 +2,7 @@
 /**
 * Permission codes for actions
 *
-* @author    Stuart Prescott
+* @author     Stuart Prescott
 * @copyright  Copyright Stuart Prescott
 * @license    http://opensource.org/licenses/gpl-license.php GNU Public License
 * @version    $Id$
@@ -17,27 +17,27 @@ checkValidInclude();
 $perm = 1;
 // SYSTEM LEVEL FUNCTIONS: NORMAL USERS
 /** Permission: No permission required, (anyone can do it) */
-define('BBPERM_USER_NONE',      1);
+define('BBPERM_USER_NONE',            1);
 /** Permission: user can view instrument list */
-define('BBPERM_USER_VIEW_LIST',   ($perm<<=1));
+define('BBPERM_USER_VIEW_LIST',       ($perm<<=1));
 /** Permission: user can view instrument calendar */
 define('BBPERM_USER_VIEW_CALENDAR',   ($perm<<=1));
 /** Permission: user can view instrument bookings */
 define('BBPERM_USER_VIEW_BOOKINGS',   ($perm<<=1));
 /** Permission: user do all VIEW actions */
-define('BBPERM_USER_VIEW_ALL',   BBPERM_USER_VIEW_LIST | BBPERM_USER_VIEW_CALENDAR | BBPERM_USER_VIEW_BOOKINGS);
+define('BBPERM_USER_VIEW_ALL',        BBPERM_USER_VIEW_LIST | BBPERM_USER_VIEW_CALENDAR | BBPERM_USER_VIEW_BOOKINGS);
 /** Permission: user can make bookings */
 define('BBPERM_USER_MAKE_BOOKINGS',   ($perm<<=1));
 /** Permission: user can change their own password */
-define('BBPERM_USER_PASSWD',   ($perm<<=1));
+define('BBPERM_USER_PASSWD',          ($perm<<=1));
 /** Permission: user log out */
-define('BBPERM_USER_LOGOUT',   ($perm<<=1));
+define('BBPERM_USER_LOGOUT',          ($perm<<=1));
 /** Permission: user can masquerade as another user */
-define('BBPERM_MASQ',          ($perm<<=1));
+define('BBPERM_MASQ',                 ($perm<<=1));
 /** Permission: sensible, basic user permissions */
-define('BBPERM_USER_BASIC',     BBPERM_USER_VIEW_ALL | BBPERM_USER_MAKE_BOOKINGS | BBPERM_USER_LOGOUT);
+define('BBPERM_USER_BASIC',           BBPERM_USER_VIEW_ALL | BBPERM_USER_MAKE_BOOKINGS | BBPERM_USER_LOGOUT);
 /** Permission: readonly user permissions */
-define('BBPERM_USER_READONLY',  BBPERM_USER_VIEW_ALL);
+define('BBPERM_USER_READONLY',        BBPERM_USER_VIEW_ALL);
 
 // SYSTEM LEVEL FUNCTIONS: ADMIN USERS
 /** Permission: Admin user required (a user *never* has this permission) */
@@ -68,28 +68,28 @@ define('BBPERM_ADMIN_BILLING',         ($perm<<=1) | BBPERM_ADMIN);
 define('BBPERM_ADMIN_BACKUPDB',        ($perm<<=1) | BBPERM_ADMIN);
 
 /** Permission: Admin user can do anything */
-define('BBPERM_ADMIN_ALL',      -1);
+define('BBPERM_ADMIN_ALL',              -1);
 
 // FINE-GRAINED INSTRUMENT PERMISSIONS
 /** Permission: View instrument booking sheet */
-define('BBPERM_INSTR_VIEW',           $perm=1);
+define('BBPERM_INSTR_VIEW',             $perm=1);
 /** Permission: View instrument booking sheet without restrictions on viewing future bookings */
-define('BBPERM_INSTR_VIEW_FUTURE',    ($perm<<=1));
+define('BBPERM_INSTR_VIEW_FUTURE',      ($perm<<=1));
 /** Permission: Book instrument */
-define('BBPERM_INSTR_BOOK',           ($perm<<=1));
+define('BBPERM_INSTR_BOOK',             ($perm<<=1));
 /** Permission: Book instrument any time into the future */
-define('BBPERM_INSTR_BOOK_FUTURE',    ($perm<<=1));
+define('BBPERM_INSTR_BOOK_FUTURE',      ($perm<<=1));
 /** Permission: Book instrument without timeslot restrictions */
-define('BBPERM_INSTR_BOOK_FREE',      ($perm<<=1));
+define('BBPERM_INSTR_BOOK_FREE',        ($perm<<=1));
 /** Permission: Delete own bookings with appropriate notice */
-define('BBPERM_INSTR_UNBOOK',         ($perm<<=1));
+define('BBPERM_INSTR_UNBOOK',           ($perm<<=1));
 /** Permission: Delete own bookings without restrictions for appropriate notice  */
-define('BBPERM_INSTR_UNBOOK_PAST',    ($perm<<=1));
+define('BBPERM_INSTR_UNBOOK_PAST',      ($perm<<=1));
 /** Permission: Delete others' bookings */
-define('BBPERM_INSTR_UNBOOK_OTHER',   ($perm<<=1));
+define('BBPERM_INSTR_UNBOOK_OTHER',     ($perm<<=1));
 
 /** Permission: Instrument admin all functions */
-define('BBPERM_INSTR_ALL',       -1);
+define('BBPERM_INSTR_ALL',               -1);
 
 
 

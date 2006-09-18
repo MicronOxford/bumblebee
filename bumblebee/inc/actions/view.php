@@ -2,7 +2,7 @@
 /**
 * View a list of instruments that are available
 *
-* @author    Stuart Prescott
+* @author     Stuart Prescott
 * @copyright  Copyright Stuart Prescott
 * @license    http://opensource.org/licenses/gpl-license.php GNU Public License
 * @version    $Id$
