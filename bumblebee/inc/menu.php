@@ -105,7 +105,7 @@ class UserMenu {
   * @var boolean
   */
   var $showMenu       = true;
-  
+
   /**
   * logged in user's credentials
   * @var BumblebeeAuth
@@ -116,7 +116,7 @@ class UserMenu {
   * @var string
   */
   var $_verb;
-  
+
   /**
   * Constructor
   * @param BumblebeeAuth $auth  user's credentials
@@ -129,7 +129,7 @@ class UserMenu {
     $this->mainMenuHeader = T_('Main Menu');
     $this->adminHeader    = T_('Administration');
   }
-  
+
   /**
   * Generates an html representation of the menu
   * @return string       menu in html format
@@ -141,14 +141,14 @@ class UserMenu {
     $menu  = '<div'.($this->menuDivId ? ' id="'.$this->menuDivId.'"' :'' ).'>';
     $menu .= $this->menuStart;
     $menu .= $this->_constructMenuEntries();
-    if ($this->_auth->amMasqed() && $this->_verb != 'masquerade') 
+    if ($this->_auth->amMasqed() && $this->_verb != 'masquerade')
           $menu .= $this->_getMasqAlert();
     $menu .= $this->_getHelpMenu();
     $menu .= $this->menuStop;
     $menu .= '</div>';
     return $menu;
   }
-  
+
   /**
   * Generates an html representation of the menu according to the current user's permissions
   * @return string       menu in html format
@@ -161,7 +161,7 @@ class UserMenu {
     $first_admin = true;
     #preDump($this->actionListing->actions);
     foreach ($this->actionListing->actions as $action) {
-      #print $action->name(). " required=".$action->permissions();
+      #print $action->name(). " requires " . $action->permissions() . " have " .$this->_auth->system_permissions."<br />\n";
       if ($action->menu_visible() && $this->_auth->permitted($action->permissions())) {
         #print " visible";
         if ($first_admin && $action->permitted(BBPERM_ADMIN)) {
@@ -179,19 +179,19 @@ class UserMenu {
     }
     return $t;
   }
-  
+
   /**
   * Generates an html div to alert the user that masquerading is in action
   * @return string       menu in html format
   */
-  function _getMasqAlert() {  
+  function _getMasqAlert() {
     $t = '<'.$this->masqAlertTag.' id="'.$this->masqDivId.'">'
              .'Mask: '.xssqw($this->_auth->eusername)
              .' (<a href="'.makeURL('masquerade', array('id'=>-1)).'">end</a>)'
         .'</'.$this->masqAlertTag.'>';
     return $t;
   }
-    
+
   /**
   * Generates an html snippet to for the link to the online help
   * @return string       menu in html format
@@ -200,14 +200,14 @@ class UserMenu {
   function _getHelpMenu() {
     global $BUMBLEBEEVERSION;
     $help = $this->menuHelp;
-    $help = preg_replace(array('/__version__/',   '/__section__/'), 
-                         array($BUMBLEBEEVERSION, $this->_verb), 
+    $help = preg_replace(array('/__version__/',   '/__section__/'),
+                         array($BUMBLEBEEVERSION, $this->_verb),
                          $help);
     return $help;
   }
-  
+
 } // class UserMenu
-  
+
 
 /**
 * create a URL for an anchor
@@ -227,4 +227,4 @@ function makeURL($action, $list=NULL) {
   return $BASEURL.'?'.join('&amp;', $args);
 }
 
-?> 
+?>

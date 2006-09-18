@@ -22,6 +22,8 @@ if (LOAD_ALL_PHP_FILES) {
   require_once 'login.php';
   require_once 'logout.php';
   require_once 'view.php';
+  require_once 'calendar.php';
+  require_once 'book.php';
   require_once 'password.php';
   require_once 'masquerade.php';
 

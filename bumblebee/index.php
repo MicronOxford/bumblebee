@@ -28,7 +28,15 @@ require_once 'inc/compat.php';
 require_once 'inc/db.php';
 /** check the user's credentials, create a session to record them */
 require_once 'inc/bb/auth.php';
-$auth = new BumblebeeAuth($_POST);
+if ((isset($_POST['anonymous']) || isset($_GET['anonymous']))
+       && issetSet($CONFIG['display'], 'AnonymousAllowed', false)) {
+  $_POST['username'] = $CONFIG['display']['AnonymousUsername'];
+  $_POST['pass'] = $CONFIG['display']['AnonymousPassword'];
+  $auth = new BumblebeeAuth($_POST);
+  $auth->system_permissions = BBPERM_USER_READONLY;
+} else {
+  $auth = new BumblebeeAuth($_POST);
+}
 
 
 /** Load the action factory to work out what should be done in this instance of the script */

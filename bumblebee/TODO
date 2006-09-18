@@ -2,17 +2,19 @@ $Id$
 
 * 1.0 series
 ------------
-Bugs:  
+Bugs:
   book dropdown on 10:00-16:00/6 includes times that would overlap bookings
 * double entry password in change passwd
 
 
 * 1.2 series
 ------------
-Installer 
+Installer
+  * make DROP TABLE an optional command in the setup (different privs for CREATE and DROP)
   * artwork?
+  * make anonymous user for browsing?
   * test log file exists, writable
-  * test suite as 
+  * test suite as
   * installer test suite as object suite?
         All tests in the test suite should report their outcome in a consistent manner, making it easy for humans or computer programs to understand and to process them. The following test states, defined by EARL (the Evaluation And Report Language), have proved useful:
           * cannotTell
@@ -34,38 +36,38 @@ Features:
   * polite "offline" mode
   * trap unconfigured and send to installer
   * trap configured and get out of installer
-  
+
   * i18n:
     - date/time customisation
-    
+
   * logging
     - include in more places
     - include in installer/upgrader
-  
+
   * fix dropdown truncation (also for multi-byte chars)
   * db hardening:
-    - put all column names and table names in back ticks, 
+    - put all column names and table names in back ticks,
     - integers in quotes
     - check UTF8-ness of strings
   * use fieldset and label to beautify forms
   * beautify calendar
   * onMouseOver info window with more information about booking than current tooltip?
-  
-  
-  
+
+
+
   * IE5Mac compatability?
-  * heirarchical+fine-grained permission system 
+  * heirarchical+fine-grained permission system
   * groups of instruments
   * bring email templates into the database
   * limit certain users to specific ranges of time on a particular instrument (Gordon Holtslander)
 
 
   * combine instruments onto the one calendar in some way. even just a free/busy with name
-  
+
   * change all boolean fields to !fieldname instead of fieldname = true
 
   * email ics file for booking to user
-  
+
   * mark some pages as cachable so that back button doesn't lose user input; provide reset button
 
 
@@ -84,9 +86,9 @@ i18n:
   * jump to day calendar on day view
   * use http-refresh or js timeout to refresh calendar after n mins
   * hold bookings for approval / display on calendar or not?
-  
+
   * reportbug script that includes phpinfo() etc
-  
+
   * activity log in db rather than flat file?
 
 
@@ -98,16 +100,16 @@ i18n:
 
 
 *recurring scheduling
-  
+
   * graceful handling of duplicate usernames (Not "oops.... message")
-  
+
 
 * a much more sophisticated permissions system that gives fine grained
  control over what users can do
- 
+
 * being able to set permissions on groups of instruments and groups of
- users 
- 
+ users
+
 * more reporting functions: future bookings by a user or group
 
 * group of instruments:
@@ -118,8 +120,8 @@ i18n:
 * book instruments for weeks/months.
 
 * instruments
-  - does not apply timeslot rule on create?  
-  
+  - does not apply timeslot rule on create?
+
 * confirmation
   - require confirmation for some instruments?
 
@@ -132,7 +134,7 @@ i18n:
 
 * -ve consumable quantities (for returns)?
 
-* email users with notification of booking 
+* email users with notification of booking
 * email users a reminder that bookings are coming up (cron job)
 
 * billing
@@ -141,17 +143,17 @@ configure exporttypes from files?
 
 * data exports
   - summary of bookings for each user
-  - summary of bookings for a set of instruments 
+  - summary of bookings for a set of instruments
 
 * instruments
   - can we put some better validation on the timeslotrule input? e.g. making sure every hour is accounted for?
-  
+
 * installer
   - create bumblebee.ini file?
   - can only run once? delete itself?
 
 * ini file
-  - move bumblebee.ini to a db table? 
+  - move bumblebee.ini to a db table?
 
 * USER TESTING
   - Firefox
@@ -165,7 +167,7 @@ configure exporttypes from files?
 
 
 create a real db with no bogus booking data and no dodgy invalid users etc
--> sf.net 
+-> sf.net
 
 
 * theme

@@ -62,9 +62,9 @@ class BumblebeeAuth extends BasicAuth {
       $this->system_permissions = BBPERM_ADMIN_ALL;
     } else {
       if ($this->localLogin) {
-        $this->system_permissions = BBPERM_USER_ALL | BBPERM_USER_PASSWD;
+        $this->system_permissions = BBPERM_USER_BASIC | BBPERM_USER_PASSWD;
       } else {
-        $this->system_permissions = BBPERM_USER_ALL;
+        $this->system_permissions = BBPERM_USER_BASIC;
       }
     }
     if ($this->masqPermitted()) {
@@ -163,6 +163,7 @@ class BumblebeeAuth extends BasicAuth {
     // print "Requested: $operation and have permissions $this->system_permissions<br/>";
     if ($instrument===NULL) {
       // looking for system permissions
+      if ($operation == BBPERM_USER_NONE)  return true;
       return $operation & $this->system_permissions;
     } else {
       return $operation & $this->instrument_permission($instrument);
