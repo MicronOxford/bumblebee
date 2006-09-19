@@ -266,62 +266,6 @@ class ActionFactory {
         return new $class ($this->_auth, $this->PDATA);
     }
   }
-//     switch ($act[$this->_verb]) {
-//       case $act['login']:
-//         $this->nextaction = 'view';
-//         return new ActionPrintLoginForm($this->_auth, $this->PDATA);
-//       case $act['logout']:
-//         $this->_auth->logout();
-//         return new ActionLogout($this->_auth, $this->PDATA);
-//       case $act['view']:
-//         return new ActionView($this->_auth, $this->PDATA);
-//       case $act['passwd']:
-//         return new ActionPassword($this->_auth, $this->PDATA);
-//       // instrument-admin only
-//       case $act['masquerade']:
-//         return new ActionMasquerade($this->_auth, $this->PDATA);
-//       // admin only
-//       case $act['groups']:
-//         return new ActionGroup($this->_auth, $this->PDATA);
-//       case $act['projects']:
-//         return new ActionProjects($this->_auth, $this->PDATA);
-//       case $act['users']:
-//         return new ActionUsers($this->_auth, $this->PDATA);
-//       case $act['instruments']:
-//         return new ActionInstruments($this->_auth, $this->PDATA);
-//       case $act['consumables']:
-//         return new ActionConsumables($this->_auth, $this->PDATA);
-//       case $act['consume']:
-//         return new ActionConsume($this->_auth, $this->PDATA);
-//       case $act['deletedbookings']:
-//         return new ActionDeletedBookings($this->_auth, $this->PDATA);
-//       case $act['costs']:
-//         return new ActionCosts($this->_auth, $this->PDATA);
-//       case $act['specialcosts']:
-//         return new ActionSpecialCosts($this->_auth, $this->PDATA);
-//       case $act['instrumentclass']:
-//         return new ActionInstrumentClass($this->_auth, $this->PDATA);
-//       case $act['userclass']:
-//         return new ActionUserClass($this->_auth, $this->PDATA);
-//       /*case $act['bookmeta']:
-//         return new ActionBookmeta();
-//       case $act['adminconfirm']:
-//         return new ActionAdminconfirm();*/
-//       case $act['emaillist']:
-//         return new ActionEmaillist($this->_auth, $this->PDATA);
-//       case $act['backupdb']:
-//         return new ActionBackupDB($this->_auth, $this->PDATA);
-//       case $act['report']:
-//         return new ActionReport($this->_auth, $this->PDATA);
-//       case $act['export']:
-//         return new ActionExport($this->_auth, $this->PDATA);
-//       case $act['billing']:
-//         return new ActionBilling($this->_auth, $this->PDATA);
-//       case $act['forbidden!']:
-//         return new ActionUnknown($this->_original_verb, 1);
-//       default:
-//         return new ActionUnknown($this->_original_verb);
-//     }
 
 }
  //class ActionFactory

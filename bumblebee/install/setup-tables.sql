@@ -1,9 +1,9 @@
 -- Creates the user and tables that will actually be used for the system
 --
 -- You can load this file using either phpMyAdmin or MySQL's command line tools
--- 
+--
 -- mysql -p --user root < bumbbelee.sql
--- 
+--
 -- $Id$
 
 DROP DATABASE IF EXISTS bumblebeedb;
@@ -35,6 +35,7 @@ CREATE TABLE users (
   suspended BOOL DEFAULT 0,
   isadmin BOOL DEFAULT 0,
   deleted BOOL DEFAULT 0,
+  permissions INTEGER UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
   UNIQUE KEY username (username)
 ) DEFAULT CHARACTER SET utf8;
@@ -122,7 +123,7 @@ CREATE TABLE permissions (
 -- unbook: receive unbook announcement emails
 -- haspriority: is a priority user  (unused)
 -- points: current points balance  (unused)
--- pointsrecharge: how many points added per cycle  (unused) 
+-- pointsrecharge: how many points added per cycle  (unused)
 
 DROP TABLE IF EXISTS instrumentclass;
 CREATE TABLE instrumentclass (

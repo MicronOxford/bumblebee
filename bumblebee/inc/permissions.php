@@ -14,10 +14,9 @@
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
-$perm = 1;
 // SYSTEM LEVEL FUNCTIONS: NORMAL USERS
 /** Permission: No permission required, (anyone can do it) */
-define('BBPERM_USER_NONE',            1);
+define('BBPERM_USER_NONE',            $perm = 1);
 /** Permission: user can view instrument list */
 define('BBPERM_USER_VIEW_LIST',       ($perm<<=1));
 /** Permission: user can view instrument calendar */
@@ -32,8 +31,6 @@ define('BBPERM_USER_MAKE_BOOKINGS',   ($perm<<=1));
 define('BBPERM_USER_PASSWD',          ($perm<<=1));
 /** Permission: user log out */
 define('BBPERM_USER_LOGOUT',          ($perm<<=1));
-/** Permission: user can masquerade as another user */
-define('BBPERM_MASQ',                 ($perm<<=1));
 /** Permission: sensible, basic user permissions */
 define('BBPERM_USER_BASIC',           BBPERM_USER_VIEW_ALL | BBPERM_USER_MAKE_BOOKINGS | BBPERM_USER_LOGOUT);
 /** Permission: readonly user permissions */
@@ -58,6 +55,8 @@ define('BBPERM_ADMIN_CONSUME',         ($perm<<=1) | BBPERM_ADMIN);
 define('BBPERM_ADMIN_COSTS',           ($perm<<=1) | BBPERM_ADMIN);
 /** Permission: Permission to view deleted bookings */
 define('BBPERM_ADMIN_DELETEDBOOKINGS', ($perm<<=1) | BBPERM_ADMIN);
+/** Permission: user can masquerade as another user */
+define('BBPERM_ADMIN_MASQ',            ($perm<<=1) | BBPERM_ADMIN);
 /** Permission: Permission to collect email lists  */
 define('BBPERM_ADMIN_EMAILLIST',       ($perm<<=1) | BBPERM_ADMIN);
 /** Permission: Permission to export data */
@@ -96,7 +95,7 @@ define('BBPERM_INSTR_ALL',               -1);
 
 // print 'BBPERM_USER_ALL='.BBPERM_USER_ALL.'<br/>';
 // print 'BBPERM_USER_PASSWD='.BBPERM_USER_PASSWD.'<br/>';
-// print 'BBPERM_MASQ='.BBPERM_MASQ.'<br/>';
+// print 'BBPERM_MASQ='.BBPERM_ADMIN_MASQ.'<br/>';
 // print 'BBPERM_ADMIN='.BBPERM_ADMIN.'<br/>';
 // print 'BBPERM_ADMIN_GROUPS='.BBPERM_ADMIN_GROUPS.'<br/>';
 // print 'BBPERM_ADMIN_PROJECTS='.BBPERM_ADMIN_PROJECTS.'<br/>';

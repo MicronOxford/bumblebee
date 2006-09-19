@@ -161,6 +161,7 @@ class UserMenu {
     $first_admin = true;
     #preDump($this->actionListing->actions);
     foreach ($this->actionListing->actions as $action) {
+      #print $action->name()."<br />\n";
       #print $action->name(). " requires " . $action->permissions() . " have " .$this->_auth->system_permissions."<br />\n";
       if ($action->menu_visible() && $this->_auth->permitted($action->permissions())) {
         #print " visible";

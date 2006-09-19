@@ -25,6 +25,9 @@ function getCurrentDBVersion() {
   if (strpos($structure[1], '`passwd` varchar(50) NOT NULL') === false) {
     return "1.1.3";
   }
+  if (strpos($structure[1], 'permissions') === false) {
+    return "1.1.4";
+  }
   return "1.1.9";
 }
 
@@ -32,18 +35,19 @@ function makeUpgradeSQL($initial) {
   $u = array();
   $u['1.1'] = "DB_upgrade_BB_1_1";
   $u['1.1.4'] = "DB_upgrade_BB_1_1_passwd";
+  $u['1.1.5'] = "DB_upgrade_BB_1_1_permissions";
   #$u['1.2'] = "DB_upgrade_BB_1_2";
   #$u['1.3'] = "DB_upgrade_BB_1_3";
   $sql = '';
   $releasenotes = array();
   foreach ($u as $version => $function) {
-    print "Considering $version and $initial\n";
-    if (version_compare($initial, $version) <= 0) {
+    // print "Considering $version and $initial\n";
+    if (version_compare($initial, $version) < 0) {
       // initial version is older than the current version so run the upgrade
       $upgrade = $function();
       $sql .= $upgrade[0];
       $releasenotes[] = $upgrade[1];
-    } 
+    }
   }
   $settingComment = "-- Bumblebee SQL load file for ".$_SERVER['SERVER_NAME']."\n"
                    ."-- date: ".date('r', time())."\n"
@@ -62,7 +66,7 @@ function DB_upgrade_BB_1_1() {
   $list = array(
           'users'           => array('username', 'name', 'passwd', 'email', 'phone'),
           'projects'        => array('name', 'longname'),
-          'groups'          => array('name', 'longname', 'addr1', 'addr2', 'suburb', 
+          'groups'          => array('name', 'longname', 'addr1', 'addr2', 'suburb',
                                      'state', 'code', 'country', 'email', 'fax', 'account'),
           'instruments'     => array('name', 'longname', 'location', 'timeslotpicture', 'supervisors'),
           'instrumentclass' => array('name'),
@@ -84,7 +88,7 @@ function DB_upgrade_BB_1_1() {
       // http://dev.mysql.com/doc/refman/5.0/en/alter-table.html
       // note that this conversion loses all the column lengths that were defined
       // in the original table but it at least gets users UTF-8 compliant.
-      $s .= "ALTER TABLE $TABLEPREFIX$table CHANGE $column $column BLOB;\n" 
+      $s .= "ALTER TABLE $TABLEPREFIX$table CHANGE $column $column BLOB;\n"
       $s .= "ALTER TABLE $TABLEPREFIX$table CHANGE $column $column TEXT;\n" */
   }
   $notes = "Note: if you have (somehow) managed to insert non-ASCII data (i.e. characters other than those found on a standard US keyboard) into your database this operation will probably corrupt it. Since previous versions of Bumblebee couldn't do this for you, you would have had to work pretty hard to achieve this.";
@@ -96,6 +100,18 @@ function DB_upgrade_BB_1_1_passwd() {
   $s = "USE {$CONFIG['database']['dbname']};\n";
   $s .= "ALTER TABLE {$TABLEPREFIX}users CHANGE passwd passwd VARCHAR(50) NOT NULL\n";
   $notes = "The password field is made larger to accommodate more secure methods for storing encode passwods.";
+  return array($s, $notes);
+}
+
+function DB_upgrade_BB_1_1_permissions() {
+  global $CONFIG, $TABLEPREFIX;
+  require 'inc/permissions.php';
+  $default = BBPERM_USER_BASIC | BBPERM_USER_PASSWD;
+  $admin = BBPERM_ADMIN_ALL;
+  $s = "USE {$CONFIG['database']['dbname']};\n";
+  $s .= "ALTER TABLE {$TABLEPREFIX}users ADD permissions INTEGER UNSIGNED NOT NULL DEFAULT '{$default}';\n";
+  $s .= "UPDATE {$TABLEPREFIX}users SET permissions = permissions | {$admin} where isadmin=1";
+  $notes = "The fine-grained permissions system (required for anonymous viewing of the calendars) requires additional database storage.";
   return array($s, $notes);
 }
 

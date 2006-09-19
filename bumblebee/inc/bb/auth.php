@@ -34,12 +34,12 @@ require_once 'inc/logging.php';
 * @todo //TODO: documentation
 */
 class BumblebeeAuth extends BasicAuth {
-  var $isadmin;
+  var $anonymous = false;
   var $euid;            //permit user masquerading like su. Effective UID
   var $ename;           //effective name
   var $eusername;       //effective username
   var $permissions = array();
-  var $system_permissions;
+  var $system_permissions = BBPERM_USER_NONE;
 
   /**
   *  Create the auth object
@@ -49,26 +49,23 @@ class BumblebeeAuth extends BasicAuth {
   * @param string $table  (optional) db table from which login data should be taken
   */
   function BumblebeeAuth($data, $recheck = false, $table='users') {
+    $this->_checkAnonymous($data);
+
     parent::BasicAuth($data, $recheck, $table);
 
     if ($this->_loggedin) {
       // set up Authorisation parts
-      $this->isadmin = $this->user_row['isadmin'];
       $this->_checkMasq();
+      $this->_loadPermissions();
     }
+  }
 
-    #FIXME
-    if ($this->isadmin) {
-      $this->system_permissions = BBPERM_ADMIN_ALL;
-    } else {
-      if ($this->localLogin) {
-        $this->system_permissions = BBPERM_USER_BASIC | BBPERM_USER_PASSWD;
-      } else {
-        $this->system_permissions = BBPERM_USER_BASIC;
-      }
-    }
-    if ($this->masqPermitted()) {
-      $this->system_permissions |= BBPERM_MASQ;
+  function _checkAnonymous(&$data) {
+    global $CONFIG;
+    if ((isset($_POST['anonymous']) || isset($_GET['anonymous']))
+        && issetSet($CONFIG['display'], 'AnonymousAllowed', false)) {
+      $data['username'] = $CONFIG['display']['AnonymousUsername'];
+      $data['pass'] = $CONFIG['display']['AnonymousPassword'];
     }
   }
 
@@ -85,7 +82,7 @@ class BumblebeeAuth extends BasicAuth {
   }
 
   function isSystemAdmin() {
-    return $this->isadmin;
+    return $this->system_permissions & BBPERM_ADMIN;
   }
 
   function isInstrumentAdmin($instr) {
@@ -125,7 +122,7 @@ class BumblebeeAuth extends BasicAuth {
   }
 
   function masqPermitted($instr=0) {
-    return $this->isadmin || $this->isInstrumentAdmin($instr);
+    return ($this->system_permissions & BBPERM_ADMIN_MASQ) || $this->isInstrumentAdmin($instr);
   }
 
   function amMasqed() {
@@ -160,13 +157,36 @@ class BumblebeeAuth extends BasicAuth {
   }
 
   function permitted($operation, $instrument=NULL) {
-    // print "Requested: $operation and have permissions $this->system_permissions<br/>";
+     //print "Requested: $operation and have permissions $this->system_permissions<br/>";
     if ($instrument===NULL) {
       // looking for system permissions
-      if ($operation == BBPERM_USER_NONE)  return true;
+      if ($operation == BBPERM_USER_NONE) return true;
       return $operation & $this->system_permissions;
     } else {
       return $operation & $this->instrument_permission($instrument);
+    }
+  }
+
+  function _loadPermissions() {
+    if (! $this->isLoggedIn()) return;
+
+    /// FIXME
+    if (isset($this->user_row['permissions'])) {
+      $this->system_permissions = $this->user_row['permissions'];
+    } else {
+      logmsg(2, "Making up some permissions for user. Upgrade database format to get rid of this message.");
+      if ($this->isadmin) {
+        $this->system_permissions = BBPERM_ADMIN_ALL;
+      } else {
+        if ($this->localLogin) {
+          $this->system_permissions = BBPERM_USER_BASIC | BBPERM_USER_PASSWD;
+        } else {
+          $this->system_permissions = BBPERM_USER_BASIC;
+        }
+      }
+      if ($this->masqPermitted()) {
+        $this->system_permissions |= BBPERM_ADMIN_MASQ;
+      }
     }
   }
 

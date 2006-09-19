@@ -147,8 +147,6 @@ class ActionListing {
         'passwd',     T_('Change password'), T_('Change password'),    BBPERM_USER_PASSWD);
     $this->actions[] = new ActionData('ActionPrintLoginForm', 'login.php',
         'login',      T_('Login'), T_('Login'), BBPERM_USER_NONE, -1, 'view');
-    $this->actions[] = new ActionData('ActionMasquerade', 'masquerade.php',
-        'masquerade', T_('Masquerade as another user'), T_('Masquerade'), BBPERM_MASQ);
     $this->actions[] = new ActionData('ActionLogout', 'logout.php',
         'logout',     T_('Logout'), T_('Logout'), BBPERM_USER_LOGOUT);
 
@@ -165,7 +163,7 @@ class ActionListing {
     $this->actions[] = new ActionData('ActionConsume', 'consume.php',
         'consume',    T_('Record consumable usage'), T_('Use consumable'), BBPERM_ADMIN_CONSUME);
     $this->actions[] = new ActionData('ActionMasquerade', 'masquerade.php',
-        'masquerade', T_('Masquerade as another user'), T_('Masquerade'), BBPERM_MASQ);
+        'masquerade', T_('Masquerade as another user'), T_('Masquerade'), BBPERM_ADMIN_MASQ);
     $this->actions[] = new ActionData('ActionCosts', 'costs.php',
         'costs',      T_('Edit standard costs'), T_('Edit costs'), BBPERM_ADMIN_COSTS);
     $this->actions[] = new ActionData('ActionSpecialCosts', 'specialcosts.php',
