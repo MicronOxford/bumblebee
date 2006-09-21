@@ -46,17 +46,25 @@ class BumblebeeAuth extends BasicAuth {
   *
   * @param array   $data    array containing keys 'username' and 'pass'
   * @param boolean $recheck (optional) ignore session data and check anyway
-  * @param string $table  (optional) db table from which login data should be taken
+  * @param string  $table  (optional) db table from which login data should be taken
   */
   function BumblebeeAuth($data, $recheck = false, $table='users') {
     $this->_checkAnonymous($data);
 
-    parent::BasicAuth($data, $recheck, $table);
+    parent::BasicAuth($data, $this->_changeUser($recheck), $table);
 
     if ($this->_loggedin) {
       // set up Authorisation parts
       $this->_checkMasq();
       $this->_loadPermissions();
+    }
+  }
+
+  function _changeUser($recheck) {
+    if ($recheck) return $recheck;
+
+    if (isset($_POST['changeuser']) || isset($_GET['changeuser'])) {
+      return true;
     }
   }
 
@@ -175,7 +183,7 @@ class BumblebeeAuth extends BasicAuth {
       $this->system_permissions = $this->user_row['permissions'];
     } else {
       logmsg(2, "Making up some permissions for user. Upgrade database format to get rid of this message.");
-      if ($this->isadmin) {
+      if (isset($this->user_row['isadmin']) && $this->user_row['isadmin']) {
         $this->system_permissions = BBPERM_ADMIN_ALL;
       } else {
         if ($this->localLogin) {
@@ -187,6 +195,9 @@ class BumblebeeAuth extends BasicAuth {
       if ($this->masqPermitted()) {
         $this->system_permissions |= BBPERM_ADMIN_MASQ;
       }
+    }
+    if (! $this->localLogin) {
+      $this->system_permissions = $this->system_permissions & (~ BBPERM_USER_PASSWD);
     }
   }
 

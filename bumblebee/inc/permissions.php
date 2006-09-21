@@ -34,7 +34,7 @@ define('BBPERM_USER_LOGOUT',          ($perm<<=1));
 /** Permission: sensible, basic user permissions */
 define('BBPERM_USER_BASIC',           BBPERM_USER_VIEW_ALL | BBPERM_USER_MAKE_BOOKINGS | BBPERM_USER_LOGOUT);
 /** Permission: readonly user permissions */
-define('BBPERM_USER_READONLY',        BBPERM_USER_VIEW_ALL);
+define('BBPERM_USER_READONLY',        BBPERM_USER_VIEW_ALL | BBPERM_USER_LOGOUT);
 
 // SYSTEM LEVEL FUNCTIONS: ADMIN USERS
 /** Permission: Admin user required (a user *never* has this permission) */
