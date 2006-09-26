@@ -36,6 +36,8 @@ class AnchorTableList extends AnchorList {
   var $tableclass = 'selectlist';
   /** @var array    list of table headings to be put at the top of the table */
   var $tableHeading;
+  /** @var boolean  make all columns in the table link to the target URL not just the first */
+  var $linkAll = true;
 
   /**
   *  Create a new AnchorTableList
@@ -64,15 +66,19 @@ class AnchorTableList extends AnchorList {
     $trclass  = (isset($this->trclass) ? " class='$this->trclass'" : '');
     $tdlclass  = (isset($this->tdlclass) ? " class='$this->tdlclass'" : '');
     $tdrclass  = (isset($this->tdrclass) ? " class='$this->tdrclass'" : '');
+    $linkformat = "<a href='".str_replace('__id__', $data[$this->formatid], $this->hrefbase)."'$aclass>"
+                  ."%s</a>";
     $t  = "<tr $trclass>"
          ."<td $tdlclass>";
-    $t .= "<a href='".str_replace('__id__', $data[$this->formatid], $this->hrefbase)."'$aclass>"
-         .$this->formatter[0]->format($data)
-         ."</a>";
+    $t .= sprintf($linkformat, $this->formatter[0]->format($data));
     $t .= "</td>\n";
     for ($i=2; $i<=$this->numcols; $i++) {
-      $t .= "<td $tdrclass>"
-           .$this->formatter[$i-1]->format($data);
+      $t .= "<td $tdrclass>";
+      if ($this->linkAll) {
+        $t .= sprintf($linkformat, $this->formatter[$i-1]->format($data));
+      } else {
+        $t .= $this->formatter[$i-1]->format($data);
+      }
       $t .= "</td>";
     }
     $t .= "</tr>\n";
@@ -101,4 +107,4 @@ class AnchorTableList extends AnchorList {
 } // class AnchorList
 
 
-?> 
+?>
