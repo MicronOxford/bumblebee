@@ -1,7 +1,7 @@
 /* $Id$ */
 
-/* Styles used within the bumblebee program 
- 
+/* Styles used within the bumblebee program
+
   All styles defined in here are used somewhere... if the theme is structured to include multiple
   stylesheets (this one first and then custom ones following that), then the minimum amount
   of work is required to implement the theme.
@@ -13,7 +13,7 @@ a {
 }
 
 body {
-  font-family: "Bitstream Vera Sans", Verdana, Helvetica, Arial, sans-serif; 
+  font-family: "Bitstream Vera Sans", Verdana, Helvetica, Arial, sans-serif;
 }
 
 #bumblebeecontent a:hover {
@@ -22,10 +22,10 @@ body {
   color: #1005A7;
 }
 
-#bumblebeecontent a:active 
-{ 
+#bumblebeecontent a:active
+{
   text-decoration: underline;
-  color: #DA4C71; 
+  color: #DA4C71;
 }
 
 pre {
@@ -62,12 +62,12 @@ td {
   font-size: 100%;
 }
 
-#bumblebeefooter a, #bumblebeefooter a:link, 
+#bumblebeefooter a, #bumblebeefooter a:link,
 #bumblebeefooter a:hover, #bumblebeefooter a:visited, #bumblebeefooter a:active  {
   color: #9999ff;
   text-decoration: none;
 }
-  
+
 #menulist li, #menulist ul {
 }
 
@@ -86,7 +86,7 @@ td {
   background-color: #ccffcc;
   text-decoration: none;
 }
-  
+
 .floatRight {
   clear: both;
   float: right;
@@ -298,7 +298,7 @@ td.dummy {
 /*   font-size: 1px; */
 }
 
-a.but { 
+a.but {
   background-color: #ccccff;
   color: black;
   text-decoration: none;
@@ -435,7 +435,7 @@ tr.itemrow:hover {
   background-color: #FFFF99;
 }
 
-td.itemL a {
+tr.itemrow a {
   display: block;
 }
 
@@ -472,7 +472,7 @@ input.radioitem {
   background-color: #ffeeee;
 }
 
-#masquerade a, #masquerade a:link, 
+#masquerade a, #masquerade a:link,
 #masquerade a:visited, #masquerade a:hover, #masquerade a:active {
   border: 0;
   display: inline;
@@ -528,7 +528,7 @@ input.radioitem {
   font-weight: bold;
 }
 
-#bumblebeeExport td.exportSectionHeader, #bumblebeeExport tr.exportSectionHeader { 
+#bumblebeeExport td.exportSectionHeader, #bumblebeeExport tr.exportSectionHeader {
   border-top: none;
   border-left: none;
   border-right: none;
