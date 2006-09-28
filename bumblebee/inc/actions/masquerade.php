@@ -46,10 +46,11 @@ class ActionMasquerade extends ActionAction {
       $this->selectUser();
     } elseif ($this->PD['id'] == -1) {
       $this->removeMasquerade();
+      echo "<br /><br /><a href='".makeURL('masquerade')."'>".T_('Return to user list')."</a>";
     } else {
       $this->assumeMasquerade();
+      echo "<br /><br /><a href='".makeURL('masquerade')."'>".T_('Return to user list')."</a>";
     }
-    echo "<br /><br /><a href='".makeURL('masquerade')."'>".T_('Return to user list')."</a>";
   }
 
   /**
@@ -72,37 +73,44 @@ class ActionMasquerade extends ActionAction {
 
   /**
   * Put on the selected mask
-  *  @todo //TODO: i18n: block translation
   */
   function assumeMasquerade() {
     if ($row = $this->auth->assumeMasq($this->PD['id'])) {
-      echo '<h3>Masquerade started</h3>'
-            .'<p>The music has started and you are now wearing the mask that looks like:</p>'
-            .'<blockquote class="highlight">'.xssqw($row['name']).' ('.xssqw($row['username']).')</blockquote>'
-            .'<p>Is that a scary thought?</p>'
-            .'<p>When you are tired of wearing your mask, remove it by returning to the '
-            .'Masquerade menu once more.</p>';
-      echo '<p>Note that even with your mask on, you can only edit/create bookings on instruments '
-            .'for which you have administrative rights.</p>';
+      echo '<h3>'. T_('Masquerade started') .'</h3>';
+      echo sprintf(
+              T_('<p>The music has started and you are now wearing the mask that looks like:</p>'
+                .'<blockquote class="highlight">%s (%s)</blockquote>'
+                .'<p>Is that a scary thought?</p>'),
+                xssqw($row['name']), xssqw($row['username'])
+                );
+      echo '<p>'
+           . T_('When you are tired of wearing your mask, remove it by returning to the "Masquerade" menu once more.')
+           .'</p>';
+      echo '<p>'
+          . T_('Note that even with your mask on, you can only edit/create bookings on instruments for which you have administrative rights.')
+          .'</p>';
     } else {
-      echo '<div class="msgerror"><h3>Masquerade Error!</h3>'
-          .'<p>Sorry, but if you\'re comming to a masquerade ball, '
-          .'you really should wear a decent mask!</p>'
-          .'<p>Masquerade didn\'t start properly: mask failed to apply and music didn\'t start.</p>'
-          .'<p>Are you sure you\'re allowed to do this?</p></div>';
+      echo '<div class="msgerror">';
+      echo '<h3>'. T_('Masquerade Error!') .'</h3>';
+      echo '<p>'
+         . T_('Sorry, but if you\'re comming to a masquerade ball, you really should wear a decent mask! Masquerade didn\'t start properly: mask failed to apply and music didn\'t start.')
+          .'</p>';
+      echo '<p>'
+          . T_('Are you sure you\'re allowed to do this?')
+          .'</p>';
+      echo '</div>';
     }
   }
 
   /**
   * Remove the mask
-  *  @todo //TODO: i18n: block translation
   */
   function removeMasquerade() {
     $this->auth->removeMasq();
-    echo '<h3>Masquerade finished</h3>'
-          .'<p>Oh well. All good things have to come to an end. '
-          .'The music has stopped and you have taken your mask off. </p>'
-          .'<p>Hope you didn\'t get too much of a surprise when eveyrone else took their masks off too!</p>';
+    echo '<h3>' . T_('Masquerade finished') . '</h3>';
+    echo '<p>'
+        . T_('Oh well. All good things have to come to an end. The music has stopped and you have taken your mask off. Hope you didn\'t get too much of a surprise when eveyrone else took their masks off too!')
+        . '</p>';
   }
 
 } //ActionMasquerade
