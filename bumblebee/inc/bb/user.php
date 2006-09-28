@@ -34,7 +34,7 @@ require_once 'inc/formslib/joindata.php';
 * @todo //TODO:       Double password entry and require them to be the same
 */
 class User extends DBRow {
-  
+
   var $_localAuthPermitted;
   var $_authList;
   var $_magicPassList;
@@ -69,19 +69,19 @@ class User extends DBRow {
     $f->isValidTest = 'is_empty_string';
     $f->setAttr($attrs);
     $this->addElement($f);
-    
+
     if (! $passwdOnly) {
       $f = new CheckBox('suspended', T_('Suspended'));
       $this->addElement($f);
       $f = new CheckBox('isadmin', T_('System Administrator'));
       $this->addElement($f);
-      
+
       //// @FIXME: bitmask control
 /*      $f = new BitmaskPopup('perms', T_('User Permissions'), T_('Permissions'), T_('Perms'));
       $f->setValuesArray(array(1=>'foo', 2=>'bar', 3=>'quux'), 'id', 'iv');
       $this->addElement($f);*/
     }
-    
+
     // association of user with an authentication method
     $this->_findAuthMethods();
     $f = new RadioList('auth_method', T_('User authentication method'));
@@ -100,8 +100,18 @@ class User extends DBRow {
       $password->editable = 1;
       //$f->list->append(array('local','Local login: '), $password);
       $this->addElement($password);
+
+      //repeat the password field so that we can check that the user entered
+      //what they thought they did
+      $password_veri = new PasswdField('passwd_veri', T_('Please re-enter password'));
+      $password_veri->setAttr(array('size' => 24));
+      $password_veri->suppressValidation = 0;
+      $password_veri->editable = 1;
+      $password_veri->sqlHidden = true;
+
+      $this->addElement($password_veri);
     }
-    
+
     if (! $passwdOnly) {
       // association of users to projects
       $f = new JoinData('userprojects',
@@ -134,7 +144,7 @@ class User extends DBRow {
       $f->addElement($unbookAnnounce);
       $instradmin = new CheckBox('isadmin', T_('Instrument admin'));
       $f->addElement($instradmin);
-      /*  
+      /*
       //Add these fields in once we need this functinality
       $hasPriority = new CheckBox('haspriority', 'Booking priority');
       $f->addElement($hasPriority);
@@ -147,14 +157,14 @@ class User extends DBRow {
       $f->colspan = 2;
       $this->addElement($f);
     }
-    
+
     $this->fill($id);
     $this->dumpheader = 'User object';
   }
 
   function _findAuthMethods() {
     global $CONFIG;
-    $this->_localAuthPermitted = isset($CONFIG['auth']['useLocal']) 
+    $this->_localAuthPermitted = isset($CONFIG['auth']['useLocal'])
                                         && $CONFIG['auth']['useLocal'];
     $this->_authList = array();
     foreach ($CONFIG['auth'] as $key => $val) {
@@ -163,7 +173,7 @@ class User extends DBRow {
         $this->_authList[$method] = $method;
         $this->_magicPassList[$method] = $CONFIG['auth'][$method.'PassToken'];
       }
-    }  
+    }
   }
 
   function fill() {
@@ -183,7 +193,7 @@ class User extends DBRow {
     $this->fields['auth_method']->set($this->_authMethod);
     //echo $this->fields['passwd']->value;
   }
-  
+
   function sync() {
     //$this->DEBUG = 10;
     //monkey the passwd/auth fields
@@ -199,7 +209,22 @@ class User extends DBRow {
       }
     }
     if ($this->fields['auth_method']->changed || $this->fields['passwd']->changed) {
-      if ($this->_authMethod != 'Local' 
+
+      if($this->_authMethod == 'Local' &&
+	 $this->fields['passwd']->value != $this->fields['passwd_veri']->value) {
+
+	 $this->fields['passwd']->isValid = 0;
+	 $this->fields['passwd']->changed = 1;
+
+	 $this->fields['passwd_veri']->isValid = 0;
+	 $this->fields['passwd_veri']->changed = 0;
+
+
+	 $this->errorMessage .= T_('The supplied passwords did not match. Please retry.').'<br/>';
+	 $this->isValid = 0;
+	 $this->changed = 1;
+
+      } elseif ($this->_authMethod != 'Local'
             /*&& $this->fields['passwd']->value != ''*/
             && $this->fields['passwd']->value != $this->_magicPassList[$this->_authMethod]) {
         $this->log('User::sync(): indulging in password munging, '. $this->_authMethod);
@@ -207,7 +232,8 @@ class User extends DBRow {
         $this->fields['passwd']->crypt_method = '';
         $this->fields['passwd']->changed = 1;
         $this->changed = 1;
-      } elseif ($this->_authMethod == 'Local' && $this->fields['passwd']->value == '' 
+
+      } elseif ($this->_authMethod == 'Local' && $this->fields['passwd']->value == ''
                         && $this->fields['username']->value != '')  {
         $this->fields['passwd']->changed = 1;
         $this->fields['passwd']->isValid = 0;
@@ -218,7 +244,7 @@ class User extends DBRow {
     }
     return parent::sync();
   }
-  
+
   /**
    *  Suspend the user as well as deleting it.
    *
@@ -227,7 +253,7 @@ class User extends DBRow {
   function delete() {
     return parent::delete("suspended='1'");
   }
-  
+
   function display() {
     return $this->displayAsTable();
   }
