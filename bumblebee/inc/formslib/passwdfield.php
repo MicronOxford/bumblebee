@@ -26,7 +26,7 @@ require_once 'inc/passwords.php';
 *
 * @package    Bumblebee
 * @subpackage FormsLibrary
-* @todo //TODO: old-passwd? retype passwd? js to check same? code to check same?
+* @todo //TODO:  js to check double entry passwd is the same
 */
 class PasswdField extends TextField {
   /** @var string  algorithm used to encrypt the data  */
@@ -53,27 +53,27 @@ class PasswdField extends TextField {
   }
 
   /**
-  * Don't return data... 
+  * Don't return data...
   *
   * We shouldn't give up our data too easily.
-  */ 
+  */
   function getValue() {
     return '';
   }
-  
+
   /**
   * Update the value of the field from user-supplied data, but only if the field was filled in
   *
   * Empty values don't count -- that way an unfilled passwd field will never count as changed
   * @param array $data  list of field_name => value pairs
-  */ 
+  */
   function update($data) {
     if (parent::update($data)) {
       return ($this->changed = ($this->value != ''));
-    } 
+    }
     return false;
   }
-  
+
   /**
   * return a SQL-injection-cleansed string that can be used in an SQL
   * UPDATE or INSERT statement. i.e. "name='Stuart'".
@@ -93,9 +93,9 @@ class PasswdField extends TextField {
     }
   }
 
-  
-  
+
+
 } // class PasswdField
 
 
-?> 
+?>
