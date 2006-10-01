@@ -23,7 +23,7 @@ function check_preinst($data) {
   set_include_path($REBASE_INSTALL.PATH_SEPARATOR.get_include_path());
   $NON_FATAL_CONFIG = true;
   $php_errormsg = '';
-  if (@ include 'inc/config.php') {  
+  if (@ include 'inc/config.php') {
     $s[] = "GOOD: Found installation of Bumblebee version $BUMBLEBEEVERSION.";
   } else {
     $s[] = "ERROR: I couldn't find any evidence of a Bumblebee installation here. PHP said:<blockquote>\n$php_errormsg</blockquote>";
@@ -36,7 +36,7 @@ function check_preinst($data) {
   } else {
     $s[] = "GOOD: Configuration loaded successfully";
   }
-  // check kit: check that php-gettext can be found 
+  // check kit: check that php-gettext can be found
   if (! @ include_once 'php-gettext/gettext.inc') {
     $s[] = "WARNING: <a href='https://savannah.nongnu.org/projects/php-gettext/'>php-gettext</a> internationali[sz]ation layer not found. Translations will not be available. "
            ."PHP said:<pre>\n$php_errormsg</pre>";
@@ -55,7 +55,7 @@ function check_preinst($data) {
   } else {
     // check individually for LDAP and RADIUS here? but will that just cause a PHP crash if they are not installed?
     if (! extension_loaded('ldap')) {
-      //$b = new Auth("LDAP", array(), '', false); 
+      //$b = new Auth("LDAP", array(), '', false);
       $s[] = "WARNING: PHP's <a href='http://php.net/ldap'>LDAP extension</a> was not found. LDAP authentication unavailable.";
       $warn = true;
     } else {
@@ -160,10 +160,12 @@ function check_postinst($data) {
   }
   if (! $error) {
     // check that the admin user can log into the system
+    echo '<!-- checking admin login -->';
     require_once 'inc/bb/auth.php';
-    $_POST['username'] = $data['bbAdmin'];
-    $_POST['pass']     = $data['bbAdminPass'];
-    $auth = @ new BumblebeeAuth(true);
+    $loginData = array();
+    $loginData['username'] = $data['bbAdmin'];
+    $loginData['pass']     = $data['bbAdminPass'];
+    $auth = @ new BumblebeeAuth($loginData, true);
     if (! $auth->isLoggedIn()) {
       $auth->DEBUG=10;
       $s[] = "ERROR: Admin user cannot log in to Bumblebee with username and password supplied. Bumblebee said:"
@@ -176,6 +178,7 @@ function check_postinst($data) {
   }
 
   // check to see if ini files are accessible to outsiders using HTTP
+  echo '<!-- checking access to config files -->';
   $htdbini    = 'http://'.$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].$BASEPATH.'/config/db.ini';
   $localdbini = '..'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'db.ini';
   if (! ini_get('allow_url_fopen')) {
@@ -217,8 +220,9 @@ function check_postinst($data) {
         $warn = true;
     }
   }
-  
+
   // check to see if bumblebee.ini has the right place for the installation
+  echo '<!-- checking ini file base location -->';
   $htbb[]  = 'http://'.$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].$BASEURL;
   $htbb[]  = 'http://'.$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].$BASEPATH.'/';
   if (! ini_get('allow_url_fopen')) {
@@ -236,7 +240,7 @@ function check_postinst($data) {
       if ($htbbdata[0] != $htbbdata[1]) {
         $s[] = "ERROR: I got different results when I tried to go to <a href='$htbb[0]' target='_blank'>check 1</a> "
               ."and <a href='$htbb[1]' target='_blank'>check 2</a>.";
-              echo "......".$htbbdata[0]."......".$htbbdata[1]."......";
+              //echo "......".$htbbdata[0]."......".$htbbdata[1]."......";
         $error = true;
       } elseif (! preg_match('/Bumblebee/', $htbbdata[0])) {
         $s[] = "WARNING: I was able to find a webpage at your <a href='$htbb[0]' target='_blank'>configured location</a>, "
@@ -250,7 +254,7 @@ function check_postinst($data) {
       $error = true;
     }
   }
-  
+
   if ($error) {
     $s[] = "<b>Errors were detected. Please fix them and reload this page.</b>";
   }
@@ -303,6 +307,6 @@ function passwordStrength($password) {
   }
   // password is exceedingly poor
   return array(1, "This password is very weak. $advice");
-} 
+}
 
 ?>

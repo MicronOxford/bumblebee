@@ -117,7 +117,9 @@ CREATE TABLE permissions (
   unbook BOOL DEFAULT 1,
   haspriority BOOL DEFAULT 0,
   points SMALLINT UNSIGNED,
-  pointsrecharge SMALLINT UNSIGNED
+  pointsrecharge SMALLINT UNSIGNED,
+  permissions INTEGER UNSIGNED NOT NULL DEFAULT 0,
+  INDEX (userid, instrid)
 ) DEFAULT CHARACTER SET utf8;
 -- announce: receive announcement emails
 -- unbook: receive unbook announcement emails

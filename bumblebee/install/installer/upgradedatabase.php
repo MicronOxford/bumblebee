@@ -110,7 +110,12 @@ function DB_upgrade_BB_1_1_permissions() {
   $admin = BBPERM_ADMIN_ALL;
   $s = "USE {$CONFIG['database']['dbname']};\n";
   $s .= "ALTER TABLE {$TABLEPREFIX}users ADD permissions INTEGER UNSIGNED NOT NULL DEFAULT '{$default}';\n";
-  $s .= "UPDATE {$TABLEPREFIX}users SET permissions = permissions | {$admin} where isadmin=1";
+  $s .= "UPDATE {$TABLEPREFIX}users SET permissions = permissions | {$admin} where isadmin=1;\n";
+  $default = BBPERM_INSTR_BASIC;
+  $admin = BBPERM_INSTR_ALL;
+  $s .= "ALTER TABLE {$TABLEPREFIX}permissions ADD `permissions` INTEGER UNSIGNED NOT NULL DEFAULT '{$default}';\n";
+  $s .= "UPDATE {$TABLEPREFIX}permissions SET permissions = permissions | {$admin} where isadmin=1;\n";
+
   $notes = "The fine-grained permissions system (required for anonymous viewing of the calendars) requires additional database storage.";
   return array($s, $notes);
 }
