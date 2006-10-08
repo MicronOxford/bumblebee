@@ -40,8 +40,6 @@ require_once 'inc/statuscodes.php';
 class BookingEntry extends DBRow {
   /** @var TimeSlotRule     rules for when the instrument can be booked    */
   var $slotrules;
-  /** @var boolean          booking is by admin user */
-  var $_isadmin = 0;
   /** @var integer          EUID of booking user @see BumblebeeAuth  */
   var $euid;
   /** @var integer          UID of booking user @see BumblebeeAuth  */
@@ -52,6 +50,8 @@ class BookingEntry extends DBRow {
   var $minunbook;
   /** @var boolean          object not fully constructed (using short constructor for deleting booking only  */
   var $isShort = false;
+  /** @var integer          instrument id number */
+  var $instrumentid;
 
   /**
   *  Create a new BookingEntry object
@@ -71,6 +71,7 @@ class BookingEntry extends DBRow {
     $this->deleteFromTable = 0;
     $this->_checkAuth($auth, $instrumentid);
     $this->minunbook = $minunbook;
+    $this->instrumentid = $instrumentid;
     // check if lots of the input data is empty, then the constructor is only being used to delete the booking
     if ($ip=='' && $start=='' && $duration=='' && $granlist=='') {
       return $this->_bookingEntryShort($id, $instrumentid);
@@ -101,7 +102,7 @@ class BookingEntry extends DBRow {
     $startf->isValidTest = 'is_valid_datetime';
     $attrs = array('size' => '24');
     $startf->setAttr($attrs);
-    if ($this->_isadmin) {
+    if ($this->_auth->permitted(BBROLE_MAKE_BOOKINGS_FREE, $instrumentid)) {
       $startf->setManualRepresentation($this->id == -1 ? TF_FREE : TF_FREE_ALWAYS);
     } else {
       $startf->setManualRepresentation(TF_AUTO);
@@ -116,7 +117,7 @@ class BookingEntry extends DBRow {
     $durationf->required = 1;
     $durationf->isValidTest = 'is_valid_nonzero_time';
     $durationf->defaultValue = $duration;
-    if ($this->_isadmin) {
+    if ($this->_auth->permitted(BBROLE_MAKE_BOOKINGS_FREE, $instrumentid)) {
       $durationf->setManualRepresentation($this->id == -1 ? TF_FREE : TF_FREE_ALWAYS);
     } else {
       $durationf->setManualRepresentation(TF_AUTO);
@@ -150,14 +151,14 @@ class BookingEntry extends DBRow {
     $f = new ReferenceField('bookedby', T_('Recorded by'));
     $f->extraInfo('users', 'id', 'name');
     $f->value = $auth->uid;
-    $f->editable = $this->_isadmin;
-    $f->hidden = !$this->_isadmin;
+    $f->editable = $this->_auth->permitted(BBROLE_VIEW_BOOKINGS_DETAILS, $instrumentid);
+    $f->hidden = ! $f->editable;
     $this->addElement($f);
     $f = new TextField('discount', T_('Discount (%)'));
     $f->isValidTest = 'is_number';
     $f->defaultValue = '0';
-    $f->editable = $this->_isadmin;
-    $f->hidden = !$this->_isadmin;
+    $f->editable = $this->_auth->permitted(BBROLE_VIEW_BOOKINGS_DETAILS, $instrumentid);
+    $f->hidden = ! $f->editable;
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new TextField('ip', T_('Computer IP'));
@@ -203,9 +204,8 @@ class BookingEntry extends DBRow {
   */
   function _checkAuth($auth, $instrumentid) {
     $this->_auth = $auth;
-    $this->_isadmin = $auth->isSystemAdmin() || $auth->isInstrumentAdmin($instrumentid);
     $this->uid = $auth->uid;
-    if ($this->id > 0 && $this->_isadmin) {
+    if ($this->id > 0 && $this->_auth->permitted(BBROLE_VIEW_BOOKINGS_DETAILS, $instrumentid)) {
       $row = quickSQLSelect('bookings', 'id', $this->id);
       $this->euid = $row['userid'];
     } else {
@@ -248,7 +248,7 @@ class BookingEntry extends DBRow {
     $status = parent::sync();
     if ($status & STATUS_OK) {
       $this->_sendBookingEmail();
-      if ($this->_isadmin) {
+      if ($this->_auth->permitted(BBROLE_MAKE_BOOKINGS_FREE, $this->instrumentid)) {
         $this->fields['bookwhen']->setManualRepresentation($this->id == -1 ? TF_FREE : TF_FREE_ALWAYS);
         $this->fields['duration']->setManualRepresentation($this->id == -1 ? TF_FREE : TF_FREE_ALWAYS);
       }
@@ -264,7 +264,7 @@ class BookingEntry extends DBRow {
 
     $starttime = new SimpleDate($this->fields['bookwhen']->getValue());
     $slot = $this->slotrules->findSlotByStart($starttime);
-    if (! $this->_isadmin) {
+    if (! $this->_auth->permitted(BBROLE_VIEW_BOOKINGS_DETAILS, $this->instrumentid)) {
       $this->fields['discount']->value = (isset($slot->discount) ? $slot->discount : 0);
       $this->log('BookingEntry::_setDefaultDiscount value '.$starttime->dateTimeString().' '.$slot->discount.'%');
       return;
@@ -283,7 +283,7 @@ class BookingEntry extends DBRow {
   function _checkMinNotice() {
     //$this->DEBUG=10;
     // get some cursory checks out of the way to save the expensive checks for later
-    if ($this->_isadmin || $this->id == -1) {
+    if ($this->_auth->permitted(BBROLE_UNBOOK_PAST, $this->instrumentid) || $this->id == -1) {
       //then we are unrestricted
       $this->log('Booking changes not limited by time restrictions as we are admin or new booking.',9);
       return;
@@ -356,7 +356,7 @@ class BookingEntry extends DBRow {
   *
   * @global array   system config settings
   * @global string  base URL for installation
-  8 @todo //TODO:  graceful error handling for fopen, fread
+  * @todo //TODO:  graceful error handling for fopen, fread
   */
   function _getEmailText($instrument, $user) {
     global $CONFIG, $BASEURL;
@@ -395,7 +395,8 @@ class BookingEntry extends DBRow {
       return $this->isValid;
     }
     $this->log('Individual fields are VALID');
-    $this->isValid = $this->_isadmin || ($this->isValid && $this->_legalSlot());
+    $this->isValid = $this->_auth->permitted(BBROLE_MAKE_BOOKINGS_FREE, $this->instrumentid)
+                        || ($this->isValid && $this->_legalSlot() && $this->_permittedFuture());
     $this->log('After checking for legality of timeslot: '.($this->isValid ? 'VALID' : 'INVALID'));
     $this->isValid = $this->isValid && $this->_checkIsFree();
     $this->log('After checking for double bookings: '.($this->isValid ? 'VALID' : 'INVALID'));
@@ -524,6 +525,35 @@ class BookingEntry extends DBRow {
   }
 
   /**
+  * Check that the booking is not too far into the future
+  *
+  * @returns boolean    the booking is permitted
+  */
+  function _permittedFuture() {
+    if ($this->_auth->permitted(BBROLE_MAKE_BOOKINGS_FUTURE, $this->instrumentid)) return true;
+
+    $now = new SimpleDate(time());
+    $now->dayRound();
+    $now->addDays(1);
+
+    $starttime = new SimpleDate($this->fields['bookwhen']->getValue());
+
+    // permit bookings today or in the past
+    if ($now->ticks > $starttime->ticks) return true;
+
+    $row = quickSQLSelect('instruments', 'id', $this->instrumentid);
+    $now = new SimpleDate(time());
+    $now->weekRound();
+    $now->addDays($row['calfuture'] + 7 + 1);
+
+    if ($now->ticks < $starttime->ticks) {
+      $this->errorMessage .= T_('Sorry, you cannot book that far into the future, due to restrictions imposed by the instrument administrator.');
+    } else {
+      return true;
+    }
+  }
+
+  /**
   * check if this booking is adjoining existing bookings -- it can explain why the booking
   * is at funny times.
   *
@@ -596,7 +626,7 @@ class BookingEntry extends DBRow {
   */
   function delete() {
     $this->_checkMinNotice();
-    if (! $this->deletable && ! $this->_isadmin) {
+    if (! $this->deletable && ! $this->_auth->permitted(BBROLE_UNBOOK, $this->instrumentid)) {
       // we're not allowed to do so
       $this->errorMessage = T_('Sorry, this booking cannot be deleted due to booking policy.');
       return STATUS_FORBIDDEN;

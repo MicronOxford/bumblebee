@@ -54,25 +54,15 @@ include 'theme/pageheader.php';
 /** display the start of the html content */
 include 'theme/contentheader.php';
 
-?>
-  <div id="bumblebeecontent">
-    <form method="post"
-      accept-charset="utf-8"
-      action="<?php echo makeURL($action->nextaction); ?>"
-      id="bumblebeeform"
-      <?php
-        if (! isset($CONFIG['display']['AllowAutocomplete']) || ! $CONFIG['display']['AllowAutocomplete'])
-          echo "AUTOCOMPLETE='off'";
-      ?>>
-    <?php
-      if (! $auth->isLoggedIn()) {
-        echo $auth->loginError();
-      }
-      $action->go();
-    ?>
-    </form>
-  </div>
-<?
+echo '<div id="bumblebeecontent">';
+echo formStart(makeURL($action->nextaction));
+
+if (! $auth->isLoggedIn()) {
+  echo $auth->loginError();
+}
+$action->go();
+echo formEnd();
+echo "</div>";
 
 /** display the page footer and close off the html page */
 include 'theme/pagefooter.php';
@@ -81,6 +71,29 @@ if (! $action->ob_flush_ok()) {
   // some actions will dump back a file, and we never want all the HTML guff to end up in it...
   ob_end_clean();
   $action->returnBufferedStream();
+}
+
+function formStart($url, $id='bumblebeeform', $showAutocomplete=true) {
+  global $CONFIG;
+  $autocomplete = "";
+  if ($showAutocomplete &&
+        ( ! isset($CONFIG['display']['AllowAutocomplete']) ||
+          ! $CONFIG['display']['AllowAutocomplete'])
+     ) {
+    $autocomplete = "AUTOCOMPLETE='off'";
+  }
+
+  return "
+    <form method='post'
+      accept-charset='utf-8'
+      action='$url'
+      id='$id'
+      $autocomplete >
+    ";
+}
+
+function formEnd() {
+  return '</form>';
 }
 
 ?>

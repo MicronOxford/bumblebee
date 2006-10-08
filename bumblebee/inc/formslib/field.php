@@ -100,14 +100,14 @@ class Field {
 
   /**
   * update the value of the object with the user-supplied data in $data
-  * 
+  *
   * $data is most probably from POST data etc.
   *
   * The validity of the data is *not* checked at this stage, the object
   * only takes the user-supplied value.
   *
   * $data is an array with the data relevant to this field being
-  * in the key $this->namebase.$this->name. 
+  * in the key $this->namebase.$this->name.
   *
   * For example:
   * <code>
@@ -145,8 +145,8 @@ class Field {
   }
 
   /**
-  * Check the validity of the current data value. 
-  * 
+  * Check the validity of the current data value.
+  *
   * This also checks the validity of the data even if the data is not newly-entered.
   * Returns true if the specified validity tests are passed:
   *  -   is the field required to be filled in && is it filled in?
@@ -169,10 +169,10 @@ class Field {
   }
 
   /**
-  * set the value of this field 
+  * set the value of this field
   *
   * <b>without</b> validation or checking to see whether the field has changed.
-  * 
+  *
   * @param string   the new value for this field
   */
   function set($value) {
@@ -212,7 +212,7 @@ class Field {
     $this->attr = array_merge($this->attr, $attrs);
   }
 
-  /** 
+  /**
   * Quick and dirty display of the field status
   *
   * @return string simple text representation of the class's value and attributes
@@ -225,14 +225,14 @@ class Field {
     return $t;
   }
 
-  /** 
+  /**
   * Generic display function
   */
   function display() {
     return $this->text_dump();
   }
 
-  /** 
+  /**
   * html representation of this field as a "hidden" form widget
   */
   function hidden() {
@@ -240,7 +240,7 @@ class Field {
            ."value='".xssqw($this->getValue())."' />";
   }
 
-  /** 
+  /**
   * render this form widget in an html table
   *
   * @param integer $cols  number of columns to be included in table (padding cols will be added)
@@ -249,7 +249,7 @@ class Field {
   function displayInTable($cols=3) {
   }
 
-  /** 
+  /**
   * return the current value as text and the widget as a hidden form element
   *
   * @return string current value
@@ -257,8 +257,8 @@ class Field {
   */
   function selectedValue() {
   }
-  
-  /** 
+
+  /**
   * return an html representation of the widget
   *
   * @return string html widget
@@ -278,14 +278,14 @@ class Field {
   }
 
   /**
-  * set whether this field is editable or not 
+  * set whether this field is editable or not
   *
   * @param boolean $editable  new editable state
   */
   function setEditable($editable=1) {
     $this->editable = $editable;
   }
-  
+
   /**
   * set the namebase for the data storage in the html form
   *
@@ -294,7 +294,7 @@ class Field {
   function setNamebase($namebase='') {
     $this->namebase = $namebase;
   }
-  
+
   /**
   * Generic logging function
   *
@@ -306,7 +306,17 @@ class Field {
       echo $logstring."<br />\n";
     }
   }
-  
+
+  /**
+  * PHP5 clone method
+  *
+  * PHP5 clone statement will perform only a shallow copy of the object. Any subobjects must also be cloned
+  */
+  function __clone() {
+    // Force a copy of contents of $this->list
+    if (is_object($this->attr)) $this->attr = clone($this->attr);
+  }
+
 } // class Field
 
-?> 
+?>

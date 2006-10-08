@@ -25,11 +25,6 @@ require_once 'inc/actions/viewbase.php';
 * @subpackage Actions
 */
 class ActionView extends ActionViewBase {
-  /**
-  * logged in user has admin view of booking/calendar
-  * @var boolean
-  */
-  var $_isAdminView     = false;
 
   /**
   * Initialising the class
@@ -45,14 +40,6 @@ class ActionView extends ActionViewBase {
 
   function go() {
     $this->selectInstrument();
-//     if (! isset($this->PD['instrid'])
-//           || $this->PD['instrid'] < 1
-//           || $this->PD['instrid'] == '') {
-//       $this->selectInstrument();
-//       return;
-//     } else {
-//       // We can only get here if there's an error.
-//
   }
 
   /**
@@ -60,7 +47,7 @@ class ActionView extends ActionViewBase {
   */
   function selectInstrument() {
     $instrselect = new AnchorTableList('Instrument', T_('Select which instrument to view'), 3);
-    if ($this->auth->isSystemAdmin()) {
+    if ($this->auth->permitted(BBROLE_VIEW_LIST)) {
       $instrselect->connectDB('instruments',
                             array('id', 'name', 'longname', 'location')
                             );
@@ -75,6 +62,7 @@ class ActionView extends ActionViewBase {
     }
     $instrselect->hrefbase = makeURL('calendar', array('instrid'=>'__id__'));
     $instrselect->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'), ' %20.20s', array('location'));
+    echo T_("<h2>Please select an instrument to view</h2>");
     echo $instrselect->display();
   }
 

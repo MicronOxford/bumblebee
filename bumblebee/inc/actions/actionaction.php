@@ -19,13 +19,13 @@ require_once 'inc/statuscodes.php';
 
 /**
 * Base class inherited by all actions from the action-triage
-*  
+*
 * An Action is a single operation requested by the user. What action is to be performed
 * is determined by the action-triage mechanism in the class ActionFactory.
 *
 *
 * Since http is a stateless protocol, what seems like just one activity
-* (e.g. "edit a publication") actually includes multiple http requests
+* (e.g. "edit a booking") actually includes multiple http requests
 * ("show the user the current values" and "sync changes to disk"). Additionally,
 * the one application suite will have many different things to do (e.g. edit/create
 * users, edit/create foobar objects). There are two approaches to this multiple
@@ -34,11 +34,11 @@ require_once 'inc/statuscodes.php';
 * with a lot of repeated code in each file to control the page layout, load themes,
 * control login etc. Alternatively, you can use just the one index.php and include
 * an extra control variable in each link that decides what the script should do this time.
-* 
+*
 * In either case, it is convenient to have a standard "action" object that can be created
 * by some ActionFactory which then obeys a standard "action" interface to then
 * be used by the internals of the application.
-* 
+*
 * Typical usage:
 * <code>
 * $action = new ActionFactory($params);
@@ -68,7 +68,7 @@ class ActionAction {
   /**
   * Permit normal HTML output
   *
-  * Allows previous output (from the HTML template) to be flushed or suppress it so 
+  * Allows previous output (from the HTML template) to be flushed or suppress it so
   * a PDF can be output.
   * @var    boolean
   */
@@ -78,20 +78,20 @@ class ActionAction {
   * @var    array
   */
   var $stdmessages;
-  
+
   /**
   * Turn on debugging messages from the Action* classes
   * @var    integer
   */
   var $DEBUG=0;
-  
+
   /**
-  * Initialising the class 
-  * 
+  * Initialising the class
+  *
   * Variable assignment only in this constructor, the child class would normally:
   * - use parent's constructor
-  * - parse input data 
-  * 
+  * - parse input data
+  *
   * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
@@ -109,17 +109,17 @@ class ActionAction {
 
   /**
   * Actually perform the action that this Action* class is to perform
-  * 
+  *
   * this is an abstract class and this function <b>must</b> be overridden
-  * 
+  *
   * @return void nothing
   */
   function go() {
   }
-  
+
   /**
   * Parse the input data sources
-  * 
+  *
   * @return void nothing
   */
   function mungeInputData() {
@@ -141,9 +141,9 @@ class ActionAction {
     #$PD['defaultclass'] = 12;
     echoData($this->PD);
   }
-  
+
   /**
-  *  Reports to the user whether an action was successful 
+  *  Reports to the user whether an action was successful
   *
   *   @param integer $status   success or otherwise of action
   *   @param array $messages  (optional) messages to be reported, indexed by $status
@@ -179,27 +179,27 @@ class ActionAction {
          ."</div>\n";
     return $t;
   }
-  
+
   /**
   * Select which item to edit for this action
-  * 
-  * @param boolean $deleted  (optional) show deleted items 
+  *
+  * @param boolean $deleted  (optional) show deleted items
   * @return void nothing
   */
   function select($deleted=false) {
   }
-  
+
   /**
   * Edit the selected item
-  * 
+  *
   * @return void nothing
   */
   function edit() {
   }
-  
+
   /**
   * Delete the selected item
-  * 
+  *
   * @return void nothing
   */
   function delete() {
@@ -223,5 +223,5 @@ class ActionAction {
 
 
 } //class ActionAction
- 
+
 ?>

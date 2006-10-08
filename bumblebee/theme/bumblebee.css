@@ -426,6 +426,10 @@ td.itemR {
   padding-right: 0.3em;
 }
 
+td.checkBoxEntry {
+  text-align: center;
+}
+
 tr.itemrow {
 }
 

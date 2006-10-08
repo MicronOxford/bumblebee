@@ -29,8 +29,8 @@ require_once 'inc/bb/user.php';
 class ActionPassword extends ActionAction {
 
   /**
-  * Initialising the class 
-  * 
+  * Initialising the class
+  *
   * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
@@ -46,11 +46,11 @@ class ActionPassword extends ActionAction {
   }
 
   function edit() {
-    $user = new User($this->auth->uid, true);
+    $user = new User($this->auth, $this->auth->uid, true);
     $user->update($this->PD);
     #$project->fields['defaultclass']->invalid = 1;
     $user->checkValid();
-    echo $this->reportAction($user->sync(), 
+    echo $this->reportAction($user->sync(),
           array(
               STATUS_OK =>   T_('Password changed successfully.'),
               STATUS_ERR =>  T_('Password could not be changed: ').$user->errorMessage
@@ -61,4 +61,4 @@ class ActionPassword extends ActionAction {
   }
 }
 
-?> 
+?>

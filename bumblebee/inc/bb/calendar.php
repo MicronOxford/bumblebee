@@ -79,6 +79,8 @@ class Calendar {
   var $timeslots;
   /** @var boolean     generate the calendar with an admin view (i.e. all times are bookable)  */
   var $isAdminView = 0;
+  /** @var boolean    only show free/busy information and not the details of the bookings */
+  var $freeBusyOnly = false;
 
   /** @var integer    debug level (0=off, 10=verbose)  */
   var $DEBUG = 0;
@@ -487,6 +489,7 @@ class Calendar {
           #$t .= '<td>';
           #preDump($matrix[$currentidx]->rows[$dayRow]);
           $b =& $matrix[$currentidx][$dayRow];
+          $b->booking->freeBusyOnly = $this->freeBusyOnly;
           $class = $this->_getDayClass($today, $b->booking->start);
           $class .= ($b->booking->isDisabled ? ' disabled' : '');
           //echo "$class <br />\n";
@@ -552,6 +555,7 @@ class Calendar {
         #$t .= '<td>';
         #preDump($matrix[$currentidx]->rows[$dayRow]);
         $b =& $matrix[0][$row];
+        $b->booking->freeBusyOnly = $this->freeBusyOnly;
         $class = $this->_getDayClass($today, $b->booking->start);
         $t .= "\n\t".$b->display($class, $this->bookhref, $this->isAdminView)."\n";
         #$t .= '</td>';

@@ -78,9 +78,7 @@ class ActionMasquerade extends ActionAction {
     if ($row = $this->auth->assumeMasq($this->PD['id'])) {
       echo '<h3>'. T_('Masquerade started') .'</h3>';
       echo sprintf(
-              T_('<p>The music has started and you are now wearing the mask that looks like:</p>'
-                .'<blockquote class="highlight">%s (%s)</blockquote>'
-                .'<p>Is that a scary thought?</p>'),
+              T_('<p>The music has started and you are now wearing the mask that looks like:</p><blockquote class="highlight">%s (%s)</blockquote><p>Is that a scary thought?</p>'),
                 xssqw($row['name']), xssqw($row['username'])
                 );
       echo '<p>'

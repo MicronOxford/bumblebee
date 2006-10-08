@@ -54,7 +54,7 @@ class Booking extends TimeSlot {
   var $masqusername;
   /** @var string     email address for user that booked the instrument */
   var $masqemail;
-  
+
   /**
   *  Create a booking object
   *
@@ -92,7 +92,7 @@ class Booking extends TimeSlot {
   function display($displayAdmin, $displayOwner) {
     return $this->displayInTable(2, $displayAdmin, $displayOwner);
   }
-  
+
   /**
   * display the booking as a list of settings
   *
@@ -134,6 +134,10 @@ class Booking extends TimeSlot {
     global $BASEPATH, $CONFIG;
     $start = isset($this->displayStart) ? $this->displayStart : $this->start;
     $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
+    if ($this->freeBusyOnly) {
+      $timedescription = sprintf(T_('Busy from %s to %s'), $start->dateTimeString(), $stop->dateTimeString());
+      return "<div title='$timedescription'>".T_('busy')."</div>";
+    }
     $timedescription = sprintf(T_('View or edit booking from %s to %s'), $start->dateTimeString(), $stop->dateTimeString());
     //$timedescription = $this->start->timeString().' - '.$this->stop->timeString();
     $isodate = $start->dateString();

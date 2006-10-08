@@ -156,9 +156,9 @@ class ActionFactory {
     #$pathaction = $PDATA['action'];
     #$formaction = $_POST['action'];
 
-    if ($explicitaction) $action = $explicitaction;
-    if ($pathaction) $action = $pathaction;
     if ($formaction) $action = $formaction;
+    if ($pathaction) $action = $pathaction;
+    if ($explicitaction) $action = $explicitaction;
 
     $this->_original_verb = $action;
 

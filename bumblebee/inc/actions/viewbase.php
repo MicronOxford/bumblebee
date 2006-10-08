@@ -26,11 +26,8 @@ require_once 'inc/actions/actionaction.php';
 */
 class ActionViewBase extends ActionAction {
 
-  /**
-  * logged in user has admin view of booking/calendar
-  * @var boolean
-  */
-  var $_isAdminView     = false;
+  /** @var integer instrument id number being viewed/booked etc */
+  var $instrument;
 
   /**
   * Initialising the class
@@ -42,17 +39,16 @@ class ActionViewBase extends ActionAction {
   function ActionViewBase($auth, $PDATA) {
     parent::ActionAction($auth, $PDATA);
     $this->mungeInputData();
+    $this->instrument = issetSet($this->PD, 'instrid',0);
   }
 
   /**
   * Set flags according to the permissions of the logged in user
-  * @todo //TODO: replace with new permissions system
   */
   function _checkBookingAuth($userid) {
     $this->_isOwnBooking = $this->auth->isMe($userid);
-    $this->_isAdminView = $this->auth->isSystemAdmin()
-                  || $this->auth->isInstrumentAdmin($this->PD['instrid']);
-    $this->_haveWriteAccess = $this->_isOwnBooking || $this->_isAdminView;
+    $this->_haveWriteAccess = $this->_isOwnBooking
+                              || $this->auth->permitted(BBROLE_MAKE_BOOKINGS, $this->instrument);
   }
 
   /**

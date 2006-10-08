@@ -20,7 +20,7 @@ require_once 'inc/formslib/idfield.php';
 require_once 'inc/formslib/textfield.php';
 require_once 'inc/formslib/radiolist.php';
 require_once 'inc/formslib/checkbox.php';
-#require_once 'inc/formslib/bitmaskpopup.php';
+require_once 'inc/formslib/bitmask.php';
 require_once 'inc/formslib/passwdfield.php';
 require_once 'inc/formslib/droplist.php';
 require_once 'inc/formslib/joindata.php';
@@ -31,7 +31,6 @@ require_once 'inc/formslib/joindata.php';
 * @package    Bumblebee
 * @subpackage DBObjects
 * @todo //TODO:       Editing method for new permissions model
-* @todo //TODO:       Double password entry and require them to be the same
 */
 class User extends DBRow {
 
@@ -39,9 +38,14 @@ class User extends DBRow {
   var $_authList;
   var $_magicPassList;
   var $_authMethod;
+  var $_auth;
 
-  function User($id, $passwdOnly=false) {
+  function User($auth, $id, $passwdOnly=false) {
+    global $CONFIG;
+
     $this->DBRow('users', $id);
+    #$this->DEBUG=10;
+    $this->_auth = $auth;
     $this->editable = ! $passwdOnly;
     $this->use2StepSync = 1;
     $this->deleteFromTable = 0;
@@ -73,13 +77,19 @@ class User extends DBRow {
     if (! $passwdOnly) {
       $f = new CheckBox('suspended', T_('Suspended'));
       $this->addElement($f);
-      $f = new CheckBox('isadmin', T_('System Administrator'));
-      $this->addElement($f);
 
-      //// @FIXME: bitmask control
-/*      $f = new BitmaskPopup('perms', T_('User Permissions'), T_('Permissions'), T_('Perms'));
-      $f->setValuesArray(array(1=>'foo', 2=>'bar', 3=>'quux'), 'id', 'iv');
-      $this->addElement($f);*/
+      if (! $CONFIG['auth']['permissionsModel']) {
+        $f = new CheckBox('isadmin', T_('System Administrator'));
+        $this->addElement($f);
+      } else {
+        $f = new Bitmask('permissions',  T_('System permissions'), T_('Grant these system-wide permissions to the user'), T_('Grant'));
+        $f->setValuesArray($this->SystemPermissions(), 'id', 'iv');
+        $f->showHideButtons = true;
+        if ($id == -1) {
+          $f->set(BBPERM_USER_BASIC);
+        }
+        $this->addElement($f);
+      }
     }
 
     // association of user with an authentication method
@@ -142,8 +152,20 @@ class User extends DBRow {
       $f->addElement($subscribeAnnounce);
       $unbookAnnounce = new CheckBox('unbook', T_('Subscribe: unbook'));
       $f->addElement($unbookAnnounce);
-      $instradmin = new CheckBox('isadmin', T_('Instrument admin'));
-      $f->addElement($instradmin);
+
+      if (! $CONFIG['auth']['permissionsModel']) {
+        $instradmin = new CheckBox('isadmin', T_('Instrument admin'));
+        $f->addElement($instradmin);
+      } else {
+        $bm = new Bitmask('permissions',  T_('Instrument permissions'), T_('Grant these instrument permissions to the user'), T_('Grant'));
+        $bm->setValuesArray($this->InstrumentPermissions(), 'id', 'iv');
+        $bm->showHideButtons = true;
+        if ($id == -1) {
+          $bm->set(BBPERM_INSTR_BASIC);
+        }
+        $f->addElement($bm);
+      }
+
       /*
       //Add these fields in once we need this functinality
       $hasPriority = new CheckBox('haspriority', 'Booking priority');
@@ -245,17 +267,53 @@ class User extends DBRow {
     return parent::sync();
   }
 
-  /**
-   *  Suspend the user as well as deleting it.
-   *
-   *  Returns from statuscodes
-   */
-  function delete() {
-    return parent::delete("suspended='1'");
-  }
-
   function display() {
     return $this->displayAsTable();
+  }
+
+  function SystemPermissions() {
+    $p = array();
+    $p[BBPERM_USER_VIEW_LIST_ALL]     = T_('View list of all instruments');
+    $p[BBPERM_USER_VIEW_CALENDAR_ALL] = T_('View calendar of all instruments');
+    $p[BBPERM_USER_VIEW_BOOKINGS_ALL] = T_('View bookings on all instruments');
+    $p[BBPERM_USER_MAKE_BOOKINGS_ALL] = T_('Make bookings on all instruments');
+    $p[BBPERM_USER_PASSWD]            = T_('Change own password');
+    $p[BBPERM_USER_LOGOUT]            = T_('Logout from system');
+    $p[BBPERM_ADMIN_GROUPS]           = T_('Admin: edit groups');
+    $p[BBPERM_ADMIN_PROJECTS]         = T_('Admin: edit projects');
+    $p[BBPERM_ADMIN_USERS]            = T_('Admin: edit users');
+    $p[BBPERM_ADMIN_INSTRUMENTS]      = T_('Admin: edit instruments');
+    $p[BBPERM_ADMIN_CONSUMABLES]      = T_('Admin: edit consumables');
+    $p[BBPERM_ADMIN_CONSUME]          = T_('Admin: record consumables');
+    $p[BBPERM_ADMIN_COSTS]            = T_('Admin: edit costs');
+    $p[BBPERM_ADMIN_DELETEDBOOKINGS]  = T_('Admin: view deleted bookings');
+    $p[BBPERM_ADMIN_MASQ]             = T_('Admin: masquerade as another user');
+    $p[BBPERM_ADMIN_EMAILLIST]        = T_('Admin: export email list');
+    $p[BBPERM_ADMIN_EXPORT]           = T_('Admin: export usage data');
+    $p[BBPERM_ADMIN_BILLING]          = T_('Admin: send out billing emails');
+    $p[BBPERM_ADMIN_BACKUPDB]         = T_('Admin: backup database');
+    return $p;
+  }
+
+
+  function InstrumentPermissions() {
+    $p = array();
+    $p[BBPERM_INSTR_VIEW]          = T_('View booking sheet');
+    $p[BBPERM_INSTR_VIEW_BOOKINGS] = T_('View bookings');
+    $p[BBPERM_INSTR_BOOK]          = T_('Make bookings');
+    $p[BBPERM_INSTR_UNBOOK]        = T_('Delete own bookings');
+
+    $p[BBPERM_INSTR_VIEW_FUTURE]   = T_('View booking sheet into the future');
+    $p[BBPERM_INSTR_BOOK_FUTURE]   = T_('Make bookings into the future');
+    $p[BBPERM_INSTR_UNBOOK_PAST]   = T_('Delete own past bookings');
+
+    $p[BBPERM_INSTR_MASQ]          = T_('Masquerade as other users');
+    $p[BBPERM_INSTR_BOOK_FREE]     = T_('Make bookings at any time');
+    $p[BBPERM_INSTR_VIEW_DETAILS]  = T_('Admin: View detailed booking information');
+    $p[BBPERM_INSTR_EDIT_ALL]      = T_('Admin: Edit others\' bookings');
+    $p[BBPERM_INSTR_UNBOOK_OTHER]  = T_('Admin: Delete others\' bookings');
+    $p[BBPERM_INSTR_EDIT_CONFIG]   = T_('Admin: change instrument config');
+    return $p;
   }
 
 } //class User

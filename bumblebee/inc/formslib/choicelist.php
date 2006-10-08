@@ -23,7 +23,7 @@ require_once 'dbchoicelist.php';
 /** list (non-db) object */
 require_once 'arraychoicelist.php';
 
-/** 
+/**
 * a choice list field from which a select, list of hrefs etc can be built
 *
 * A field class that can only take a restricted set of values, such as
@@ -36,7 +36,7 @@ require_once 'arraychoicelist.php';
 */
 class ChoiceList extends Field {
   /** @var DBChoiceList  contains the DBChoiceList object which has the restricted choices */
-  var $list; 
+  var $list;
   /** @var array         array of OutputFormatter objects  */
   var $formatter;
   /** @var integer       name of the id field for the value of the field */
@@ -59,7 +59,7 @@ class ChoiceList extends Field {
 
   /**
   * Create a DBList object within this class that is connected to the
-  * available choices in the database and will handle the actual parsing 
+  * available choices in the database and will handle the actual parsing
   * of user input etc
   *
   * If php supported multiple inheritance, then $this->list would not be
@@ -81,17 +81,17 @@ class ChoiceList extends Field {
     $this->list = new DBChoiceList($table, $fields, $restriction, $order,
                       $idfield, $limit, $join, $distinct, $this->deleted);
   }
-  
-  /** 
+
+  /**
   * Provides a set of values for the droplist rather than filling it from a db query
   *
   * cf. ChoiceList::connectDB
   *
-  * @param array $list List of label=>value pairs 
+  * @param array $list List of label=>value pairs
   */
   function setValuesArray($list, $idfield='id', $valfield='iv'){
     $this->list = new ArrayChoiceList($list, $idfield, $valfield);
-  }  
+  }
 
   function text_dump() {
     return $this->list->text_dump();
@@ -102,7 +102,7 @@ class ChoiceList extends Field {
   }
 
   /**
-  * Create a set of OutputFormatter objects to handle the display of this object. 
+  * Create a set of OutputFormatter objects to handle the display of this object.
   *
   *  called as: setFormat($id, $f1, $v1, $f2, $v2, ...) {
   *    - f1, v1 etc must be in pairs.
@@ -122,7 +122,7 @@ class ChoiceList extends Field {
   }
 
   /**
-  * A test text-based format function for the object. 
+  * A test text-based format function for the object.
   *
   * @param array $data the data to be formatted by this object's formatter object
   * @return string text-based representation
@@ -133,7 +133,7 @@ class ChoiceList extends Field {
     return $s;
   }
 
-  /** 
+  /**
   * Display the field inside a table
   *
   * @param integer $cols the number of columns to include in the table (extras are padded out)
@@ -203,7 +203,7 @@ class ChoiceList extends Field {
   }
 
   /**
-   * Check the validity of the data. 
+   * Check the validity of the data.
    *
    * Return TRUE iff the DBList isValid and the Field isValid.
    * This permits two rounds of checks on the data to be performed.
@@ -219,7 +219,7 @@ class ChoiceList extends Field {
   * Obtain the SQL data necessary for including the foreign key in
   * the DBRow to which we belong.
   * trip the complex field within us to sync(), which allows us
-  * to then know our actual value (at last). 
+  * to then know our actual value (at last).
   *
   * @param boolean $force force the field to return a name=value statement even
   *                if it would prefer not to
@@ -292,11 +292,15 @@ class ChoiceList extends Field {
   * PHP5 clone statement will perform only a shallow copy of the object. Any subobjects must also be cloned
   */
   function __clone() {
-    // Force a copy of contents of $this->list 
+    parent::__clone();
+    // Force a copy of contents of $this->list
     if (is_object($this->list)) $this->list = clone($this->list);
+    foreach ($this->formatter as $k => $f) {
+      $this->formatter[$k] = clone($f);
+    }
   }
 
 
 } // class ChoiceList
 
-?> 
+?>

@@ -26,7 +26,6 @@ Installer
 
 Features:
 
-  * double entry password in change passwd
   * more flexible data entry (amounts including currency symbols)
   * report generation memory usage (can't generate NMR report for Q1 2006)
   * longer bookings

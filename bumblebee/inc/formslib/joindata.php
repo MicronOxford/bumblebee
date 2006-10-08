@@ -152,8 +152,10 @@ class JoinData extends Field {
   * @param integer  $rowNum   number of this row (used as unique identifier in the namebase)
   */
   function _createRow($rowNum) {
+    #echo "NAMEBASE={$this->namebase}";
+    #echo "NAME={$this->name}";
     $this->rows[$rowNum] = clone($this->protoRow);
-    $this->rows[$rowNum]->setNamebase($this->name.'-'.$rowNum.'-');
+    $this->rows[$rowNum]->setNamebase($this->namebase.$this->name.'-'.$rowNum.'-');
   }
 
   /**

@@ -19,19 +19,21 @@ require_once 'inc/actions/actionaction.php';
 
 /**
 * Print a polite login form
-*  
+*
 * Authentication is undertaken by the class BumblebeeAuth
 * @package    Bumblebee
 * @subpackage Actions
 */
 class ActionPrintLoginForm extends ActionAction {
-  
+
   /**
-  * Initialising the class 
-  * 
+  * Initialising the class
+  *
   * @return void nothing
   */
-  function ActionPrintLoginForm() {
+  function ActionPrintLoginForm($auth, $PDATA) {
+    parent::ActionAction($auth, $PDATA);
+    $this->mungeInputData();
   }
 
   function go() {
@@ -41,6 +43,13 @@ class ActionPrintLoginForm extends ActionAction {
     }
     echo '<h2>' . T_('Login required').'</h2>';
     echo '<p>'  . T_('Please login to view or book instrument usage') . '</p>';
+    $this->printLoginForm();
+    if (isset($this->PD['changeuser'])) {
+      $this->printDataReflectionForm($this->PD);
+    }
+  }
+
+  function printLoginForm() {
     printf('
       <table>
       <tr>
@@ -60,6 +69,17 @@ class ActionPrintLoginForm extends ActionAction {
       T_('Password:'),
       T_('login')  );
   }
+
+  function printDataReflectionForm($data) {
+    // save the rest of the query string for later use
+    foreach ($data as $k => $v) {
+      #if ($k == 'action') $k = 'nextaction';
+      if ($k != 'changeuser') {
+        printf ('<input type="hidden" name="%s" value="%s" />', xssqw($k), xssqw($v));
+      }
+    }
+  }
+
 }
 
-?> 
+?>

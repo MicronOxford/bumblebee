@@ -29,8 +29,8 @@ require_once 'inc/actions/actionaction.php';
 class ActionUsers extends ActionAction {
 
   /**
-  * Initialising the class 
-  * 
+  * Initialising the class
+  *
   * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
@@ -39,7 +39,7 @@ class ActionUsers extends ActionAction {
     parent::ActionAction($auth, $pdata);
     $this->mungeInputData();
   }
-  
+
   function go() {
     if (! isset($this->PD['id'])) {
       $this->select(issetSet($this->PD, 'showdeleted', false));
@@ -63,11 +63,11 @@ class ActionUsers extends ActionAction {
   }
 
   function edit() {
-    $user = new User($this->PD['id']);
+    $user = new User($this->auth, $this->PD['id']);
     $user->update($this->PD);
     #$project->fields['defaultclass']->invalid = 1;
     $user->checkValid();
-    echo $this->reportAction($user->sync(), 
+    echo $this->reportAction($user->sync(),
           array(
               STATUS_OK =>   ($this->PD['id'] < 0 ? T_('User created') : T_('User updated')),
               STATUS_ERR =>  T_('User could not be changed:').' '.$user->errorMessage
@@ -86,14 +86,14 @@ class ActionUsers extends ActionAction {
   }
 
   function delete() {
-    $user = new User($this->PD['id']);
-    echo $this->reportAction($user->delete(), 
+    $user = new User($this->auth, $this->PD['id']);
+    echo $this->reportAction($user->delete(),
               array(
                   STATUS_OK =>   $user->isDeleted ? T_('User undeleted') : T_('User deleted'),
                   STATUS_ERR =>  T_('User could not be deleted:').'<br/><br/>'.$user->errorMessage
               )
-            );  
+            );
   }
 }
 
-?> 
+?>

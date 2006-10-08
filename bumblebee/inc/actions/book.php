@@ -66,20 +66,19 @@ class ActionBook extends ActionViewBase {
       trigger_error($err, E_USER_WARNING);
       return;
     }
-    $instrument = $this->PD['instrid'];
     if (isset($this->PD['delete']) && isset($this->PD['bookid'])) {
       $this->deleteBooking();
-      echo $this->_calendarViewLink($instrument);
+      echo $this->_calendarViewLink($this->instrument);
     } elseif (isset($this->PD['bookid']) && isset($this->PD['edit'])) {
       $this->editBooking();
-      echo $this->_calendarViewLink($instrument);
+      echo $this->_calendarViewLink($this->instrument);
     } elseif (isset($this->PD['bookid'])) {
       $this->viewBooking();
-      echo $this->_calendarViewLink($instrument);
+      echo $this->_calendarViewLink($this->instrument);
     } elseif ( (isset($this->PD['startticks']) && isset($this->PD['stopticks']))
                || (isset($this->PD['bookwhen-time']) && isset($this->PD['bookwhen-date']) && isset($this->PD['duration']) ) ) {
       $this->createBooking();
-      echo $this->_calendarViewLink($instrument);
+      echo $this->_calendarViewLink($this->instrument);
     } else {
       # shouldn't get here
       $err = 'Invalid action specification in action/book.php::go()';
@@ -114,8 +113,8 @@ class ActionBook extends ActionViewBase {
   function _editCreateBooking($bookid, $start, $duration) {
     $ip = $this->auth->getRemoteIP();
     //echo $ip;
-    $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
-    $booking = new BookingEntry($bookid,$this->auth,$this->PD['instrid'], $row['mindatechange'],$ip,
+    $row = quickSQLSelect('instruments', 'id', $this->instrument);
+    $booking = new BookingEntry($bookid, $this->auth, $this->instrument, $row['mindatechange'],$ip,
                                 $start, $duration, $row['timeslotpicture']);
     $this->_checkBookingAuth($booking->fields['userid']->getValue());
     if (! $this->_haveWriteAccess) {
@@ -144,13 +143,15 @@ class ActionBook extends ActionViewBase {
   function viewBooking() {
     $booking = new BookingEntryRO($this->PD['bookid']);
     $this->_checkBookingAuth($booking->data->userid);
-    $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
+    $row = quickSQLSelect('instruments', 'id', $this->instrument);
     echo $this->displayInstrumentHeader($row);
-    echo $booking->display($this->_isAdminView, $this->_isOwnBooking);
-    if ($this->_isOwnBooking || $this->_isAdminView) {
+    $adminView = $this->auth->permitted(BBROLE_VIEW_BOOKINGS_DETAILS, $this->instrument);
+    echo $booking->display($adminView, $this->_isOwnBooking);
+    $adminEdit = $this->auth->permitted(BBROLE_EDIT_ALL, $this->instrument);
+    if ($this->_isOwnBooking || $adminEdit) {
       echo "<p><a href='"
             .makeURL('book',
-                array('instrid' => $this->PD['instrid'],
+                array('instrid' => $this->instrument,
                       'bookid'  => $this->PD['bookid'],
                       'edit'    => 1,
                       'isodate' => $this->PD['isodate']))
@@ -162,8 +163,8 @@ class ActionBook extends ActionViewBase {
   * Delete a booking
   */
   function deleteBooking() {
-    $row = quickSQLSelect('instruments', 'id', $this->PD['instrid']);
-    $booking = new BookingEntry($this->PD['bookid'], $this->auth, $this->PD['instrid'], $row['mindatechange']);
+    $row = quickSQLSelect('instruments', 'id', $this->instrument);
+    $booking = new BookingEntry($this->PD['bookid'], $this->auth, $this->instrument, $row['mindatechange']);
     $this->_checkBookingAuth($booking->fields['userid']->getValue());
     if (! $this->_haveWriteAccess) {
       return $this->_forbiddenError(T_('Delete booking'));

@@ -165,7 +165,7 @@ class UserMenu {
       #print $action->name(). " requires " . $action->permissions() . " have " .$this->_auth->system_permissions."<br />\n";
       if ($action->menu_visible() && $this->_auth->permitted($action->permissions())) {
         #print " visible";
-        if ($first_admin && $action->permitted(BBPERM_ADMIN)) {
+        if ($first_admin && $action->requires_admin()) {
           #print " admin header";
           $first_admin = false;
           if ($this->adminHeader) {
