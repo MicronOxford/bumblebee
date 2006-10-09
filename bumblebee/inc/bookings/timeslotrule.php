@@ -441,7 +441,7 @@ class RuleSlot {
     $this->stopStr = $stopStr;
     $this->tstart = $tstart;
     $this->tstop = $tstop;
-    $this->tgran = is_a($tgran, 'SimpleTime') ? $tgran : new SimpleTime(0);
+    $this->tgran = type_is_a($tgran, 'SimpleTime') ? $tgran : new SimpleTime(0);
   }
 
   function setDate($date) {

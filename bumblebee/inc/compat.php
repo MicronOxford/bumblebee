@@ -7,7 +7,7 @@
 * object. The consequence is that in PHP5, this:
 *     $object = new Foo();
 *     $copy = $object;
-* is equivalent to 
+* is equivalent to
 *     $object = new Foo();
 *     $copy = &$object;
 * in PHP4. In PHP5, the = operator is copy by reference not copy by value.
@@ -27,9 +27,9 @@
 *     $object = new Foo();
 *     $copy = clone($object);
 *
-* Note that in normal PHP5, you would not include the parentheses as clone is 
+* Note that in normal PHP5, you would not include the parentheses as clone is
 * a keyword not a function, but for the PHP4 compatability to work, it has to be
-* written as a function. PHP5 will just throw away the parentheses, pretending 
+* written as a function. PHP5 will just throw away the parentheses, pretending
 * that they are for (an unneeded) grouping not a function call.
 *
 * @author    Stuart Prescott
@@ -49,14 +49,13 @@ if (version_compare(phpversion(), '5.0') === -1) {
   #include_once 'PHP/Compat/Function/clone.php';
     // Needs to be wrapped in eval as clone is a keyword in PHP5
     eval('
-      function clone($object)
-      {
+      function clone($object) {
           // Sanity check
           if (!is_object($object)) {
               user_error(\'clone() __clone method called on non-object\', E_USER_WARNING);
               return;
           }
-  
+
           // Use serialize/unserialize trick to deep copy the object
           #this results in a memory leak under PHP4.4.2
           #$object = unserialize(serialize($object));
@@ -65,10 +64,31 @@ if (version_compare(phpversion(), '5.0') === -1) {
           if (method_exists($object, \'__clone\')) {
               $object->__clone();
           }
-          
+
           return $object;
       }
+
+      function type_is_a($a, $b) {
+        return is_a($a, $b);
+      }
+
+      function date_default_timezone_set($tz) {
+        putenv("TZ=$tz");
+      }
+
   ');
+
+} else {
+
+  // PHP5 complains if you use the is_a construct, so may this function across to
+  // instanceof. Note that this is not exactly the same as instanceof will throw
+  // errors in places where is_a didn't.
+  eval('
+     function type_is_a($a, $b) {
+        return $a instanceof $b;
+     }
+  ');
+
 }
 
-?> 
+?>

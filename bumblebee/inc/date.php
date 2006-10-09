@@ -73,7 +73,7 @@ class SimpleDate {
     ($time == NULL) && $time = 0;
     if (is_numeric($time)) {
       $this->setTicks($time);
-    } elseif (is_a($time, 'SimpleDate')) {
+    } elseif (type_is_a($time, 'SimpleDate')) {
       $this->setTicks($time->ticks);
     } else {
       $this->setStr($time);
@@ -154,7 +154,7 @@ class SimpleDate {
   * @param mixed $d days to add
   */
   function addTime($t) {
-    if (is_a($t, 'SimpleTime')) {
+    if (type_is_a($t, 'SimpleTime')) {
       $this->ticks += $t->seconds();
     } else {
       $this->ticks += $t;
@@ -531,7 +531,7 @@ class SimpleTime {
     #echo "New SimpleTime: $time, $type<br />";
     if (is_numeric($time)) {
       $this->setTicks($time);
-    } elseif (is_a($time, 'SimpleTime')) {
+    } elseif (type_is_a($time, 'SimpleTime')) {
       $this->setTicks($time->ticks);
     } else {
       $this->setStr($time);

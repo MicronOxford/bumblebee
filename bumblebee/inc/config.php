@@ -100,27 +100,35 @@ $SESSIDX = md5(dirname(__FILE__));
 ini_set("session.use_only_cookies",1); #don't permit ?PHPSESSID= stuff
 #ini_set("session.cookie_lifetime",60*60*1); #login expires after x seconds
 
-if (! $NON_FATAL_CONFIG) {
-  if ($CONFIG['error_handling']['AllWarnings']) {
-    //this is nice for development but probably turn it off for production
-    ini_set("error_reporting", E_ALL); #force all warnings to be echoed
-    /** load all php files */
-    define('LOAD_ALL_PHP_FILES', 1);
-  } else {
-    ini_set("error_reporting", E_ERROR); #only errors should be echoed
-    /** load only the php files required to fullfill this request) */
-    define('LOAD_ALL_PHP_FILES', 0);
-  }
-}
-if (!empty($CONFIG['main']['ExtraIncludePath'])) {
-  set_include_path($REBASE_INSTALL.$CONFIG['main']['ExtraIncludePath'].PATH_SEPARATOR.get_include_path());
-}
-
 if (isset($CONFIG['error_handling']['UseDBug']) && $CONFIG['error_handling']['UseDBug'] && ! $NON_FATAL_CONFIG) {
   // include the dBug pretty printer for error and debugging dumps
   // http://dbug.ospinto.com/
   include_once 'dBug.php';
 }
+
+if (! $NON_FATAL_CONFIG) {
+  if ($CONFIG['error_handling']['AllWarnings']) {
+    //this is nice for development but probably turn it off for production
+    #error_reporting(E_ALL | E_STRICT); #force all warnings to be echoed
+    error_reporting(E_ALL); #force all warnings to be echoed
+    /** load all php files */
+    define('LOAD_ALL_PHP_FILES', 1);
+  } else {
+    error_reporting(E_ERROR); #only errors should be echoed
+    /** load only the php files required to fullfill this request) */
+    define('LOAD_ALL_PHP_FILES', 0);
+  }
+}
+
+if (!empty($CONFIG['main']['ExtraIncludePath'])) {
+  set_include_path($REBASE_INSTALL.$CONFIG['main']['ExtraIncludePath'].PATH_SEPARATOR.get_include_path());
+}
+
+// As of PHP5.0, we *must* set the timezone for date calculations, otherwise
+// many errors will be emitted. For a list of timezones, see
+//     http://php.net/manual/en/timezones.php
+$tz = isset($CONFIG['language']['timezone']) ? $CONFIG['language']['timezone'] : "Europe/London";
+date_default_timezone_set($tz);
 
 if (! $NON_FATAL_CONFIG) {
   /** load the language pack */
