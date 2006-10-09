@@ -137,7 +137,7 @@ class ActionBilling extends ActionExport {
       //preDump($exportArray);
       $who = quickSQLSelect('groups', 'id', unqw($g));
       if (! $noGroupData) {
-        $filename = $this->_getFilename($who['name']);
+        $filename = $this->_getReportFilename($who['name']);
         $pdfExport = $this->_preparePDFExport($exportArray);
         $pdfExport->filename = $filename;
         $pdfExport->useBigTable = false;
@@ -209,7 +209,7 @@ class ActionBilling extends ActionExport {
   /**
   * obtain an appropriate filename for the data export
   */
-  function _getFilename($who) {
+  function _getReportFilename($who) {
     global $CONFIG;
     $name = $CONFIG['billing']['filename'];
     $this->mimetype = 'application/pdf';

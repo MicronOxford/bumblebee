@@ -57,6 +57,9 @@ class CheckBoxTableList extends ChoiceList {
   /** @var array of arary of checkboxes   for individual customisation of boxes before display */
   var $boxMatrix = NULL;
 
+  var $currentNumCols;
+  var $currentRow;
+
   /**
   *  Create a new AnchorTableList
   *
@@ -122,7 +125,10 @@ class CheckBoxTableList extends ChoiceList {
     $this->footer = $f;
   }
 
-  function format($data, $j, $numcols) {
+  function format($data) {
+    $j = $this->currentRow;
+    $numcols = $this->currentNumCols;
+
     $aclass  = (isset($this->aclass) ? " class='$this->aclass'" : '');
     $trclass  = (isset($this->trclass) ? " class='$this->trclass'" : '');
     $tdlclass  = (isset($this->tdlclass) ? " class='$this->tdlclass'" : '');
@@ -187,7 +193,7 @@ class CheckBoxTableList extends ChoiceList {
   }
 
 
-  function displayInTable($numCols) {
+  function displayInTable($numCols=3) {
     $totalCols = 1 + $this->numExtraInfoCols + $this->numcols;
     $t='';
     if ($this->numExtraInfoCols = -1) {
@@ -213,7 +219,9 @@ class CheckBoxTableList extends ChoiceList {
     $t .= '</tr>'."\n";
     if (is_array($this->list->choicelist)) {
       for ($j=0; $j<count($this->list->choicelist); $j++) {
-        $t .= $this->format($this->list->choicelist[$j], $j, $numCols - $totalCols);
+        $this->currentRow = $j;
+        $this->currentNumCols = $numCols - $totalCols;
+        $t .= $this->format($this->list->choicelist[$j]);
       }
     }
     // SelectAll/DeselectAll footer

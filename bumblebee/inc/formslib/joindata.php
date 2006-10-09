@@ -211,7 +211,7 @@ class JoinData extends Field {
     return $this->selectable();
   }
 
-  function displayInTable($cols) {
+  function displayInTable($cols=3) {
     //check how many fields we need to have (again) as we might have to show more this time around.
     $this->_fillFromProto();
     //$cols += $this->colspan;
@@ -261,9 +261,12 @@ class JoinData extends Field {
   * delayed for as long as possible as an INSERT might be needed before the value of the
   * selection is actually known, but that shouldn't be done until all the data has passed
   * all validation tests
+  *
+  * @param $name  (unused)
+  * @param $force (unused)
   * @return string  sql name=value sequence
   */
-  function sqlSetStr() {
+  function sqlSetStr($name='', $force=false) {
     //$this->DEBUG=10;
     #echo "JoinData::sqlSetStr";
     $this->_joinSync();

@@ -2,6 +2,8 @@
 	* feature: anonymous browsing mode (disabled by default)
 	* feature: internals now use new permissions model
 	* feature: interface for editing permissions
+	* feature: explicitly set the timezone for date calculations
+	* janitorial: clean up some PHP4isms (function prototypes same in subclasses; TZ set)
 
 2006-10-XX Seth Sims <sims1001@alltel.net>
 	* feature: double entry password model included

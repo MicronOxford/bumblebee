@@ -186,11 +186,12 @@ class Field {
   * Generates a string that represents this field that can be used in an SQL
   * UPDATE or INSERT statement. i.e. "name='Stuart'".
   *
-  * @param string optional SQL name to use to change the default
+  * @param string  optional SQL name to use to change the default
+  * @param boolean optional force the generation of the command
   * @return string  in SQL assignable form
   */
-  function sqlSetStr($name='') {
-    if (! $this->sqlHidden) {
+  function sqlSetStr($name='', $force=false) {
+    if ($force || ! $this->sqlHidden) {
       if (empty($name)) {
         $name = $this->name;
       }

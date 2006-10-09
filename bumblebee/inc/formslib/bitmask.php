@@ -182,7 +182,7 @@ class Bitmask extends TextField {
     return $jsbuf;
   }
 
-  function displayInTable($numCols) {
+  function displayInTable($numCols=3) {
     #preDump($this->select);
     $this->select->numcols    = $this->numcols;
     $this->select->numExtraInfoCols = $this->numExtraInfoCols;

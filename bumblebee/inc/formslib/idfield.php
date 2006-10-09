@@ -38,7 +38,7 @@ class IdField extends TextField {
     parent::TextField($name, $longname, $description);
   }
 
-  function displayInTable($cols) {
+  function displayInTable($cols=3) {
     if ($this->value != -1) {
       $this->editable = 0;
       $t = parent::displayInTable($cols);
@@ -52,4 +52,4 @@ class IdField extends TextField {
 } // class IdField
 
 
-?> 
+?>

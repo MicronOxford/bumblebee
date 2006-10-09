@@ -56,7 +56,7 @@ define('DR_YEAR',   128);
 * @package    Bumblebee
 * @subpackage DBObjects
 */
-class DateRange extends nonDBRow { 
+class DateRange extends nonDBRow {
   /** @var boolean   include data in hidden fields if not shown  */
   var $reflectData = 1;
   /** @var boolean   include a submit button in the output  */
@@ -69,7 +69,7 @@ class DateRange extends nonDBRow {
                           T_('Period starts at the beginning of this day'));
     $startdate->isValidTest = 'is_valid_date';
     $this->addElement($startdate);
-    $stopdate  = new DateField('stopdate', T_('Finish period end of'), 
+    $stopdate  = new DateField('stopdate', T_('Finish period end of'),
                           T_('Period finishes at the end of this day'));
     $stopdate->isValidTest = 'is_valid_date';
     $this->addElement($stopdate);
@@ -79,11 +79,11 @@ class DateRange extends nonDBRow {
    * Calculate a sensible range
    *
    * this is calculated from the 'DR_*' data that we have above
-   * 
+   *
    * @param integer $which     DR_NEXT, DR_CURRENT, DR_PREVIOUS
    * @param integer $range     DR_DAY, DR_WEEK, etc...
    * @param integer $basetime  what date is "current" date
-   * @return array  (SimpleDate startdate, SimpleDate stopdate) 
+   * @return array  (SimpleDate startdate, SimpleDate stopdate)
    */
   function _calcRange($which, $range, $basetime) {
     $start = clone($basetime);
@@ -181,7 +181,7 @@ class DateRange extends nonDBRow {
    */
   function setDefaults($which, $range, $basetime=0) {
     $start = new SimpleDate($basetime ? $basetime : time());
-    $daterange = $this->_calcRange($which, $range, $start);    
+    $daterange = $this->_calcRange($which, $range, $start);
     $this->fields['startdate']->setDate($daterange['startdate']->dateString());
     $this->fields['stopdate']->setDate($daterange['stopdate']->dateString());
     $this->extrarows = array();
@@ -201,11 +201,11 @@ class DateRange extends nonDBRow {
     //$this->extrarows[] = array('', $prevRange[0]->dateString().$prevRange[1]->dateString());
     //$this->extrarows[] = array('', $nextRange[0]->dateString().$nextRange[1]->dateString());
     $this->extrarows[] = array($jswalk->displayJS(),
-                        $jswalk->displayBack().' | '.$jswalk->displayFwd());  
+                        $jswalk->displayBack().' | '.$jswalk->displayFwd());
   }
-  
-  
-  function display($PD) {
+
+
+  function display($PD=NULL) {
     $t = '';
     if ($this->reflectData) {
       foreach ($PD as $key => $val) {
@@ -218,11 +218,11 @@ class DateRange extends nonDBRow {
     }
     return $t;
   }
-  
+
   function getStart() {
     return $this->fields['startdate']->date;
   }
-  
+
   function getStop() {
     return $this->fields['stopdate']->date;
   }

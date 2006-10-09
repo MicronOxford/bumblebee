@@ -49,7 +49,7 @@ class ReferenceField extends Field {
   * add an extra field to the end of the formatted data
   *
   * @param string $table       db table for extra field
-  * @param string $matchfield  id/key field 
+  * @param string $matchfield  id/key field
   * @param string $field       field to return in the list of examples
   * @param integer $numentries (optional) the number of entries to return
   */
@@ -57,7 +57,7 @@ class ReferenceField extends Field {
     $this->example = new ExampleEntries('id', $table, $matchfield, $field, $numentries);
   }
 
-  function displayInTable($cols) {
+  function displayInTable($cols=3) {
     $t = "<tr><td>$this->longname</td>\n"
         ."<td title='$this->description'>";
     $t .= xssqw($this->getValue());
@@ -80,4 +80,4 @@ class ReferenceField extends Field {
 } // class ReferenceField
 
 
-?> 
+?>

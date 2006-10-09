@@ -28,7 +28,7 @@ require_once 'inc/formslib/joindata.php';
 * @subpackage DBObjects
 */
 class SpecialCost extends DBRow {
-  
+
   function SpecialCost($id, $project, $instrument) {
     //$this->DEBUG=10;
     $this->DBRow('projectrates', $project, 'projectid');
@@ -57,11 +57,11 @@ class SpecialCost extends DBRow {
     $f->protoRow->autonumbering = 1;
     //$f->DEBUG=10;
     $f->reportFields[] = array('id' => 'rate');
-    
+
     $rate = new IdField('id', T_('Rate ID'), T_('Rate ID'));
     $rate->value = $id;
     $f->addElement($rate);
-    $cost = new TextField('costfullday', T_('Full day cost'), 
+    $cost = new TextField('costfullday', T_('Full day cost'),
                           T_('Cost of instrument use for a full day'));
     $attrs = array('size' => '6');
     $cost->setAttr($attrs);
@@ -81,16 +81,16 @@ class SpecialCost extends DBRow {
 
     $f->joinSetup('id', array('total' => 1));
     $f->colspan = 2;
-    
+
     $this->addElement($f);
-    
+
     $this->fill($id);
     $this->dumpheader = 'Cost object';
     $this->insertRow = ($id == -1);
     #preDump($this);
   }
 
-  function delete() {
+  function delete($unused=null) {
     //delete our association in the costing table first
     //preDump($this);
     $result = $this->fields['costsettings']->rows[0]->delete();
@@ -101,7 +101,7 @@ class SpecialCost extends DBRow {
     }
     return $result;
   }
-  
+
   function display() {
     return $this->displayAsTable();
   }

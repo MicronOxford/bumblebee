@@ -81,11 +81,11 @@ class PasswdField extends TextField {
   * @param string $name the field name to be used
   * @return string  in SQL assignable form
   */
-  function sqlSetStr($name='') {
+  function sqlSetStr($name='', $force=false) {
     if (empty($name)) {
       $name = $this->name;
     }
-    if (! $this->sqlHidden && $this->value != '') {
+    if ($force || ! $this->sqlHidden && $this->value != '') {
       $pass = makePasswordHash($this->value);
       return $name ."='$pass'";
     } else {

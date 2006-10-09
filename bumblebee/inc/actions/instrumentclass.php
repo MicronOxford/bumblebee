@@ -23,15 +23,15 @@ require_once 'inc/actions/actionaction.php';
 
 /**
 * Edit/create/delete instrument classes
-*  
+*
 * @package    Bumblebee
 * @subpackage Actions
 */
 class ActionInstrumentClass extends ActionAction  {
 
   /**
-  * Initialising the class 
-  * 
+  * Initialising the class
+  *
   * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
@@ -57,9 +57,9 @@ class ActionInstrumentClass extends ActionAction  {
     $class = new InstrumentClass($this->PD['id']);
     $class->update($this->PD);
     $class->checkValid();
-    echo $this->reportAction($class->sync(), 
+    echo $this->reportAction($class->sync(),
           array(
-              STATUS_OK =>   ($this->PD['id'] < 0 ? T_('Instrument class created') 
+              STATUS_OK =>   ($this->PD['id'] < 0 ? T_('Instrument class created')
                                                   : T_('Instrument class updated')),
               STATUS_ERR =>  T_('Instrument class could not be changed:').' '.$class->errorMessage
           )
@@ -77,7 +77,10 @@ class ActionInstrumentClass extends ActionAction  {
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
   }
 
-  function select() {
+  /**
+  * @param $deleted  (unused)
+  */
+  function select($deleted=false) {
     $select = new AnchorTableList('InstrumentClass', T_('Select which instrument class to view'));
     $select->connectDB('instrumentclass', array('id', 'name'));
     $select->list->prepend(array('-1', T_('Create new instrument class')));
@@ -90,13 +93,13 @@ class ActionInstrumentClass extends ActionAction  {
 
   function delete() {
     $class = new InstrumentClass($this->PD['id']);
-    echo $this->reportAction($class->delete(), 
+    echo $this->reportAction($class->delete(),
               array(
                   STATUS_OK =>   T_('Instrument class deleted'),
                   STATUS_ERR =>  T_('Instrument class could not be deleted:')
                                     .'<br/><br/>'.$class->errorMessage
               )
-            );  
+            );
   }
 }
-?> 
+?>

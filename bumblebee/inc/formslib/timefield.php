@@ -55,7 +55,7 @@ class TimeField extends Field {
   var $droplist;
   /** @var boolean       is the time *really* editable ... ?? FIXME  */
   var $editableOutput=1;
-  
+
   /**
   *  Create a new field object, designed to be superclasses
   *
@@ -70,7 +70,7 @@ class TimeField extends Field {
     #$this->DEBUG=10;
   }
 
-  function displayInTable($cols) {
+  function displayInTable($cols=3) {
     $errorclass = ($this->isValid ? '' : "class='inputerror'");
     $t = "<tr $errorclass><td>$this->longname</td>\n"
         ."<td title='$this->description'>";
@@ -86,7 +86,7 @@ class TimeField extends Field {
   /**
   * render the HTML version of the widget
   *
-  * @return string 
+  * @return string
   */
   function getdisplay() {
     $t = '';
@@ -102,7 +102,7 @@ class TimeField extends Field {
     }
     return $t;
   }
-  
+
   function selectable() {
     #echo "TIME=".$this->time->timeString()."\n";
     $this->_determineRepresentation();
@@ -140,7 +140,7 @@ class TimeField extends Field {
     }
     return $t;
   }
-  
+
   /**
    * set the representation of this field
    *
@@ -150,7 +150,7 @@ class TimeField extends Field {
     $this->log("Manual representation set to $flag",10);
     $this->_manualRepresentation = $flag;
   }
-  
+
   /**
    * Determine what sort of representation is appropriate
    */
@@ -174,7 +174,7 @@ class TimeField extends Field {
     } elseif ($this->isStart || $this->slot->numslotsFollowing < 1) {
       $this->log('Starting slot or none following, TF_FIXED');
       $this->representation = TF_FIXED;
-    } elseif (($duration = new SimpleTime($this->getValue())) 
+    } elseif (($duration = new SimpleTime($this->getValue()))
               && $this->slot->start->ticks + $duration->ticks != $this->slot->stop->ticks) {
       //$this->log($this->slot->start->ticks.' + '.$duration->ticks.' != '.$this->slot->stop->ticks);
       $this->log('Not exactly following slots, TF_FIXED');
@@ -186,7 +186,7 @@ class TimeField extends Field {
     }
     $this->log('Determined representation was '. $this->representation, 10);
   }
-  
+
   /**
    * Calculate data for the dropdown list of permissible times
    *
@@ -203,7 +203,7 @@ class TimeField extends Field {
     //$this->droplist->setDefault($j);
     $this->droplist->setDefault($this->value);
   }
-  
+
   /**
    * Free-form field entry
    *
@@ -221,7 +221,7 @@ class TimeField extends Field {
     $t .= "/>";
     return $t;
   }
-  
+
   /**
    * Convert a string into a js link that controls the behaviour of another div
    *
@@ -233,7 +233,7 @@ class TimeField extends Field {
   function _makeHiddenSwitch($id1, $id2) {
     $func = preg_replace('/[^\w]/', '_', "hideunhide$id1");
     $t = "
-    
+
       <input type='hidden' id='{$this->namebase}{$this->name}-switch' name='{$this->namebase}{$this->name}-switch' value='' />
       <script type='text/javascript'>
         function $func() {
@@ -247,12 +247,12 @@ class TimeField extends Field {
       </script>
       <a href='javascript:$func();'>".T_('edit times')."</a>
       ";
-    return $t;  
+    return $t;
   }
-  
+
   /**
    * determine if a dropdown list appropriate here?
-   * 
+   *
    * @access private
    */
   function _fixedTimeSlots() {
@@ -265,8 +265,8 @@ class TimeField extends Field {
                 .', numFollowing: '.$this->fixedTimeSlots, 8);
     return $this->fixedTimeSlots;
   }
-  
-  /** 
+
+  /**
    * overload the parent's set() method as we need to do some extra processing
    */
   function set($value) {
@@ -306,7 +306,7 @@ class TimeField extends Field {
     $this->date = $date;
     $this->setTime($date->timePart());
   }
-  
+
   /**
    * Set the time (and value)
    *
@@ -318,7 +318,7 @@ class TimeField extends Field {
     $this->value = $this->time->timeString();
   }
 
-  /** 
+  /**
    * associate a TimeSlotRule for validation of the times that we are using
    *
    * @param TimeSlotRule $list a valid TimeSlotRule
@@ -328,7 +328,7 @@ class TimeField extends Field {
     //preDump($list);
   }
 
-  /** 
+  /**
    * set the appropriate date that we are refering to for the timeslot rule validation
    *
    * @param string $date passed to the TimeSlotRule
@@ -365,19 +365,19 @@ class TimeField extends Field {
    *
    * @return string  in SQL assignable form
    */
-  function sqlSetStr($name='') {
+  function sqlSetStr($name='', $force=false) {
     if (empty($name)) {
       $name = $this->name;
     }
-    if (! $this->sqlHidden) {
+    if ($force || ! $this->sqlHidden) {
       return $name .'='. qw($this->time->getHMSstring());
     } else {
       return '';
     }
   }
 
-          
+
 } // class TimeField
 
 
-?> 
+?>

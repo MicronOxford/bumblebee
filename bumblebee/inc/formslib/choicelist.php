@@ -139,7 +139,7 @@ class ChoiceList extends Field {
   * @param integer $cols the number of columns to include in the table (extras are padded out)
   * @return string a single row HTML representation of the field
   */
-  function displayInTable($cols) {
+  function displayInTable($cols=3) {
     if (! $this->hidden) {
       $errorclass = ($this->isValid ? "" : "class='inputerror'");
       $t = "<tr $errorclass><td>{$this->description}</td>\n"
@@ -225,7 +225,7 @@ class ChoiceList extends Field {
   *                if it would prefer not to
   * @return string name='value' from parent class
   */
-  function sqlSetStr($name, $force) {
+  function sqlSetStr($name='', $force=false) {
     #echo "Choicelist::sqlSetStr";
     $this->oob_status = $this->list->sync();
     //preDump($this->list);

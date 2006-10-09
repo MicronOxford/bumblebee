@@ -50,7 +50,7 @@ class CheckBox extends Field {
     return $this->changed;
   }
 
-  function displayInTable($cols) {
+  function displayInTable($cols=3) {
     $errorclass = ($this->isValid ? '' : "class='inputerror'");
     $t = "<tr $errorclass><td>$this->longname</td>\n"
         ."<td title='$this->description'>";
@@ -79,4 +79,4 @@ class CheckBox extends Field {
 
 } // class CheckBox
 
-?> 
+?>

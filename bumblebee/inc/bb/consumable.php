@@ -1,6 +1,6 @@
 <?php
 /**
-* Consumables object 
+* Consumables object
 *
 * @author    Stuart Prescott
 * @copyright  Copyright Stuart Prescott
@@ -21,13 +21,13 @@ require_once 'inc/formslib/idfield.php';
 require_once 'inc/formslib/textfield.php';
 
 /**
-* Consumables object 
+* Consumables object
 *
 * @package    Bumblebee
 * @subpackage DBObjects
 */
 class Consumable extends DBRow {
-  
+
   function Consumable($id) {
     $this->DBRow('consumables', $id);
     $this->editable = 1;
@@ -59,10 +59,10 @@ class Consumable extends DBRow {
     return $this->displayAsTable();
   }
 
-  function displayAsTable() {
+  function displayAsTable($cols=2) {
     $t = '<table class="tabularobject">';
     foreach ($this->fields as $k => $v) {
-      $t .= $v->displayInTable(2);
+      $t .= $v->displayInTable($cols);
     }
     $t .= '</table>';
     return $t;

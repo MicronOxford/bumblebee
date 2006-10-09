@@ -62,7 +62,7 @@ class DBRow extends DBO {
   var $isDeleted = false;
   /** @var string   this object can be deleted from the table (using DELETE); otherwise set the delete column to 1 for delete */
   var $deleteFromTable = 1;
-    
+
   /**
   *  Create a new database row object
   *
@@ -74,7 +74,7 @@ class DBRow extends DBO {
     $this->DBO($table, $id, $idfield);
     #$this->fields = array();
   }
-  
+
   /**
   * Set the value of the primary key (id) for this object
   *
@@ -90,14 +90,14 @@ class DBRow extends DBO {
       }
     }
   }
-  
-  /** 
+
+  /**
   *  Update the object with the user-submitted data
   *
-  *  update the value of each of the objects fields according to the user 
+  *  update the value of each of the objects fields according to the user
   *  input data, and validate the data if appropriate
   *  @param array user supplied data (field => $value)
-  *  @return boolean data is valid 
+  *  @return boolean data is valid
   */
   function update($data) {
     $this->log('DBRow:'.$this->namebase.' Looking for updates:');
@@ -105,7 +105,7 @@ class DBRow extends DBO {
     if ($this->id == -1 && ! $this->ignoreId) {
       $this->insertRow = 1;
     }
-    
+
     // We're a new object, but has the user filled the form in, or is the
     // user about to fill the form in?
     $this->newObject = 1;
@@ -116,7 +116,7 @@ class DBRow extends DBO {
         break;
       }
     }
-  
+
     // check each field in turn to allow it to update its data
     foreach (array_keys($this->fields) as $k) {
       $this->log("Check $k ov:".$this->fields[$k]->value
@@ -137,7 +137,7 @@ class DBRow extends DBO {
   function checkValid() {
     $this->isValid = 1;
     // check each field in turn to allow it to update its data
-    // if this object has not been filled in by the user, then 
+    // if this object has not been filled in by the user, then
     // suppress validation
     foreach (array_keys($this->fields) as $k) {
       if (! ($this->newObject && $this->insertRow)) {
@@ -163,7 +163,7 @@ class DBRow extends DBO {
   * If the object is new, then INSERT the data, if the object is pre-existing
   * then UPDATE the data. Fancier fields that are only pretending to
   * do be simple fields (such as JOINed data) should perform their updates
-  * during the _sqlvals() call 
+  * during the _sqlvals() call
   *
   * @return integer  from statuscodes
   */
@@ -189,8 +189,8 @@ class DBRow extends DBO {
       //echo "changed with vals=$vals<br/>";
       if (! $this->insertRow) {
         //it's an existing record, so update
-        $q = 'UPDATE '.$TABLEPREFIX.$this->table 
-            .' SET '.$vals 
+        $q = 'UPDATE '.$TABLEPREFIX.$this->table
+            .' SET '.$vals
             .' WHERE '.$this->idfield.'='.qw($this->id)
             .(($this->restriction !== '') ? ' AND '.$this->restriction : '')
             .' LIMIT 1';
@@ -206,19 +206,19 @@ class DBRow extends DBO {
         }
         $this->insertRow = 0;
       }
-    } 
+    }
     $this->errorMessage .= $this->oob_errorMessage;
     //echo "sql=$sql_result, oob=$this->oob_status\n";
     return $sql_result | $this->oob_status;
   }
-  
+
   /**
   * An alternative way of synchronising this object's fields with the database.
   *
   * Using this approach, we:
-  *   - If the object is new, then INSERT a temp row first. 
+  *   - If the object is new, then INSERT a temp row first.
   *   - Then, trip the sqlvals() calls.
-  *   - Then, UPDATE the data. 
+  *   - Then, UPDATE the data.
   *
   * Here, we to the 'create temp row' part.
   */
@@ -244,8 +244,8 @@ class DBRow extends DBO {
       $this->insertRow = 0;
       $this->log('Created temp row for locking, id='.$this->id.')');
     }
-  }  
-  
+  }
+
   /**
   * Delete this object's row from the database.
   *
@@ -263,10 +263,10 @@ class DBRow extends DBO {
       $this->log('Object not deletable by rule.');
       $this->errorMessage = T_('Cannot delete this item. Permission denied.');
       return STATUS_FORBIDDEN;
-    }  
+    }
     $sql_result = -1;
     if ($this->deleteFromTable) {
-      $q = 'DELETE FROM '.$TABLEPREFIX.$this->table 
+      $q = 'DELETE FROM '.$TABLEPREFIX.$this->table
           .' WHERE '.$this->idfield.'='.qw($this->id)
           .(($this->restriction !== '') ? ' AND '.$this->restriction : '')
           .' LIMIT 1';
@@ -276,7 +276,7 @@ class DBRow extends DBO {
         $updates = array_merge($updates, $extraUpdates);
       } elseif ($extraUpdates !== NULL) {
         $updates[] = $extraUpdates;
-      } 
+      }
       // toggle the deleted state
       $updates[] = 'deleted='.($this->isDeleted?0:1); // old MySQL cannot handle true, use 0,1 instead
       $q = 'UPDATE '.$TABLEPREFIX.$this->table
@@ -320,7 +320,7 @@ class DBRow extends DBO {
     return join(', ',$vals);
   }
 
-  /** 
+  /**
   * Add a new field to the row
   *
   * Add an element into the fields[] array. The element must conform
@@ -328,7 +328,7 @@ class DBRow extends DBO {
   * assumed elsewhere in this object.
   * Inheritable attributes are also set here.
   *
-  * @param Field $el the field to add 
+  * @param Field $el the field to add
   */
   function addElement($el) {
     $this->fields[$el->name] = $el;
@@ -347,11 +347,11 @@ class DBRow extends DBO {
     #echo "foo:".$this->fields[$el->name]->name.":bar";
   }
 
-  /** 
+  /**
   * Add multiple new fields to the row
   *
   * Adds multiple elements into the fields[] array.
-  * 
+  *
   * @param array $els array of Field objects
   */
   function addElements($els) {
@@ -384,10 +384,10 @@ class DBRow extends DBO {
       $q = 'SELECT * FROM '
           .$TABLEPREFIX.$this->table .' AS '. $this->table
           .' WHERE '.join($where, ' AND ')
-          .(($this->recStart !== '') && ($this->recNum !== '') 
+          .(($this->recStart !== '') && ($this->recNum !== '')
                           ? " LIMIT $this->recStart,$this->recNum" : '');
       $g = db_get_single($q);
-      if (is_array($g)) { 
+      if (is_array($g)) {
         foreach (array_keys($this->fields) as $k) {
           if (! $this->fields[$k]->sqlHidden) {
             $val = issetSet($g,$k);
@@ -407,7 +407,7 @@ class DBRow extends DBO {
     }
   }
 
-  /** 
+  /**
   * Quick and dirty dump of fields (values only, not a full print_r
   */
   function text_dump() {
@@ -447,11 +447,11 @@ class DBRow extends DBO {
     return $t;
   }
 
-  function displayAsTable($j=2) {
-    return $this->displayInTable($j);
+  function displayAsTable($cols=2) {
+    return $this->displayInTable($cols);
   }
 
 
 } // class dbrow
 
-?> 
+?>

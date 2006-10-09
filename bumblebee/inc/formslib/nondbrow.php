@@ -37,7 +37,7 @@ require_once 'inc/statuscodes.php';
 * @package    Bumblebee
 * @subpackage FormsLibrary
 */
- 
+
 class nonDBRow {
   /** @var string   name of this field */
   var $name;
@@ -70,8 +70,8 @@ class nonDBRow {
 
   /** @var integer   debug level 0=off    */
   var $DEBUG = 0;
-  
-  
+
+
   /**
   *  Create a new generic field/row object not linked to the db
   *
@@ -84,14 +84,14 @@ class nonDBRow {
     $this->longname = $longname;
     $this->description = $description;
   }
-  
-  /** 
+
+  /**
   *  Update the object with the user-submitted data
   *
-  *  update the value of each of the objects fields according to the user 
+  *  update the value of each of the objects fields according to the user
   *  input data, and validate the data if appropriate
   *  @param array user supplied data (field => $value)
-  *  @return boolean data is valid 
+  *  @return boolean data is valid
   */
   function update($data) {
     // We're a new object, but has the user filled the form in, or is the
@@ -106,7 +106,7 @@ class nonDBRow {
         $this->log('Still new '.$k.':unchanged');
       }
     }
-  
+
     // check each field in turn to allow it to update its data
     foreach (array_keys($this->fields) as $k) {
       $this->log("Check $k ov:".$this->fields[$k]->value
@@ -128,7 +128,7 @@ class nonDBRow {
   function checkValid() {
     $this->isValid = 1;
     // check each field in turn to allow it to update its data
-    // if this object has not been filled in by the user, then 
+    // if this object has not been filled in by the user, then
     // suppress validation
     foreach (array_keys($this->fields) as $k) {
       if (! $this->newObject) {
@@ -148,7 +148,7 @@ class nonDBRow {
     return $this->isValid;
   }
 
-  /** 
+  /**
   * Add a new field to the row
   *
   * Add an element into the fields[] array. The element must conform
@@ -156,7 +156,7 @@ class nonDBRow {
   * assumed elsewhere in this object.
   * Inheritable attributes are also set here.
   *
-  * @param Field $el the field to add 
+  * @param Field $el the field to add
   */
   function addElement($el) {
     $this->fields[$el->name] = $el;
@@ -175,11 +175,11 @@ class nonDBRow {
     #echo "foo:".$this->fields[$el->name]->name.":bar";
   }
 
-  /** 
+  /**
   * Add multiple new fields to the row
   *
   * Adds multiple elements into the fields[] array.
-  * 
+  *
   * @param array $els array of Field objects
   */
   function addElements($els) {
@@ -208,7 +208,8 @@ class nonDBRow {
   *
   * @return string object representation
   */
-  function display() {
+  function display($data=NULL) {
+    if ($data !== NULL) $this->update($data);
     return $this->text_dump();
   }
 
@@ -251,4 +252,4 @@ class nonDBRow {
 
 } // class dbrow
 
-?> 
+?>

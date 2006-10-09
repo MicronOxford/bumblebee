@@ -29,8 +29,8 @@ require_once 'inc/actions/actionaction.php';
 class ActionUserClass extends ActionAction  {
 
   /**
-  * Initialising the class 
-  * 
+  * Initialising the class
+  *
   * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
@@ -55,9 +55,9 @@ class ActionUserClass extends ActionAction  {
     $class = new UserClass($this->PD['id']);
     $class->update($this->PD);
     $class->checkValid();
-    echo $this->reportAction($class->sync(), 
+    echo $this->reportAction($class->sync(),
           array(
-              STATUS_OK =>   ($this->PD['id'] < 0 ? T_('User class created') 
+              STATUS_OK =>   ($this->PD['id'] < 0 ? T_('User class created')
                                                   : T_('User class updated')),
               STATUS_ERR =>  T_('User class could not be changed:').' '.$class->errorMessage
           )
@@ -75,7 +75,10 @@ class ActionUserClass extends ActionAction  {
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
   }
 
-  function select() {
+  /**
+  * @param $deleted  (unused)
+  */
+  function select($deleted=false) {
     $select = new AnchorTableList(T_('UserClass'), T_('Select which user class to view'));
     $select->connectDB('userclass', array('id', 'name'));
     $select->list->prepend(array('-1','Create new user class'));
@@ -88,13 +91,13 @@ class ActionUserClass extends ActionAction  {
 
   function delete() {
     $class = new UserClass($this->PD['id']);
-    echo $this->reportAction($class->delete(), 
+    echo $this->reportAction($class->delete(),
               array(
                   STATUS_OK =>   T_('User class deleted'),
                   STATUS_ERR =>  T_('User class could not be deleted:')
                                  .'<br/><br/>'.$class->errorMessage
               )
-            );  
+            );
   }
 }
-?> 
+?>

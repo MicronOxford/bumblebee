@@ -624,7 +624,7 @@ class BookingEntry extends DBRow {
   *
   *  @return integer  from statuscodes
   */
-  function delete() {
+  function delete($unused=null) {
     $this->_checkMinNotice();
     if (! $this->deletable && ! $this->_auth->permitted(BBROLE_UNBOOK, $this->instrumentid)) {
       // we're not allowed to do so

@@ -46,7 +46,7 @@ class DateField extends Field {
     $this->date = new SimpleDate(0);
   }
 
-  function displayInTable($cols) {
+  function displayInTable($cols=3) {
     $errorclass = ($this->isValid ? "" : "class='inputerror'");
     $t = "<tr $errorclass><td>$this->longname</td>\n"
         ."<td title='$this->description'>";
@@ -59,7 +59,7 @@ class DateField extends Field {
     return $t;
   }
 
-  
+
   /**
   * Generate the complete html representation of the field
   *
@@ -79,9 +79,9 @@ class DateField extends Field {
     }
     return $t;
   }
-  
 
-  
+
+
   /**
   * Generate the html representation of the field in a textfield
   *
@@ -95,24 +95,24 @@ class DateField extends Field {
     $t .= "/>";
     return $t;
   }
-  
+
   function hidden() {
     return "<input type='hidden' name='$this->namebase$this->name' "
            ."value='".xssqw($this->value)."' />";
   }
 
-  
+
   /**
   * Set the date (and value)
   *
-  * @param SimpleDate $time 
+  * @param SimpleDate $time
   */
   function setDate($date) {
     $this->date = new SimpleDate($date);
     $this->value = $this->date->dateString();
 //     $this->set($this->time->timeString());
   }
-  
+
   /**
   * overload the parent's update method so that local calculations can be performed
   *
@@ -136,7 +136,7 @@ class DateField extends Field {
     $this->isValid = $this->isValid && $this->date->isValid;
     return $this->isValid;
   }
-    
+
 }
 
-?> 
+?>
