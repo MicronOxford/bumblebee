@@ -6,6 +6,7 @@
 2006-10-XX Seth Sims <sims1001@alltel.net>
 	* feature: double entry password model included
 	* feature: make entire row in lists a link
+	* feature: make DROP commands in the installer optional
 	* janitorial: clean up some PHP4isms (is_a)
 
 2006-08-01 Stuart Prescott <bumblebee@nanonanonano.net>
