@@ -1,6 +1,6 @@
 <?php
 /**
-* Simple Forms librart for Bumblebee installer 
+* Simple Forms library for Bumblebee installer
 *
 * @author    Stuart Prescott
 * @copyright  Copyright Stuart Prescott
@@ -23,7 +23,7 @@ function startHTML($title, $head='') {
               blockquote {border: 1px solid #333399; margin: 1em; padding: 1em;}
               fieldset { background-color: #f9f9ff;}
               fieldset fieldset {background-color: #f9ffff;}
-              h2 { padding-top: 0; margin-top: 0;} 
+              h2 { padding-top: 0; margin-top: 0;}
         </style>
         <?php echo $head; ?>
       </head>
@@ -44,7 +44,7 @@ function startHTML_install($data, $steps) {
         print $steps->getStepButtons();
       ?>
       </div>
-      <p>Please use this script in conjunction with the 
+      <p>Please use this script in conjunction with the
       <a href='http://bumblebeeman.sourceforge.net/documentation/install'>installation instructions</a>.
       </p>
   <?php
@@ -63,7 +63,7 @@ function startHTML_upgrade($data, $steps) {
         print $steps->getStepButtons();
       ?>
       </div>
-      <p>Please use this script in conjunction with the 
+      <p>Please use this script in conjunction with the
       <a href='http://bumblebeeman.sourceforge.net/documentation/upgrade'>upgrade instructions</a>.</p>
   <?php
   if (isset($data['old_db_version']))
@@ -150,8 +150,12 @@ function printDatabaseSetupForm($values) {
     <legend>Database setup</legend>
     <label>
       <input type='checkbox' name='includeAdmin' value='1' checked='checked' />
-      include commands to create the database and MySQL user
-    </label><br />
+      include commands to create the database and MySQL user ("CREATE" and "GRANT" commands)
+    </label><br /><br />
+    <label>
+      <input type='checkbox' name='sqlUseDropTable' value='1' checked='checked' />
+      include commands to remove any existing databases and tables ("DROP" commands)
+    </label><br /><br />
     You can either download the database setup script and load it manually into the database
     or you can enter the username and password of a database user who is permitted
     to add database users, grant them permissions and create databases (<i>e.g.</i> root)
@@ -163,7 +167,7 @@ function printDatabaseSetupForm($values) {
       <input type='submit' name='submitsql' value='Download database script' />
             <br/>
             Save the SQL file and then load it into the database using either phpMyAdmin or
-            the mysql command line tools, <i>e.g.</i>: 
+            the mysql command line tools, <i>e.g.</i>:
             <code style="white-space: nowrap;">mysql -p --user root &lt; bumbelebee.sql</code>
     </fieldset>
     </td><td width='50%' valign='top'>

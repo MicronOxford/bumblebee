@@ -40,6 +40,10 @@ $steps->addStep(new InstallStep('Clean-up',           'do_cleanup'));
 
 $steps->setCurrent(1);
 $userSubmitted = array_merge(getSetupDefaults(), $_POST);
+
+if(!isset($_POST['sqlUseDropTable']))
+	$userSubmitted['sqlUseDropTable'] = '0';
+
 if (! isset($_POST['havedata']) || isset($_POST['do_userdata'])) {
   printStepUserForm($userSubmitted, $steps);
   exit;
@@ -59,7 +63,8 @@ if (isset($_POST['do_database'])) {
 }
 // do the database setup parts
 if (isset($_POST['submitsql'])) {
-  $s = constructSQL($sqlSourceFile, $userSubmitted, $_POST['includeAdmin']);
+  $includeAdmin = isset($_POST['includeAdmin']) ? $_POST['includeAdmin'] : false;
+  $s = constructSQL($sqlSourceFile, $userSubmitted, $includeAdmin);
   outputTextFile($sqlSetupFilename, $s);
   exit;
 }

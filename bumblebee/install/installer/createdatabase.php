@@ -22,6 +22,7 @@ function getSetupDefaults() {
   $defaults['sqlUser']        = $defaults['sqlDefaultUser'];
   $defaults['sqlDefaultPass'] = 'bumblebeepass';
   $defaults['sqlPass']        = $defaults['sqlDefaultPass'];
+  $defaults['sqlUseDropTable'] = '1';
   
   $defaults['bbDefaultAdmin']     = 'BumblebeeAdmin';
   $defaults['bbDefaultAdminName'] = 'Queen Bee';
@@ -48,6 +49,7 @@ function constructSQL($source, $replacements, $includeAdmin) {
   $sqlUser              = $replacements['sqlUser'];
   $sqlDefaultPass       = $replacements['sqlDefaultPass'];
   $sqlPass              = $replacements['sqlPass'];
+  $sqlUseDropTable      = $replacements['sqlUseDropTable'];
   $bbDefaultAdmin       = $replacements['bbDefaultAdmin'];
   $bbDefaultAdminName   = $replacements['bbDefaultAdminName'];
   $bbDefaultAdminPass   = $replacements['bbDefaultAdminPass'];
@@ -73,8 +75,15 @@ function constructSQL($source, $replacements, $includeAdmin) {
                       "\$1 DATABASE\$2 $sqlDB", $sql);
   $sql = preg_replace("/USE $sqlDefaultDB;/",
                       "USE $sqlDB;", $sql);
-  $sql = preg_replace("/DROP TABLE IF EXISTS (.+)?;/",
+
+  if($sqlUseDropTable == '1') {
+        $sql = preg_replace("/DROP TABLE IF EXISTS (.+)?;/",
                       "DROP TABLE IF EXISTS $sqlTablePrefix\$1;", $sql);
+  } else {
+        $sql = preg_replace("/DROP TABLE IF EXISTS (.+)?;/i", '', $sql);
+        $sql = preg_replace("/DROP DATABASE IF EXISTS (.+)?;/i", '', $sql);
+  }
+
   $sql = preg_replace("/CREATE TABLE (.+)? /",
                       "CREATE TABLE $sqlTablePrefix\$1 ", $sql);
   // make the admin user
