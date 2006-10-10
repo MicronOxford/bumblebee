@@ -27,12 +27,8 @@ require_once 'inc/actions/viewbase.php';
 * @subpackage Actions
 */
 class ActionCalendar extends ActionViewBase {
-  /**
-  * logged in user can modify booking
-  * @var boolean
-  */
+  /** @var boolean   logged in user can modify booking  */
   var $_haveWriteAccess = false;
-
 
   /**
   * Initialising the class
@@ -55,6 +51,9 @@ class ActionCalendar extends ActionViewBase {
       trigger_error($err, E_USER_WARNING);
       return;
     }
+
+    $this->row = quickSQLSelect('instruments', 'id', $this->instrument);
+
     if (isset($this->PD['isodate']) &&
                     ! isset($this->PD['bookid']) && ! isset($this->PD['startticks']) ) {
       $this->instrumentDay();
@@ -81,25 +80,36 @@ class ActionCalendar extends ActionViewBase {
   */
   function instrumentMonth() {
     global $CONFIG;
-    $row = quickSQLSelect('instruments', 'id', $this->instrument);
     // Show a window $row['calendarlength'] weeks long starting $row['calendarhistory'] weeks
-    // before the current date. Displayed week always starts on Monday
+    // before the current date. Displayed week starts on configured day of week.
     $offset = issetSet($this->PD, 'caloffset');
     if ($offset == 'today') $offset = 0;
+
     $now = new SimpleDate(time());
     $now->dayRound();
     $start = clone($now);
     $start->addDays($offset);
 
+    $callength = 7 * $this->row['callength'];
+
+    $week_offset = issetSet($CONFIG['language'], 'week_offset', 1);
+    $start->weekRound();
+    if ($now->dow() < $week_offset) $start->addDays(-7);
+    $start->addDays($week_offset - 7*$this->row['calhistory']);
+
+    $stop = clone($start);
+    $stop->addDays($callength);
+
     // check to see if this is an allowable calendar view (not too far into the future)
-    $futureView = $this->BookingPastNormalCalendar($row, $start, 7*($row['callength']-$row['calhistory']));
+    $futureView = $this->BookingPastNormalCalendar($stop);
 
     if ($futureView < 0 && ! $this->auth->permitted(BBROLE_VIEW_CALENDAR_FUTURE, $this->instrument)) {
-      $start->addDays($futureView);
-      $offset += $futureView;
+      $off = ceil($futureView / 7) * 7;
+      $start->addDays($off);
+      $stop->addDays($off);
+      $offset += $off;
     }
 
-     $callength = 7 * $row['callength'];
 //     $totaloffset = $offset + $callength - 7*$row['calhistory'] - $start->dow();
 //     $this->log("Found total offset of $totaloffset, calfuture=".$row['calfuture']." calhistory=".$row['calhistory']);
 //
@@ -119,59 +129,123 @@ class ActionCalendar extends ActionViewBase {
 
     // jump backwards to the start of that week.
     //$day = $start->dow(); // the day of the week, 0=Sun, 6=Sat
-    $week_offset = issetSet($CONFIG['language'], 'week_offset', 1);
-    $start->weekRound();
-    if ($now->dow() < $week_offset) $start->addDays(-7);
-    $start->addDays($week_offset - 7*$row['calhistory']);
-
-    $stop = clone($start);
-    $stop->addDays($callength);
 
     $cal = new Calendar($start, $stop, $this->instrument);
 
-    $daystart    = new SimpleTime($row['usualopen']);
-    $daystop     = new SimpleTime($row['usualclose']);
+    $daystart    = new SimpleTime($this->row['usualopen']);
+    $daystop     = new SimpleTime($this->row['usualclose']);
     //configure the calendar view granularity (not the same as booking granularity)
-    $granularity = $row['calprecision'];
-    $timelines   = $row['caltimemarks'];
-    $cal->setTimeSlotPicture($row['timeslotpicture']);
+    $granularity = $this->row['calprecision'];
+    $timelines   = $this->row['caltimemarks'];
+    $cal->setTimeSlotPicture($this->row['timeslotpicture']);
     #$granularity = 60*60;
 //     echo $cal->display();
 
-    if ($this->auth->permitted($futureView<-$callength ? BBROLE_MAKE_BOOKINGS_FUTURE : BBROLE_MAKE_BOOKINGS, $this->instrument)) {
+/*    if ($this->auth->permitted($futureView<-$callength ? BBROLE_MAKE_BOOKINGS_FUTURE : BBROLE_MAKE_BOOKINGS, $this->instrument)) {
       $cal->bookhref = makeURL('book', array('instrid'=>$this->instrument));
     } else {
       $cal->bookhref = makeURL('bookcontact', array('instrid'=>$this->instrument));
-    }
+    }*/
+    $cal->bookhrefCallback = array(&$this, 'MakeBookingHref');
+
     $cal->zoomhref = makeURL('calendar', array('instrid'=>$this->instrument));
 
     $cal->freeBusyOnly = ! $this->auth->permitted(BBROLE_VIEW_BOOKINGS, $this->instrument);
     $cal->isAdminView = $this->auth->permitted(BBROLE_MAKE_BOOKINGS_FREE, $this->instrument);
     $cal->setOutputStyles('', $CONFIG['calendar']['todaystyle'],
                 preg_split('{/}',$CONFIG['calendar']['monthstyle']), 'm');
-    echo $this->displayInstrumentHeader($row);
-    echo $this->_linksForwardBack(($offset-$callength),
+    echo $this->displayInstrumentHeader();
+    echo $this->_linksForwardBack($start,
+                                  ($offset-$callength),
                                   ($offset+$callength),
-                                  ($futureView>0) || $this->auth->permitted(BBROLE_VIEW_CALENDAR_FUTURE,
-                                  $this->instrument));
+                                  $callength);
     echo $cal->displayMonthAsTable($daystart,$daystop,$granularity,$timelines);
-    echo $this->displayInstrumentFooter($row);
+    echo $this->displayInstrumentFooter();
   }
 
   /**
   * Generate back | today | forward links for the calendar
   * @return string html for links
   */
-  function _linksForwardBack($back, $forward, $showForward=true, $extra=array()) {
-    return '<div style="text-align:center">'
-        .'<a href="'.makeURL('calendar', array_merge(array('instrid'=>$this->instrument, 'caloffset'=>$back), $extra)).'">&laquo; '. T_('earlier') .'</a> | '
-        .'<a href="'.makeURL('calendar', array_merge(array('instrid'=>$this->instrument, 'caloffset'=>'today'), $extra)).'">'. T_('today') .'</a> '
-        .($showForward ?
-                ' | '
-                .'<a href="'.makeURL('calendar', array_merge(array('instrid'=>$this->instrument, 'caloffset'=>$forward), $extra)).'">'. T_('later') .' &raquo;</a>'
-                : ''
-          )
-        .'</div>';
+  function _linksForwardBack($centre, $back, $forward, $calLength, $extra=array()) {
+    $links = array();
+    $script = 'JumpCalendarTo';
+    $today = new SimpleDate(time());
+    $today->dayRound();
+    $centreOffset = $today->dsDaysBetween($centre);
+
+    $links[] = '<a href="'
+                  .makeURL('calendar',
+                            array_merge(
+                            array('instrid'=>$this->instrument, 'caloffset'=>$back),
+                            $extra)
+                           )
+                .'">&laquo; '. T_('earlier') .'</a>';
+
+    $links[] = $this->_makeQuickJumpLinks(T_('jump back to:'), -1, $calLength, $centre, $centreOffset, $script);
+
+    $links[] = '<a href="'
+                  .makeURL('calendar',
+                          array_merge(
+                              array('instrid'=>$this->instrument, 'caloffset'=>'today'),
+                              $extra)
+                           )
+              .'">'. T_('today') .'</a> ';
+
+    if ($this->ViewCalendarPermitted($forward)) {
+      $select = $this->_makeQuickJumpLinks(T_('jump forward to:'), 1, $calLength, $centre, $centreOffset, $script);
+
+      if ($select !== '') $links[] = $select;
+
+      $links[] = '<a href="'
+                  .makeURL('calendar',
+                          array_merge(
+                              array('instrid'=>$this->instrument, 'caloffset'=>$forward),
+                              $extra)
+                           )
+                  .'">'. T_('later') .' &raquo;</a>';
+    }
+
+    $linkList = join($links, ' | ');
+    $location = makeURL('calendar',
+                        array_merge(
+                            array('instrid'=>$this->instrument),
+                            $extra),
+                         false);
+    $js = "
+          <script type='text/javascript'>
+            function $script(offset) {
+              newLocation = '$location' + '&caloffset=' + offset;
+              document.location.href = newLocation;
+            }
+          </script>";
+    return '<div style="text-align:center">' . $js . $linkList . '</div>';
+  }
+
+
+  function _makeQuickJumpLinks($caption, $direction, $calLength, $centre, $centreOffset, $script) {
+    $nonEmpty = false;
+    $backJumps = array('<option value="0">'. $caption .'</option>');
+    for ($i=1; $i <= 20; $i++) {
+      $offset = $direction * $i * $calLength;
+      $offsetDate = clone($centre);
+      $offsetDate->addDays($offset);
+      $offset -= $centreOffset;
+      if ($direction < 0 || $this->ViewCalendarPermitted($offset)) {
+        $nonEmpty = true;
+        $date = $offsetDate->dateString();
+        $backJumps[] = "<option value='$offset'>$date</option>";
+      } else {
+        break;
+      }
+    }
+    if ($nonEmpty) {
+      return "<select name='backLink' onChange='$script(this.value)'>"
+                  .join($backJumps, "\n")
+                  .'</select>';
+    } else {
+      return '';
+    }
   }
 
   /**
@@ -180,9 +254,8 @@ class ActionCalendar extends ActionViewBase {
   * @todo ///TODO: combine this function with instrumentMonth to reduce duplication
   */
   function instrumentDay() {
-    $row = quickSQLSelect('instruments', 'id', $this->instrument);
-    $granularity = $row['calprecision'];
-    $timelines   = $row['caltimemarks'];
+    $granularity = $this->row['calprecision'];
+    $timelines   = $this->row['caltimemarks'];
 
     $offset = issetSet($this->PD, 'caloffset');
     $today = new SimpleDate(time());
@@ -197,13 +270,15 @@ class ActionCalendar extends ActionViewBase {
       $start->addDays($offset);
     }
 
-
+    $stop = clone($start);
+    $stop->addDays(1);
 
     // check to see if this is an allowable calendar view (not too far into the future)
-    $futureView = $this->BookingPastNormalCalendar($row, $start, 1);
+    $futureView = $this->BookingPastNormalCalendar($start);
 
     if ($futureView < 0 && ! $this->auth->permitted(BBROLE_VIEW_CALENDAR_FUTURE, $this->instrument)) {
       $start->addDays($futureView);
+      $stop->addDays($futureView);
       $offset += $futureView;
     }
 
@@ -223,48 +298,24 @@ class ActionCalendar extends ActionViewBase {
       $start->addDays($delta);
       $futureView = true;
     }*/
-    $stop = clone($start);
-    $stop->addDays(1);
     $cal = new Calendar($start, $stop, $this->instrument);
-    $cal->setTimeSlotPicture($row['timeslotpicture']);
+    $cal->setTimeSlotPicture($this->row['timeslotpicture']);
 
     /// FIXME: get this from the instrument table?
     $daystart    = new SimpleTime('00:00:00');
-    $daystop     = new SimpleTime('23:59:59');
+    $daystop     = new SimpleTime('24:00:00');
 //     echo $cal->display();
-    if ($this->auth->permitted($futureView ? BBROLE_MAKE_BOOKINGS_FUTURE : BBROLE_MAKE_BOOKINGS, $this->instrument)) {
-      $cal->bookhref = makeURL('book', array('instrid'=>$this->instrument));
-    } else {
-      $cal->bookhref = makeURL('bookcontact', array('instrid'=>$this->instrument));
-    }
+    $cal->bookhrefCallback = array(&$this, 'MakeBookingHref');
 
     $cal->freeBusyOnly = ! $this->auth->permitted(BBROLE_VIEW_BOOKINGS, $this->instrument);
     $cal->isAdminView = $this->auth->permitted(BBROLE_MAKE_BOOKINGS_FREE, $this->instrument);
     $cal->setOutputStyles('', 'caltoday', array('monodd', 'moneven'), 'm');
-    echo $this->displayInstrumentHeader($row);
-    echo $this->_linksForwardBack('-1', '+1',
-                                ($futureView>0) || $this->auth->permitted(BBROLE_VIEW_CALENDAR_FUTURE, $this->instrument),
-                                array('isodate'=>$start->dateString()));
+    echo $this->displayInstrumentHeader();
+    echo $this->_linksForwardBack($start,
+                                  '-1', '+1', 1,
+                                  array('isodate'=>$start->dateString()));
     echo $cal->displayDayAsTable($daystart,$daystop,$granularity,$timelines);
-    echo $this->displayInstrumentFooter($row);
-  }
-
-
-  function BookingPastNormalCalendar($row, $start, $length) {
-    //$this->DEBUG = 10;
-
-    $today = new SimpleDate(time());
-    $today->dayRound();
-    $totaloffset = $start->daysBetween($today);
-    $maxfuture = $row['calfuture'] + 7 - $today->dow() - $length;
-
-    $this->log("Found total offset of $totaloffset, $maxfuture");
-
-    if ($totaloffset >= $maxfuture) {
-      return floor($maxfuture - $totaloffset);
-    }
-
-    return 1;
+    echo $this->displayInstrumentFooter();
   }
 
 } // class ActionCalendar

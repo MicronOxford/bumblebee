@@ -66,6 +66,9 @@ class ActionBook extends ActionViewBase {
       trigger_error($err, E_USER_WARNING);
       return;
     }
+
+    $this->row = quickSQLSelect('instruments', 'id', $this->instrument);
+
     if (isset($this->PD['delete']) && isset($this->PD['bookid'])) {
       $this->deleteBooking();
       echo $this->_calendarViewLink($this->instrument);
@@ -113,16 +116,15 @@ class ActionBook extends ActionViewBase {
   function _editCreateBooking($bookid, $start, $duration) {
     $ip = $this->auth->getRemoteIP();
     //echo $ip;
-    $row = quickSQLSelect('instruments', 'id', $this->instrument);
-    $booking = new BookingEntry($bookid, $this->auth, $this->instrument, $row['mindatechange'],$ip,
-                                $start, $duration, $row['timeslotpicture']);
+    $booking = new BookingEntry($bookid, $this->auth, $this->instrument, $this->row['mindatechange'],$ip,
+                                $start, $duration, $this->row['timeslotpicture']);
     $this->_checkBookingAuth($booking->fields['userid']->getValue());
     if (! $this->_haveWriteAccess) {
       return $this->_forbiddenError(T_('Edit booking'));
     }
     $booking->update($this->PD);
     $booking->checkValid();
-    echo $this->displayInstrumentHeader($row);
+    echo $this->displayInstrumentHeader();
     echo $this->reportAction($booking->sync(),
               array(
                   STATUS_OK =>   ($bookid < 0 ? T_('Booking made') : T_('Booking updated')),
@@ -134,7 +136,7 @@ class ActionBook extends ActionViewBase {
     $delete = ($booking->id >= 0 && $booking->deletable) ? T_('Delete booking') : '';
     echo "<input type='submit' name='submit' value='$submit' />";
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
-    echo $this->displayInstrumentFooter($row);
+    echo $this->displayInstrumentFooter();
   }
 
   /**
@@ -143,8 +145,7 @@ class ActionBook extends ActionViewBase {
   function viewBooking() {
     $booking = new BookingEntryRO($this->PD['bookid']);
     $this->_checkBookingAuth($booking->data->userid);
-    $row = quickSQLSelect('instruments', 'id', $this->instrument);
-    echo $this->displayInstrumentHeader($row);
+    echo $this->displayInstrumentHeader();
     $adminView = $this->auth->permitted(BBROLE_VIEW_BOOKINGS_DETAILS, $this->instrument);
     echo $booking->display($adminView, $this->_isOwnBooking);
     $adminEdit = $this->auth->permitted(BBROLE_EDIT_ALL, $this->instrument);
@@ -163,13 +164,12 @@ class ActionBook extends ActionViewBase {
   * Delete a booking
   */
   function deleteBooking() {
-    $row = quickSQLSelect('instruments', 'id', $this->instrument);
-    $booking = new BookingEntry($this->PD['bookid'], $this->auth, $this->instrument, $row['mindatechange']);
+    $booking = new BookingEntry($this->PD['bookid'], $this->auth, $this->instrument, $this->row['mindatechange']);
     $this->_checkBookingAuth($booking->fields['userid']->getValue());
     if (! $this->_haveWriteAccess) {
       return $this->_forbiddenError(T_('Delete booking'));
     }
-    echo $this->displayInstrumentHeader($row);
+    echo $this->displayInstrumentHeader();
     echo $this->reportAction($booking->delete(),
               array(
                   STATUS_OK =>   T_('Booking deleted'),

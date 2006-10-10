@@ -26,8 +26,12 @@ require_once 'inc/actions/actionaction.php';
 */
 class ActionViewBase extends ActionAction {
 
-  /** @var integer instrument id number being viewed/booked etc */
+  /** @var integer   instrument id number being viewed/booked etc */
   var $instrument;
+  /** @var array     row of data representing the database entry for the instrument */
+  var $row;
+  /** @var integer   maximum number of days into the future that bookings can be made */
+  var $maxFutureDays = 0;
 
   /**
   * Initialising the class
@@ -99,26 +103,26 @@ class ActionViewBase extends ActionAction {
   /**
   * Display a heading on the page with the instrument name and location
   */
-  function displayInstrumentHeader($row) {
+  function displayInstrumentHeader() {
     $t = '<h2 class="instrumentname">'
-        .xssqw($row['longname'])
+        .xssqw($this->row['longname'])
         .'</h2>'
        .'<p class="instrumentlocation">'
-       .xssqw($row['location']).'</p>'."\n";
-    $t .= $this->_instrumentNotes($row, false);
+       .xssqw($this->row['location']).'</p>'."\n";
+    $t .= $this->_instrumentNotes(false);
     return $t;
   }
 
   /**
   * Display a footer for the page with the instrument comments and who looks after the instrument
   */
-  function displayInstrumentFooter($row) {
+  function displayInstrumentFooter() {
     $t = '';
-    $t .= $this->_instrumentNotes($row, true);
-    if ($row['supervisors']) {
+    $t .= $this->_instrumentNotes($this->row, true);
+    if ($this->row['supervisors']) {
       $t .= '<h3>'.T_('Instrument supervisors').'</h3>';
       $t .= '<ul>';
-      foreach(preg_split('/,\s*/', $row['supervisors']) as $username) {
+      foreach(preg_split('/,\s*/', $this->row['supervisors']) as $username) {
         $user = quickSQLSelect('users', 'username', $username);
         $t .= '<li><a href="mailto:'. xssqw($user['email']) .'">'. xssqw($user['name']) .'</a></li>';
       }
@@ -130,25 +134,77 @@ class ActionViewBase extends ActionAction {
   /**
   * Display the instrument comment in either header or footer as configured
   *
-  * @param array $row        instrument db row
   * @param boolean $footer   called in the footer
   * @returns string          header/footer to display for notes section
   *
   * @global array system config
   */
-  function _instrumentNotes($row, $footer=true) {
+  function _instrumentNotes($footer=true) {
     global $CONFIG;
     $t = '';
     $notesbottom = issetSet($CONFIG['calendar'], 'notesbottom', true);
-    if ($notesbottom == $footer && $row['calendarcomment']) {
+    if ($notesbottom == $footer && $this->row['calendarcomment']) {
       $t = '<div class="calendarcomment">'
           .'<p>'
           .preg_replace("/\n+/",
                         '</p><p>',
-                          xssqw_relaxed($row['calendarcomment']))
+                          xssqw_relaxed($this->row['calendarcomment']))
           .'</p></div>';
     }
     return $t;
+  }
+
+
+  /**
+  * Check if a date is within the permitted booking period for this user on this instrument.
+  *
+  * @param  SimpleDate   date to be checked
+  * @returns   1 if date is within permitted calendar period, returns 0 or number of days (negative) that the booking is beyond the end of the calendar
+  */
+  function BookingPastNormalCalendar($date, $calcOffset=0) {
+    #$this->DEBUG = 10;
+    $today = new SimpleDate(time());
+    $today->dayRound();
+    $totaloffset = $date->dsDaysBetween($today);
+
+    if ($this->maxFutureDays == 0) {
+      $this->maxFutureDays = $this->row['calfuture'] + 7 - $today->dow();
+    }
+
+    #printf ('today = %s, checkDate = %s, ', $today->dateTimeString(), $date->dateTimeString());
+    $this->log("Found total offset of $totaloffset, {$this->maxFutureDays}");
+
+    $offset = floor($this->maxFutureDays - $totaloffset + $calcOffset);
+    if ($offset <= 0) {
+      return $offset;
+    }
+
+    return 1;
+  }
+
+  function MakeBookingHref($date) {
+    $permission = $this->BookingPastNormalCalendar($date, 1) < 0
+                      ? BBROLE_MAKE_BOOKINGS_FUTURE
+                      : BBROLE_MAKE_BOOKINGS;
+    if ($this->auth->permitted($permission, $this->instrument)) {
+      return makeURL('book',        array('instrid'=>$this->instrument));
+    } else {
+      return makeURL('bookcontact', array('instrid'=>$this->instrument));
+    }
+  }
+
+  function ViewCalendarPermitted($offset) {
+    if (type_is_a($offset, 'SimpleDate')) {
+      $date = $offset;
+    } else {
+      $date = new SimpleDate(time());
+      $date->addDays($offset);
+    }
+    #echo "Checking calendar for ". $date->dateTimeString();
+    $permission = $this->BookingPastNormalCalendar($date) < 0
+                      ? BBROLE_VIEW_CALENDAR_FUTURE
+                      : BBROLE_VIEW_CALENDAR;
+    return $this->auth->permitted($permission, $this->instrument);
   }
 
 }

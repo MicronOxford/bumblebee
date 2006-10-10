@@ -212,12 +212,13 @@ class UserMenu {
 
 /**
 * create a URL for an anchor
-* @param string $action    action to be performed
-* @param array  $list      (optional) key => value data to be added to the URL
+* @param string  $action    action to be performed
+* @param array   $list      (optional) key => value data to be added to the URL
+* @param boolean $escape    use &amp; rather than & in the URL
 * @return string URL
 * @global string base URL for the installation
 */
-function makeURL($action, $list=NULL) {
+function makeURL($action, $list=NULL, $escape=true) {
   global $BASEURL;
   $list = is_array($list) ? $list : array();
   $list['action'] = $action;
@@ -225,7 +226,8 @@ function makeURL($action, $list=NULL) {
   foreach ($list as $field => $value) {
     $args[] = $field.'='.urlencode($value);
   }
-  return $BASEURL.'?'.join('&amp;', $args);
+  $delim = $escape ? '&amp;' : '&';
+  return $BASEURL.'?'.join($delim, $args);
 }
 
 ?>
