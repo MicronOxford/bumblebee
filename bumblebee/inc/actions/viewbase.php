@@ -183,14 +183,18 @@ class ActionViewBase extends ActionAction {
   }
 
   function MakeBookingHref($date) {
-    $permission = $this->BookingPastNormalCalendar($date, 1) < 0
-                      ? BBROLE_MAKE_BOOKINGS_FUTURE
-                      : BBROLE_MAKE_BOOKINGS;
-    if ($this->auth->permitted($permission, $this->instrument)) {
+    if ($this->MakeBookingPermitted($date)) {
       return makeURL('book',        array('instrid'=>$this->instrument));
     } else {
       return makeURL('bookcontact', array('instrid'=>$this->instrument));
     }
+  }
+
+  function MakeBookingPermitted($date) {
+    $permission = $this->BookingPastNormalCalendar($date, 1) < 0
+                      ? BBROLE_MAKE_BOOKINGS_FUTURE
+                      : BBROLE_MAKE_BOOKINGS;
+    return $this->auth->permitted($permission, $this->instrument);
   }
 
   function ViewCalendarPermitted($offset) {

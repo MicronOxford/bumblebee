@@ -99,7 +99,12 @@ class ActionBook extends ActionViewBase {
     $stop  = new SimpleDate(issetSet($this->PD, 'stopticks'));
     $duration = new SimpleTime($stop->subtract($start));
     $this->log($start->dateTimeString().', '.$duration->timeString().', '.$start->dow());
-    $this->_editCreateBooking(-1, $start->dateTimeString(), $duration->timeString());
+
+    if ($this->MakeBookingPermitted($start)) {
+      $this->_editCreateBooking(-1, $start->dateTimeString(), $duration->timeString());
+    } else {
+      $this->_createBookingForbidden();
+    }
   }
 
   /**
@@ -176,6 +181,14 @@ class ActionBook extends ActionViewBase {
                   STATUS_ERR =>  T_('Booking could not be deleted:').'<br/><br/>'.$booking->errorMessage
               )
             );
+  }
+
+  function _createBookingForbidden() {
+    echo $this->reportAction(STATUS_FORBIDDEN,
+                array(
+                  STATUS_FORBIDDEN => T_('Sorry, making bookings at that time is not permitted')
+                )
+              );
   }
 
 } // class ActionBook
