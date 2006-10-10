@@ -19,6 +19,21 @@ require_once 'textfield.php';
 /** uses checkbox table list */
 require_once 'checkboxtablelist.php';
 
+// ===================  NOTE  ======================
+// $this->select suffers from a horrible hack around a PHP 4.x bug
+// All we want to do is something like:
+//    $this->select->foo($a);
+// but that causes $this->select to suddenly become a reference: Object not &Object (see a var_dump)
+// see http://bugs.php.net/bug.php?id=24485 and http://bugs.php.net/bug.php?id=30787
+// There is no prospect of this bug ever being fixed in PHP4.
+// If we can come up with a clone() function for PHP4 that deals with references then
+// we can at least get rid of some of these horrible hacks:
+//     $s = $this->select;
+//     $s->foo($a);
+//     $this->select = $s;
+// ================================================
+
+
 /**
 * a table of checkboxes for different options that are condensed into a single value by bitmask
 *
@@ -60,13 +75,14 @@ class Bitmask extends TextField {
   function Bitmask($name, $title, $description='', $checkbox_description) {
     parent::TextField($name, $title, $description);
     // $this->DEBUG=10;
-    $this->select = new CheckBoxTableList($name);
+    $select = new CheckBoxTableList($name); // see note above before refactoring $select out
     $bit = new CheckBox('bit', $checkbox_description);
     $hidden = new TextField('value');
-    $this->select->addFollowHidden($hidden);
-    $this->select->addCheckBox($bit);
-    $this->select->setFormat('id', '%s', array('iv'));
-    $this->select->addSelectAllFooter(true);
+    $select->addFollowHidden($hidden);
+    $select->addCheckBox($bit);
+    $select->setFormat('id', '%s', array('iv'));
+    $select->addSelectAllFooter(true);
+    $this->select = $select;
     $this->numcols=1;
   }
 
@@ -78,7 +94,9 @@ class Bitmask extends TextField {
   * @param array $list List of label=>value pairs
   */
   function setValuesArray($list, $idfield='id', $valfield='iv'){
-    $this->select->setValuesArray($list, $idfield, $valfield);
+    $s = $this->select;   // see note above for why we have this horrible hack
+    $s->setValuesArray($list, $idfield, $valfield);
+    $this->select = $s;
   }
 
   /**
@@ -87,19 +105,21 @@ class Bitmask extends TextField {
   * @param array   new headings to use for the table
   */
   function setTableHeadings($headings) {
-    $this->select->tableHeadings = $headings;
+    $s = $this->select;   // see note above for why we have this horrible hack
+    $s->tableHeadings = $headings;
+    $this->select = $s;
   }
 
   function update($data) {
-    #preDump($data);
     #echo "Name=({$this->namebase},{$this->name})<br />";
     $value = 0;
     $fieldSet = false;
-    $this->select->namebase = $this->namebase;
-    $this->select->MakeBoxMatrix();
-    for ($i=0; $i<count($this->select->list->choicelist); $i++) {
-      $fieldname  = $this->select->boxMatrix[$i][0]->namebase . $this->select->boxMatrix[$i][0]->name;
-      $fieldvalue = $this->select->boxMatrix[$i][0]->namebase . 'value';
+    $s = $this->select;   // see note above for why we have this horrible hack
+    $s->namebase = $this->namebase;
+    $s->MakeBoxMatrix();
+    for ($i=0; $i<count($s->list->choicelist); $i++) {
+      $fieldname  = $s->boxMatrix[$i][0]->namebase . $s->boxMatrix[$i][0]->name;
+      $fieldvalue = $s->boxMatrix[$i][0]->namebase . 'value';
       #echo "/$fieldname/$fieldvalue/";
       if (isset($data[$fieldname]) && isset($data[$fieldvalue])) {
         $value |= $data[$fieldvalue];
@@ -113,6 +133,7 @@ class Bitmask extends TextField {
     if ($fieldSet) {
       $data[$this->namebase.$this->name] = $value;
     }
+    $this->select = $s;
 
     //$this->select->update($data);
     if (parent::update($data)) {
@@ -124,8 +145,10 @@ class Bitmask extends TextField {
   function set($value) {
     #echo "Set Name=({$this->namebase},{$this->name})<br />";
     parent::set($value);
-    $this->select->namebase = $this->namebase;
-    $this->select->MakeBoxMatrix();
+    $s = $this->select;
+    $s->namebase = $this->namebase;
+    $s->MakeBoxMatrix();
+    $this->select = $s;
     $this->setChecks($value);
   }
 
@@ -210,6 +233,7 @@ class Bitmask extends TextField {
   * PHP5 clone statement will perform only a shallow copy of the object. Any subobjects must also be cloned
   */
   function __clone() {
+    //echo "<hr /><br />Cloning bitmask<br />";
     // Force a copy of contents of $this->list
     if (is_object($this->select)) $this->select = clone($this->select);
   }

@@ -156,6 +156,10 @@ class JoinData extends Field {
     #echo "NAME={$this->name}";
     $this->rows[$rowNum] = clone($this->protoRow);
     $this->rows[$rowNum]->setNamebase($this->namebase.$this->name.'-'.$rowNum.'-');
+
+    #for ($i=0; $i<=$rowNum; $i++) {
+    #  echo "NB = ". $this->rows[$i]->namebase."<br />";
+    #}
   }
 
   /**

@@ -315,6 +315,7 @@ class Field {
   */
   function __clone() {
     // Force a copy of contents of $this->list
+    //echo "Cloning field";
     if (is_object($this->attr)) $this->attr = clone($this->attr);
   }
 

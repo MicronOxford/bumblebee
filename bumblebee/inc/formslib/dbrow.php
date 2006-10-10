@@ -452,6 +452,15 @@ class DBRow extends DBO {
   }
 
 
+  /**
+  * PHP5 clone method
+  *
+  * PHP5 clone statement will perform only a shallow copy of the object. Any subobjects must also be cloned
+  */
+  function __clone() {
+    parent::__clone();
+  }
+
 } // class dbrow
 
 ?>

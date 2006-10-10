@@ -274,6 +274,7 @@ class CheckBoxTableList extends ChoiceList {
   * PHP5 clone statement will perform only a shallow copy of the object. Any subobjects must also be cloned
   */
   function __clone() {
+    //echo "cloning checkboxtablelist";
     parent::__clone();
     // Force a copy of various members
     if (is_object($this->followHidden)) $this->followHidden = clone($this->followHidden);
