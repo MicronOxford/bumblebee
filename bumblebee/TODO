@@ -10,7 +10,6 @@ Bugs:
 * 1.2 series
 ------------
 Installer
-  * make DROP TABLE an optional command in the setup (different privs for CREATE and DROP)
   * artwork?
   * make anonymous user for browsing?
   * test log file exists, writable
@@ -31,7 +30,6 @@ Features:
   * longer bookings
   * list view of bookings
   * jump to dropdowns on calendar
-  * strip tags from admin strings too?
   * polite "offline" mode
   * trap unconfigured and send to installer
   * trap configured and get out of installer
