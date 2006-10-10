@@ -81,6 +81,8 @@ class Calendar {
   var $isAdminView = 0;
   /** @var boolean    only show free/busy information and not the details of the bookings */
   var $freeBusyOnly = false;
+  /** @var integer    time after which the calendar should automatically reload itself (in milliseconds) */
+  var $reloadInterval = 300000;  //    5 * 60 * 1000
 
   /** @var integer    debug level (0=off, 10=verbose)  */
   var $DEBUG = 0;
@@ -431,7 +433,9 @@ class Calendar {
 
     $today = new SimpleDate(time());
 
-    $t = '<table class="tabularobject calendar" summary="'.T_('Extended view of instrument bookings').'">';
+    $t = $this->_makeRefreshScript();
+
+    $t .= '<table class="tabularobject calendar" summary="'.T_('Extended view of instrument bookings').'">';
     $weekstart = clone($this->start);
     $weekstart->addDays(-7);
     $t .= '<tr><th colspan="2"></th>';
@@ -533,7 +537,9 @@ class Calendar {
 
     $today = new SimpleDate(time());
 
-    $t = '<table class="tabularobject calendar" summary="'.T_('Day view of instrument bookings').'">';
+    $t = $this->_makeRefreshScript();
+
+    $t .= '<table class="tabularobject calendar" summary="'.T_('Day view of instrument bookings').'">';
     $t .= '<tr><td class="dummy"></td><th></th>';
     $t .= '<td class="caldayzoom">';
     $t .= '<div class="caldate">'
@@ -569,6 +575,19 @@ class Calendar {
     $t .= '</table>';
     return $t;
   }
+
+  function _makeRefreshScript() {
+    if ($this->reloadInterval <=0) return '';
+
+    return "
+      <script type='text/javascript'>
+        function ReloadPageCalendar() {
+          location.reload();
+        }
+        setTimeout('ReloadPageCalendar()', {$this->reloadInterval});
+      </script>";
+  }
+
 
   /**
   * logging function -- logs debug info to stdout
