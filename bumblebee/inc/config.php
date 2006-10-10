@@ -130,6 +130,8 @@ if (!empty($CONFIG['main']['ExtraIncludePath'])) {
 $tz = isset($CONFIG['language']['timezone']) ? $CONFIG['language']['timezone'] : "Europe/London";
 date_default_timezone_set($tz);
 
+$CONFIG['auth']['permissionsModel'] = issetSet($CONFIG['auth']['permissionsModel'], false);
+
 if (! $NON_FATAL_CONFIG) {
   /** load the language pack */
   require_once 'i18n.php';
