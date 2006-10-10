@@ -100,6 +100,10 @@ $SESSIDX = md5(dirname(__FILE__));
 ini_set("session.use_only_cookies",1); #don't permit ?PHPSESSID= stuff
 #ini_set("session.cookie_lifetime",60*60*1); #login expires after x seconds
 
+
+if (!empty($CONFIG['main']['ExtraIncludePath'])) {
+  set_include_path($REBASE_INSTALL.$CONFIG['main']['ExtraIncludePath'].PATH_SEPARATOR.get_include_path());
+}
 if (isset($CONFIG['error_handling']['UseDBug']) && $CONFIG['error_handling']['UseDBug'] && ! $NON_FATAL_CONFIG) {
   // include the dBug pretty printer for error and debugging dumps
   // http://dbug.ospinto.com/
@@ -118,10 +122,6 @@ if (! $NON_FATAL_CONFIG) {
     /** load only the php files required to fullfill this request) */
     define('LOAD_ALL_PHP_FILES', 0);
   }
-}
-
-if (!empty($CONFIG['main']['ExtraIncludePath'])) {
-  set_include_path($REBASE_INSTALL.$CONFIG['main']['ExtraIncludePath'].PATH_SEPARATOR.get_include_path());
 }
 
 // As of PHP5.0, we *must* set the timezone for date calculations, otherwise
