@@ -285,7 +285,7 @@ class CheckBoxTableList extends ChoiceList {
     for ($i=0; $i<count($bm); $i++) {
       $this->boxMatrix[$i] = array();
       for ($j=0; $j<count($bm[$i]); $j++) {
-        $this->boxMatrix[$i][j] = $bm[$i][$j];
+        $this->boxMatrix[$i][$j] = $bm[$i][$j];
       }
     }
   }
