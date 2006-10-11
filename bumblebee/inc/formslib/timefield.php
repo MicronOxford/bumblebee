@@ -55,6 +55,14 @@ class TimeField extends Field {
   var $droplist;
   /** @var boolean       is the time *really* editable ... ?? FIXME  */
   var $editableOutput=1;
+  /** @var integer       maximum number of booking slots to include in the dropdown */
+  var $maxSlotsDropDown = 20;
+  /** @var boolean       go beyond the end of the slots that are part of a group for booking */
+  var $extendDropDown = true;
+  /** @var integer       max period to be included in the dropdown in seconds */
+  var $maxPeriodDropDown = 86400;
+  /** @var SimpleDate    max date for the dropdown to go to */
+  var $maxDateDropDown = null;
 
   /**
   *  Create a new field object, designed to be superclasses
@@ -88,7 +96,7 @@ class TimeField extends Field {
   *
   * @return string
   */
-  function getdisplay() {
+  function getDisplay() {
     $t = '';
     if ($this->editable && $this->editableOutput && ! $this->hidden) {
       $t .= $this->selectable();
@@ -171,9 +179,9 @@ class TimeField extends Field {
       $this->representation = TF_FIXED;
     } elseif ($this->slot->isFreeForm) {
       $this->representation = TF_FREE_ALWAYS;
-    } elseif ($this->isStart || $this->slot->numslotsFollowing < 1) {
+/*    } elseif ($this->isStart || $this->slot->numslotsFollowing < 1) {
       $this->log('Starting slot or none following, TF_FIXED');
-      $this->representation = TF_FIXED;
+      $this->representation = TF_FIXED;*/
     } elseif (($duration = new SimpleTime($this->getValue()))
               && $this->slot->start->ticks + $duration->ticks != $this->slot->stop->ticks) {
       //$this->log($this->slot->start->ticks.' + '.$duration->ticks.' != '.$this->slot->stop->ticks);
@@ -193,9 +201,50 @@ class TimeField extends Field {
    * @access private
    */
   function _prepareDropDown() {
-    $durations = $this->slot->allSlotDurations();
+    $ends = $this->slot->allSlotEnds();
+    $nextSlot = $this->slot;
+    $nextStart = $ends[count($ends)-1];
+    $max = clone($this->slot->start);
+    $max->addSecs($this->maxPeriodDropDown);
+
+    while ($this->extendDropDown && count($ends) < $this->maxSlotsDropDown && is_object($nextSlot)) {
+      #echo "Looking for next start. ";
+      #echo $nextStart->dateTimeString()." ";
+      $nextSlot = $this->list->findSlotByStart($nextStart);
+      if (! is_object($nextSlot)) {
+        // this should never really happen....
+        break;
+      }
+      $nextStart = $nextSlot->stop;
+      if (! $nextSlot->isAvailable) {
+        #echo "Not available <br />";
+        break;
+      }
+      if ($this->slot->start->ticks + $this->maxPeriodDropDown < $nextSlot->stop->ticks) {
+        #echo "Past max allowable ".$nextSlot->stop->dateTimeString()."<br />";
+        break;
+      }
+      if ($this->maxDateDropDown != null && $this->maxDateDropDown->ticks < $nextSlot->stop->ticks) {
+        #echo "Conflicting with booking ".$nextSlot->stop->dateTimeString()."<br />";
+        break;
+      }
+
+      $ends[] = $nextSlot->stop;
+      #echo "Got an end: ". $nextSlot->stop->dateTimeString() ." ";
+    }
+
+    $dropVals = array();
+
+    foreach($ends as $d) {
+      $duration = new SimpleTime($d->ticks - $this->slot->start->ticks);
+      #echo $d->datetimeString() . " -- ".$duration->timestring()."<br />";
+      $dropVals[$duration->timeString()] = sprintf(T_("%s (until %s)"), $duration->timeString(), $d->datetimeString());
+    }
+    #preDump($dropVals);
+
+
     $this->droplist = new DropList($this->name, $this->description);
-    $this->droplist->setValuesArray($durations, 'id', 'iv');
+    $this->droplist->setValuesArray($dropVals, 'id', 'iv');
     $this->droplist->setFormat('id', '%s', array('iv'));
     //preDump($durations);
     //for ($j = count($durations)-1; $j >=0 && $durations[$j] != $this->value; $j--) {
@@ -256,6 +305,7 @@ class TimeField extends Field {
    * @access private
    */
   function _fixedTimeSlots() {
+    return true;
     if ($this->slotStart->ticks == 0) {
       $this->fixedTimeSlots = false;
     } else {
@@ -369,7 +419,7 @@ class TimeField extends Field {
     if (empty($name)) {
       $name = $this->name;
     }
-    if ($force || ! $this->sqlHidden) {
+    if (! $this->sqlHidden) {
       return $name .'='. qw($this->time->getHMSstring());
     } else {
       return '';

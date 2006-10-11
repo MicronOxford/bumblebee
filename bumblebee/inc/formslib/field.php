@@ -191,7 +191,7 @@ class Field {
   * @return string  in SQL assignable form
   */
   function sqlSetStr($name='', $force=false) {
-    if ($force || ! $this->sqlHidden) {
+    if (! $this->sqlHidden) {
       if (empty($name)) {
         $name = $this->name;
       }

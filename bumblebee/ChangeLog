@@ -3,7 +3,18 @@
 	* feature: internals now use new permissions model
 	* feature: interface for editing permissions
 	* feature: explicitly set the timezone for date calculations
-	* janitorial: clean up some PHP4isms (function prototypes same in subclasses; TZ set)
+	* feature: provide forwards/backwards quick navigation on calendar
+	  (closes #1574596)
+	* feature: calendar automatically reloads after timeout
+	  (closes #1574622)
+	* feature: bookings can now span multiple timeslots and can be
+	  arbitrarily long (closes #1575374, #1575376)
+	* bugfix: enforce future booking restrictions when making
+	  bookings (closes #1567290)
+	* bugfix: dropdown list no longer overlaps existing bookings
+	  (closes #1575377)
+	* janitorial: clean up some PHP4isms (function prototypes same in
+	  subclasses; TZ set)
 
 2006-10-XX Seth Sims <sims1001@alltel.net>
 	* feature: double entry password model included
@@ -17,13 +28,16 @@
 	* bugfix: billing reports now work under PHP5
 	* bugfix: don't make bookings if no project is set
 	* reduce memory consumption for calendar rendering under PHP4
-	* push session information into a unique slot to prevent session clashes
-	* feature: give option of different password hashing schemes for the users table
+	* push session information into a unique slot to prevent session
+	  clashes
+	* feature: give option of different password hashing schemes for
+	  the users table
 	* vastly improved German translation thanks to Jürgen Fricke
 
 2006-06-01 Stuart Prescott <bumblebee@nanonanonano.net>
 	* 1.1.3 release
-	* i18n: relax default valid-user-regexp to make life easier for non-English speaking users
+	* i18n: relax default valid-user-regexp to make life easier for
+	  non-English speaking users
 	* i18n: use UTF-8 encoding when talking to MySQL
 	* feature: enforce the username validity test when creating new users
 	* feature: reworked installer (much easier to understand)
@@ -32,7 +46,8 @@
 2006-05-31 Stuart Prescott <bumblebee@nanonanonano.net>
 	* 1.1.2 release
 	* i18n: translate days of week and months of year
-	* bugfix: PHP5 tweaks for instrument editing component and timeslot management
+	* bugfix: PHP5 tweaks for instrument editing component and timeslot
+	  management
 
 2006-05-25 Stuart Prescott <bumblebee@nanonanonano.net>
 	* 1.1.1 release

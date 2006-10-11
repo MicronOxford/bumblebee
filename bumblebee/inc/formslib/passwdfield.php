@@ -85,7 +85,7 @@ class PasswdField extends TextField {
     if (empty($name)) {
       $name = $this->name;
     }
-    if ($force || ! $this->sqlHidden && $this->value != '') {
+    if (! $this->sqlHidden && $this->value != '') {
       $pass = makePasswordHash($this->value);
       return $name ."='$pass'";
     } else {

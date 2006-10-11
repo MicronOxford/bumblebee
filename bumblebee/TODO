@@ -27,9 +27,7 @@ Features:
 
   * more flexible data entry (amounts including currency symbols)
   * report generation memory usage (can't generate NMR report for Q1 2006)
-  * longer bookings
   * list view of bookings
-  * jump to dropdowns on calendar
   * polite "offline" mode
   * trap unconfigured and send to installer
   * trap configured and get out of installer
@@ -53,7 +51,6 @@ Features:
 
 
   * IE5Mac compatability?
-  * heirarchical+fine-grained permission system
   * groups of instruments
   * bring email templates into the database
   * limit certain users to specific ranges of time on a particular instrument (Gordon Holtslander)
@@ -81,7 +78,6 @@ i18n:
   * overlay multiple instruments on one calendar
   * show multiple instruments side-by-side in columns
   * jump to day calendar on day view
-  * use http-refresh or js timeout to refresh calendar after n mins
   * hold bookings for approval / display on calendar or not?
 
   * reportbug script that includes phpinfo() etc

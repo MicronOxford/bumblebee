@@ -140,7 +140,7 @@ function echoSQLerror($echo, $fatal=0) {
         preDump(debug_backtrace());
       } else {
         logmsg(1, "SQL ERROR=[$echo]");
-        logmsg(1, join("//", debug_backtrace()));
+        logmsg(1, serialize(debug_backtrace()));
       }
       die('<b>'.T_('Fatal SQL error. Aborting.').'</b>');
     }

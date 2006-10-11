@@ -33,7 +33,7 @@ define('TSARRAYMIN', 1);
 /** flag that slot was not found by the slot finding routines */
 define('TS_SLOT_NOT_FOUND', -10000);
 
-  
+
 /**
 * Timeslot validation based on rules passed to us (presumably from an SQL entry)
 *
@@ -44,19 +44,19 @@ define('TS_SLOT_NOT_FOUND', -10000);
 class TimeSlotRule {
   var $picture = '';
   var $slots;
-  
+
   var $DEBUG = 0;
-  
+
   function TimeSlotRule($pic) {
     $this->picture = $pic;
     $this->_interpret();
   }
-  
-  /** 
+
+  /**
    * timeslot picture syntax (concatinate onto one line, no spaces)
-   * [x] or [x-y] 
+   * [x] or [x-y]
    *         specify the day of week (or range of days). 0=Sunday, 6=Saturday
-   * <slot;slot;slot> 
+   * <slot;slot;slot>
    *         around the comma-separated slot specifications for that day. All times from 00:00 to 24:00
    *         must be included in the list
    * starttime-stoptime/num_slots-discount%,comment
@@ -92,9 +92,9 @@ class TimeSlotRule {
     for ($dow=0; $dow<=6; $dow++) {
       $this->_fillDaySlots($dow);
     }
-  } 
-  
-  function _findDayLines() {  
+  }
+
+  function _findDayLines() {
     $daylines = array();
     preg_match_all('/\[.+?\>/', $this->picture, $daylines);
     foreach ($daylines[0] as $d) {
@@ -112,7 +112,7 @@ class TimeSlotRule {
       }
     }
   }
-  
+
   function _fillDaySlots($dow) {
     $times = array();
     #preDump($this->slots[$dow]['picture']);
@@ -121,7 +121,7 @@ class TimeSlotRule {
     if ($times[0] == '<>') {
       $times[1]='00:00-24:00/0';
     }
-    
+
     $i=0;
     foreach(preg_split('/;/', $times[1]) as $slot) {
       #echo "found slot=$slot\n";
@@ -130,9 +130,9 @@ class TimeSlotRule {
       if (preg_match('/(\d\d:\d\d)-(\d\d:\d\d)\/(\d+|\*)(-\d+%)?(?:,(.+))?/', $slot, $tmp)) {
         /* regexp:       HH:MM    -  HH:MM     /n         -x%       ,comment
            group:         1            2        3          4          5
-           notes:  
+           notes:
               n can be digit or *
-              x is optional and can be one or more digits 
+              x is optional and can be one or more digits
               ,comment is optional and the comma is not included in the captured pattern
               ?: means don't capture the contents of that subpattern () to $tmp
         */
@@ -189,12 +189,12 @@ class TimeSlotRule {
     }
     #var_dump($this->slots);
   }
-  
+
 /*  function allSlotStart() {
     echo "STUB: ". __FILE__ .' '. __LINE__;
     return array('09:00','10:00','15:00');
   }*/
-  
+
   /**
    * return true if the specified date & time correspond to a valid starting time according
    * to this object's slot rules.
@@ -219,14 +219,14 @@ class TimeSlotRule {
     }
     return $this->_isValidStartStop($date, TSSTOP);
   }
-  
+
   /**
    * perform the above operations with no code duplication
    */
   function _isValidStartStop($date, $type, $daysdate=0) {
     return ! is_object($this->_findSlot($date, $type, $daysdate));
   }
-  
+
   /**
    * return true if the specified dates & times are valid start/stop times
    * to this object's slot rules.
@@ -234,7 +234,7 @@ class TimeSlotRule {
   function isValidSlot($startdate, $stopdate) {
     return $this->isValidStart($startdate) && $this->isValidStop($stopdate);
   }
-  
+
   /**
    * return true if the specified dates & times are valid as above, but only occupy one slot
    */
@@ -242,7 +242,7 @@ class TimeSlotRule {
     $slot = $this->_findSlot($startdate, TSSTART);
     return $slot->stop->ticks == $stopdate->ticks;
   }
-      
+
   /**
    * return the corresponding the slot specified by the given start date.
    * ASSUMES that the specified date is a valid start, else behaviour is undefined.
@@ -253,15 +253,15 @@ class TimeSlotRule {
   function findSlotByStart($date, $datetime=0) {
     return $this->_findSlot($date, TSSTART, $datetime);
   }
-  
+
   /**
-   * return the 
+   * return the
    * as per findSlotByStart
    */
   function findSlotByStop($date, $datetime=0) {
     return $this->_findSlot($date, TSSTOP, $datetime);
   }
-  
+
   /**
    * return the corresponding startdate/time to a time that is possibly within a slot
    */
@@ -275,8 +275,8 @@ class TimeSlotRule {
   function findNextSlot($date, $datetime=0) {
     return $this->_findSlot($date, TSNEXT, $datetime);
   }
-  
-  
+
+
   /**
    * return the corresponding slot number of the starting or stopping date-time $date
    * returns -1 if no matching slot found.
@@ -285,6 +285,8 @@ class TimeSlotRule {
    *
    * this function will return a slot from the previous day if the slot spans days and
    * that is the appropriate slot.
+   *
+   * WARNING: There be dragons....
    */
   function _findSlot($date, $match, $datetime=0) {
     #$this->DEBUG=10;
@@ -299,7 +301,7 @@ class TimeSlotRule {
       $dow = $datetime->dow();
       $day = clone($datetime);
       //echo "Found $time->timeString(), $dow, $day->dateTimeString()\n";
-    } 
+    }
     $slot=0;
     $timecmp = $match;
     if ($match == TSWITHIN) $timecmp = TSSTOP;
@@ -308,7 +310,7 @@ class TimeSlotRule {
     $stopvar  = TSSTOP;
     #preDump($this->slots[$dow]);
     $this->log("TimeSlotRule::_findSlot:(".$time->timeString().", ".$this->slots[$dow][0]->$startvar->ticks.", $time->ticks, $dow)", 10);
-    if ($time->ticks < $this->slots[$dow][0]->$startvar->ticks 
+    if ($time->ticks < $this->slots[$dow][0]->$startvar->ticks
         || $match ==  TSSTOP && $time->ticks <= $this->slots[$dow][0]->$startvar->ticks) {
       $dow = ($dow+6)%7;
       $day->addDays(-1);
@@ -325,8 +327,8 @@ class TimeSlotRule {
     $this->log("Asking for ($dow, $slot, $timecmp, $match)", 10);
     //preDump($this->slots[$dow]);
     while(
-            //print_r("Asking for ($dow, $slot, $match)<br />") && 
-            $slot < count($this->slots[$dow])-TSARRAYMIN 
+            //print_r("Asking for ($dow, $slot, $match)<br />") &&
+            $slot < count($this->slots[$dow])-TSARRAYMIN
             && $time->ticks >= $this->slots[$dow][$slot]->$timecmp->ticks) {
       //echo $time->ticks .'#'. $this->slots[$dow][$slot]->$timecmp->ticks."\n";
       //echo $slot .'#'.(count($this->slots[$dow])-TSARRAYMIN)."\n";
@@ -339,14 +341,14 @@ class TimeSlotRule {
       $slot--;
       $finalslot = ($slot < count($this->slots[$dow])-TSARRAYMIN
                     && $slot >= 0
-                    && $time->ticks == $this->slots[$dow][$slot]->$timecmp->ticks) 
+                    && $time->ticks == $this->slots[$dow][$slot]->$timecmp->ticks)
                     ? $slot : TS_SLOT_NOT_FOUND ;
     } elseif ($match == TSWITHIN) {
       $a=TSSTART;
       $b=TSSTOP;
       $finalslot =  ($slot < count($this->slots[$dow])-TSARRAYMIN
                       && $time->ticks >= $this->slots[$dow][$slot]->$a->ticks
-                      && $time->ticks <  $this->slots[$dow][$slot]->$b->ticks) 
+                      && $time->ticks <  $this->slots[$dow][$slot]->$b->ticks)
                       ? $slot : TS_SLOT_NOT_FOUND ;
       //echo "Found containing slot: $finalslot\n";
     } else { //TSNEXT
@@ -371,11 +373,12 @@ class TimeSlotRule {
     }
     $returnSlot = clone($this->slots[$dow][$finalslot]);
     //preDump($returnSlot);
+    #echo $day->datetimestring();
     $returnSlot->setDate($day);
-//    preDump($returnSlot->dump());
+    #preDump($returnSlot->dump());
     return $returnSlot;
   }
-  
+
   function dump($html=1) {
     #preDump($this->slots);
     #return;
@@ -388,7 +391,7 @@ class TimeSlotRule {
       foreach ($this->slots[$day] as $k => $v) {
         if (is_numeric($k)) {
           $s .= $v->dump($html);
-//           $s .= "\t" . $v->tstart->timeString() 
+//           $s .= "\t" . $v->tstart->timeString()
 //                 ." - ". $v->tstop->timeString() .$eol;
         }
       }
@@ -401,7 +404,7 @@ class TimeSlotRule {
       echo $logstring."<br />\n";
     }
   }
-  
+
 
 } //class TimeSlotRule
 
@@ -434,7 +437,7 @@ class RuleSlot {
   var $nextSlot;
   var $comment = '';
   var $discount = 0;
-  
+
   function RuleSlot($picture, $startStr, $stopStr, $tstart, $tstop, $tgran=NULL) {
     $this->picture = $picture;
     $this->startStr = $startStr;
@@ -450,7 +453,7 @@ class RuleSlot {
     $this->stop = clone($date);
     $this->stop->setTime($this->tstop);
   }
-  
+
   function dump($html=1) {
     $eol = $html ? "<br />\n" : "\n";
     return 'Slot:'."\t"
@@ -463,17 +466,30 @@ class RuleSlot {
     ;
   }
 
-  function allSlotDurations() {
+  function allSlotDurations($offset=0) {
     $duration = array();
     $cslot = $this;
     $cdur = $this->tgran;
     for ($i=0; $i<=$this->numslotsFollowing; $i++) {
       #echo $i.': length='.$cslot->tgran->timeString().', sum='.$cdur->timeString()."<br />\n";
-      $duration[$cdur->timeString()] = $cdur->timeString();
+      $dur = clone($cdur);
+      $dur->addSecs($offset);
+      $duration[] = clone($cdur);
       $cdur->addTime($cslot->tgran);
       $cslot = $cslot->nextSlot;
     }
     return $duration;
   }
-  
+
+  function allSlotEnds() {
+    $ends = array();
+    $cslot = $this;
+    for ($i=0; $i<=$this->numslotsFollowing; $i++) {
+      $cslot->setDate($this->start);
+      $ends[] = clone($cslot->stop);
+      $cslot = $cslot->nextSlot;
+    }
+    return $ends;
+  }
+
 }  // RuleSlot

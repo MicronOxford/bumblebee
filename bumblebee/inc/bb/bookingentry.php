@@ -95,6 +95,7 @@ class BookingEntry extends DBRow {
     $startticks = new SimpleDate($start);
     $f->value = $startticks->ticks;
     $this->addElement($f);
+
     $startf = new DateTimeField('bookwhen', T_('Start'));
 //     $this->starttime = &$startf;
     $startf->required = 1;
@@ -112,6 +113,7 @@ class BookingEntry extends DBRow {
     $startf->setSlotStart($start);
     $startf->setEditableOutput(false, true);
     $this->addElement($startf);
+
     $durationf = new TimeField('duration', T_('Duration'));
 //     $this->duration = &$durationf;
     $durationf->required = 1;
@@ -125,7 +127,18 @@ class BookingEntry extends DBRow {
 //     echo $f->manualRepresentation .'-'.$f->time->manualRepresentation."\n";
     $durationf->setSlots($this->slotrules);
     $durationf->setSlotStart($start);
+
+    $nextBooking = new NextBooking($start, $instrumentid);
+    $durationf->maxDateDropDown = $nextBooking->booking;
+
+    // load in instrument settings for how the dropdowns should be configured
+    $instrrow = quickSQLSelect('instruments', 'id', $instrumentid);
+    $durationf->extendDropDown    = issetSet($instrrow,   'bookacrossslots', true);
+    $durationf->maxSlotsDropDown  = issetSet($instrrow,   'maxslotsbook',    20);
+    $durationf->maxPeriodDropDown = issetSet($instrrow,   'maxbooklength',   86400);
+
     $this->addElement($durationf);
+
     $f = new DropList('projectid', T_('Project'));
     $f->connectDB('projects',
                   array('id', 'name', 'longname'),
@@ -457,7 +470,12 @@ class BookingEntry extends DBRow {
       $this->errorMessage .= T_('Sorry, the instrument is not free at this time.').'<br /><br />'
                           .sprintf(T_('Instrument booked by %s (%s) from %s until %s.'),
                                   $row['username'],
-                                  '<a href="'.makeURL('view', array('instrid'=>$instrument,'bookid'=>$row['bookid'])).'">'
+                                  '<a href="'.
+                                    makeURL('book',
+                                      array('instrid' => $instrument,
+                                            'bookid'  => $row['bookid'],
+                                            'isodate' => $startdate->dateString())
+                                           ).'">'
                                       .T_('booking #').$row['bookid'].'</a>',
                                   xssqw($row['bookwhen']),
                                   xssqw($row['stoptime']));

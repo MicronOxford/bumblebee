@@ -202,7 +202,7 @@ function DateTimeField($name, $longname='', $description='') {
     if (empty($name)) {
       $name = $this->name;
     }
-    if ($force || ! $this->sqlHidden) {
+    if (! $this->sqlHidden) {
       $date = new SimpleDate($this->getValue());
       return $name .'='. qw($date->dateTimeString());
     } else {
