@@ -184,11 +184,7 @@ class ActionBook extends ActionViewBase {
   }
 
   function _createBookingForbidden() {
-    echo $this->reportAction(STATUS_FORBIDDEN,
-                array(
-                  STATUS_FORBIDDEN => T_('Sorry, making bookings at that time is not permitted')
-                )
-              );
+    $this->_Forbidden(T_('Sorry, making bookings at that time is not permitted.'));
   }
 
 } // class ActionBook

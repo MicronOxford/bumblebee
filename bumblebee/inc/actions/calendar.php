@@ -52,6 +52,12 @@ class ActionCalendar extends ActionViewBase {
       return;
     }
 
+    if (! $this->auth->permitted(BBROLE_VIEW_CALENDAR, $this->instrument)) {
+      $this->_viewCalendarForbidden();
+      return;
+    }
+
+
     $this->row = quickSQLSelect('instruments', 'id', $this->instrument);
 
     if (isset($this->PD['isodate']) &&
@@ -316,6 +322,10 @@ class ActionCalendar extends ActionViewBase {
                                   array('isodate'=>$start->dateString()));
     echo $cal->displayDayAsTable($daystart,$daystop,$granularity,$timelines);
     echo $this->displayInstrumentFooter();
+  }
+
+  function _viewCalendarForbidden() {
+    $this->_Forbidden(T_('Sorry, you are not permitted to view this instrument\'s calendar.'));
   }
 
 } // class ActionCalendar

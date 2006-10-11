@@ -211,5 +211,17 @@ class ActionViewBase extends ActionAction {
     return $this->auth->permitted($permission, $this->instrument);
   }
 
+
+  function _Forbidden($message=null) {
+    if ($message == null) {
+      $message = T_('Sorry, you are not permitted to do that with this instrument.');
+    }
+    echo $this->reportAction(STATUS_FORBIDDEN,
+                array(
+                  STATUS_FORBIDDEN => $message
+                )
+              );
+  }
+
 }
 ?>
