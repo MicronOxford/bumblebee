@@ -160,9 +160,7 @@ class User extends DBRow {
         $bm = new Bitmask('permissions',  T_('Instrument permissions'), T_('Grant these instrument permissions to the user'), T_('Grant'));
         $bm->setValuesArray($this->InstrumentPermissions(), 'id', 'iv');
         $bm->showHideButtons = true;
-        if ($id == -1) {
-          $bm->set(BBPERM_INSTR_BASIC);
-        }
+        $bm->defaultValue = BBPERM_INSTR_BASIC;
         $f->addElement($bm);
       }
 

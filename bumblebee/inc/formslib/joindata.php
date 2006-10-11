@@ -184,6 +184,9 @@ class JoinData extends Field {
       $this->rows[$i]->restriction = $this->jtRightIDCol .'='. qw($this->rows[$i]->fields[$this->jtRightIDCol]->value);
       $this->rows[$i]->insertRow = ! ($this->rows[$i]->fields[$this->jtRightIDCol]->value > 0);
       $this->log('This row flagged with insertRow '.$this->rows[$i]->insertRow);
+      if ($this->rows[$i]->insertRow) {
+        $this->rows[$i]->fillWithDefaults();
+      }
     }
     //preDump($this->rows);
   }

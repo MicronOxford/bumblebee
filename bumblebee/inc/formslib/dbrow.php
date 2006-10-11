@@ -407,6 +407,15 @@ class DBRow extends DBO {
     }
   }
 
+  function fillWithDefaults() {
+    #echo "Filling with defaults";
+    foreach (array_keys($this->fields) as $k) {
+      #echo get_class($this->fields[$k]);
+      #echo '"'.$this->fields[$k]->defaultValue.'"';
+      $this->fields[$k]->set($this->fields[$k]->defaultValue);
+    }
+  }
+
   /**
   * Quick and dirty dump of fields (values only, not a full print_r
   */
