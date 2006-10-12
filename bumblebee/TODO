@@ -31,6 +31,7 @@ Features:
   * polite "offline" mode
   * trap unconfigured and send to installer
   * trap configured and get out of installer
+  * complain inside bumblebee if installer still exists
 
   * i18n:
     - date/time customisation
