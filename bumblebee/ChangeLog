@@ -13,6 +13,7 @@
 	  bookings (closes #1567290)
 	* bugfix: dropdown list no longer overlaps existing bookings
 	  (closes #1575377)
+	* bugfix: allow for https URLs (closes #1568944)
 	* janitorial: clean up some PHP4isms (function prototypes same in
 	  subclasses; TZ set)
 
