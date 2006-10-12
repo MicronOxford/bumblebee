@@ -339,7 +339,7 @@ class ActionBilling extends ActionExport {
             '/__groupname__/' => $group['longname'],
             '/__start__/'     => $start,
             '/__stop__/'      => $stop,
-            '/__host__/'      => 'http://'.$_SERVER['SERVER_NAME'].$BASEURL
+            '/__host__/'      => makeAbsURL()
                     );
     $txt = preg_replace(array_keys($replace),
                         array_values($replace),

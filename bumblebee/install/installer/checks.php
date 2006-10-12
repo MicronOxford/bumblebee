@@ -179,7 +179,8 @@ function check_postinst($data) {
 
   // check to see if ini files are accessible to outsiders using HTTP
   echo '<!-- checking access to config files -->';
-  $htdbini    = 'http://'.$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].$BASEPATH.'/config/db.ini';
+  require_once 'inc/menu.php';
+  $htdbini    = makeAbsURL('/config/db.ini');
   $localdbini = '..'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'db.ini';
   if (! ini_get('allow_url_fopen')) {
     $s[] = "WARNING: The accessibility of your ini files (and passwords!) to outsiders cannot be checked."
@@ -209,7 +210,7 @@ function check_postinst($data) {
     } elseif (preg_match('/\s404 Not Found/', $php_errormsg)) {
       $s[] = "WARNING: db.ini file gave a 404 Not Found error. If you have manually moved the config files "
             ."out of the webserver's file tree then that's fine, but if you haven't done this then your "
-            ."setup in <code>bumblebee.ini</code> is specifying an incorrect location for your Bumblebee installation.";
+            ."setup in <code>bumblebee.ini</code> is specifying an incorrect location for your Bumblebee installation. (I looked in <code>$htdbini</code> and <code>$localdbini</code>.)";
     } else {
         $s[] = "WARNING: db.ini file appears to be protected against downloading, "
               ."but I didn't get a 403 Forbidden error. "
@@ -223,8 +224,8 @@ function check_postinst($data) {
 
   // check to see if bumblebee.ini has the right place for the installation
   echo '<!-- checking ini file base location -->';
-  $htbb[]  = 'http://'.$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].$BASEURL;
-  $htbb[]  = 'http://'.$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].$BASEPATH.'/';
+  $htbb[]  = makeAbsURL();
+  $htbb[]  = makeAbsURL('/');
   if (! ini_get('allow_url_fopen')) {
     $s[] = "WARNING: I can't test to see that your bumblebee.ini file points to the right URL.."
           ."You can enable the PHP option <code>allow_url_fopen</code> in the <code>php.ini</code> file and rerun this test,"
@@ -247,7 +248,7 @@ function check_postinst($data) {
               ."but I couldn't find any evidence that it was a Bumblebee installation.";
         $warn = true;
       } else {
-        $s[] = "GOOD: I could find your installation using http.";
+        $s[] = "GOOD: I could find your installation through your web server (found at {$htbb[0]} and {$htbb[1]}).";
       }
     } else {
       $s[] = "ERROR: I couldn't find a web page at your  <a href='$htbb[0]' target='_blank'>configured location</a>.";

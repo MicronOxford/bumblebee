@@ -109,7 +109,7 @@ class ActionBookContact extends ActionAction {
             '/__phone__/'               => $data['contact-phone'],
             '/__organisation__/'        => $data['contact-organisation'],
             '/__comments__/'            => $data['contact-comments'],
-            '/__host__/'                => 'http://'.$_SERVER['SERVER_NAME'].$BASEURL
+            '/__host__/'                => makeAbsURL()
                     );
     $txt = preg_replace(array_keys($replace),
                         array_values($replace),

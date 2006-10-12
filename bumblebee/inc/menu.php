@@ -218,16 +218,59 @@ class UserMenu {
 * @return string URL
 * @global string base URL for the installation
 */
-function makeURL($action, $list=NULL, $escape=true) {
+function makeURL($action=NULL, $list=NULL, $escape=true) {
   global $BASEURL;
   $list = is_array($list) ? $list : array();
-  $list['action'] = $action;
+  if ($action !== NULL) $list['action'] = $action;
   $args = array();
   foreach ($list as $field => $value) {
     $args[] = $field.'='.urlencode($value);
   }
   $delim = $escape ? '&amp;' : '&';
-  return $BASEURL.'?'.join($delim, $args);
+  if (count($args) > 0) return $BASEURL.'?'.join($delim, $args);
+
+  return $BASEURL;
+}
+
+
+/**
+* Create an absolute URL for an anchor (include protocol and port)
+*
+* @param mixed   $target
+* @param array   $list      (optional) key => value data to be added to the URL
+* @param boolean $escape    use &amp; rather than & in the URL
+* @return  string  Absolute URL
+*/
+function makeAbsURL($target=NULL, $escape=true) {
+
+  if (isset($_SERVER['HTTPS']) && !strcasecmp($_SERVER['HTTPS'], 'on')) {
+    $protocol = 'https';
+  } else {
+    $protocol = 'http';
+  }
+
+  $port = isset($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : 80;
+
+  // filter out well known ports from the URL
+  if (($protocol == 'http' && $port == 80) || ($protocol == 'https' && $port == 443)) {
+    unset($port);
+  }
+
+  $host = $_SERVER['SERVER_NAME'];
+  if (empty($host)) {
+    list($host) = explode(':', $_SERVER['HTTP_HOST']);
+  }
+
+  $serverPart = $protocol .'://'. $host . (isset($port) ? ':'. $port : '');
+
+  if (is_array($target) || $target === NULL) {
+    $pathPart = makeURL($target[0], $target[1], $escape);
+  } else {
+    global $BASEPATH;
+    $pathPart = $BASEPATH . $target;
+  }
+
+  return $serverPart . $pathPart;
 }
 
 ?>

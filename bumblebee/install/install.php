@@ -41,9 +41,6 @@ $steps->addStep(new InstallStep('Clean-up',           'do_cleanup'));
 $steps->setCurrent(1);
 $userSubmitted = array_merge(getSetupDefaults(), $_POST);
 
-if(!isset($_POST['sqlUseDropTable']))
-	$userSubmitted['sqlUseDropTable'] = '0';
-
 if (! isset($_POST['havedata']) || isset($_POST['do_userdata'])) {
   printStepUserForm($userSubmitted, $steps);
   exit;

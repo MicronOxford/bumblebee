@@ -385,7 +385,7 @@ class BookingEntry extends DBRow {
             '/__duration__/'            => $duration->timeString(),
             '/__name__/'                => $user['name'],
             '/__username__/'            => $user['username'],
-            '/__host__/'      => 'http://'.$_SERVER['SERVER_NAME'].$BASEURL
+            '/__host__/'                => makeAbsURL()
                     );
     $txt = preg_replace(array_keys($replace),
                         array_values($replace),

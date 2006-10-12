@@ -124,17 +124,17 @@ if (! $NON_FATAL_CONFIG) {
   }
 }
 
-// As of PHP5.0, we *must* set the timezone for date calculations, otherwise
-// many errors will be emitted. For a list of timezones, see
-//     http://php.net/manual/en/timezones.php
-$tz = isset($CONFIG['language']['timezone']) ? $CONFIG['language']['timezone'] : "Europe/London";
-date_default_timezone_set($tz);
-
 $CONFIG['auth']['permissionsModel'] = issetSet($CONFIG['auth'], 'permissionsModel', false);
 
 if (! $NON_FATAL_CONFIG) {
   /** load the language pack */
   require_once 'i18n.php';
+
+  // As of PHP5.0, we *must* set the timezone for date calculations, otherwise
+  // many errors will be emitted. For a list of timezones, see
+  //     http://php.net/manual/en/timezones.php
+  $tz = isset($CONFIG['language']['timezone']) ? $CONFIG['language']['timezone'] : "Europe/London";
+  date_default_timezone_set($tz);
 }
 
 /**

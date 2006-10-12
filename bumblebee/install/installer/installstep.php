@@ -16,12 +16,12 @@ class InstallStep {
   var $next = NULL;
   var $name;
   var $action;
-  
+
   function InstallStep($name, $action) {
     $this->name = $name;
     $this->action = $action;
   }
-  
+
   function setNext($step) {
     $this->next = $step;
   }
@@ -29,22 +29,22 @@ class InstallStep {
   function setPrev($step) {
     $this->prev = $step;
   }
-  
+
   function getNextButton($name=NULL) {
     if ($this->next == NULL) return '';
     return $this->next->makeNextButton($name);
   }
-  
+
   function getPrevButton($name=NULL) {
     if ($this->prev == NULL) return '';
     return $this->prev->makePrevButton($name);
   }
-  
+
   function getThisButton($name=NULL) {
     if ($name == NULL) $name = $this->name;
     return $this->makeButton($name);
   }
-  
+
   function makePrevButton($name) {
     if ($name == NULL) $name = $this->name;
     return $this->makeButton('&laquo '.$name);
@@ -54,7 +54,7 @@ class InstallStep {
     if ($name == NULL) $name = $this->name;
     return $this->makeButton($name.' &raquo');
   }
-  
+
   function makeButton($name) {
     return "<input type='submit' name='{$this->action}' value='{$name}' />";
   }
@@ -74,15 +74,15 @@ class InstallStepCollection {
     }
     $this->steps[$num+1] = $step;
   }
-  
+
   function numSteps() {
     return count($this->steps);
   }
-  
+
   function getIndex() {
     return $this->index;
   }
-  
+
   function getStepButtons() {
     $t = '';
     foreach ($this->steps as $num => $s) {
@@ -91,14 +91,14 @@ class InstallStepCollection {
     }
     return $t;
   }
-  
+
   function getPrevNextButtons($prev=NULL, $next=NULL) {
     if ($prev   === NULL) $prev = 'Previous';
     if ($next   === NULL) $next = 'Continue';
     return $this->steps[$this->index]->getPrevButton($prev).' '
           .$this->steps[$this->index]->getNextButton($next);
   }
-  
+
   function getPrevReloadNextButtons($prev=NULL, $reload=NULL, $next=NULL) {
     if ($prev   === NULL) $prev = 'Previous';
     if ($reload === NULL) $reload = 'Reload';
@@ -107,22 +107,22 @@ class InstallStepCollection {
           .$this->steps[$this->index]->getThisButton($reload).' '
           .$this->steps[$this->index]->getNextButton($next);
   }
-  
+
   function getPrevSkipToButtons($skip=1, $prev=NULL, $next=NULL) {
     if ($prev   === NULL) $prev = 'Previous';
     if ($next   === NULL) $next = 'Continue';
     return $this->steps[$this->index]->getPrevButton($prev).' '
           .$this->steps[$this->index+$skip]->getNextButton($next);
   }
-  
+
   function setCurrent($num) {
     $this->index = $num;
   }
-  
+
   function increment() {
     $this->index++;
   }
-  
+
 }
 
 ?>
