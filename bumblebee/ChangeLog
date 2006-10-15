@@ -1,3 +1,11 @@
+2006-10-XX Stuart Prescott <bumblebee@nanonanonano.net>
+	* bugfix: use UNION ALL not UNION to join consumables and
+	  instrument usage data in billing reports (closes #1577754)
+	* bugfix: exclude projectid==0 from export data functions 
+	  (closes #1577715)
+	* bugfix: actually filter the data export for billing summaries
+	  by group as promised in by the interface (closes #1577717)
+
 2006-08-01 Stuart Prescott <bumblebee@nanonanonano.net>
 	* 1.0.6 release
 	* feature: phone numbers can be included in the calendar too 
