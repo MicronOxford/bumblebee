@@ -76,7 +76,7 @@ class DBList {
         $u->restriction = array_merge($u->restriction, $this->unionrestriction);
         $union[] = $u->_getSQLsyntax();
       }
-      $q = '('.join($union, ') UNION (').')';
+      $q = '('.join($union, ') UNION ALL (').')';
       $q .= (is_array($this->order) ? ' ORDER BY '.join($this->order,', ') : '');
       $q .= (is_array($this->group) ? ' GROUP BY '.join($this->group,', ') : '');
     } else {
