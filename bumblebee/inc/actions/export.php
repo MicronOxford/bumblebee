@@ -41,7 +41,7 @@ require_once 'inc/formslib/radiolist.php';
 
 /**
 * Export various views of the booking data in numerous formats
-*  
+*
 * A number of different data views can be created (see exporttypes.php)
 * and the data can be exported in various formats (see htmlexport.php and arrayexport.php)
 *
@@ -83,8 +83,8 @@ class ActionExport extends BufferedAction {
   var $_verb = 'export';
 
   /**
-  * Initialising the class 
-  * 
+  * Initialising the class
+  *
   * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
@@ -104,7 +104,7 @@ class ActionExport extends BufferedAction {
       $this->selectExport();
     } else {
       $allDataOK = true;
-      $this->_daterange = new DateRange('daterange', T_('Select date range'), 
+      $this->_daterange = new DateRange('daterange', T_('Select date range'),
                       T_('Enter the dates over which you want to export data'));
       $this->_daterange->update($this->PD);
       $this->_daterange->checkValid();
@@ -116,7 +116,7 @@ class ActionExport extends BufferedAction {
         $this->unbuffer();
         $this->_daterange->setDefaults(DR_PREVIOUS, DR_QUARTER);
         echo $this->_daterange->display($this->PD);
-      } 
+      }
       if (! isset($this->format)) {
         #echo "don't have format<br />";
         $allDataOK = false;
@@ -139,7 +139,7 @@ class ActionExport extends BufferedAction {
       }
     }
   }
-  
+
   function mungeInputData() {
     parent::mungeInputData();
     if (isset($this->PD['outputformat'])) {
@@ -151,7 +151,7 @@ class ActionExport extends BufferedAction {
   * Generate HTML list for user to select which data export should be used
   *
   * @return void nothing
-  */  
+  */
   function selectExport() {
     $reportlist = array();
     foreach ($this->typelist->types as $type) {
@@ -168,12 +168,12 @@ class ActionExport extends BufferedAction {
   * Generate HTML list for user to select which data format should be used
   *
   * @return void nothing
-  */  
+  */
   function formatSelect() {
     global $CONFIG;
-    $formatlist = array(EXPORT_FORMAT_VIEW     => T_('View in web browser'), 
-                        EXPORT_FORMAT_VIEWOPEN => T_('View in web browser (new window)'), 
-                        EXPORT_FORMAT_CSV      => T_('Save as comma separated variable (csv)'), 
+    $formatlist = array(EXPORT_FORMAT_VIEW     => T_('View in web browser'),
+                        EXPORT_FORMAT_VIEWOPEN => T_('View in web browser (new window)'),
+                        EXPORT_FORMAT_CSV      => T_('Save as comma separated variable (csv)'),
                         EXPORT_FORMAT_TAB      => T_('Save as tab separated variable (txt)'));
     if ($CONFIG['export']['enablePDF']) {
       $formatlist[EXPORT_FORMAT_PDF] = T_('Save as pdf report');
@@ -187,8 +187,8 @@ class ActionExport extends BufferedAction {
       $select->setDefault(exportStringToCode($CONFIG['export']['defaultFormat']));
     }
     echo '<div style="margin: 2em 0 2em 0;">'.$select->display().'</div>';
-  }  
-  
+  }
+
   /**
   * Generate HTML form widget for user to control output.
   *
@@ -196,7 +196,7 @@ class ActionExport extends BufferedAction {
   * and which specific parts of the data should be included (i.e. restrict by group)
   *
   * @return void nothing
-  */  
+  */
   function outputSelect() {
     $export = $this->typelist->types[$this->PD['what']];
     for ($lim = 0; $lim < count($export->limitation); $lim++) {
@@ -235,25 +235,25 @@ class ActionExport extends BufferedAction {
   * Common submit button for this class
   *
   * @return void nothing
-  */  
+  */
   function _goButton() {
     echo '<input type="submit" name="submit" value="'.T_('Select').'" />';
   }
-      
+
   /**
   * Generate the data export and then send it to the user in the appropriate format
   *
   * @return void nothing
-  */  
+  */
   function returnExport() {
     $list = $this->_getDataList($this->PD['what']);
     $list->fill();
     if (count($list->data) == 0) {
       return $this->unbufferForError('<p>'.T_('No data found for those criteria').'</p>');
-    }      
+    }
     // start rendering the data
     $list->outputFormat = $this->format;
-    $list->formatList();   
+    $list->formatList();
     if ($this->format & EXPORT_FORMAT_USEARRAY) {
       $exportArray = new ArrayExport($list, $list->breakfield);
       $exportArray->header = $this->_reportHeader();
@@ -265,13 +265,13 @@ class ActionExport extends BufferedAction {
       $htmlExport = new HTMLExport($exportArray);
       $htmlExport->makeHTMLBuffer();
     }
-    
+
     //finally, direct the data towards its output
-    if ($this->format == EXPORT_FORMAT_PDF){ 
+    if ($this->format == EXPORT_FORMAT_PDF){
       // construct the PDF from $htmlbuffer
       $pdfExport = $this->_preparePDFExport($exportArray);
       $pdfExport->makePDFBuffer();
-      
+
       if ($pdfExport->writeToFile) {
         $this->unbuffer();
       } else {
@@ -293,12 +293,12 @@ class ActionExport extends BufferedAction {
       echo $htmlExport->export;
     }
   }
-  
+
   /**
   * Sets up the DBlist object so that it can query the db
   *
   * @return DBList query ready to run
-  */  
+  */
   function _getDataList($report) {
     $this->_export = $this->typelist->types[$report];
     $start = $this->_daterange->getStart();
@@ -319,12 +319,12 @@ class ActionExport extends BufferedAction {
     }
     return $list;
   }
-  
+
   /**
   * From the export definition in the ExportType generate a DBList query
   *
   * @return void DBList ready for query
-  */  
+  */
   function _getDBListFromExport(&$export, $start, $stop, $limitsOffset=0) {
     $where = $export->where;
     $where[] = $export->timewhere[0].qw($start->dateTimeString());
@@ -364,7 +364,7 @@ class ActionExport extends BufferedAction {
   * @todo //TODO:   there are limitations in the IN() syntax.... replace this with lots of booleans?
   *
   * @return array SQL field IN (list...) syntax
-  */  
+  */
   function _limitationSet($fields, $limitsOffset, $makeSQL=true) {
     $sets = array();
     for ($lim = 0; $lim < count($fields); $lim++) {
@@ -392,12 +392,12 @@ class ActionExport extends BufferedAction {
     }
     return $sets;
   }
-  
+
   /**
   * Set the filename and mimetype for the data export
   *
   * @return void nothing
-  */  
+  */
   function _getFilename() {
     switch ($this->format & EXPORT_FORMAT_MASK) {
       case EXPORT_FORMAT_CSV:
@@ -420,13 +420,13 @@ class ActionExport extends BufferedAction {
     $this->filename = parent::getFilename('export', $this->PD['what'], $ext);
     $this->mimetype = $type;
   }
-  
+
   /**
   * Generate the PDF for return to the user
   *
   * @uses PDFExport but only loaded here so that optional library can be absent without compile errors
   * @return string $pdf containing the PDF
-  */  
+  */
   function _preparePDFExport(&$exportArray) {
     require_once('inc/export/pdfexport.php');
     $pdf = new PDFExport($exportArray);
@@ -437,13 +437,13 @@ class ActionExport extends BufferedAction {
   * Generate the standard report header from the date range and the description in ExportType
   *
   * @return string the title to be used for this report
-  */  
+  */
   function _reportHeader() {
     $start = $this->_daterange->getStart();
     $stop  = $this->_daterange->getStop();
     $s = sprintf($this->_export->header, $start->dateString(), $stop->dateString());
     return $s;
-  }  
+  }
 
 }  //ActionExport
-?> 
+?>
