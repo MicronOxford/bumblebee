@@ -122,6 +122,7 @@ class ExportTypeList {
                     );
     $type->where[] = 'bookings.deleted <> 1';
     $type->where[] = 'bookings.userid <> 0';
+    $type->where[] = 'bookings.projectid <> 0';
     $type->group = array('instrument_name', 'bookwhen', 'user_name', 'project_name');
     $type->breakField = 'instrument_title';
     $type->omitFields['instrument_name'] = 1;
@@ -145,6 +146,7 @@ class ExportTypeList {
                     );
     $type->where[] = 'bookings.deleted <> 1';
     $type->where[] = 'bookings.userid <> 0';
+    $type->where[] = 'bookings.projectid <> 0';
     $type->pivot = array('instruments' => 
                               array('description'=> 'Group results by instrument',
                                     'group' => array('instrument_name', 'project_name'),
@@ -189,6 +191,7 @@ class ExportTypeList {
                    );
     $type->where[] = 'bookings.deleted <> 1';
     $type->where[] = 'bookings.userid <> 0';
+    $type->where[] = 'bookings.projectid <> 0';
     $type->pivot = array('instruments' => 
                               array('description'=> 'Group results by instrument',
                                     'group' => array('instrument_name', 'group_name',
@@ -231,6 +234,7 @@ class ExportTypeList {
                     );
     $type->where[] = 'bookings.deleted <> 1';
     $type->where[] = 'bookings.userid <> 0';
+    $type->where[] = 'bookings.projectid <> 0';
     $type->group = array('instrument_name', 'user_name');
     $type->breakField = 'instrument_title';
     $type->omitFields['instrument_title'] = 1;
@@ -269,6 +273,7 @@ class ExportTypeList {
                                     'omitFields' => array('username','user_name', 
                                                           'consumable_title'))
                         );
+    $type->where[] = 'consumables_use.projectid <> 0';
     $type->timewhere = array('usewhen >= ', 'usewhen < ');
     return $type;
   }
@@ -316,6 +321,7 @@ class ExportTypeList {
                                     'fieldOrder' => array('user_name', 'project_name', 'consumable_title', 'quantity', 'share') )
 
                         );
+    $type->where[] = 'consumables_use.projectid <> 0';
     $type->timewhere = array('usewhen >= ', 'usewhen < ');
     return $type;
   }
@@ -356,6 +362,7 @@ class ExportTypeList {
                                                           'consumable_name', 
                                                           'consumable_longname', 'consumable_title'))
                         );
+    $type->where[] = 'consumables_use.projectid <> 0';
     $type->timewhere = array('usewhen >= ', 'usewhen < ');
     return $type;
   }
@@ -390,6 +397,7 @@ class ExportTypeList {
                    );
     $type->where[] = 'bookings.deleted <> 1';
     $type->where[] = 'bookings.userid <> 0';
+    $type->where[] = 'bookings.projectid <> 0';
     //$type->group = '';
     //$type->group = array('instrument_name', 'group_name');
     $type->pivot = array('groups' =>
@@ -429,6 +437,7 @@ class ExportTypeList {
                    );
     $itype->where[] = 'bookings.deleted <> 1';
     $itype->where[] = 'bookings.userid <> 0';
+    $itype->where[] = 'bookings.projectid <> 0';
     $itype->group = array('groups.name', 'instruments.name');
 
     
@@ -449,6 +458,7 @@ class ExportTypeList {
                     );
     $ctype->group = array('groups.name', 'consumables.name');
     $ctype->timewhere = array('usewhen >= ', 'usewhen < ');          
+    $ctype->where[] = 'consumables_use.projectid <> 0';
 
 
 
@@ -495,6 +505,7 @@ class ExportTypeList {
                    );
     $itype->where[] = 'bookings.deleted <> 1';
     $itype->where[] = 'bookings.userid <> 0';
+    $itype->where[] = 'bookings.projectid <> 0';
     $itype->group = array('groups.name', 'instruments.name');
 
     
@@ -518,6 +529,7 @@ class ExportTypeList {
                                           'Cost to group', 'cost', EXPORT_CALC_TOTAL|EXPORT_HTML_RIGHT|EXPORT_HTML_MONEY, '*')
                     );
     $ctype->group = array('groups.name', 'consumables.name');
+    $ctype->where[] = 'consumables_use.projectid <> 0';
     $ctype->timewhere = array('usewhen >= ', 'usewhen < ');          
 
 
