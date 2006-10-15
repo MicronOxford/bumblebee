@@ -1,6 +1,6 @@
 <?php
 /**
-* View a list of instruments that are available
+* Base class for viewing and editing booking information
 *
 * @author    Stuart Prescott
 * @copyright  Copyright Stuart Prescott
@@ -20,7 +20,7 @@ require_once 'inc/date.php';
 require_once 'inc/actions/actionaction.php';
 
 /**
-* View a list of instruments so the user can view and make bookings
+* Base class for booking and viewing bookings
 * @package    Bumblebee
 * @subpackage Actions
 */

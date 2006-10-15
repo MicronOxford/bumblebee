@@ -1,6 +1,6 @@
 <?php
 /**
-* View a list of instruments that are available
+* Let the user either log in or fill in a contact form to make a booking.
 *
 * @author     Stuart Prescott
 * @copyright  Copyright Stuart Prescott
@@ -20,7 +20,7 @@ require_once 'inc/actions/login.php';
 require_once 'inc/date.php';
 
 /**
-* View a list of instruments so the user can view and make bookings
+* Let the user either log in or fill in a contact form to make a booking.
 * @package    Bumblebee
 * @subpackage Actions
 */

@@ -1,6 +1,6 @@
 <?php
 /**
-* View a bookings calendar and make bookings
+* Make, edit and delete bookings
 *
 * @author     Stuart Prescott
 * @copyright  Copyright Stuart Prescott
@@ -28,7 +28,7 @@ require_once 'inc/date.php';
 require_once 'inc/actions/viewbase.php';
 
 /**
-* View a bookings calendar and make bookings
+* Make edit or delete a booking
 * @package    Bumblebee
 * @subpackage Actions
 */
