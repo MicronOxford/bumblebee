@@ -409,7 +409,7 @@ class ExportTypeList {
 
 
   function _createBilling() {
-    $itype = new ExportType('billing-instruments', 'bookings', 'Billing data: complete: instruments', 'instruments');
+    $itype = new ExportType('billing-instruments', 'bookings', 'Billing data: complete: instruments', array('instruments','groups'));
     $itype->join[] = array('table' => 'instruments', 'condition' =>  'instruments.id=bookings.instrument');
     $itype->join[] = array('table' => 'projects', 'condition' =>  'bookings.projectid=projects.id');
     $itype->join[] = array('table' => 'projectgroups', 'condition' =>  'projectgroups.projectid=bookings.projectid');
@@ -432,7 +432,7 @@ class ExportTypeList {
     $itype->group = array('groups.name', 'instruments.name');
 
     
-    $ctype = new ExportType('billing-consumable', 'consumables_use', 'Billing data: complete: consumable usage', 'consumables');
+    $ctype = new ExportType('billing-consumable', 'consumables_use', 'Billing data: complete: consumable usage', array('consumables','groups'));
     $ctype->join[] = array('table' => 'consumables', 'condition' =>  'consumables.id=consumables_use.consumable');
     $ctype->join[] = array('table' => 'projectgroups', 'condition' =>  'projectgroups.projectid=consumables_use.projectid');
     $ctype->join[] = array('table' => 'groups', 'condition' =>  'groups.id=projectgroups.groupid');
@@ -470,7 +470,7 @@ class ExportTypeList {
   }
   
   function _createBillingSummary() {
-    $itype = new ExportType('billing-instruments', 'bookings', 'Billing data: summary: instruments', 'instruments');
+    $itype = new ExportType('billing-instruments', 'bookings', 'Billing data: summary: instruments', array('instruments','groups'));
     $itype->join[] = array('table' => 'instruments', 'condition' =>  'instruments.id=bookings.instrument');
     $itype->join[] = array('table' => 'projects', 'condition' =>  'bookings.projectid=projects.id');
     $itype->join[] = array('table' => 'projectgroups', 'condition' =>  'projectgroups.projectid=bookings.projectid');
@@ -498,7 +498,7 @@ class ExportTypeList {
     $itype->group = array('groups.name', 'instruments.name');
 
     
-    $ctype = new ExportType('billing-consumable', 'consumables_use', 'Billing data: summary: consumable usage', 'consumables');
+    $ctype = new ExportType('billing-consumable', 'consumables_use', 'Billing data: summary: consumable usage', array('consumables','groups'));
     $ctype->join[] = array('table' => 'consumables', 'condition' =>  'consumables.id=consumables_use.consumable');
     $ctype->join[] = array('table' => 'projectgroups', 'condition' =>  'projectgroups.projectid=consumables_use.projectid');
     $ctype->join[] = array('table' => 'groups', 'condition' =>  'groups.id=projectgroups.groupid');
