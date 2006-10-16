@@ -28,7 +28,6 @@ require_once 'inc/actions/bookinglist.php';
 */
 class ActionView extends ActionViewBase {
 
-  var $list;
   var $defaultListingLength = 14;
 
   /**
@@ -41,13 +40,13 @@ class ActionView extends ActionViewBase {
   function ActionView($auth, $PDATA) {
     parent::ActionViewBase($auth, $PDATA);
     $this->mungeInputData();
-
-    $this->list = new ActionBookingList($auth, $PDATA);
   }
 
   function go() {
     $this->selectInstrument();
     $this->showMyBookings();
+    $this->showMyProjectBookings();
+    $this->showMyGroupBookings();
   }
 
   /**
@@ -75,11 +74,55 @@ class ActionView extends ActionViewBase {
   }
 
   function showMyBookings() {
-    $this->list->tableCaption = '<h2>' . T_('My bookings') . '</h2>';
-    $this->list->noneFoundNotice = T_('You have no bookings between %s and %s.');
-    $this->list->user = $this->auth->getEUID();
-    $this->list->setDefaultRestrictions($this->defaultListingLength);
-    $this->list->showBookings();
+    $list = new ActionBookingList($this->auth, null);
+    $list->tableCaption = '<h2>' . T_('My bookings') . '</h2>';
+    $list->noneFoundNotice = T_('You have no bookings between %s and %s.');
+    $list->user = $this->auth->getEUID();
+    $list->setDefaultRestrictions($this->defaultListingLength);
+    $list->showBookings();
+  }
+
+  function showMyGroupBookings() {
+    global $TABLEPREFIX;
+
+    $list = new ActionBookingList($this->auth, null);
+    $list->tableCaption = '<h2>' . T_('My group\'s bookings') . '</h2>';
+    $list->noneFoundNotice = T_('Your group has no bookings between %s and %s.');
+
+    $projects = array();
+    $userid = $this->auth->getEUID();
+    $q = "SELECT userprojects.projectid as projectid "
+        ."FROM {$TABLEPREFIX}projectgroups AS projectgroups "
+        ."LEFT JOIN {$TABLEPREFIX}userprojects AS userprojects "
+            ."ON userprojects.projectid=projectgroups.projectid "
+        ."WHERE userprojects.userid=".qw($userid);
+    $sql = db_get($q, false);
+    while ($g = db_fetch_array($sql)) {
+      $projects[] = $g['projectid'];
+    }
+    $list->projects = $projects;
+
+    $list->setDefaultRestrictions($this->defaultListingLength);
+    $list->showBookings();
+  }
+
+  function showMyProjectBookings() {
+    global $TABLEPREFIX;
+
+    $list = new ActionBookingList($this->auth, null);
+    $list->tableCaption = '<h2>' . T_('My project\'s bookings') . '</h2>';
+    $list->noneFoundNotice = T_('Your project has no bookings between %s and %s.');
+
+    $projects = array();
+    $userid = $this->auth->getEUID();
+    $q = "SELECT projectid FROM {$TABLEPREFIX}userprojects WHERE userid=".qw($userid);
+    $sql = db_get($q, false);
+    while ($g = db_fetch_array($sql)) {
+      $projects[] = $g['projectid'];
+    }
+    $list->projects = $projects;
+    $list->setDefaultRestrictions($this->defaultListingLength);
+    $list->showBookings();
   }
 
 } // class ActionView

@@ -130,6 +130,20 @@ function qw($v) {
 }
 
 /**
+* Quote each element in a set of values.
+*
+* @param array $list    list of values to qw quote for use in SQL
+* @returns array  list of quoted strings
+*/
+function array_qw($list) {
+  $newlist = array();
+  foreach ($list as $a) {
+    $newlist[] = qw($a);
+  }
+  return $newlist;
+}
+
+/**
 * Remove quoting around expressions and remove slashes in data to escape bad chars
 *
 * @param string $v string to be unquoted

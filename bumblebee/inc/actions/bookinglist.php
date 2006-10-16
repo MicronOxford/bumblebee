@@ -29,8 +29,13 @@ class ActionBookingList extends ActionViewBase {
   var $restrictions = array();
   var $startListing;
   var $stopListing;
+
+  //restrictions that might be placed on the listing
   var $instrument;
   var $user;
+  var $groups;
+  var $projects;
+
   var $showUser = true;
 
   var $tableCaption = '';
@@ -72,6 +77,22 @@ class ActionBookingList extends ActionViewBase {
     if (isset($this->instrument) && ! empty($this->instrument)) {
       $this->restrictions[] = 'instrument='.qw($this->instrument);
     }
+
+/*    if (is_array($this->groups)) {
+      if (count($this->groups) > 0) {
+        $this->restrictions[] = 'groupid in ('.join(',', array_qw($this->groups)).')';
+      } else {
+        $this->restrictions[] = '0';
+      }
+    }*/
+
+    if (is_array($this->projects)) {
+      if (count($this->projects) > 0) {
+        $this->restrictions[] = 'projectid in ('.join(',', array_qw($this->projects)).')';
+      } else {
+        $this->restrictions[] = '0';
+      }
+    }
   }
 
   /**
@@ -83,6 +104,8 @@ class ActionBookingList extends ActionViewBase {
     $restriction = join($this->restrictions, ' AND ');
 
     $blist = new AnchorTableList('Bookings', T_('Upcoming bookings'), 4);
+    $blist->hrefbase = makeURL('book', array('bookid'=>'__id__'));
+
     $blist->connectDB('bookings',
                           array('bookings.id', 'bookwhen', 'duration',
                                 'instruments.name AS instrumentname', 'username', 'users.name'),
@@ -92,7 +115,6 @@ class ActionBookingList extends ActionViewBase {
                           NULL,
                           array('users'       => 'userid=users.id',
                                 'instruments' => 'instrument=instruments.id'));
-    $blist->hrefbase = makeURL('book', array('bookid'=>'__id__'));
 
     $headings = array(T_('Date &amp; Time'),
                       T_('Duration'),
