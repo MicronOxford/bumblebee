@@ -18,6 +18,8 @@ checkValidInclude();
 require_once 'inc/formslib/anchortablelist.php';
 /** parent object */
 require_once 'inc/actions/viewbase.php';
+/** list of bookings */
+require_once 'inc/actions/bookinglist.php';
 
 /**
 * View a list of instruments so the user can view and make bookings
@@ -25,6 +27,9 @@ require_once 'inc/actions/viewbase.php';
 * @subpackage Actions
 */
 class ActionView extends ActionViewBase {
+
+  var $list;
+  var $defaultListingLength = 14;
 
   /**
   * Initialising the class
@@ -36,10 +41,13 @@ class ActionView extends ActionViewBase {
   function ActionView($auth, $PDATA) {
     parent::ActionViewBase($auth, $PDATA);
     $this->mungeInputData();
+
+    $this->list = new ActionBookingList($auth, $PDATA);
   }
 
   function go() {
     $this->selectInstrument();
+    $this->showMyBookings();
   }
 
   /**
@@ -62,8 +70,16 @@ class ActionView extends ActionViewBase {
     }
     $instrselect->hrefbase = makeURL('calendar', array('instrid'=>'__id__'));
     $instrselect->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'), ' %20.20s', array('location'));
-    echo T_("<h2>Please select an instrument to view</h2>");
+    echo '<h2>' . T_('Please select an instrument to view') . '</h2>';
     echo $instrselect->display();
+  }
+
+  function showMyBookings() {
+    $this->list->tableCaption = '<h2>' . T_('My bookings') . '</h2>';
+    $this->list->noneFoundNotice = T_('You have no bookings between %s and %s.');
+    $this->list->user = $this->auth->getEUID();
+    $this->list->setDefaultRestrictions($this->defaultListingLength);
+    $this->list->showBookings();
   }
 
 } // class ActionView

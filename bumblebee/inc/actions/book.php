@@ -58,9 +58,10 @@ class ActionBook extends ActionViewBase {
   }
 
   function go() {
-    if (! isset($this->PD['instrid'])
-          || $this->PD['instrid'] < 1
-          || $this->PD['instrid'] == '') {
+    if (! isset($this->PD['bookid'])
+        && ( ! isset($this->PD['instrid'])
+              || $this->PD['instrid'] < 1
+              || $this->PD['instrid'] == '')) {
       $err = 'Invalid action specification in actions/book.php::go(): no instrument specified';
       $this->log($err);
       trigger_error($err, E_USER_WARNING);
