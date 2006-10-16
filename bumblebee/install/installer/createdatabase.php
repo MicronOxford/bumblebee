@@ -22,8 +22,8 @@ function getSetupDefaults() {
   $defaults['sqlUser']        = $defaults['sqlDefaultUser'];
   $defaults['sqlDefaultPass'] = 'bumblebeepass';
   $defaults['sqlPass']        = $defaults['sqlDefaultPass'];
-  $defaults['sqlUseDropTable'] = '1';
-  
+  $defaults['sqlUseDropTable'] = '0';
+
   $defaults['bbDefaultAdmin']     = 'BumblebeeAdmin';
   $defaults['bbDefaultAdminName'] = 'Queen Bee';
   $defaults['bbDefaultAdminPass'] = 'defaultpassword123';
@@ -39,7 +39,7 @@ function getSetupDefaults() {
 */
 function constructSQL($source, $replacements, $includeAdmin) {
   $sqlSourceFile = $source;
-    
+
   $sqlTablePrefix       = $replacements['sqlTablePrefix'];
   $sqlDefaultHost       = $replacements['sqlDefaultHost'];
   $sqlHost              = $replacements['sqlHost'];
@@ -58,7 +58,7 @@ function constructSQL($source, $replacements, $includeAdmin) {
   $bbAdminPass          = $replacements['bbAdminPass'];
 
   $sql = file($sqlSourceFile);
-  
+
   $sql = preg_replace("/(DELETE .+ WHERE User=')$sqlDefaultUser';/",
                       "$1$sqlUser';", $sql);
   $sql = preg_replace("/(INSERT INTO user .+)'$sqlDefaultHost','$sqlDefaultUser',\s*PASS.+\)(.+);/",
@@ -70,7 +70,7 @@ function constructSQL($source, $replacements, $includeAdmin) {
   // REVOKE GRANT OPTION ON *.* FROM bumblebee;
   $sql = preg_replace("/(REVOKE .+ FROM) $sqlDefaultUser;/",
                       "\$1 $sqlUser;", $sql);
-  // CREATE OR DROP DATABASE                     
+  // CREATE OR DROP DATABASE
   $sql = preg_replace("/^(.+) DATABASE(.*) $sqlDefaultDB/",
                       "\$1 DATABASE\$2 $sqlDB", $sql);
   $sql = preg_replace("/USE $sqlDefaultDB;/",
@@ -89,19 +89,19 @@ function constructSQL($source, $replacements, $includeAdmin) {
   // make the admin user
   $sql = preg_replace("/INSERT INTO (users)/",
                       "INSERT INTO $sqlTablePrefix\$1", $sql);
-  
+
   $sql = preg_replace("/\('$bbDefaultAdmin','$bbDefaultAdminName',MD5\('$bbDefaultAdminPass'\),1\)/",
                       "('$bbAdmin','$bbAdminName','".md5($bbAdminPass)."',1);", $sql);
   $sql = preg_replace('/^(.*?)--.*$/',
                       '$1', $sql);
   $sql = preg_grep('/^\s*$/', $sql, PREG_GREP_INVERT);
-  
+
   $stream = join($sql,'');
   if (! $includeAdmin) {
     $stream = substr($stream, strpos($stream, "USE $sqlDB"));
     $stream = "-- SQL user and database creation code removed as per user request.\n".$stream;
   }
-  
+
   $settingComment = "-- Bumblebee SQL load file for ".$_SERVER['SERVER_NAME']."\n"
                    ."-- date: ".date('r', time())."\n"
                    ."-- sourced from $sqlSourceFile\n"
