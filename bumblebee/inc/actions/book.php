@@ -68,6 +68,16 @@ class ActionBook extends ActionViewBase {
       return;
     }
 
+    if (isset($this->PD['bookid'])
+        && ( ! isset($this->PD['instrid'])
+              || $this->PD['instrid'] < 1
+              || $this->PD['instrid'] == '')) {
+       $booking = quickSQLSelect('bookings', 'id', $this->PD['bookid']);
+       $this->instrument = $booking['instrument'];
+       $start = new SimpleDate($booking['bookwhen']);
+       $this->PD['isodate'] = $start->dateString();
+    }
+
     $this->row = quickSQLSelect('instruments', 'id', $this->instrument);
 
     if (isset($this->PD['delete']) && isset($this->PD['bookid'])) {
