@@ -24,6 +24,8 @@ require_once 'inc/typeinfo.php';
 require_once 'inc/permissions.php';
 /** logging functions */
 require_once 'inc/logging.php';
+/** system configuration */
+require_once 'inc/bb/configreader.php';
 
 /**
 * User *authorisation* and *authentication* object
@@ -67,11 +69,11 @@ class BumblebeeAuth extends BasicAuth {
   }
 
   function _checkAnonymous(&$data) {
-    global $CONFIG;
+    $conf = ConfigReader::getInstance();
     if ((isset($_POST['anonymous']) || isset($_GET['anonymous']))
-        && issetSet($CONFIG['display'], 'AnonymousAllowed', false)) {
-      $data['username'] = $CONFIG['display']['AnonymousUsername'];
-      $data['pass'] = $CONFIG['display']['AnonymousPassword'];
+        && $conf->value('display', 'AnonymousAllowed', false)) {
+      $data['username'] = $conf->value('display', 'AnonymousUsername');
+      $data['pass']     = $conf->value('display', 'AnonymousPassword');
     }
   }
 
@@ -104,7 +106,7 @@ class BumblebeeAuth extends BasicAuth {
 
 
   function instrument_permissions($instrument) {
-    global $CONFIG;
+    $conf = ConfigReader::getInstance();
 
     if (isset($this->permissions[$instrument])) {
       return $this->permissions[$instrument];
@@ -119,7 +121,7 @@ class BumblebeeAuth extends BasicAuth {
           .' WHERE userid=' . qw($this->uid);
       $sql = db_get($q, false);
       while ($row = db_fetch_array($sql)) {
-        if (isset($row['permissions']) && $CONFIG['auth']['permissionsModel']) {
+        if (isset($row['permissions']) && $conf->value('auth', 'permissionsModel')) {
           $permission = $row['permissions'];
         } else {
           $permission = $this->_constructInstrumentPermission($row);
@@ -134,7 +136,7 @@ class BumblebeeAuth extends BasicAuth {
                               array($this->uid, $instrument)
                            );
       if (is_array($row)) {
-        if (isset($row['permissions']) && $CONFIG['auth']['permissionsModel']) {
+        if (isset($row['permissions']) && $conf->value('auth', 'permissionsModel')) {
           $permission = $row['permissions'];
         } else {
           $permission = $this->_constructInstrumentPermission($row);
@@ -222,12 +224,12 @@ class BumblebeeAuth extends BasicAuth {
   }
 
   function _loadPermissions() {
-    global $CONFIG;
+    $conf = ConfigReader::getInstance();
 
     if (! $this->isLoggedIn()) return;
 
     /// FIXME
-    if (isset($this->user_row['permissions']) && $CONFIG['auth']['permissionsModel']) {
+    if (isset($this->user_row['permissions']) && $conf->value('auth', 'permissionsModel')) {
       $this->system_permissions = (int) $this->user_row['permissions'];
     } else {
       logmsg(2, "Making up some permissions for user. Upgrade database format to get rid of this message.");

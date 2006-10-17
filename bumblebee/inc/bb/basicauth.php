@@ -53,11 +53,9 @@ class BasicAuth {
   * @param array   $data    array containing keys 'username' and 'pass'
   * @param boolean $recheck (optional) ignore session data and check anyway
   * @param string  $table  (optional) db table from which login data should be taken
-  * @global base path for installation
-  * @global session base
   */
   function BasicAuth($data, $recheck = false, $table='users') {
-    global $BASEPATH, $SESSIDX;
+    $conf = ConfigReader::getInstance();
     // Only start the session if one has not already been started (e.g. to cope
     // with the situation where session.auto_start=1 in php.ini or where
     // the entire thing is embedded within some other framework.
@@ -69,7 +67,7 @@ class BasicAuth {
     if (! session_id()) {
       #print "Creating new session". session_id();;
       session_name('BumblebeeLogin');
-      session_set_cookie_params(ini_get('session.cookie_lifetime'), $BASEPATH.'/');
+      session_set_cookie_params(ini_get('session.cookie_lifetime'), $conf->BasePath.'/');
       session_start();
       #print "Started session, ". session_id();
     }
@@ -108,8 +106,10 @@ class BasicAuth {
   * @returns string  error message
   */
   function loginError() {
-    global $CONFIG;
-    if ($this->DEBUG || ($CONFIG['auth']['authAdvancedSecurityHole'] && $CONFIG['auth']['verboseFailure'])) {
+    $conf = ConfigReader::getInstance();
+    if ($this->DEBUG ||
+          ($conf->value('auth', 'authAdvancedSecurityHole') &&
+           $conf->value('auth', 'verboseFailure'))) {
       return xssqw($this->_error);
     } elseif (strpos($this->_error, ':') !== false) {
       // protect any additional info that is in the error string:
@@ -130,8 +130,8 @@ class BasicAuth {
   * @param mixed  $value  value to store
   */
   function _var_put($var, $value) {
-    global $SESSIDX;
-    $_SESSION[$SESSIDX][$var] = $value;
+    $conf = ConfigReader::getInstance();
+    $_SESSION[$conf->SessionIndex][$var] = $value;
   }
 
   /**
@@ -139,8 +139,8 @@ class BasicAuth {
   * @returns mixed  value stored
   */
   function _var_get($var) {
-    global $SESSIDX;
-    return issetSet($_SESSION[$SESSIDX], $var);
+    $conf = ConfigReader::getInstance();
+    return issetSet($_SESSION[$conf->SessionIndex], $var);
   }
 
   /**
@@ -185,7 +185,7 @@ class BasicAuth {
   * @returns boolean credentialsOK
   */
   function _login($data) {
-    global $CONFIG;
+    $conf = ConfigReader::getInstance();
     // a login attempt must have a password
     if (! isset($data['pass']) ) {
       $this->_error = 'Login failed: no password specified.';
@@ -205,7 +205,7 @@ class BasicAuth {
     $this->user_row = $row;
 
     // if the admin user has locked themselves out of the system, let them get back in:
-    if ($CONFIG['auth']['authAdvancedSecurityHole'] && $CONFIG['auth']['recoverAdminPassword']) {
+    if ($conf->value('auth','authAdvancedSecurityHole') && $conf->value('auth','recoverAdminPassword')) {
       $this->_createSession($row);
       return true;
     }
@@ -216,11 +216,11 @@ class BasicAuth {
     }
 
     $authOK = 0;
-    if ($CONFIG['auth']['useRadius'] && $CONFIG['auth']['RadiusPassToken'] == $row['passwd']) {
+    if ($conf->value('auth', 'useRadius') && $conf->value('auth', 'RadiusPassToken') == $row['passwd']) {
       $authOK = $this->_auth_via_radius($USERNAME, $PASSWORD);
-    } elseif ($CONFIG['auth']['useLDAP'] && $CONFIG['auth']['LDAPPassToken'] == $row['passwd']) {
+    } elseif ($conf->value('auth','useLDAP') && $conf->value('auth','LDAPPassToken') == $row['passwd']) {
       $authOK = $this->_auth_via_ldap($USERNAME, $PASSWORD);
-    } elseif ($CONFIG['auth']['useLocal']) {
+    } elseif ($conf->value('auth', 'useLocal')) {
       $this->localLogin = 1;
       $authOK = $this->_auth_local($USERNAME, $PASSWORD);
     } else {   //system is misconfigured
@@ -239,9 +239,9 @@ class BasicAuth {
   }
 
   function _retrieveUserInfo($identifier, $type=1) {
-    global $CONFIG;
+    $conf = ConfigReader::getInstance();
     $row = quickSQLSelect('users',($type?'username':'id'),$identifier);
-    if ($CONFIG['auth']['authAdvancedSecurityHole'] && $CONFIG['auth']['recoverAdminPassword']) {
+    if ($conf->value('auth','authAdvancedSecurityHole') && $conf->value('auth','recoverAdminPassword')) {
       if (! is_array($row)) {
         $row = array('id' => -1);
       }
@@ -319,16 +319,15 @@ class BasicAuth {
 
   /**
   *
-  * @global array config
   */
   function _auth_local($username, $password) {
-    global $CONFIG;
+    $conf = ConfigReader::getInstance();
     $passOK = check_password($password, $this->user_row['passwd']);
     if (! $passOK) {
       $this->_error = T_('Login failed: bad password');
     }
-    if ($passOK && issetSet($CONFIG['auth'], 'convertEntries', false)
-                && passwordHashType($this->user_row['passwd']) != issetSet($CONFIG['auth'], 'LocalPassToken')) {
+    if ($passOK && $conf->value('auth', 'convertEntries', false)
+                && passwordHashType($this->user_row['passwd']) != $conf->value('auth', 'LocalPassToken')) {
       $this->updatePassword($password);
     }
     return $passOK;

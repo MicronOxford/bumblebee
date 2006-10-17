@@ -33,12 +33,21 @@ $CONFIGLOCATION = $REBASE_INSTALL.'config/';
 * @global array $CONFIG
 */
 global $CONFIG;
-$CONFIG = parse_ini_file($CONFIGLOCATION.'bumblebee.ini',1);
-if (! is_array($CONFIG)) {
-  // if the config file doesn't exist, then we're pretty must stuffed
-  trigger_error("Bumblebee misconfiguration: I could not find the bumblebee.ini file in $CONFIGLOCATION. Please give me a config file so I can do something useful.", $NON_FATAL_CONFIG ? E_USER_NOTICE : E_USER_ERROR);
-  $config_error = 1;
-}
+
+require_once 'inc/bb/configreader.php';
+$conf = ConfigReader::getInstance();
+$conf->LoadFile($CONFIGLOCATION.'bumblebee.ini');
+$conf->ParseConfig;
+
+$CONFIG = $conf->data;
+
+
+// $CONFIG = parse_ini_file($CONFIGLOCATION.'bumblebee.ini',1);
+// if (! is_array($CONFIG)) {
+//   // if the config file doesn't exist, then we're pretty must stuffed
+//   trigger_error("Bumblebee misconfiguration: I could not find the bumblebee.ini file in $CONFIGLOCATION. Please give me a config file so I can do something useful.", $NON_FATAL_CONFIG ? E_USER_NOTICE : E_USER_ERROR);
+//   $config_error = 1;
+// }
 
 /**
 * $ADMINEMAIL is used for generating links to the administrator for more information, help etc
