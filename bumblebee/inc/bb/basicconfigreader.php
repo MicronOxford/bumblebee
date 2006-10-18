@@ -22,23 +22,24 @@ class BasicConfigReader {
 
   var $configError = false;
 
-  static $_instance = array();
-
   function ConfigReader() {
+    // note: this function does not seem to be called under PHP5.
+    static $constructed = false;
     #echo "Constructor called";
-    if (count($this->_instance) > 0) {
+    if ($constructed) {
       trigger_error('ConfigReader is a singleton. Instantiate it only once if you must then use getInstance()', E_USER_ERROR);
     }
-    $this->_instance[0] = &$this;
+    $constructed = true;
   }
 
-  static function & getInstance() {
-    if (count(ConfigReader::$_instance) == 0 || ConfigReader::$_instance[0] == null) {
+  function & getInstance() {
+    static $instance = array();
+    if (count($instance) < 1 || $instance[0] == null) {
       #echo "Making instance";
-      ConfigReader::$_instance[0] = new ConfigReader();
+      $instance[0] = & new ConfigReader();
     }
     #echo "Returning instance";
-    return ConfigReader::$_instance[0];
+    return $instance[0];
   }
 
   function loadFile($filename, $fatalErrors=true) {
