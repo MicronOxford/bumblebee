@@ -35,7 +35,7 @@ $CONFIGLOCATION = $REBASE_INSTALL.'config/';
 global $CONFIG;
 
 require_once 'inc/bb/configreader.php';
-$conf = ConfigReader::getInstance();
+$conf = new ConfigReader();
 $conf->LoadFile($CONFIGLOCATION.'bumblebee.ini');
 $conf->ParseConfig;
 
@@ -122,8 +122,8 @@ if (isset($CONFIG['error_handling']['UseDBug']) && $CONFIG['error_handling']['Us
 if (! $NON_FATAL_CONFIG) {
   if ($CONFIG['error_handling']['AllWarnings']) {
     //this is nice for development but probably turn it off for production
-    #error_reporting(E_ALL | E_STRICT); #force all warnings to be echoed
     error_reporting(E_ALL); #force all warnings to be echoed
+    #error_reporting(E_ALL | E_STRICT); #force all warnings to be echoed
     /** load all php files */
     define('LOAD_ALL_PHP_FILES', 1);
   } else {
