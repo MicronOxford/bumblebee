@@ -49,6 +49,7 @@ class BasicConfigReader {
     } else {
       #echo "registering instance";
       $instance[0] = & $newInstance;
+      return $instance[0];
     }
   }
 
@@ -59,6 +60,16 @@ class BasicConfigReader {
       $this->configError = true;
       trigger_error("System misconfiguration: I could not find the config file '$filename'. Please give me a config file so I can do something useful.", $fatalErrors ? E_USER_ERROR : E_USER_NOTICE);
     }
+  }
+
+  function mergeFile($filename, $section=null, $fatalErrors=true) {
+    $newdata = parse_ini_file($filename, 1);
+    if (! is_array($newdata)) {
+      // if the config file doesn't exist, then we're pretty much stuffed
+      $this->configError = true;
+      trigger_error("System misconfiguration: I could not find the config file '$filename'. Please give me a config file so I can do something useful.", $fatalErrors ? E_USER_ERROR : E_USER_NOTICE);
+    }
+    $this->mergeConfig($newdata, $section);
   }
 
   function value($section, $parameter, $default=null) {

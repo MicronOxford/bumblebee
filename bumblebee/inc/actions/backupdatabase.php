@@ -27,10 +27,10 @@ require_once 'inc/statuscodes.php';
 * @subpackage Actions
 */
 class ActionBackupDB extends BufferedAction {
-  
+
   /**
-  * Initialising the class 
-  * 
+  * Initialising the class
+  *
   * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
@@ -43,7 +43,7 @@ class ActionBackupDB extends BufferedAction {
     $success = $this->makeDump();
     //echo $success;
     //echo $this->errorMessage;
-    echo $this->reportAction($success, 
+    echo $this->reportAction($success,
               array(STATUS_ERR =>  T_('Error making backup: ').$this->errorMessage
                    )
                );
@@ -81,20 +81,20 @@ class ActionBackupDB extends BufferedAction {
     system($this->_mysqldump_invocation(),
                 $returnError);
   }
-  
+
   /**
   * Obtain the correct mysqldump command line to make the backup
-  */  
+  */
   function _mysqldump_invocation() {
     $conf = ConfigReader::getInstance();
     return $conf->value('sqldump', 'mysqldump').' '
                 .$conf->value('sqldump', 'options')
-                .' --host='.escapeshellarg($conf->value('database', 'dbhost'))
-                .' --user='.escapeshellarg($conf->value('database', 'dbusername'))
-                .' --password='.escapeshellarg($conf->value('database', 'dbpasswd'))
-                .' '.escapeshellarg($conf->value('database', 'dbname'))
+                .' --host='.escapeshellarg($conf->value('database', 'host'))
+                .' --user='.escapeshellarg($conf->value('database', 'username'))
+                .' --password='.escapeshellarg($conf->value('database', 'passwd'))
+                .' '.escapeshellarg($conf->value('database', 'database'))
             ;
   }
 }
 
-?> 
+?>

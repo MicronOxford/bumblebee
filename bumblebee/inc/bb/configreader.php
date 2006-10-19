@@ -34,7 +34,7 @@ class ConfigReader extends BasicConfigReader {
     $this->AdminEmail = $this->data['main']['AdminEmail'];
 
     $this->BasePath   = $this->data['main']['BasePath'];
-    if (substr($BASEPATH, 0, 1) != '/' && ! $this->configError) {
+    if (substr($this->BasePath, 0, 1) != '/' && ! $this->configError) {
       // the first character of the path must be a slash
       // the user is never going to be able to log on when it's like this, so let's kill it off.
       trigger_error('Bumblebee misconfiguration: please make sure that the BasePath parameter in bumblebee.ini is only the path portion of the URL and does not include the server name. (Hint: should start with a "/" and be something like "/bumblebee" or "/departments/chemistry/equipment")', $fatalErrors ? E_USER_ERROR : E_USER_NOTICE);

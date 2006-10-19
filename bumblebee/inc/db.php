@@ -2,7 +2,7 @@
 /**
 * Database connection script
 *
-* Parses the {@link db.ini } file and connects to the database. 
+* Parses the {@link db.ini } file and connects to the database.
 * If the db login doesn't work then die() as there is no point in continuing
 * without a database connection.
 *
@@ -19,22 +19,15 @@ require_once 'inc/bb/configreader.php';
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
-$conf = ConfigReader::getInstance();
+$conf = & ConfigReader::getInstance();
+$conf->mergeFile($CONFIGLOCATION.'db.ini');
 
-$db_ini = parse_ini_file($CONFIGLOCATION.'db.ini');
-
-$temp = array('dbhost' => $db_ini['host'],
-	      'dbusername'=> $db_ini['username'],
-	      'dbpasswd' => $db_ini['passwd'],
-	      'dbname' => $db_ini['database']);
-
-$conf->mergeConfig($temp, 'database');
 
 /**
 * $TABLEPREFIX is added to the beginning of all SQL table names to allow database sharing
-* @global string $TABLEPREFIX 
+* @global string $TABLEPREFIX
 */
-$TABLEPREFIX = $db_ini['tableprefix'];
+$TABLEPREFIX = $conf->value('database', 'tableprefix');
 
 /**
 * import SQL functions for database lookups
@@ -46,10 +39,10 @@ $dberrmsg = sprintf(T_('<p>Sorry, I couldn\'t connect to the database, so there\
 $DB_CONNECT_DEBUG = isset($DB_CONNECT_DEBUG) ? $DB_CONNECT_DEBUG : false;
 $NON_FATAL_DB     = isset($NON_FATAL_DB)     ? $NON_FATAL_DB     : false;
 
-if (($connection = mysql_pconnect($conf->value('database', 'dbhost'), 
-                             $conf->value('database', 'dbusername'), 
-                             $conf->value('database', 'dbpasswd')) )
-    && ($db = mysql_select_db($conf->value('database', 'dbname'), $connection)) ) {
+if (($connection = mysql_pconnect($conf->value('database', 'host'),
+                             $conf->value('database', 'username'),
+                             $conf->value('database', 'passwd')) )
+    && ($db = mysql_select_db($conf->value('database', 'database'), $connection)) ) {
   // we successfully logged on to the database
   // automatically use UTF-8 for the connection encoding
   db_quiet("SET NAMES 'utf8'");
@@ -57,12 +50,12 @@ if (($connection = mysql_pconnect($conf->value('database', 'dbhost'),
   $errcode = $NON_FATAL_DB ? E_USER_NOTICE : E_USER_ERROR;
   $errmsg  = $dberrmsg;
   if ($DB_CONNECT_DEBUG) {
-    $errmsg .= mysql_error() 
+    $errmsg .= mysql_error()
               .'<br />Connected using parameters <pre>'
-              .print_r($conf->value('database'),true).'</pre>';
+              .print_r($conf->getSection('database'),true).'</pre>';
   }
   trigger_error($errmsg, $errcode);
 }
 
 
-?> 
+?>

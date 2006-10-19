@@ -36,19 +36,12 @@ $CONFIGLOCATION = $REBASE_INSTALL.'config/';
 global $CONFIG;
 
 require_once 'inc/bb/configreader.php';
-$conf = new ConfigReader();
+new ConfigReader();
+$conf = & ConfigReader::getInstance();
 $conf->LoadFile($CONFIGLOCATION.'bumblebee.ini');
-$conf->ParseConfig;
+$conf->ParseConfig();
 
 $CONFIG = $conf->data;
-
-
-// $CONFIG = parse_ini_file($CONFIGLOCATION.'bumblebee.ini',1);
-// if (! is_array($CONFIG)) {
-//   // if the config file doesn't exist, then we're pretty must stuffed
-//   trigger_error("Bumblebee misconfiguration: I could not find the bumblebee.ini file in $CONFIGLOCATION. Please give me a config file so I can do something useful.", $NON_FATAL_CONFIG ? E_USER_NOTICE : E_USER_ERROR);
-//   $config_error = 1;
-// }
 
 /**
 * $ADMINEMAIL is used for generating links to the administrator for more information, help etc
@@ -118,20 +111,6 @@ if (isset($CONFIG['error_handling']['UseDBug']) && $CONFIG['error_handling']['Us
   // include the dBug pretty printer for error and debugging dumps
   // http://dbug.ospinto.com/
   include_once 'dBug.php';
-}
-
-if (! $NON_FATAL_CONFIG) {
-  if ($CONFIG['error_handling']['AllWarnings']) {
-    //this is nice for development but probably turn it off for production
-    error_reporting(E_ALL); #force all warnings to be echoed
-    #error_reporting(E_ALL | E_STRICT); #force all warnings to be echoed
-    /** load all php files */
-    define('LOAD_ALL_PHP_FILES', 1);
-  } else {
-    error_reporting(E_ERROR); #only errors should be echoed
-    /** load only the php files required to fullfill this request) */
-    define('LOAD_ALL_PHP_FILES', 0);
-  }
 }
 
 $CONFIG['auth']['permissionsModel'] = issetSet($CONFIG['auth'], 'permissionsModel', false);
