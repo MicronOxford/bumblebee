@@ -80,7 +80,7 @@ if (isset($_POST['submitsql'])) {
 }
 if (isset($_POST['submitsqlload'])) {
   list($sql, $notes) = makeUpgradeSQL($old_db_version);
-  $results = loadSQL($sql, $conf->value('database', 'dbhost'), $_POST['sqlAdminUsername'], $_POST['sqlAdminPassword']);
+  $results = loadSQL($sql, $conf->value('database', 'host'), $_POST['sqlAdminUsername'], $_POST['sqlAdminPassword']);
   $data['db-notes']   = $notes;
   $data['db-results'] = $results;
   printStepDBUpgrade($data, $steps);
