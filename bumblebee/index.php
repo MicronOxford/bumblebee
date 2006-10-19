@@ -19,7 +19,7 @@ define('BUMBLEBEE', true);
 /** Load ancillary functions */
 require_once 'inc/typeinfo.php';
 
-global $CONFIG;
+
 /** Load in PHP4/5 compatability layer */
 require_once 'inc/compat.php';
 /** Load in the user configuration data */
@@ -29,6 +29,10 @@ require_once 'inc/db.php';
 /** check the user's credentials, create a session to record them */
 require_once 'inc/bb/auth.php';
 $auth = new BumblebeeAuth($_POST);
+
+/** get the configuration values. */
+require_once 'inc/bb/configreader.php';
+$conf = ConfigReader::getInstance();
 
 /** Load the action factory to work out what should be done in this instance of the script */
 require_once 'inc/actions/actionfactory.php';
@@ -46,7 +50,7 @@ $usermenu->showMenu = ($auth->isLoggedIn() && $action->_verb != 'logout');
 $usermenu->actionListing = $action->actionListing;
 
 // $pagetitle can be used in theme/pageheader.php
-$pagetitle  = $action->title . ' : ' . $CONFIG['main']['SiteTitle'];
+$pagetitle  = $action->title . ' : ' . $conf->value('main', 'SiteTitle');
 $pageheader = $action->title;
 $pageBaseRef = makeURL($action->_verb);
 /** display the HTML header section */
@@ -60,8 +64,10 @@ echo formStart(makeURL($action->nextaction));
 if (! $auth->isLoggedIn()) {
   echo $auth->loginError();
 }
+
 if($auth->isSystemAdmin() && file_exists("install"))
-  echo "<div class=error>The installer still exists. This is a security risk please delete it.</div>";
+  printf('<div class="error">%s</div>', T_('The installer still exists. This is a security risk please delete it.'));
+
 $action->go();
 echo formEnd();
 echo "</div>";
@@ -76,11 +82,11 @@ if (! $action->ob_flush_ok()) {
 }
 
 function formStart($url, $id='bumblebeeform', $showAutocomplete=true) {
-  global $CONFIG;
+  $conf = ConfigReader::getInstance();
   $autocomplete = "";
   if ($showAutocomplete &&
-        ( ! isset($CONFIG['display']['AllowAutocomplete']) ||
-          ! $CONFIG['display']['AllowAutocomplete'])
+        ( $conf->value('display', 'AllowAutocomplete') === null ||
+          ! $conf->value('display', 'AllowAutocomplete'))
      ) {
     $autocomplete = "AUTOCOMPLETE='off'";
   }

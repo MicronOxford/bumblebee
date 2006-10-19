@@ -10,6 +10,7 @@
 * @subpackage Installer
 */
 
+
 define('BUMBLEBEE', true);
 
 error_reporting(E_ALL);
@@ -27,6 +28,8 @@ loadInstalledConfig();
 require_once 'inc/db.php';
 require_once 'inc/formslib/sql.php';
 
+require_once 'inc/bb/configreader.php';
+$conf = ConfigReader::getInstance();
 
 require_once 'installer/installstep.php';
 
@@ -77,7 +80,7 @@ if (isset($_POST['submitsql'])) {
 }
 if (isset($_POST['submitsqlload'])) {
   list($sql, $notes) = makeUpgradeSQL($old_db_version);
-  $results = loadSQL($sql, $CONFIG['database']['dbhost'], $_POST['sqlAdminUsername'], $_POST['sqlAdminPassword']);
+  $results = loadSQL($sql, $conf->value('database', 'dbhost'), $_POST['sqlAdminUsername'], $_POST['sqlAdminPassword']);
   $data['db-notes']   = $notes;
   $data['db-results'] = $results;
   printStepDBUpgrade($data, $steps);

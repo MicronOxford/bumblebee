@@ -69,6 +69,25 @@ class BasicConfigReader {
     }
   }
 
+  function getSection($section) {
+    if(isset($this->data[$section]) && is_array($this->data[$section]))
+      return $this->data[$section];
+    else
+      trigger_error("Tryed to access non existant section");
+  }
+
+  /** merge an array into the config data. If a section is provided the array is added as a new sub key */
+  function mergeConfig($other_array, $section = null) {
+
+    if(is_array($other_array))
+	if($section == null)
+	   $this->data = array_merge($this->data, $other_array);
+        else
+	   $this->data = array_merge($this->data, array($section => $other_array));	   
+    else
+	trigger_error("Tryed to merge a non array into the config values");
+
+  } 
 }
 
 

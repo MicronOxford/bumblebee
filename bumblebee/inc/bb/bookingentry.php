@@ -14,6 +14,8 @@
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
+require_once 'inc/bb/configreader.php';
+
 /** parent object */
 require_once 'inc/formslib/dbrow.php';
 /** uses fields */
@@ -323,8 +325,10 @@ class BookingEntry extends DBRow {
   *  booking has been made
   */
   function _sendBookingEmail() {
-    global $CONFIG;
     global $ADMINEMAIL;
+
+    $conf = ConfigReader::getInstance();    
+
     //preDump($this->fields['instrument']);
     $instrument = quickSQLSelect('instruments', 'id', $this->fields['instrument']->getValue());
     if (! $instrument['emailonbooking']) {
@@ -337,8 +341,8 @@ class BookingEntry extends DBRow {
     }
     $bookinguser = quickSQLSelect('users', 'id', $this->fields['userid']->value);
     $eol = "\r\n";
-    $from = $instrument['name'].' '.$CONFIG['instruments']['emailFromName']
-            .' <'.$CONFIG['main']['SystemEmail'].'>';
+    $from = $instrument['name'].' '.$conf->value('instruments', 'emailFromName')
+            .' <'.$conf->value('main', 'SystemEmail').'>';
     $replyto = $bookinguser['name'].' <'.$bookinguser['email'].'>';
     $to   = join($emails, ',');
     srand(time());
@@ -347,8 +351,8 @@ class BookingEntry extends DBRow {
     $headers  = 'From: '.$from .$eol;
     $headers .= 'Reply-To: '.$replyto.$eol;
     $headers .= 'Message-id: ' .$id .$eol;
-    $subject = $instrument['name']. ': '. ($CONFIG['instruments']['emailSubject']
-                    ? $CONFIG['instruments']['emailSubject'] : 'Instrument booking notification');
+    $subject = $instrument['name']. ': '. ($conf->value('instruments', 'emailSubject')
+                    ? $conf->value('instruments', 'emailSubject') : 'Instrument booking notification');
     $message = $this->_getEmailText($instrument, $bookinguser);
 
     // Send the message
@@ -372,9 +376,12 @@ class BookingEntry extends DBRow {
   * @todo //TODO:  graceful error handling for fopen, fread
   */
   function _getEmailText($instrument, $user) {
-    global $CONFIG, $BASEURL;
-    $fh = fopen($CONFIG['instruments']['emailTemplate'], 'r');
-    $txt = fread($fh, filesize($CONFIG['instruments']['emailTemplate']));
+    global $BASEURL;
+
+    $conf = ConfigReader::getInstance();
+
+    $fh = fopen($conf->value('instruments', 'emailTemplate'), 'r');
+    $txt = fread($fh, filesize($conf->value('instruments', 'emailTemplate')));
     fclose($fh);
     $start = new SimpleDate($this->fields['bookwhen']->getValue());
     $duration = new SimpleTime($this->fields['duration']->getValue());

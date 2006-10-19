@@ -14,6 +14,8 @@
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
+require_once 'inc/bb/configreader.php';
+
 /** parent object */
 require_once 'inc/actions/export.php';
 /** ExportType and formatting */
@@ -210,8 +212,8 @@ class ActionBilling extends ActionExport {
   * obtain an appropriate filename for the data export
   */
   function _getReportFilename($who) {
-    global $CONFIG;
-    $name = $CONFIG['billing']['filename'];
+    $conf = ConfigReader::getInstance();
+    $name = $conf->value('billing', 'filename');
     $this->mimetype = 'application/pdf';
     $who = urlencode($who);
     $name = preg_replace('/__date__/', strftime('%Y%m%d-%H%M%S', time()), $name);
@@ -229,11 +231,11 @@ class ActionBilling extends ActionExport {
   * @param string $data    PDF data to be sent
   */
   function _sendPDFbyEmail($toName, $toEmail, $group, $data) {
-    global $CONFIG;
+    $conf = ConfigReader::getInstance();
     $eol = "\r\n";
     //$from = $CONFIG['billing']['emailFromName'].' <'.$CONFIG['main']['SystemEmail'].'>';
-    $from = $CONFIG['main']['SystemEmail'];
-    $returnpath = $CONFIG['main']['SystemEmail'];
+    $from = $conf->value('main', 'SystemEmail');
+    $returnpath = $conf->value('main', 'SystemEmail');
     $replyto = $this->auth->name.' <'.$this->auth->email.'>';
     $cc   = $this->auth->name.' <'.$this->auth->email.'>';    // CC a copy to the sender
     $to   = $toName.' <'.$toEmail.'>';
@@ -246,9 +248,9 @@ class ActionBilling extends ActionExport {
     //      http://bugs.php.net/bug.php?id=28976
     if(strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' && ! ini_get("sendmail_from")){
       ini_set("sendmail_from", $from);
-      $server = issetSet($CONFIG['email'], 'smtp_server');
+      $server = $conf->value('email', 'smtp_server');
       if ($server) ini_set('SMTP', $server);
-      $port = issetSet($CONFIG['email'], 'smtp_port');
+      $port = $conf->value('email', 'smtp_port');
       if ($port) ini_set('smtp_port', $port);
     }
 
@@ -265,8 +267,8 @@ class ActionBilling extends ActionExport {
     $textmessage = $this->_getEmailText($group, $start->dateString(), $stop->dateString());
 
     //$textmessage = 'Please find attached PDF billing summaries for instrument usage.';
-    $subject = ($CONFIG['billing']['emailSubject']
-                    ? $CONFIG['billing']['emailSubject'] : T_('Instrument usage summary'));
+    $subject = ($conf->value('billing', 'emailSubject')
+                    ? $conf->value('billing', 'emailSubject') : T_('Instrument usage summary'));
 
     //Having read in the data for the file attachment,
     //we need to set up the message headers to send a multipart/mixed message:
@@ -330,9 +332,10 @@ class ActionBilling extends ActionExport {
   * @global string  url base for links
   */
   function _getEmailText($group, $start, $stop) {
-    global $CONFIG, $BASEURL;
-    $fh = fopen($CONFIG['billing']['emailTemplate'], 'r');
-    $txt = fread($fh, filesize($CONFIG['billing']['emailTemplate']));
+    $conf = ConfigReader::getInstance();
+    global $BASEURL;
+    $fh = fopen($conf->value('billing', 'emailTemplate'), 'r');
+    $txt = fread($fh, filesize($conf->value('billing', 'emailTemplate')));
     fclose($fh);
     $replace = array(
             '/__name__/'      => $group['name'],

@@ -24,6 +24,8 @@ require_once 'inc/passwords.php';
 require_once 'inc/permissions.php';
 /** logging functions */
 require_once 'inc/logging.php';
+/** configuration */
+require_once 'inc/bb/configreader.php';
 
 /**
 * User Authentication

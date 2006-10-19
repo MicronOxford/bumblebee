@@ -14,6 +14,8 @@
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
+require_once 'inc/bb/configreader.php';
+
 /** parent object */
 require_once 'inc/formslib/dbrow.php';
 require_once 'inc/formslib/idfield.php';
@@ -41,7 +43,7 @@ class User extends DBRow {
   var $_auth;
 
   function User($auth, $id, $passwdOnly=false) {
-    global $CONFIG;
+    $conf = ConfigReader::getInstance();
 
     $this->DBRow('users', $id);
     #$this->DEBUG=10;
@@ -78,7 +80,7 @@ class User extends DBRow {
       $f = new CheckBox('suspended', T_('Suspended'));
       $this->addElement($f);
 
-      if (! $CONFIG['auth']['permissionsModel']) {
+      if (! $conf->value('auth', 'permissionsModel')) {
         $f = new CheckBox('isadmin', T_('System Administrator'));
         $this->addElement($f);
       } else {
@@ -153,7 +155,7 @@ class User extends DBRow {
       $unbookAnnounce = new CheckBox('unbook', T_('Subscribe: unbook'));
       $f->addElement($unbookAnnounce);
 
-      if (! $CONFIG['auth']['permissionsModel']) {
+      if (! $conf->value('auth', 'permissionsModel')) {
         $instradmin = new CheckBox('isadmin', T_('Instrument admin'));
         $f->addElement($instradmin);
       } else {
@@ -183,15 +185,16 @@ class User extends DBRow {
   }
 
   function _findAuthMethods() {
-    global $CONFIG;
-    $this->_localAuthPermitted = isset($CONFIG['auth']['useLocal'])
-                                        && $CONFIG['auth']['useLocal'];
+    $conf = ConfigReader::getInstance();
+
+    $this->_localAuthPermitted = ($conf->value('auth', 'useLocal') !== null)
+                                        && $conf->value('auth', 'useLocal')?true:false;
     $this->_authList = array();
-    foreach ($CONFIG['auth'] as $key => $val) {
+    foreach ($conf->getSection('auth') as $key => $val) {
       if (strpos($key, 'use') === 0 && $val) {
         $method = substr($key,3);
         $this->_authList[$method] = $method;
-        $this->_magicPassList[$method] = $CONFIG['auth'][$method.'PassToken'];
+        $this->_magicPassList[$method] = $conf->value('auth', $method.'PassToken');
       }
     }
   }

@@ -15,14 +15,20 @@
 */
 
 /** Load ancillary functions */
+require_once 'inc/bb/configreader.php';
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
+$conf = ConfigReader::getInstance();
+
 $db_ini = parse_ini_file($CONFIGLOCATION.'db.ini');
-$CONFIG['database']['dbhost']     = $db_ini['host'];
-$CONFIG['database']['dbusername'] = $db_ini['username'];
-$CONFIG['database']['dbpasswd']   = $db_ini['passwd'];
-$CONFIG['database']['dbname']     = $db_ini['database'];
+
+$temp = array('dbhost' => $db_ini['host'],
+	      'dbusername'=> $db_ini['username'],
+	      'dbpasswd' => $db_ini['passwd'],
+	      'dbname' => $db_ini['database']);
+
+$conf->mergeConfig($temp, 'database');
 
 /**
 * $TABLEPREFIX is added to the beginning of all SQL table names to allow database sharing
@@ -40,10 +46,10 @@ $dberrmsg = sprintf(T_('<p>Sorry, I couldn\'t connect to the database, so there\
 $DB_CONNECT_DEBUG = isset($DB_CONNECT_DEBUG) ? $DB_CONNECT_DEBUG : false;
 $NON_FATAL_DB     = isset($NON_FATAL_DB)     ? $NON_FATAL_DB     : false;
 
-if (($connection = mysql_pconnect($CONFIG['database']['dbhost'], 
-                             $CONFIG['database']['dbusername'], 
-                             $CONFIG['database']['dbpasswd']) )
-    && ($db = mysql_select_db($CONFIG['database']['dbname'], $connection)) ) {
+if (($connection = mysql_pconnect($conf->value('database', 'dbhost'), 
+                             $conf->value('database', 'dbusername'), 
+                             $conf->value('database', 'dbpasswd')) )
+    && ($db = mysql_select_db($conf->value('database', 'dbname'), $connection)) ) {
   // we successfully logged on to the database
   // automatically use UTF-8 for the connection encoding
   db_quiet("SET NAMES 'utf8'");
@@ -53,7 +59,7 @@ if (($connection = mysql_pconnect($CONFIG['database']['dbhost'],
   if ($DB_CONNECT_DEBUG) {
     $errmsg .= mysql_error() 
               .'<br />Connected using parameters <pre>'
-              .print_r($CONFIG['database'],true).'</pre>';
+              .print_r($conf->value('database'),true).'</pre>';
   }
   trigger_error($errmsg, $errcode);
 }

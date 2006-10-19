@@ -14,6 +14,8 @@
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
+require_once 'inc/bb/configreader.php';
+
 /** parent object */
 require_once 'inc/actions/actionaction.php';
 
@@ -37,9 +39,9 @@ class ActionPrintLoginForm extends ActionAction {
   }
 
   function go() {
-    global $CONFIG;
-    if (isset($CONFIG['display']['LoginPage']) && ! empty($CONFIG['display']['LoginPage'])) {
-      echo $CONFIG['display']['LoginPage'];
+    $conf = ConfigReader::getInstance();
+    if ($conf->value('display', 'LoginPage') !== null && $conf->value('display', 'LoginPage') !== "") {
+      echo $conf->value('display', 'LoginPage');
     }
     echo '<h2>' . T_('Login required').'</h2>';
     echo '<p>'  . T_('Please login to view or book instrument usage') . '</p>';

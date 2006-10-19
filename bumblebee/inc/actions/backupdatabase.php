@@ -14,6 +14,8 @@
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
+require_once 'inc/bb/configreader.php';
+
 /** parent object */
 require_once 'inc/actions/bufferedaction.php';
 /** status codes for success/failure of database actions */
@@ -52,7 +54,7 @@ class ActionBackupDB extends BufferedAction {
   */
   function makeDump() {
     // get a MySQL dump of the database
-    global $CONFIG;
+    $conf = ConfigReader::getInstance();
     $output = array();
     $retstring = exec($this->_mysqldump_invocation() .' 2>&1',
                 $output,
@@ -63,7 +65,7 @@ class ActionBackupDB extends BufferedAction {
     } else {
       // $dump now contains the data stream.
       // let's work out a nice filename and dump it out
-      $this->filename = $this->getFilename('backup', $CONFIG['database']['dbname'], 'sql');
+      $this->filename = $this->getFilename('backup', $conf->value('database', 'dbname'), 'sql');
       $this->bufferedStream = $dump;
       // the data itself will be dumped later by the action driver (index.php)
     }
@@ -84,13 +86,13 @@ class ActionBackupDB extends BufferedAction {
   * Obtain the correct mysqldump command line to make the backup
   */  
   function _mysqldump_invocation() {
-    global $CONFIG;
-    return $CONFIG['sqldump']['mysqldump'].' '
-                .$CONFIG['sqldump']['options']
-                .' --host='.escapeshellarg($CONFIG['database']['dbhost'])
-                .' --user='.escapeshellarg($CONFIG['database']['dbusername'])
-                .' --password='.escapeshellarg($CONFIG['database']['dbpasswd'])
-                .' '.escapeshellarg($CONFIG['database']['dbname'])
+    $conf = ConfigReader::getInstance();
+    return $conf->value('sqldump', 'mysqldump').' '
+                .$conf->value('sqldump', 'options')
+                .' --host='.escapeshellarg($conf->value('database', 'dbhost'))
+                .' --user='.escapeshellarg($conf->value('database', 'dbusername'))
+                .' --password='.escapeshellarg($conf->value('database', 'dbpasswd'))
+                .' '.escapeshellarg($conf->value('database', 'dbname'))
             ;
   }
 }

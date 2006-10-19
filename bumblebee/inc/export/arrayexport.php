@@ -14,6 +14,8 @@
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
+require_once 'inc/bb/configreader.php';
+
 /** constants for defining export formatting and codes */
 require_once 'inc/exportcodes.php';
 
@@ -223,10 +225,10 @@ class ArrayExport {
   * @return string formatted value
   */
   function _formatVal($val, $format) {
-    global $CONFIG;
+    $conf = ConfigReader::getInstance();
     switch ($format & EXPORT_HTML_NUMBER_MASK) {
       case EXPORT_HTML_MONEY:
-        $val = sprintf($CONFIG['language']['moneyFormat'], $val);
+        $val = sprintf($conf->value('language', 'moneyFormat'), $val);
         break;
       case EXPORT_HTML_DECIMAL_1:
         $val = sprintf('%.1f', $val);

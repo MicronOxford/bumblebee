@@ -10,6 +10,9 @@
 * @subpackage Installer
 */
 
+require_once 'loadconfig.php';
+loadInstalledConfig();
+
 // we will need auth rights to alter the structure of the table to actually perform these operations
 // as per the installer, we give the option of making an SQL file for the user to make use of using
 // either command line tools or phpMyAdmin, or we execute the statements for the user.
@@ -60,9 +63,10 @@ function makeUpgradeSQL($initial) {
 }
 
 function DB_upgrade_BB_1_1() {
-  global $CONFIG, $TABLEPREFIX;
-  $s = "ALTER DATABASE {$CONFIG['database']['dbname']} DEFAULT CHARACTER SET utf8;\n";
-  $s .= "USE {$CONFIG['database']['dbname']};\n";
+  $conf = ConfigReader::getInstance();
+  global $TABLEPREFIX;
+  $s = "ALTER DATABASE {$conf->value('database', 'dbname')} DEFAULT CHARACTER SET utf8;\n";
+  $s .= "USE {$conf->value('database', 'dbname')};\n";
   $list = array(
           'users'           => array('username', 'name', 'passwd', 'email', 'phone'),
           'projects'        => array('name', 'longname'),
@@ -96,19 +100,21 @@ function DB_upgrade_BB_1_1() {
 }
 
 function DB_upgrade_BB_1_1_passwd() {
-  global $CONFIG, $TABLEPREFIX;
-  $s = "USE {$CONFIG['database']['dbname']};\n";
+  $conf = ConfigReader::getInstance();
+  global $TABLEPREFIX;
+  $s = "USE {$conf->value('database', 'dbname')};\n";
   $s .= "ALTER TABLE {$TABLEPREFIX}users CHANGE passwd passwd VARCHAR(50) NOT NULL\n";
   $notes = "The password field is made larger to accommodate more secure methods for storing encode passwods.";
   return array($s, $notes);
 }
 
 function DB_upgrade_BB_1_1_permissions() {
-  global $CONFIG, $TABLEPREFIX;
+  $conf = ConfigReader::getInstance();
+  global $TABLEPREFIX;
   require 'inc/permissions.php';
   $default = BBPERM_USER_BASIC | BBPERM_USER_PASSWD;
   $admin = BBPERM_ADMIN_ALL;
-  $s = "USE {$CONFIG['database']['dbname']};\n";
+  $s = "USE {$conf->value('database', 'dbname')};\n";
   $s .= "ALTER TABLE {$TABLEPREFIX}users ADD permissions INTEGER UNSIGNED NOT NULL DEFAULT '{$default}';\n";
   $s .= "UPDATE {$TABLEPREFIX}users SET permissions = permissions | {$admin} where isadmin=1;\n";
   $default = BBPERM_INSTR_BASIC;

@@ -41,8 +41,8 @@ function issetSet(&$a, $k, $default=NULL) {
 */
 function preDump($v) {
   // either use the dBug class for pretty printing or var_dump/print_r
-  global $CONFIG;
-  if ($CONFIG['error_handling']['UseDBug']) {
+  $conf = ConfigReader::getInstance();
+  if ($conf->value('error_handling', 'UseDBug')) {
     new dBug($v);
   } else {
     echo '<pre>';

@@ -11,6 +11,7 @@
 */
 
 /** Load ancillary functions */
+require_once 'inc/bb/configreader.php';
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
@@ -22,8 +23,8 @@ checkValidInclude();
 * @return boolean username is valid
 */
 function is_valid_username($v) {
-  global $CONFIG;
-  $validUserRegexp = issetSet($CONFIG['auth'], 'validUserRegexp');
+  $conf = ConfigReader::getInstance();
+  $validUserRegexp = $conf->value('auth', 'validUserRegexp');
   return (empty($validUserRegexp) || preg_match($validUserRegexp, $v));
 }
 
@@ -51,9 +52,9 @@ function check_password($test, $real) {
 * @global config array
 */
 function makePasswordHash($passwd, $salt=NULL, $method=NULL) {
-  global $CONFIG;
+  $conf = ConfigReader::getInstance();
   if ($salt === NULL) $salt = makeHashSalt(
-            issetSet($CONFIG['auth'], 'LocalPassToken', ($method === NULL) ? 'md5_compat' : $method));
+            $conf->value('auth', 'LocalPassToken', ($method === NULL) ? 'md5_compat' : $method));
 
   $tmp = explode('$', $salt);
   if (count($tmp) > 3) $saltpart = '$'.$tmp[1].'$'.$tmp[2].'$';

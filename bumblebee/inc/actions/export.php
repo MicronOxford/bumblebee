@@ -14,6 +14,8 @@
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
+require_once 'inc/bb/configreader.php';
+
 /** CheckBox object */
 require_once 'inc/formslib/checkbox.php';
 /** CheckBoxTableList object */
@@ -170,21 +172,21 @@ class ActionExport extends BufferedAction {
   * @return void nothing
   */
   function formatSelect() {
-    global $CONFIG;
+    $conf = ConfigReader::getInstance();
     $formatlist = array(EXPORT_FORMAT_VIEW     => T_('View in web browser'),
                         EXPORT_FORMAT_VIEWOPEN => T_('View in web browser (new window)'),
                         EXPORT_FORMAT_CSV      => T_('Save as comma separated variable (csv)'),
                         EXPORT_FORMAT_TAB      => T_('Save as tab separated variable (txt)'));
-    if ($CONFIG['export']['enablePDF']) {
+    if ($conf->value('export', 'enablePDF')) {
       $formatlist[EXPORT_FORMAT_PDF] = T_('Save as pdf report');
     }
     $select = new RadioList('outputformat', T_('Select which data to export'), 1);
     $select->setValuesArray($formatlist, 'id', 'iv');
     $select->setFormat('id', '%s', array('iv'));
-    if (is_numeric($CONFIG['export']['defaultFormat'])) {
-      $select->setDefault($CONFIG['export']['defaultFormat']);
+    if (is_numeric($conf->value('export', 'defaultFormat'))) {
+      $select->setDefault($conf->value('export', 'defaultFormat'));
     } else {
-      $select->setDefault(exportStringToCode($CONFIG['export']['defaultFormat']));
+      $select->setDefault(exportStringToCode($conf->value('export', 'defaultFormat')));
     }
     echo '<div style="margin: 2em 0 2em 0;">'.$select->display().'</div>';
   }

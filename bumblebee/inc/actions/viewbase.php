@@ -14,6 +14,8 @@
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
+require_once 'inc/bb/configreader.php';
+
 /** date maniuplation objects */
 require_once 'inc/date.php';
 /** parent object */
@@ -140,9 +142,9 @@ class ActionViewBase extends ActionAction {
   * @global array system config
   */
   function _instrumentNotes($footer=true) {
-    global $CONFIG;
+    $conf = ConfigReader::getInstance();
     $t = '';
-    $notesbottom = issetSet($CONFIG['calendar'], 'notesbottom', true);
+    $notesbottom = $conf->value('calendar', 'notesbottom', true);
     if ($notesbottom == $footer && $this->row['calendarcomment']) {
       $t = '<div class="calendarcomment">'
           .'<p>'

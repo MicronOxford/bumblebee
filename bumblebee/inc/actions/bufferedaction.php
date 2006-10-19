@@ -14,6 +14,8 @@
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
+require_once 'inc/bb/configreader.php';
+
 /** status codes for success/failure of database actions */
 require_once 'inc/statuscodes.php';
 /** parent object */
@@ -127,8 +129,8 @@ class BufferedAction extends ActionAction  {
   * @param string $ext  the file extension (pdf, csv etc) without the dot.
   */
   function getFilename($action, $what, $ext) {
-    global $CONFIG;
-    $name = $CONFIG['export']['filename'];
+    $conf = ConfigReader::getInstance();
+    $name = $conf->value('export', 'filename');
     $name = preg_replace('/__date__/', strftime('%Y%m%d-%H%M%S', time()), $name);
     $name = preg_replace('/__action__/', $action, $name);
     $name = preg_replace('/__what__/', $what, $name);

@@ -14,6 +14,8 @@
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
+require_once 'inc/bb/configreader.php';
+
 /** constants for defining export formatting and codes */
 require_once 'inc/exportcodes.php';
 /** FPDF free PDF creation library for PHP: http://fpdf.org/ */
@@ -129,7 +131,7 @@ class PDFExport {
   }
   
   function _readConfig() {
-    global $CONFIG;
+    $conf = ConfigReader::getInstance();
     $simplevars = array(
       'orientation', 'size', 'pageWidth', 'pageHeight', 
       'leftMargin', 'rightMargin', 'topMargin', 'bottomMargin', 
@@ -145,10 +147,10 @@ class PDFExport {
       'tableTotalFillColor', 'tableTotalDrawColor', 'tableTotalTextColor', 'tableTotalFont'
       );
     foreach ($simplevars as $v) {
-      $this->$v = $CONFIG['pdfexport'][$v];
+      $this->$v = $conf->value('pdfexport', $v);
     }
     foreach ($cxvars as $v) {
-      $this->$v = $this->_confSplit($CONFIG['pdfexport'][$v]);
+      $this->$v = $this->_confSplit($conf->value('pdfexport', $v));
     }
   }
   

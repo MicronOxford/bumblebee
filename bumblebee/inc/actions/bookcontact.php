@@ -14,6 +14,8 @@
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
+require_once 'inc/bb/configreader.php';
+
 /** uses the login class for the login form */
 require_once 'inc/actions/login.php';
 /** date/time handline */
@@ -60,7 +62,7 @@ class ActionBookContact extends ActionAction {
   }
 
   function sendEmail() {
-    global $CONFIG;
+    $conf = ConfigReader::getInstance();
     global $ADMINEMAIL;
     $instrument = quickSQLSelect('instruments', 'id', $this->PD['contact-instrid']);
     $emails = array();
@@ -75,8 +77,8 @@ class ActionBookContact extends ActionAction {
     }
 
     $eol = "\r\n";
-    $from = $instrument['name'].' '.$CONFIG['instruments']['emailFromName']
-            .' <'.$CONFIG['main']['SystemEmail'].'>';
+    $from = $instrument['name'].' '.$conf->value('instruments', 'emailFromName')
+            .' <'.$conf->value('main', 'SystemEmail').'>';
     $replyto = $this->PD['contact-name'].' <'.$this->PD['contact-email'].'>';
     $to   = join($emails, ',');
     srand(time());
@@ -85,8 +87,8 @@ class ActionBookContact extends ActionAction {
     $headers  = 'From: '.$from .$eol;
     $headers .= 'Reply-To: '.$replyto.$eol;
     $headers .= 'Message-id: ' .$id .$eol;
-    $subject = $instrument['name']. ': '. ($CONFIG['instruments']['emailSubject']
-                    ? $CONFIG['instruments']['emailSubject'] : 'Instrument booking notification');
+    $subject = $instrument['name']. ': '. ($conf-value('instruments', 'emailSubject')
+                    ? $conf->value('instruments', 'emailSubject') : 'Instrument booking notification');
     $message = $this->_getEmailText($this->PD);
 
     $ok = @ mail($to, $subject, $message, $headers);
@@ -96,9 +98,10 @@ class ActionBookContact extends ActionAction {
   }
 
   function _getEmailText($data) {
-    global $CONFIG, $BASEURL;
-    $fh = fopen($CONFIG['instruments']['emailRequestTemplate'], 'r');
-    $txt = fread($fh, filesize($CONFIG['instruments']['emailRequestTemplate']));
+    $conf = ConfigReder::getInstance();
+    global $BASEURL;
+    $fh = fopen($conf->value('instruments', 'emailRequestTemplate'), 'r');
+    $txt = fread($fh, filesize($conf->value('instruments', 'emailRequestTemplate')));
     fclose($fh);
     $replace = array(
             '/__instrumentname__/'      => $data['contact-instrument'],

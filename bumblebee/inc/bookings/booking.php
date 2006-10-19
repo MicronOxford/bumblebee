@@ -14,6 +14,8 @@
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
+require_once 'inc/bb/configreader.php';
+
 /** date manipulation routines */
 require_once 'inc/date.php';
 /** parent object */
@@ -131,7 +133,8 @@ class Booking extends TimeSlot {
   * @return string html representation of booking
   */
   function displayInCell(/*$isadmin=0*/) {
-    global $BASEPATH, $CONFIG;
+    $conf = ConfigReader::getInstance();
+    global $BASEPATH;
     $start = isset($this->displayStart) ? $this->displayStart : $this->start;
     $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
     if ($this->freeBusyOnly) {
@@ -149,7 +152,7 @@ class Booking extends TimeSlot {
     $t .= '<div class="calbookperson">'
          .'<a href="mailto:'.xssqw($this->useremail).'">'
          .xssqw($this->name).'</a></div>';
-    if (isset($CONFIG['calendar']['showphone']) && $CONFIG['calendar']['showphone']) {
+    if ($conf->value('calendar', 'showphone') !== null && $conf->value('calendar', 'showphone')) {
       $t .= '<div class="calphone">'
           .xssqw($this->userphone)
           .'</div>';

@@ -13,6 +13,7 @@
 */
 
 /** Load ancillary functions */
+require_once 'inc/bb/configreader.php';
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 

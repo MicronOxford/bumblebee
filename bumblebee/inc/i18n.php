@@ -25,6 +25,7 @@
 
 /** Load ancillary functions */
 require_once 'inc/typeinfo.php';
+require_once 'inc/bb/configreader.php';
 checkValidInclude();
 
 /** php-gettext base file for gettext emulation */
@@ -32,13 +33,15 @@ include_once 'php-gettext/gettext.inc';
 /** logging routine */
 require_once 'inc/logging.php';
 
+$conf = ConfigReader::getInstance();
+
 // get PHP to send a UTF-8 header for the content-type charset rather
 // than the PHP4 default iso8859-1
 ini_set('default_charset', 'utf-8');
 
 // this could be done per-user, but that would be more difficult...
 //$locale = (isset($_GET['lang']))? $_GET['lang'] : DEFAULT_LOCALE;
-$locale = $CONFIG['language']['locale'];
+$locale = $conf->value('language', 'locale');
 
 // work out if php-gettext is installed on this system
 if (function_exists('T_setlocale') && function_exists('T_')) {
@@ -51,7 +54,7 @@ if (function_exists('T_setlocale') && function_exists('T_')) {
   // gettext setup
   T_setlocale(LC_MESSAGES, $locale);
   
-  T_bindtextdomain(PACKAGE, $CONFIG['language']['translation_base']);
+  T_bindtextdomain(PACKAGE, $conf->value('language', 'translation_base'));
   T_bind_textdomain_codeset(PACKAGE, $encoding);
   T_textdomain(PACKAGE);
   
@@ -67,7 +70,8 @@ if (function_exists('T_setlocale') && function_exists('T_')) {
   function T_($s) { return $s; }
 }
 
-if (! isset($CONFIG['language']['moneyFormat'])) $CONFIG['language']['moneyFormat'] = "$%.2f";
+//FIXME? this is not exactly oop but the current sigleton does not provide for it
+if ($conf->value('language', 'moneyFormat') === null) $conf->data['language']['moneyFormat'] = "$%.2f";
 
 
 ?> 

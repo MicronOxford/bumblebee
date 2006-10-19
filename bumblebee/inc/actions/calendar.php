@@ -14,6 +14,8 @@
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
+require_once 'inc/bb/configreader.php';
+
 /** calendar object */
 require_once 'inc/bb/calendar.php';
 /** date maniuplation objects */
@@ -85,7 +87,7 @@ class ActionCalendar extends ActionViewBase {
   * Display the monthly calendar for the selected instrument
   */
   function instrumentMonth() {
-    global $CONFIG;
+    $conf = ConfigReader::getInstance();
     // Show a window $row['calendarlength'] weeks long starting $row['calendarhistory'] weeks
     // before the current date. Displayed week starts on configured day of week.
     $offset = issetSet($this->PD, 'caloffset');
@@ -98,7 +100,7 @@ class ActionCalendar extends ActionViewBase {
 
     $callength = 7 * $this->row['callength'];
 
-    $week_offset = issetSet($CONFIG['language'], 'week_offset', 1);
+    $week_offset = $conf->value('language', 'week_offset', 1);
     $start->weekRound();
     if ($now->dow() < $week_offset) $start->addDays(-7);
     $start->addDays($week_offset - 7*$this->row['calhistory']);
@@ -158,8 +160,8 @@ class ActionCalendar extends ActionViewBase {
 
     $cal->freeBusyOnly = ! $this->auth->permitted(BBROLE_VIEW_BOOKINGS, $this->instrument);
     $cal->isAdminView = $this->auth->permitted(BBROLE_MAKE_BOOKINGS_FREE, $this->instrument);
-    $cal->setOutputStyles('', $CONFIG['calendar']['todaystyle'],
-                preg_split('{/}',$CONFIG['calendar']['monthstyle']), 'm');
+    $cal->setOutputStyles('', $conf->value('calendar', 'todaystyle'),
+                preg_split('{/}',$conf->value('calendar', 'monthstyle')), 'm');
     echo $this->displayInstrumentHeader();
     echo $this->_linksForwardBack($start,
                                   ($offset-$callength),

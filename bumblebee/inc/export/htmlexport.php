@@ -14,6 +14,7 @@
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
+
 /** constants for defining export formatting and codes */
 require_once 'inc/exportcodes.php';
 
@@ -223,9 +224,9 @@ class HTMLExport {
   * @todo //TODO: potential memory hog (stores HTML output in three places at once)
   */
   function wrapHTMLBuffer() {
-    global $CONFIG;
+    $conf = ConfigReader::getInstance();
     global $BASEPATH;
-    $filename = $CONFIG['export']['htmlWrapperFile'];
+    $filename = $conf->value('export', 'htmlWrapperFile');
     $fd = fopen($filename, 'r');
     $contents = fread($fd, filesize ($filename));
     fclose($fd);
