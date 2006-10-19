@@ -90,10 +90,11 @@ class BumblebeeAuth extends BasicAuth {
   }
 
   function isSystemAdmin() {
-    trigger_error("using deprecated isSystemAdmin", E_USER_NOTICE);
-    $l = debug_backtrace();
-    print "file= ". $l[0]['file'] .", line=".$l[0]['line']."\n<br />";
-    return $this->system_permissions & BBPERM_ADMIN;
+	if($this->system_permissions >= BBROLE_ADMIN_BASE)
+		return true;
+	else
+		return false;	  
+
   }
 
   function isInstrumentAdmin($instr) {

@@ -60,6 +60,8 @@ echo formStart(makeURL($action->nextaction));
 if (! $auth->isLoggedIn()) {
   echo $auth->loginError();
 }
+if($auth->isSystemAdmin() && file_exists("install"))
+  echo "<div class=error>The installer still exists. This is a security risk please delete it.</div>";
 $action->go();
 echo formEnd();
 echo "</div>";
