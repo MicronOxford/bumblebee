@@ -16,7 +16,6 @@ function loadInstalledConfig() {
   set_include_path($REBASE_INSTALL.PATH_SEPARATOR.get_include_path());
   $NON_FATAL_CONFIG = true;
   require_once 'inc/config.php';
-  require_once 'inc/bb/configreader.php';  
 }
 
 ?>

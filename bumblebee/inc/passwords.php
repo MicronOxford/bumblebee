@@ -11,9 +11,10 @@
 */
 
 /** Load ancillary functions */
-require_once 'inc/bb/configreader.php';
 require_once 'inc/typeinfo.php';
 checkValidInclude();
+
+require_once 'inc/bb/configreader.php';
 
 /**
 * tests if string is a valid username as per the config setting for usernames

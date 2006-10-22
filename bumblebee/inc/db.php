@@ -15,9 +15,10 @@
 */
 
 /** Load ancillary functions */
-require_once 'inc/bb/configreader.php';
 require_once 'inc/typeinfo.php';
 checkValidInclude();
+
+require_once 'inc/bb/configreader.php';
 
 $conf = & ConfigReader::getInstance();
 $conf->MergeFile('db.ini');

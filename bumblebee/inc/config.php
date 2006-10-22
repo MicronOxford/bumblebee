@@ -35,7 +35,6 @@ $configLocation = $REBASE_INSTALL.'config/';
 */
 global $CONFIG;
 
-require_once 'inc/bb/configreader.php';
 new ConfigReader();
 $conf = & ConfigReader::getInstance();
 $conf->SetFileLocation($configLocation);
