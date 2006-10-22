@@ -127,14 +127,11 @@ class Booking extends TimeSlot {
   /**
   * display the booking as a single cell in a calendar
   *
-  * @global string base path to the installation
-  * @global array  system config
-  *
   * @return string html representation of booking
   */
   function displayInCell(/*$isadmin=0*/) {
     $conf = ConfigReader::getInstance();
-    global $BASEPATH;
+    $BasePath = $conf->BasePath;
     $start = isset($this->displayStart) ? $this->displayStart : $this->start;
     $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
     if ($this->freeBusyOnly) {
@@ -146,7 +143,7 @@ class Booking extends TimeSlot {
     $isodate = $start->dateString();
     $t = '';
     $t .= "<div style='float:right;'><a href='$this->href&amp;isodate=$isodate&amp;bookid=$this->id' "
-              ."title='$timedescription' class='but'><img src='$BASEPATH/theme/images/editbooking.png' "
+              ."title='$timedescription' class='but'><img src='$BasePath/theme/images/editbooking.png' "
               ."alt='$timedescription' class='calicon' /></a></div>";
     // Finally include details of the booking:
     $t .= '<div class="calbookperson">'

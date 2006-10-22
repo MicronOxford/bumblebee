@@ -138,8 +138,6 @@ class ActionViewBase extends ActionAction {
   *
   * @param boolean $footer   called in the footer
   * @returns string          header/footer to display for notes section
-  *
-  * @global array system config
   */
   function _instrumentNotes($footer=true) {
     $conf = ConfigReader::getInstance();

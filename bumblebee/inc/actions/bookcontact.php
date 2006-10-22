@@ -63,11 +63,10 @@ class ActionBookContact extends ActionAction {
 
   function sendEmail() {
     $conf = ConfigReader::getInstance();
-    global $ADMINEMAIL;
     $instrument = quickSQLSelect('instruments', 'id', $this->PD['contact-instrid']);
     $emails = array();
     if (empty($instrument['supervisors'])) {
-      $emails[0] = $ADMINEMAIL;
+      $emails[0] = $conf->AdminEmail;
     } else {
       foreach(preg_split('/,\s*/', $instrument['supervisors']) as $username) {
         preDump($username);
@@ -99,7 +98,6 @@ class ActionBookContact extends ActionAction {
 
   function _getEmailText($data) {
     $conf = ConfigReder::getInstance();
-    global $BASEURL;
     $fh = fopen($conf->value('instruments', 'emailRequestTemplate'), 'r');
     $txt = fread($fh, filesize($conf->value('instruments', 'emailRequestTemplate')));
     fclose($fh);

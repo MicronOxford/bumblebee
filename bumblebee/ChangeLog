@@ -23,6 +23,7 @@
 	* feature: double entry password model included
 	* feature: make entire row in lists a link
 	* feature: make DROP commands in the installer optional
+	* make system configuration object-based
 	* janitorial: clean up some PHP4isms (is_a)
 
 2006-08-01 Stuart Prescott <bumblebee@nanonanonano.net>

@@ -259,8 +259,6 @@ class BasicAuth {
 
   /**
   * RADIUS auth method to login the user against a RADIUS server
-  *
-  * @global string location of the config file
   */
   function _auth_via_radius($username, $password) {
     require_once 'Auth/Auth.php';
@@ -289,8 +287,6 @@ class BasicAuth {
 
   /**
   * LDAP auth method to login the user against an LDAP server
-  *
-  * @global string location of the config file
   */
   function _auth_via_ldap($username, $password) {
     require_once 'Auth/Auth.php';

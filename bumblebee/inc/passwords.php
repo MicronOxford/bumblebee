@@ -19,7 +19,6 @@ checkValidInclude();
 * tests if string is a valid username as per the config setting for usernames
 *
 * @param string $v string to test if it is a valid username
-* @global system config array
 * @return boolean username is valid
 */
 function is_valid_username($v) {
@@ -49,7 +48,6 @@ function check_password($test, $real) {
 * @param string $salt       salt used to hash the password
 * @returns string           hashed password
 *
-* @global config array
 */
 function makePasswordHash($passwd, $salt=NULL, $method=NULL) {
   $conf = ConfigReader::getInstance();

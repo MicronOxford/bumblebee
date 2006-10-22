@@ -31,16 +31,16 @@ class ConfigReader extends BasicConfigReader {
   var $SessionIndex;
 
   function ParseConfig($fatalErrors=true) {
-    $this->AdminEmail = $this->data['main']['AdminEmail'];
+    $this->AdminEmail = $this->value('main', 'AdminEmail', '');  ///FIXME: work out a default?
 
-    $this->BasePath   = $this->data['main']['BasePath'];
+    $this->BasePath   = $this->value('main', 'BasePath');   ///FIXME: work out a default?
     if (substr($this->BasePath, 0, 1) != '/' && ! $this->configError) {
       // the first character of the path must be a slash
       // the user is never going to be able to log on when it's like this, so let's kill it off.
       trigger_error('Bumblebee misconfiguration: please make sure that the BasePath parameter in bumblebee.ini is only the path portion of the URL and does not include the server name. (Hint: should start with a "/" and be something like "/bumblebee" or "/departments/chemistry/equipment")', $fatalErrors ? E_USER_ERROR : E_USER_NOTICE);
     }
 
-    $this->BaseURL    = $this->data['main']['BaseURL'];
+    $this->BaseURL    = $this->value('main', 'BaseURL');    ///FIXME: work out a default?
 
     if ($fatalErrors) {
       if ($this->data['error_handling']['AllWarnings']) {

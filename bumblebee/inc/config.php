@@ -1,8 +1,8 @@
 <?php
 /**
-* Load user's configuration settings
+* Load system-wide configuration settings
 *
-* Parses the {@link bumblebee.ini } file and sets appropriate globals for quick reference
+* Set up a config object that parses the { @link bumblebee.ini } file.
 *
 * @author    Stuart Prescott
 * @copyright  Copyright Stuart Prescott
@@ -13,9 +13,10 @@
 */
 
 /** Load ancillary functions */
-require_once 'inc/bb/configreader.php';
 require_once 'inc/typeinfo.php';
 checkValidInclude();
+
+require_once 'inc/bb/configreader.php';
 
 $REBASE_INSTALL = isset($REBASE_INSTALL) ? $REBASE_INSTALL : '';
 $NON_FATAL_CONFIG = isset($NON_FATAL_CONFIG) ? $NON_FATAL_CONFIG : false;

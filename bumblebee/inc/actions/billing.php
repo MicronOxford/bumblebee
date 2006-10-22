@@ -328,12 +328,9 @@ class ActionBilling extends ActionExport {
   * @param string $group   name of the group for which this report is being generated
   * @param string $start   the start date for the report
   * @param string $stop    the stop date for the report
-  * @global array  system config
-  * @global string  url base for links
   */
   function _getEmailText($group, $start, $stop) {
     $conf = ConfigReader::getInstance();
-    global $BASEURL;
     $fh = fopen($conf->value('billing', 'emailTemplate'), 'r');
     $txt = fread($fh, filesize($conf->value('billing', 'emailTemplate')));
     fclose($fh);

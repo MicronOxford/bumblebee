@@ -325,9 +325,7 @@ class BookingEntry extends DBRow {
   *  booking has been made
   */
   function _sendBookingEmail() {
-    global $ADMINEMAIL;
-
-    $conf = ConfigReader::getInstance();    
+    $conf = ConfigReader::getInstance();
 
     //preDump($this->fields['instrument']);
     $instrument = quickSQLSelect('instruments', 'id', $this->fields['instrument']->getValue());
@@ -371,19 +369,15 @@ class BookingEntry extends DBRow {
   * @param array  $instrument   instrument data (name => , longname => )
   * @param array  $user         user data (name => , username => )
   *
-  * @global array   system config settings
-  * @global string  base URL for installation
   * @todo //TODO:  graceful error handling for fopen, fread
   */
   function _getEmailText($instrument, $user) {
-    global $BASEURL;
-
     $conf = ConfigReader::getInstance();
 
     $fh = fopen($conf->value('instruments', 'emailTemplate'), 'r');
     $txt = fread($fh, filesize($conf->value('instruments', 'emailTemplate')));
     fclose($fh);
-    $start = new SimpleDate($this->fields['bookwhen']->getValue());
+    $start    = new SimpleDate($this->fields['bookwhen']->getValue());
     $duration = new SimpleTime($this->fields['duration']->getValue());
     $replace = array(
             '/__instrumentname__/'      => $instrument['name'],

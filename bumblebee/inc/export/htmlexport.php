@@ -218,14 +218,11 @@ class HTMLExport {
   /**
   * embed the html within a blank page to create the report in a separate window
   *
-  * @global array   config settings
-  * @global string  base URL for installation
   * @return string  html snippet that will open a new window with the html report
   * @todo //TODO: potential memory hog (stores HTML output in three places at once)
   */
   function wrapHTMLBuffer() {
     $conf = ConfigReader::getInstance();
-    global $BASEPATH;
     $filename = $conf->value('export', 'htmlWrapperFile');
     $fd = fopen($filename, 'r');
     $contents = fread($fd, filesize ($filename));
@@ -233,7 +230,7 @@ class HTMLExport {
     $title = T_('Data export');
     $table = preg_replace('/\$/', '&#'.ord('$').';', $this->export);
     $contents = preg_replace('/__TITLE__/', $title, $contents);
-    $contents = preg_replace('/__BASEPATH__/', $BASEPATH, $contents);
+    $contents = preg_replace('/__BASEPATH__/', $conf->BasePath, $contents);
     //return $contents;
     //preDump($contents);
     $contents = preg_replace('/__CONTENTS__/', $table, $contents);
