@@ -27,10 +27,10 @@ class ActionUnknown extends ActionAction {
   var $forbiden;
 
   /**
-  * Initialising the class 
-  * 
+  * Initialising the class
+  *
   * @param  string  $action requested action ('verb')
-  * @param  boolean $forbidden  (optional) 
+  * @param  boolean $forbidden  (optional)
   * @return void nothing
   */
   function ActionUnknown($action, $forbidden=0) {
@@ -40,11 +40,11 @@ class ActionUnknown extends ActionAction {
   }
 
   function go() {
-    global $ADMINEMAIL;
+    $conf = ConfigReader::getInstance();
     echo '<h2>'.T_('Error').'</h2><div class="msgerror">';
     if ($this->forbidden) {
       echo '<p>'
-          .sprintf(T_('Sorry, you don\'t have permission to perform the action "%s".'), xssqw($this->action)) 
+          .sprintf(T_('Sorry, you don\'t have permission to perform the action "%s".'), xssqw($this->action))
           .'</p>';
     } else {
       echo '<p>'
@@ -52,11 +52,11 @@ class ActionUnknown extends ActionAction {
           .'</p>';
     }
     echo '<p>'
-        .sprintf(T_('Please contact <a href="mailto:%s">the system administrator</a> for more information.'), $ADMINEMAIL)
+        .sprintf(T_('Please contact <a href="mailto:%s">the system administrator</a> for more information.'), $conf->AdminEmail)
         .'</p></div>';
   }
-  
-  
-  
+
+
+
 } //ActionUnknown
-?> 
+?>

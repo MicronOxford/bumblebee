@@ -35,7 +35,7 @@ $TABLEPREFIX = $conf->value('database', 'tableprefix');
 */
 require_once 'inc/formslib/sql.php';
 
-$dberrmsg = sprintf(T_('<p>Sorry, I couldn\'t connect to the database, so there\'s nothing I can presently do. This could be due to a booking system misconfiguration, or a failure of the database subsystem.</p><p>If this persists, please contact the <a href="mailto:%s">booking system administrator</a>.</p>'), $ADMINEMAIL);
+$dberrmsg = sprintf(T_('<p>Sorry, I couldn\'t connect to the database, so there\'s nothing I can presently do. This could be due to a booking system misconfiguration, or a failure of the database subsystem.</p><p>If this persists, please contact the <a href="mailto:%s">booking system administrator</a>.</p>'), $conf->AdminEmail);
 
 $DB_CONNECT_DEBUG = isset($DB_CONNECT_DEBUG) ? $DB_CONNECT_DEBUG : false;
 $NON_FATAL_DB     = isset($NON_FATAL_DB)     ? $NON_FATAL_DB     : false;

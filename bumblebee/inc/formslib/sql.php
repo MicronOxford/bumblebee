@@ -123,20 +123,18 @@ function echoSQL($echo, $success=0) {
 *
 * @param string $echo       the sql query
 * @param boolean $fatal     die on error
-* @global boolean should the SQL be shown
-* @global string the email address of the administrator
 */
 function echoSQLerror($echo, $fatal=0) {
-  global $VERBOSESQL, $ADMINEMAIL;
+  $conf = ConfigReader::getInstance();
   if ($echo != '' && $echo) {
-    if ($VERBOSESQL) {
+    if ($conf->VerboseSQL) {
       echo "<div class='sql error'>". xssqw($echo) ."</div>";
     }
    if ($fatal) {
       echo "<div class='sql error'>"
-        .sprintf(T_("Ooops. Something went very wrong. Please send the following log information to <a href='mailto:%s'>your Bumblebee Administrator</a> along with a description of what you were doing and ask them to pass it on to the Bumblebee developers. Thanks!"), $ADMINEMAIL)
+        .sprintf(T_("Ooops. Something went very wrong. Please send the following log information to <a href='mailto:%s'>your Bumblebee Administrator</a> along with a description of what you were doing and ask them to pass it on to the Bumblebee developers. Thanks!"), $conf->AdminEmail)
         .'</div>';
-      if ($VERBOSESQL) {
+      if ($conf->VerboseSQL) {
         preDump(debug_backtrace());
       } else {
         logmsg(1, "SQL ERROR=[$echo]");

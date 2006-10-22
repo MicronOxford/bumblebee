@@ -36,13 +36,6 @@ $conf->LoadFile('bumblebee.ini');
 $conf->ParseConfig();
 
 /**
-* $ADMINEMAIL is used for generating links to the administrator for more information, help etc
-* @global string $ADMINEMAIL
-*/
-global $ADMINEMAIL;
-$ADMINEMAIL = $conf->value('main', 'AdminEmail');
-
-/**
 * $BASEPATH is the path to this installation so that CSS and image files can be found by the browser
 * @global string $BASEPATH
 */
