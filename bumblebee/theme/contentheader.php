@@ -1,8 +1,8 @@
 <?php
 /**
 * Content heading, branding etc
-*  
-* This is only a sample header file. 
+*
+* This is only a sample header file.
 * You can customise the menu system here or in pageheader.php
 *
 * @author    Stuart Prescott
@@ -17,15 +17,18 @@
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
+require_once 'inc/config.php';
+$conf = ConfigReader::getInstance();
+
 $MENUCONTENTS = $usermenu->getMenu();
-  
+$BasePath     = $conf->BasePath;
 ?>
 <body>
 
 <div id="header">
   <div id="headerLeft">
     <a href='http://bumblebeeman.sf.net/' title="Bumblebee">
-      <img src='<?php echo $BASEPATH ?>/theme/images/logo.png' alt="Bumblebee logo" />
+      <img src='<?php echo $BasePath ?>/theme/images/logo.png' alt="Bumblebee logo" />
     </a>
   </div>
   <div id="headerRight">

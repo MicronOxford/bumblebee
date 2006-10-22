@@ -411,12 +411,11 @@ class Calendar {
   * @param SimpleTime $daystop     time up until which bookings should be displayed
   * @param integer    $granularity seconds per row in display
   * @param integer    $reportPeriod  seconds between reporting the time in a column down the side
-  * @global base path the installation (for icons)
   * @return string   html representation of the calendar
   */
   function displayMonthAsTable($daystart, $daystop, $granularity,
                                     $reportPeriod) {
-    global $BASEPATH;
+    $conf = ConfigReader::getInstance();
     $this->_breakAcrossDays();
 //     echo $this->display();
     $matrix = $this->_collectMatrix($daystart, $daystop, $granularity);
@@ -459,7 +458,7 @@ class Calendar {
           $t .= '<td class="caldatecell '.$class.'">';
           $t .= '<div style="float:right;"><a href="'.$this->zoomhref.'&amp;isodate='.$isodate.'" '
                   .'class="but" title="'.$zoomwords .'">'
-              .'<img src="'.$BASEPATH.'/theme/images/zoom.png" '
+              .'<img src="'.$conf->BasePath.'/theme/images/zoom.png" '
                   .'alt="'.$zoomwords .'" class="calicon" /></a></div>'."\n";
           $t .= '<div class="caldate">'
                 . $current->dom();
@@ -520,7 +519,6 @@ class Calendar {
   */
   function displayDayAsTable($daystart, $daystop, $granularity,
                                     $reportPeriod) {
-    global $BASEPATH;
     $this->_breakAcrossDays();
 //     echo $this->display();
     $matrix = $this->_collectMatrix($daystart, $daystop, $granularity);

@@ -266,8 +266,8 @@ function makeAbsURL($target=NULL, $escape=true) {
   if (is_array($target) || $target === NULL) {
     $pathPart = makeURL($target[0], $target[1], $escape);
   } else {
-    global $BASEPATH;
-    $pathPart = $BASEPATH . $target;
+    $conf = ConfigReader::getInstance();
+    $pathPart = $conf->BasePath . $target;
   }
 
   return $serverPart . $pathPart;

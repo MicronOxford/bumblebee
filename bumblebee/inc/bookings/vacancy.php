@@ -26,11 +26,11 @@ require_once 'timeslot.php';
 * @subpackage Bookings
 */
 class Vacancy extends TimeSlot {
-  
+
   /**
   *  Create a new vacancy slot
   *
-  * @param array  $arr   field => value  
+  * @param array  $arr   field => value
   */
   function Vacancy($arr='') {
     if (is_array($arr)) {
@@ -60,7 +60,7 @@ class Vacancy extends TimeSlot {
   function display() {
     return $this->displayInTable();
   }
-  
+
   /**
   * display the vacancy as a list of settings
   *
@@ -81,7 +81,7 @@ class Vacancy extends TimeSlot {
   * @return string html representation of the slot
   */
   function displayInCell($isadmin=0) {
-    global $BASEPATH;
+    $conf = ConfigReader::getInstance();
     $t = '';
     #echo $this->isDisabled ? 'disabled ' : 'active ';
     if ($isadmin || ! $this->isDisabled) {
@@ -96,7 +96,7 @@ class Vacancy extends TimeSlot {
               .'<a href="'
                   .$this->href.'&amp;isodate='.$isodate.'&amp;startticks='.$startticks.'&amp;stopticks='.$stopticks.'" '
                   .'class="but" title="'.$timedescription.'">'
-                      .'<img src="'.$BASEPATH.'/theme/images/book.png" '
+                      .'<img src="'.$conf->BasePath.'/theme/images/book.png" '
                           .'alt="'.$timedescription.'" '
                           .'class="calicon" />'
               .'</a>'
