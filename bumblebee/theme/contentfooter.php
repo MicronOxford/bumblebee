@@ -1,7 +1,7 @@
 <?php
 /**
 * Footer HTML that is included on every page
-*  
+*
 * this is only a sample implementation giving credit to the Bumblebee project and some
 * feedback on what Bumblebee has been managing.
 *
@@ -25,6 +25,9 @@ checkValidInclude();
 include_once 'inc/systemstats.php';
 $stat = new SystemStats;
 
+require_once 'inc/bb/configreader.php';
+$conf = ConfigReader::getInstance();
+
 print "<div id='bumblebeefooter'>";
 print "<p>";
 printf(T_('System managed by <a href="http://bumblebeeman.sf.net/">Bumblebee</a> version %s, released under the <a href="http://www.gnu.org/licenses/gpl.html">GNU GPL</a>.'),
@@ -34,20 +37,20 @@ printf(T_('This installation of Bumblebee currently manages %s users, %s project
             $stat->get('users'), $stat->get('projects'), $stat->get('instruments'), $stat->get('bookings'));
 print "<br />";
 
-if ($CONFIG['display']['server_signature']) {
+if ($conf->value('display','server_signature',true)) {
   printf(T_('Running under %s (%s), %s (%s), PHP (%s, %s mode) with %s (%s).'),
-              php_uname('s'), php_uname('r'), 
-              webserver_get_name(), webserver_get_version(), 
-              phpversion(), PHP_SAPI, 
+              php_uname('s'), php_uname('r'),
+              webserver_get_name(), webserver_get_version(),
+              phpversion(), PHP_SAPI,
               db_get_name(), db_get_version());
   print "<br />";
 }
 
-printf(T_('Email the <a href="mailto:%s">system administrator</a> for help.'), 
-            $ADMINEMAIL);
+printf(T_('Email the <a href="mailto:%s">system administrator</a> for help.'),
+            $conf->AdminEmail);
 print "</p>";
 print "<p class='bumblebeecopyright'>";
-printf(T_('Booking information Copyright &copy; %s %s'), 
+printf(T_('Booking information Copyright &copy; %s %s'),
             date('Y'), $COPYRIGHTOWNER);
 print "</p>";
 print "</div>";

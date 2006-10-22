@@ -29,33 +29,25 @@ $NON_FATAL_CONFIG = isset($NON_FATAL_CONFIG) ? $NON_FATAL_CONFIG : false;
 */
 $configLocation = $REBASE_INSTALL.'config/';
 
-/**
-* $CONFIG contains the parsed config options for this installation
-* @global array $CONFIG
-*/
-global $CONFIG;
-
 new ConfigReader();
 $conf = & ConfigReader::getInstance();
 $conf->SetFileLocation($configLocation);
 $conf->LoadFile('bumblebee.ini');
 $conf->ParseConfig();
 
-$CONFIG = $conf->data;
-
 /**
 * $ADMINEMAIL is used for generating links to the administrator for more information, help etc
 * @global string $ADMINEMAIL
 */
 global $ADMINEMAIL;
-$ADMINEMAIL = $CONFIG['main']['AdminEmail'];
+$ADMINEMAIL = $conf->value('main', 'AdminEmail');
 
 /**
 * $BASEPATH is the path to this installation so that CSS and image files can be found by the browser
 * @global string $BASEPATH
 */
 global $BASEPATH;
-$BASEPATH   = $CONFIG['main']['BasePath'];
+$BASEPATH   = $conf->value('main', 'BasePath');
 if (substr($BASEPATH, 0, 1) != '/' && ! $config_error) {
   // the first character of the path must be a slash
   // the user is never going to be able to log on when it's like this, so let's kill it off.
@@ -67,14 +59,14 @@ if (substr($BASEPATH, 0, 1) != '/' && ! $config_error) {
 * @global string $BASEURL
 */
 global $BASEURL;
-$BASEURL    = $CONFIG['main']['BaseURL'];
+$BASEURL    = $conf->value('main', 'BaseURL');
 
 /**
 * Copyright of generated output is attributed to $COPYRIGHTOWNER
 * @global string $COPYRIGHTOWNER
 */
 global $COPYRIGHTOWNER;
-$COPYRIGHTOWNER = $CONFIG['main']['CopyrightOwner'];
+$COPYRIGHTOWNER = $conf->value('main', 'CopyrightOwner');
 
 
 /**
@@ -82,23 +74,24 @@ $COPYRIGHTOWNER = $CONFIG['main']['CopyrightOwner'];
 * @global boolean $VERBOSESQL
 */
 global $VERBOSESQL;
-$VERBOSESQL = $CONFIG['error_handling']['VerboseSQL'];
+$VERBOSESQL = $conf->value('error_handling', 'VerboseSQL');
 
 /**
 * If $VERBOSEDATA is true then user data will be dumped to the browser for debugging purposes
 * @global boolean $VERBOSEDATA
 */
 global $VERBOSEDATA;
-$VERBOSEDATA = $CONFIG['error_handling']['VerboseData'];
+$VERBOSEDATA = $conf->value('error_handling', 'VerboseData');
 
 ini_set("session.use_only_cookies",1); #don't permit ?PHPSESSID= stuff
 #ini_set("session.cookie_lifetime",60*60*1); #login expires after x seconds
 
 
-if (!empty($CONFIG['main']['ExtraIncludePath'])) {
-  set_include_path($REBASE_INSTALL.$CONFIG['main']['ExtraIncludePath'].PATH_SEPARATOR.get_include_path());
+if ($conf->value('main', 'ExtraIncludePath', false)) {
+  set_include_path($REBASE_INSTALL.($conf->value('main','ExtraIncludePath')).PATH_SEPARATOR.get_include_path());
 }
-if (isset($CONFIG['error_handling']['UseDBug']) && $CONFIG['error_handling']['UseDBug'] && ! $NON_FATAL_CONFIG) {
+
+if ($conf->value('error_handling', 'UseDBug', false) && ! $NON_FATAL_CONFIG) {
   // include the dBug pretty printer for error and debugging dumps
   // http://dbug.ospinto.com/
   include_once 'dBug.php';
@@ -111,7 +104,7 @@ if (! $NON_FATAL_CONFIG) {
   // As of PHP5.0, we *must* set the timezone for date calculations, otherwise
   // many errors will be emitted. For a list of timezones, see
   //     http://php.net/manual/en/timezones.php
-  $tz = isset($CONFIG['language']['timezone']) ? $CONFIG['language']['timezone'] : "Europe/London";
+  $tz = $conf->value('language', 'timezone', 'Europe/London');
   date_default_timezone_set($tz);
 }
 

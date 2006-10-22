@@ -233,7 +233,7 @@ class ActionBilling extends ActionExport {
   function _sendPDFbyEmail($toName, $toEmail, $group, $data) {
     $conf = ConfigReader::getInstance();
     $eol = "\r\n";
-    //$from = $CONFIG['billing']['emailFromName'].' <'.$CONFIG['main']['SystemEmail'].'>';
+    //$from = $conf->value('billing', 'emailFromName').' <'.$conf->value('main','SystemEmail').'>';
     $from = $conf->value('main', 'SystemEmail');
     $returnpath = $conf->value('main', 'SystemEmail');
     $replyto = $this->auth->name.' <'.$this->auth->email.'>';
