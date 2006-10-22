@@ -20,7 +20,7 @@ require_once 'inc/typeinfo.php';
 checkValidInclude();
 
 $conf = & ConfigReader::getInstance();
-$conf->mergeFile($CONFIGLOCATION.'db.ini');
+$conf->MergeFile('db.ini');
 
 
 /**

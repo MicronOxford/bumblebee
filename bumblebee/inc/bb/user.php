@@ -80,7 +80,7 @@ class User extends DBRow {
       $f = new CheckBox('suspended', T_('Suspended'));
       $this->addElement($f);
 
-      if (! $conf->value('auth', 'permissionsModel')) {
+      if (! $conf->value('auth', 'permissionsModel', false)) {
         $f = new CheckBox('isadmin', T_('System Administrator'));
         $this->addElement($f);
       } else {
@@ -155,7 +155,7 @@ class User extends DBRow {
       $unbookAnnounce = new CheckBox('unbook', T_('Subscribe: unbook'));
       $f->addElement($unbookAnnounce);
 
-      if (! $conf->value('auth', 'permissionsModel')) {
+      if (! $conf->value('auth', 'permissionsModel', false)) {
         $instradmin = new CheckBox('isadmin', T_('Instrument admin'));
         $f->addElement($instradmin);
       } else {

@@ -263,16 +263,16 @@ class BasicAuth {
   * @global string location of the config file
   */
   function _auth_via_radius($username, $password) {
-    global $CONFIGLOCATION;
     require_once 'Auth/Auth.php';
-    $RADIUSCONFIG = parse_ini_file($CONFIGLOCATION.DIRECTORY_SEPARATOR.'radius.ini');
+    $conf = & ConfigReader::getInstance();
+    $conf->MergeFile('radius.ini', '_auth_radius');
     $params = array(
-                "servers" => array(array($RADIUSCONFIG['host'],
+                "servers" => array(array($conf->value('_auth_radius', 'host'),
                                          0,
-                                         $RADIUSCONFIG['key'],
+                                         $conf->value('_auth_radius', 'key'),
                                          3, 3)
                                   ),
-                "authtype" => $RADIUSCONFIG['authtype']
+                "authtype" => $conf->value('_auth_radius', 'authtype')
                 );
     // start the PEAR::Auth system using RADIUS authentication with the parameters
     // we have defined here for this config. Do not display a login box on error.
@@ -293,18 +293,18 @@ class BasicAuth {
   * @global string location of the config file
   */
   function _auth_via_ldap($username, $password) {
-    global $CONFIGLOCATION;
     require_once 'Auth/Auth.php';
-    $LDAPCONFIG = parse_ini_file($CONFIGLOCATION.DIRECTORY_SEPARATOR.'ldap.ini');
+    $conf = & ConfigReader::getInstance();
+    $conf->MergeFile('ldap.ini', '_auth_ldap');
     $params = array(
-                'url'        => $LDAPCONFIG['url'],
-                'basedn'     => $LDAPCONFIG['basedn'],
-                'userattr'   => $LDAPCONFIG['userattr'],
-                'useroc'     => $LDAPCONFIG['userobjectclass'],          // for v 1.2
-                'userfilter' => $LDAPCONFIG['userfilter'],               // for v 1.3
-                'debug'      => $LDAPCONFIG['debug'] ? true : false,
-                'version'    => intval($LDAPCONFIG['version']),          // for v 1.3
-                'start_tls'  => $LDAPCONFIG['start_tls'] ? true : false  // requires patched version of LDAP auth
+                'url'        => $conf->value('_auth_ldap', 'url'),
+                'basedn'     => $conf->value('_auth_ldap', 'basedn'),
+                'userattr'   => $conf->value('_auth_ldap', 'userattr'),
+                'useroc'     => $conf->value('_auth_ldap', 'userobjectclass'),          // for v 1.2
+                'userfilter' => $conf->value('_auth_ldap', 'userfilter'),               // for v 1.3
+                'debug'      => $conf->value('_auth_ldap', 'debug') ? true : false,
+                'version'    => intval($conf->value('_auth_ldap', 'version')),          // for v 1.3
+                'start_tls'  => $conf->value('_auth_ldap', 'start_tls') ? true : false  // requires patched version of LDAP auth
                 );
     // start the PEAR::Auth system using LDAP authentication with the parameters
     // we have defined here for this config. Do not display a login box on error.

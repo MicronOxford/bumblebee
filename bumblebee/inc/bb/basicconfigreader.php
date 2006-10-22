@@ -22,6 +22,8 @@ class BasicConfigReader {
 
   var $configError = false;
 
+  var $configFileLocation = null;
+
   function BasicConfigReader() {
     static $constructed = false;
     #echo "Constructor called";
@@ -53,23 +55,36 @@ class BasicConfigReader {
     }
   }
 
-  function loadFile($filename, $fatalErrors=true) {
-    $this->data = parse_ini_file($filename, 1);
-    if (! is_array($this->data)) {
-      // if the config file doesn't exist, then we're pretty much stuffed
+  function SetFileLocation($directory) {
+    $this->configFileLocation = $directory;
+  }
+
+  function LoadFile($filename, $fatalErrors=true) {
+    $this->data = $this->_readConfigFile($filename, $fatalErrors);
+  }
+
+  function MergeFile($filename, $section=null, $fatalErrors=true) {
+    $newdata = $this->_readConfigFile($filename, $fatalErrors);
+    $this->mergeConfig($newdata, $section);
+  }
+
+  function _readConfigFile($filename, $fatalErrors=true) {
+    $source = $this->configFileLocation . DIRECTORY_SEPARATOR . $filename;
+    if (! file_exists($source) && file_exists($filename)) {
+      $this->configError = true;
+      trigger_error("System misconfiguration: I could fine the config file '$filename' but
+      not in the designated location.", $fatalErrors ? E_USER_ERROR : E_USER_NOTICE);
+    } elseif (! file_exists($source)) {
       $this->configError = true;
       trigger_error("System misconfiguration: I could not find the config file '$filename'. Please give me a config file so I can do something useful.", $fatalErrors ? E_USER_ERROR : E_USER_NOTICE);
     }
-  }
-
-  function mergeFile($filename, $section=null, $fatalErrors=true) {
-    $newdata = parse_ini_file($filename, 1);
+    $newdata = parse_ini_file($source, 1);
     if (! is_array($newdata)) {
       // if the config file doesn't exist, then we're pretty much stuffed
       $this->configError = true;
       trigger_error("System misconfiguration: I could not find the config file '$filename'. Please give me a config file so I can do something useful.", $fatalErrors ? E_USER_ERROR : E_USER_NOTICE);
     }
-    $this->mergeConfig($newdata, $section);
+    return $newdata;
   }
 
   function value($section, $parameter, $default=null) {

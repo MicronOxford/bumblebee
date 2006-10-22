@@ -20,14 +20,13 @@ checkValidInclude();
 $REBASE_INSTALL = isset($REBASE_INSTALL) ? $REBASE_INSTALL : '';
 $NON_FATAL_CONFIG = isset($NON_FATAL_CONFIG) ? $NON_FATAL_CONFIG : false;
 
-/** location of config files
+/*
+* Set the location of config files
 *
 * By default, config/ in the Bumblebee installation directory, but
 * can be moved into /etc, /usr/share/bumblebee ...
-* @global string $CONFIGLOCATION
 */
-global $CONFIGLOCATION;
-$CONFIGLOCATION = $REBASE_INSTALL.'config/';
+$configLocation = $REBASE_INSTALL.'config/';
 
 /**
 * $CONFIG contains the parsed config options for this installation
@@ -38,7 +37,8 @@ global $CONFIG;
 require_once 'inc/bb/configreader.php';
 new ConfigReader();
 $conf = & ConfigReader::getInstance();
-$conf->LoadFile($CONFIGLOCATION.'bumblebee.ini');
+$conf->SetFileLocation($configLocation);
+$conf->LoadFile('bumblebee.ini');
 $conf->ParseConfig();
 
 $CONFIG = $conf->data;
@@ -91,15 +91,6 @@ $VERBOSESQL = $CONFIG['error_handling']['VerboseSQL'];
 global $VERBOSEDATA;
 $VERBOSEDATA = $CONFIG['error_handling']['VerboseData'];
 
-/**
-* Location of the session array (make sure the session variables don't clash with others systems
-* that are setting session vars)
-* @global string $SESSIDX
-*/
-global $SESSIDX;
-$SESSIDX = md5(dirname(__FILE__));
-
-
 ini_set("session.use_only_cookies",1); #don't permit ?PHPSESSID= stuff
 #ini_set("session.cookie_lifetime",60*60*1); #login expires after x seconds
 
@@ -112,8 +103,6 @@ if (isset($CONFIG['error_handling']['UseDBug']) && $CONFIG['error_handling']['Us
   // http://dbug.ospinto.com/
   include_once 'dBug.php';
 }
-
-$CONFIG['auth']['permissionsModel'] = issetSet($CONFIG['auth'], 'permissionsModel', false);
 
 if (! $NON_FATAL_CONFIG) {
   /** load the language pack */

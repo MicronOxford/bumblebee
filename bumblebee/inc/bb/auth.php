@@ -122,7 +122,7 @@ class BumblebeeAuth extends BasicAuth {
           .' WHERE userid=' . qw($this->uid);
       $sql = db_get($q, false);
       while ($row = db_fetch_array($sql)) {
-        if (isset($row['permissions']) && $conf->value('auth', 'permissionsModel')) {
+        if (isset($row['permissions']) && $conf->value('auth', 'permissionsModel', false)) {
           $permission = $row['permissions'];
         } else {
           $permission = $this->_constructInstrumentPermission($row);
@@ -137,7 +137,7 @@ class BumblebeeAuth extends BasicAuth {
                               array($this->uid, $instrument)
                            );
       if (is_array($row)) {
-        if (isset($row['permissions']) && $conf->value('auth', 'permissionsModel')) {
+        if (isset($row['permissions']) && $conf->value('auth', 'permissionsModel', false)) {
           $permission = $row['permissions'];
         } else {
           $permission = $this->_constructInstrumentPermission($row);
@@ -230,7 +230,7 @@ class BumblebeeAuth extends BasicAuth {
     if (! $this->isLoggedIn()) return;
 
     /// FIXME
-    if (isset($this->user_row['permissions']) && $conf->value('auth', 'permissionsModel')) {
+    if (isset($this->user_row['permissions']) && $conf->value('auth', 'permissionsModel', false)) {
       $this->system_permissions = (int) $this->user_row['permissions'];
     } else {
       logmsg(2, "Making up some permissions for user. Upgrade database format to get rid of this message.");
