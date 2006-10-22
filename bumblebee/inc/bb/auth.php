@@ -90,11 +90,11 @@ class BumblebeeAuth extends BasicAuth {
   }
 
   function isSystemAdmin() {
-	if($this->system_permissions >= BBROLE_ADMIN_BASE)
-		return true;
-	else
-		return false;	  
-
+    if($this->system_permissions >= BBROLE_ADMIN_BASE) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   function isInstrumentAdmin($instr) {
