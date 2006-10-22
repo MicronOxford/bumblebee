@@ -140,7 +140,7 @@ function check_postinst($data) {
   $REBASE_INSTALL = '..'.DIRECTORY_SEPARATOR;
   $NON_FATAL_CONFIG = true;
   $php_errormsg = '';
-  if ((! @ require 'inc/config.php') || $php_errormsg !== '') {
+  if ((! @ require_once 'inc/config.php') || $php_errormsg !== '') {
     $s[] = "ERROR: Configuration didn't load properly. "
            ."Bumblebee said:<blockquote>\n$php_errormsg</blockquote>";
     $error = true;

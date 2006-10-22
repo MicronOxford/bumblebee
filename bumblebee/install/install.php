@@ -102,7 +102,8 @@ $steps->increment();
 if (isset($_POST['do_cleanup'])) {
   require_once 'installer/loadconfig.php';
   loadInstalledConfig();
-  $userSubmitted['BASEURL'] = $BASEURL;
+  $conf = ConfigReader::getInstance();
+  $userSubmitted['BASEURL'] = $conf->BaseURL;
   printStepCleanup($userSubmitted, $steps);
   exit;
 }

@@ -216,10 +216,9 @@ class UserMenu {
 * @param array   $list      (optional) key => value data to be added to the URL
 * @param boolean $escape    use &amp; rather than & in the URL
 * @return string URL
-* @global string base URL for the installation
 */
 function makeURL($action=NULL, $list=NULL, $escape=true) {
-  global $BASEURL;
+  $conf = ConfigReader::getInstance();
   $list = is_array($list) ? $list : array();
   if ($action !== NULL) $list['action'] = $action;
   $args = array();
@@ -227,9 +226,9 @@ function makeURL($action=NULL, $list=NULL, $escape=true) {
     $args[] = $field.'='.urlencode($value);
   }
   $delim = $escape ? '&amp;' : '&';
-  if (count($args) > 0) return $BASEURL.'?'.join($delim, $args);
+  if (count($args) > 0) return $conf->BaseURL.'?'.join($delim, $args);
 
-  return $BASEURL;
+  return $conf->BaseURL;
 }
 
 
