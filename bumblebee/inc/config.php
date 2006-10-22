@@ -35,28 +35,6 @@ $conf->SetFileLocation($configLocation);
 $conf->LoadFile('bumblebee.ini');
 $conf->ParseConfig();
 
-/**
-* Copyright of generated output is attributed to $COPYRIGHTOWNER
-* @global string $COPYRIGHTOWNER
-*/
-global $COPYRIGHTOWNER;
-$COPYRIGHTOWNER = $conf->value('main', 'CopyrightOwner');
-
-
-/**
-* If $VERBOSESQL is true, then all SQL statements will be dumped to the browser for debugging purposes
-* @global boolean $VERBOSESQL
-*/
-global $VERBOSESQL;
-$VERBOSESQL = $conf->value('error_handling', 'VerboseSQL');
-
-/**
-* If $VERBOSEDATA is true then user data will be dumped to the browser for debugging purposes
-* @global boolean $VERBOSEDATA
-*/
-global $VERBOSEDATA;
-$VERBOSEDATA = $conf->value('error_handling', 'VerboseData');
-
 ini_set("session.use_only_cookies",1); #don't permit ?PHPSESSID= stuff
 #ini_set("session.cookie_lifetime",60*60*1); #login expires after x seconds
 

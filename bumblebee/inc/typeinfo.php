@@ -58,8 +58,8 @@ function preDump($v) {
 * @param boolean $DEBUG   print data if true
 */
 function echoData($v, $DEBUG=0) {
-  global $VERBOSEDATA;
-  if ($VERBOSEDATA || $DEBUG) {
+  $conf = ConfigReader::getInstance();
+  if ($conf->VerboseData || $DEBUG) {
     preDump($v);
   }
 }

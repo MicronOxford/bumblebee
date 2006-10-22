@@ -106,11 +106,10 @@ function db_num_rows($sql) {
 *
 * @param string $echo       the sql query
 * @param boolean $success   query was successful
-* @global boolean should the SQL be shown
 */
 function echoSQL($echo, $success=0) {
-  global $VERBOSESQL;
-  if ($VERBOSESQL) {
+  $conf = ConfigReader::getInstance();
+  if ($conf->VerboseSQL) {
     echo "<div class='sql'>".xssqw($echo)
         .($success ? '<div>'.T_('(successful)').'</div>' : '')
         ."</div>";

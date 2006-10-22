@@ -26,13 +26,12 @@ require_once 'inc/typeinfo.php';
 * @return boolean data is valid
 */
 function ValidTester($validator, $data, $DEBUG=0) {
-  //global $VERBOSEDATA;
   $isValid = 1;
   if (isset($validator) && is_callable($validator)) {
     $isValid = $validator($data);
-  } 
+  }
   if ($DEBUG > 9) echo "[$data, $validator, $isValid]";
   return $isValid;
 }
 
-?> 
+?>

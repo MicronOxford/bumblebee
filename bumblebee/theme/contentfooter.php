@@ -51,6 +51,6 @@ printf(T_('Email the <a href="mailto:%s">system administrator</a> for help.'),
 print "</p>";
 print "<p class='bumblebeecopyright'>";
 printf(T_('Booking information Copyright &copy; %s %s'),
-            date('Y'), $COPYRIGHTOWNER);
+            date('Y'), $conf->value('main', 'CopyrightOwner'));
 print "</p>";
 print "</div>";
