@@ -65,9 +65,9 @@ if (! $auth->isLoggedIn()) {
   echo $auth->loginError();
 }
 
-if($auth->isSystemAdmin() && file_exists("install")) {
+if ($auth->isSystemAdmin() && file_exists("install")) {
   printf('<div class="error">%s</div>',
-      T_('The installer still exists. This is a security risk please delete it.'));
+      T_('The installer still exists. This is a security risk. Please delete it.'));
 }
 $action->go();
 echo formEnd();
