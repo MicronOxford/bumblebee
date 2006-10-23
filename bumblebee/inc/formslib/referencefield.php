@@ -21,8 +21,6 @@ checkValidInclude();
 require_once 'field.php';
 /** uses ExampleEntries object */
 require_once 'exampleentries.php';
-/** type checking and data manipulation */
-require_once 'inc/typeinfo.php';
 
 /**
 * a non-editable reference object to explain a table entry

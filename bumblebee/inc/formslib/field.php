@@ -15,8 +15,6 @@ require_once 'inc/typeinfo.php';
 checkValidInclude();
 
 /** type checking and data manipulation */
-require_once 'inc/typeinfo.php';
-/** type checking and data manipulation */
 require_once 'validtester.php';
 /** status codes for success/failure of database actions */
 require_once 'inc/statuscodes.php';

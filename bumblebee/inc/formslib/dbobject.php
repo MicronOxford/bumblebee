@@ -14,8 +14,6 @@
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
-/** type checking and data manipulation */
-require_once 'inc/typeinfo.php';
 /** database connection script */
 require_once 'inc/db.php';
 /** sql manipulation routines */

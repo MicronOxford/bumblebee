@@ -16,8 +16,6 @@ checkValidInclude();
 
 /** parent object */
 require_once 'field.php';
-/** type checking and data manipulation */
-require_once 'inc/typeinfo.php';
 
 /**
 * a textarea widget
@@ -41,8 +39,8 @@ class TextArea extends TextField {
     $t .= '</textarea>';
     return $t;
   }
-  
+
 } // class TextArea
 
 
-?> 
+?>

@@ -16,8 +16,6 @@ checkValidInclude();
 
 /** parent object */
 require_once 'field.php';
-/** type checking and data manipulation */
-require_once 'inc/typeinfo.php';
 
 /**
 * a dummy field does not exist in the database but stores data in the form

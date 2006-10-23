@@ -16,8 +16,6 @@ checkValidInclude();
 
 /** parent object */
 require_once 'textfield.php';
-/** type checking and data manipulation */
-require_once 'inc/typeinfo.php';
 /** username and password checks */
 require_once 'inc/passwords.php';
 

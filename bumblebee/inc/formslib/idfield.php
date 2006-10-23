@@ -16,8 +16,6 @@ checkValidInclude();
 
 /** parent object */
 require_once 'textfield.php';
-/** type checking and data manipulation */
-require_once 'inc/typeinfo.php';
 
 /**
 * a textfield object designed to hold the database key (or id) field

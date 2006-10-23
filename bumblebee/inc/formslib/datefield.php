@@ -16,8 +16,6 @@ checkValidInclude();
 
 /** parent object */
 require_once 'field.php';
-/** type checking and data manipulation */
-require_once 'inc/typeinfo.php';
 /** Date/Time classes */
 require_once 'inc/date.php';
 

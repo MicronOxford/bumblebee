@@ -15,9 +15,7 @@ require_once 'inc/typeinfo.php';
 checkValidInclude();
 
 /** parent object */
-require_once 'field.php';
-/** type checking and data manipulation */
-require_once 'inc/typeinfo.php';
+require_once 'textfield.php';
 
 /**
 * adaptation of the textfield widget primitive to currency input
