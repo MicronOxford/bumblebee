@@ -25,13 +25,11 @@ Installer
 
 Features:
 
-  * more flexible data entry (amounts including currency symbols)
   * report generation memory usage (can't generate NMR report for Q1 2006)
   * list view of bookings
   * polite "offline" mode
   * trap unconfigured and send to installer
   * trap configured and get out of installer
-  * complain inside bumblebee if installer still exists
 
   * i18n:
     - date/time customisation
