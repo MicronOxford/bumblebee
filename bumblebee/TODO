@@ -95,11 +95,8 @@ i18n:
 
 *recurring scheduling
 
-  * graceful handling of duplicate usernames (Not "oops.... message")
+* graceful handling of duplicate usernames (Not "oops.... message")
 
-
-* a much more sophisticated permissions system that gives fine grained
- control over what users can do
 
 * being able to set permissions on groups of instruments and groups of
  users
