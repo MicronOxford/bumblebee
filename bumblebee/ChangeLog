@@ -16,6 +16,8 @@
 	* bugfix: dropdown list no longer overlaps existing bookings
 	  (closes #1575377)
 	* bugfix: allow for https URLs (closes #1568944)
+	* bugfix: strip whitespace from input fields before checking if the
+	  field is empty (closes #1578355)
 	* janitorial: clean up some PHP4isms (function prototypes same in
 	  subclasses; TZ set)
 
