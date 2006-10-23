@@ -11,6 +11,8 @@
 	  arbitrarily long (closes #1575374, #1575376)
 	* feature: include summary of current user's bookings on front page,
 	  also summary of group and project bookings (working on #1578369)
+	* feature: allow currency symbols to be put into fields without
+	  raising an error (closes #1583138)
 	* bugfix: enforce future booking restrictions when making
 	  bookings (closes #1567290)
 	* bugfix: dropdown list no longer overlaps existing bookings

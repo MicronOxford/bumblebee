@@ -46,9 +46,8 @@ class Consumable extends DBRow {
     $f->isValidTest = 'is_nonempty_string';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField('cost', T_('Unit cost'));
+    $f = new CurrencyField('cost', T_('Unit cost'), T_('Cost per item'));
     $f->required = 1;
-    $f->isValidTest = 'is_cost_amount';
     $f->setAttr($attrs);
     $this->addElement($f);
     $this->fill();

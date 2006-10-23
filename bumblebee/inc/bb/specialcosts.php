@@ -61,8 +61,8 @@ class SpecialCost extends DBRow {
     $rate = new IdField('id', T_('Rate ID'), T_('Rate ID'));
     $rate->value = $id;
     $f->addElement($rate);
-    $cost = new TextField('costfullday', T_('Full day cost'),
-                          T_('Cost of instrument use for a full day'));
+    $cost = new CurrencyField('costfullday', T_('Full day cost'),
+                          T_('Cost of instrument use for a full day'), false);
     $attrs = array('size' => '6');
     $cost->setAttr($attrs);
     $f->addElement($cost);

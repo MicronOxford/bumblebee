@@ -396,6 +396,16 @@ function is_cost_amount($v) {
 }
 
 /**
+* tests if string is a amount for a price but allows blank entries
+*
+* @param string $v string to test if it is a valid cost
+* @return boolean
+*/
+function is_cost_amount_or_blank($v) {
+   return is_number($v) || $v === '' || $v === null;
+}
+
+/**
 * tests if string is valid date-time expression YYYY-MM-DD HH:MM
 *
 * @param string $v string to test it is a date-time string
@@ -443,6 +453,16 @@ function sum_is_100($vs) {
     $sum += $v;
   }
   return ($sum == 100);
+}
+
+function currencyValueCleaner($value) {
+  $conf = ConfigReader::getInstance();
+  $re = $conf->value('language', 'removedCurrencySymbols');
+  if ($re == '' || $re == null) return;
+
+  $re = preg_quote($re, '@');
+  $value = preg_replace("@[$re]@", '', $value);
+  return trim($value);
 }
 
 ?>
