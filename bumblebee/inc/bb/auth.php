@@ -90,7 +90,7 @@ class BumblebeeAuth extends BasicAuth {
   }
 
   function isSystemAdmin() {
-    if($this->system_permissions >= BBROLE_ADMIN_BASE) {
+    if($this->system_permissions == -1 || $this->system_permissions >= BBROLE_ADMIN_BASE) {
       return true;
     } else {
       return false;
