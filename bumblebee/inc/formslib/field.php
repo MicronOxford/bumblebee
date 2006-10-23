@@ -74,6 +74,8 @@ class Field {
   var $namebase;
   /** @var string   function to call to check that the data is valid */
   var $isValidTest = 'isset';
+  /** @var string   function to call to clean the data string before testing if valid */
+  var $valueCleaner = null;
   /** @var boolean  don't generate an SQL name=value representation for this field  */
   var $sqlHidden = 0;
   /** @var boolean  this field requires two-stage sync */
@@ -123,6 +125,10 @@ class Field {
     if (isset($data["$this->namebase$this->name"]) || $this->useNullValues) {
       $newval = issetSet($data, "$this->namebase$this->name");
       $this->log("$this->name, $this->value, $newval ($this->useNullValues)");
+      if (isset($this->valueCleaner) && is_callable($this->valueCleaner)) {
+        $newval = call_user_func($this->valueCleaner, $newval);
+      }
+
       if ($this->editable) {
         // we ignore new values if the field is not editable
         if ($this->changed = ($this->getValue() != $newval)) {

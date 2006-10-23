@@ -77,7 +77,6 @@ class Vacancy extends TimeSlot {
   /**
   * display the vacancy in a table calendar cell
   *
-  * @global string base path to the installation
   * @return string html representation of the slot
   */
   function displayInCell($isadmin=0) {

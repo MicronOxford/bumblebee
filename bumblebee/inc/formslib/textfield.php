@@ -39,6 +39,7 @@ class TextField extends Field {
   */
   function TextField($name, $longname='', $description='') {
     parent::Field($name, $longname, $description);
+    $this->valueCleaner = 'trim';
   }
 
   function displayInTable($cols=3) {
