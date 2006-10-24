@@ -72,6 +72,8 @@ define('BBROLE_ADMIN_EXPORT',           ($role<<=1));
 define('BBROLE_ADMIN_BILLING',          ($role<<=1));
 /** Activity: backup database */
 define('BBROLE_ADMIN_BACKUPDB',         ($role<<=1));
+/** Activity: change system config */
+define('BBROLE_ADMIN_CONFIG',           ($role<<=1));
 
 /** Activity: Admin activity flag */
 define('BBROLE_ADMIN_BASE',             BBROLE_ADMIN_GROUPS);
@@ -124,6 +126,8 @@ define('BBPERM_ADMIN_EXPORT',             BBROLE_ADMIN_EXPORT);
 define('BBPERM_ADMIN_BILLING',            BBROLE_ADMIN_BILLING);
 /** Permission: Permission to backup database */
 define('BBPERM_ADMIN_BACKUPDB',           BBROLE_ADMIN_BACKUPDB);
+/** Permission: Permission to change system settings */
+define('BBPERM_ADMIN_CONFIG',             BBROLE_ADMIN_CONFIG);
 
 /** Permission: Admin user can do anything */
 define('BBPERM_ADMIN_ALL',              -1);

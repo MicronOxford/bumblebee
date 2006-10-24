@@ -67,6 +67,8 @@ class nonDBRow {
   var $extrarows;
   /** @var array    list of Field objects in this row */
   var $fields;
+  /** @var array    list of column headings for tabular display */
+  var $headings;
 
   /** @var integer   debug level 0=off    */
   var $DEBUG = 0;
@@ -127,6 +129,7 @@ class nonDBRow {
   */
   function checkValid() {
     $this->isValid = 1;
+    if (! is_array($this->fields) && count($this->fields) < 1) return true;
     // check each field in turn to allow it to update its data
     // if this object has not been filled in by the user, then
     // suppress validation
@@ -222,6 +225,13 @@ class nonDBRow {
   function displayInTable($numCols=2) {
     $t  = '<h3>'.$this->longname.'</h3>';
     $t .= '<table class="tabularobject" title="'.$this->description.'">';
+    if (is_array($this->headings)) {
+      $t .= '<tr>';
+      foreach ($this->headings as $h) {
+        $t .= '<th>'.$h.'</th>';
+      }
+      $t .= '</tr>';
+    }
     foreach ($this->fields as $v) {
       $t .= $v->displayInTable($numCols);
     }

@@ -214,6 +214,7 @@ class Field {
   * @access public
   */
   function setattr($attrs) {
+    if (! is_array($attrs)) return;
     $this->attr = array_merge($this->attr, $attrs);
   }
 

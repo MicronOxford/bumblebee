@@ -105,6 +105,10 @@ class BasicConfigReader {
     }
   }
 
+  function getSections() {
+    return array_keys($this->data);
+  }
+
   /** merge an array into the config data. If a section is provided the array is added as a new sub key */
   function mergeConfig($other_array, $section = null) {
     if(is_array($other_array)) {

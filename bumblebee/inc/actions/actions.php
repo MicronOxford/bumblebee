@@ -184,6 +184,8 @@ class ActionListing {
         'billing',    T_('Prepare billing summaries'), T_('Billing reports'), BBROLE_ADMIN_BILLING);
     $this->actions[] = new ActionData('ActionBackupDB', 'backupdatabase.php',
         'backupdb',   T_('Backup database'), T_('Backup database'), BBROLE_ADMIN_BACKUPDB);
+    $this->actions[] = new ActionData('ActionSettings', 'settings.php',
+        'settings',   T_('Configuration editor'), T_('Configure system'), BBROLE_ADMIN_CONFIG);
 
   }
 
