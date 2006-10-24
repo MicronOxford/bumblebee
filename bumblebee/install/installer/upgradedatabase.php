@@ -65,8 +65,8 @@ function makeUpgradeSQL($initial) {
 function DB_upgrade_BB_1_1() {
   $conf = ConfigReader::getInstance();
   global $TABLEPREFIX;
-  $s = "ALTER DATABASE {$conf->value('database', 'dbname')} DEFAULT CHARACTER SET utf8;\n";
-  $s .= "USE {$conf->value('database', 'dbname')};\n";
+  $s = "ALTER DATABASE ".$conf->value('database', 'database')." DEFAULT CHARACTER SET utf8;\n";
+  $s .= "USE ".$conf->value('database', 'database').";\n";
   $list = array(
           'users'           => array('username', 'name', 'passwd', 'email', 'phone'),
           'projects'        => array('name', 'longname'),
@@ -102,8 +102,8 @@ function DB_upgrade_BB_1_1() {
 function DB_upgrade_BB_1_1_passwd() {
   $conf = ConfigReader::getInstance();
   global $TABLEPREFIX;
-  $s = "USE {$conf->value('database', 'dbname')};\n";
-  $s .= "ALTER TABLE {$TABLEPREFIX}users CHANGE passwd passwd VARCHAR(50) NOT NULL\n";
+  $s = "USE ".$conf->value('database', 'database').";\n";
+  $s .= "ALTER TABLE {$TABLEPREFIX}users CHANGE passwd passwd VARCHAR(50) NOT NULL;\n";
   $notes = "The password field is made larger to accommodate more secure methods for storing encode passwods.";
   return array($s, $notes);
 }
@@ -114,7 +114,7 @@ function DB_upgrade_BB_1_1_permissions() {
   require 'inc/permissions.php';
   $default = BBPERM_USER_BASIC | BBPERM_USER_PASSWD;
   $admin = BBPERM_ADMIN_ALL;
-  $s = "USE {$conf->value('database', 'dbname')};\n";
+  $s = "USE {$conf->value('database', 'database')};\n";
   $s .= "ALTER TABLE {$TABLEPREFIX}users ADD permissions INTEGER UNSIGNED NOT NULL DEFAULT '{$default}';\n";
   $s .= "UPDATE {$TABLEPREFIX}users SET permissions = permissions | {$admin} where isadmin=1;\n";
   $default = BBPERM_INSTR_BASIC;
