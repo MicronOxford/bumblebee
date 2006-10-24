@@ -24,9 +24,16 @@ require_once 'inc/typeinfo.php';
 require_once 'inc/compat.php';
 /** Load in the user configuration data */
 require_once 'inc/config.php';
+/** check the user's credentials, create a session to record them */
+
+
 /** start the database session */
 require_once 'inc/db.php';
-/** check the user's credentials, create a session to record them */
+
+$conf = & ConfigReader::getInstance();
+$conf->mergeDatabaseTable();
+$conf->ParseConfig();
+
 require_once 'inc/bb/auth.php';
 $auth = new BumblebeeAuth($_POST);
 

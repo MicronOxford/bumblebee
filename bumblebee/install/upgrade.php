@@ -89,7 +89,6 @@ if (isset($_POST['submitsqlload'])) {
 
 $steps->increment();
 if (isset($_POST['do_cleanup'])) {
-  $data['BASEURL'] = $BASEURL;
   printStepCleanup($data, $steps);
   exit;
 }
@@ -201,6 +200,8 @@ function printStepDBUpgrade($data, $steps) {
 }
 
 function printStepCleanup($values, $steps) {
+  $conf = ConfigReader::getInstance();
+  $values['BASEURL'] = $conf->BaseURL;
   startHTML_upgrade($values, $steps);
   genericCleanupInstructions($values, $steps);
   endHTML();

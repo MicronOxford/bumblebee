@@ -87,6 +87,7 @@ function db_new_id() {
 * @return array next row from query
 */
 function db_fetch_array($sql) {
+  if (! is_resource($sql)) return null;
   return mysql_fetch_array($sql);
 }
 

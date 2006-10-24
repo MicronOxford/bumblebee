@@ -48,16 +48,18 @@ class ConfigReader extends BasicConfigReader {
     $this->BaseURL    = $this->value('main', 'BaseURL');    ///FIXME: work out a default?
 
     if ($fatalErrors) {
-      if ($this->data['error_handling']['AllWarnings']) {
-        //this is nice for development but probably turn it off for production
-        #error_reporting(E_ALL | E_STRICT); #force all warnings to be echoed
-        error_reporting(E_ALL); #force all warnings to be echoed
-        /** load all php files */
-        define('LOAD_ALL_PHP_FILES', 1);
-      } else {
-        error_reporting(E_ERROR); #only errors should be echoed
-        /** load only the php files required to fullfill this request) */
-        define('LOAD_ALL_PHP_FILES', 0);
+      if (defined('LOAD_ALL_PHP_FILES')) {
+        if ($this->data['error_handling']['AllWarnings']) {
+          //this is nice for development but probably turn it off for production
+          #error_reporting(E_ALL | E_STRICT); #force all warnings to be echoed
+          error_reporting(E_ALL); #force all warnings to be echoed
+          /** load all php files */
+          define('LOAD_ALL_PHP_FILES', 1);
+        } else {
+          error_reporting(E_ERROR); #only errors should be echoed
+          /** load only the php files required to fullfill this request) */
+          define('LOAD_ALL_PHP_FILES', 0);
+        }
       }
     }
 

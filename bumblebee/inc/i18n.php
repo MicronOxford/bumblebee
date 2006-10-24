@@ -69,8 +69,4 @@ if (function_exists('T_setlocale') && function_exists('T_')) {
   function T_($s) { return $s; }
 }
 
-//FIXME? this is not exactly oop but the current sigleton does not provide for it
-if ($conf->value('language', 'moneyFormat') === null) $conf->data['language']['moneyFormat'] = "$%.2f";
-
-
 ?>

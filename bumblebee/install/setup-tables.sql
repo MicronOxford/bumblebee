@@ -242,6 +242,12 @@ CREATE TABLE consumables_use (
 --   PRIMARY KEY (id)
 -- );
 
+DROP TABLE IF EXISTS settings;
+CREATE TABLE settings (
+  section VARCHAR(64) CHARACTER SET utf8 NOT NULL,
+  parameter VARCHAR(64) CHARACTER SET utf8 NOT NULL,
+  value TEXT
+) DEFAULT CHARACTER SET utf8;
 
 --     Create an admin user
 INSERT INTO users (username,name,passwd,isadmin) VALUES

@@ -16,6 +16,8 @@
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
+require_once 'inc/formslib/sql.php';
+
 class BasicConfigReader {
 
   var $data;
@@ -113,6 +115,20 @@ class BasicConfigReader {
       }
     } else {
       trigger_error("Tried to merge a non array into the config values");
+    }
+  }
+
+  function mergeDatabaseTable($table = 'settings', $sectionColumn = 'section',
+                              $parameterColumn = 'parameter', $valueColumn = 'value') {
+    global $TABLEPREFIX;
+    $q = "SELECT $sectionColumn as section, $parameterColumn as parameter, $valueColumn as value from $TABLEPREFIX$table";
+    $sql = db_get($q, false);
+    while ($g = db_fetch_array($sql)) {
+      if (! isset($this->data[$g['section']]) || ! is_array($this->data[$g['section']])) {
+        $this->data[$g['section']] = array();
+      }
+      $this->data[$g['section']][$g['parameter']] = $g['value'];
+      //printf('[%s]::$s = %s', $g['section'], $g['parameter'], $g['value']);
     }
   }
 

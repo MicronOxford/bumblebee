@@ -36,7 +36,7 @@ function getCurrentDBVersion() {
 
 function makeUpgradeSQL($initial) {
   $u = array();
-  $u['1.1'] = "DB_upgrade_BB_1_1";
+  $u['1.1']   = "DB_upgrade_BB_1_1";
   $u['1.1.4'] = "DB_upgrade_BB_1_1_passwd";
   $u['1.1.5'] = "DB_upgrade_BB_1_1_permissions";
   #$u['1.2'] = "DB_upgrade_BB_1_2";
@@ -121,8 +121,15 @@ function DB_upgrade_BB_1_1_permissions() {
   $admin = BBPERM_INSTR_ALL;
   $s .= "ALTER TABLE {$TABLEPREFIX}permissions ADD `permissions` INTEGER UNSIGNED NOT NULL DEFAULT '{$default}';\n";
   $s .= "UPDATE {$TABLEPREFIX}permissions SET permissions = permissions | {$admin} where isadmin=1;\n";
-
   $notes = "The fine-grained permissions system (required for anonymous viewing of the calendars) requires additional database storage.";
+
+  $s .= "CREATE TABLE {$TABLEPREFIX}settings ("
+          ."section VARCHAR(64) CHARACTER SET utf8 NOT NULL, "
+          ."parameter VARCHAR(64) CHARACTER SET utf8 NOT NULL, "
+          ."value TEXT"
+       .") DEFAULT CHARACTER SET utf8;\n";
+  $notes .= " The new configuration system stores all your settings in the database to make configuration easier.";
+
   return array($s, $notes);
 }
 
