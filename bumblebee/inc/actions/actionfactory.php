@@ -47,6 +47,7 @@ if (LOAD_ALL_PHP_FILES) {
   require_once 'export.php';
   require_once 'billing.php';
   require_once 'backupdatabase.php';
+  require_once 'settings.php';
 }
 
 require_once 'unknownaction.php';

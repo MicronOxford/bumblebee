@@ -222,9 +222,9 @@ class nonDBRow {
   * @param integer $j      (optional) number of columns in the table (will pad as necessary)
   * @return string  html table
   */
-  function displayInTable($numCols=2) {
+  function displayInTable($numCols=2, $extraClass='') {
     $t  = '<h3>'.$this->longname.'</h3>';
-    $t .= '<table class="tabularobject" title="'.$this->description.'">';
+    $t .= '<table class="tabularobject '.$extraClass.'" title="'.$this->description.'">';
     if (is_array($this->headings)) {
       $t .= '<tr>';
       foreach ($this->headings as $h) {
