@@ -68,6 +68,10 @@ class Settings extends NonDBRow {
             $f->value = $config->value($section->name, $parameter->name);
             break;
           case SETTING_CHOICELIST:
+            $f = new DropList($parameter->name, $description);
+            $f->setValuesArray($parameter->list, 'id', 'iv');
+            $f->setFormat('id', '%s', array('iv'));
+            $f->value = $config->value($section->name, $parameter->name);
             break;
         }
         $s->addElement($f);
@@ -163,6 +167,7 @@ class SettingsEntry {
   }
 
   function insert() {
+    global $TABLEPREFIX;
     $q = "INSERT INTO $TABLEPREFIX{$this->table} "
         ."SET {$this->sectionColumn} = %s, {$this->parameterColumn} = %s, {$this->valueColumn} = %s ";
     $q = sprintf($q, qw($this->section), qw($this->parameter), qw($this->value));
@@ -171,6 +176,7 @@ class SettingsEntry {
   }
 
   function delete() {
+    global $TABLEPREFIX;
     $q = "DELETE FROM $TABLEPREFIX{$this->table} "
         ."WHERE {$this->sectionColumn} = %s AND {$this->parameterColumn} = %s "
         ."LIMIT 1";
@@ -196,11 +202,18 @@ class SettingsDescription {
   var $name;
   var $description;
   var $type;
+  var $list;
 
-  function SettingsDescription($name, $description, $type=SETTING_TEXT) {
+  function SettingsDescription($name, $description, $type=SETTING_TEXT, $list=null) {
     $this->name = $name;
     $this->description = $description;
     $this->type = $type;
+    if (is_array($list)) {
+      $this->list = array();
+      foreach ($list as $value) {
+        $this->list[$value] = $value;
+      }
+    }
   }
 }
 
@@ -278,215 +291,73 @@ class SettingsDescriptionList {
     $s->parameters[] = new SettingsDescription('AnonymousPassword', T_('Password that will be used to simulate a login for the anonymous user.'));
     $this->sections[] = $s;
 
+    $s = new SettingsDescriptionSection('auth', T_('User Authentication'));
+    $s->parameters[] = new SettingsDescription('validUserRegexp', T_('Regular expression that defines what is an acceptable username on your installation. Examples:<br />Allow anything: <code>/^.+$/</code><br />Require unix-like login names <code>/^[a-z0-9][a-z0-9@\-_.+]+$/i</code>'));
+    $s->parameters[] = new SettingsDescription('permissionsModel', T_('Use fine-grained permissions model for managing user access.'), SETTING_BOOLEAN);
+    $s->parameters[] = new SettingsDescription('useLocal', T_('Permit local logins (user passwords are encoded in the users table of the database.'), SETTING_BOOLEAN);
+    $s->parameters[] = new SettingsDescription('LocalPassToken', T_('Method by which passwords are encoded in the database: des md5 md5_compat md5_emulated sha1 (md5_compat is the method used by Bumblebee 1.0)'), SETTING_CHOICELIST, array('des', 'md5', 'md5_compat', 'md5_emulated', 'sha1'));
+    $s->parameters[] = new SettingsDescription('convertEntries', T_('Convert encoded passwords to the selected encoding when users login.'), SETTING_BOOLEAN);
+    $s->parameters[] = new SettingsDescription('useRadius', T_('Use RADIUS authentication for users against servers specified in the radius.ini file.'), SETTING_BOOLEAN);
+    $s->parameters[] = new SettingsDescription('useLDAP', T_('Use LDAP authentication for users against servers specified in the ldap.ini file.'), SETTING_BOOLEAN);
+    $this->sections[] = $s;
 
+    $s = new SettingsDescriptionSection('instruments', T_('Instruments'));
+    $s->parameters[] = new SettingsDescription('usualopen', T_('Default opening time for instruments.'));
+    $s->parameters[] = new SettingsDescription('usualclose', T_('Default closing time for instruments.'));
+    $s->parameters[] = new SettingsDescription('usualprecision', T_('Default precision to which the calendar is displayed (in seconds).'));
+    $s->parameters[] = new SettingsDescription('usualtimemarks', T_('Default number of boxes between time marks (in units of <i>usualprecision</i>).'));
+    $s->parameters[] = new SettingsDescription('usualcallength', T_('Default length of the calendar (in weeks).'));
+    $s->parameters[] = new SettingsDescription('usualcalhistory', T_('Default period to show into the past on the calendar (in weeks).'));
+    $s->parameters[] = new SettingsDescription('usualclose', T_('Default period of time to permit users to view into the future (in days).'));
+    $s->parameters[] = new SettingsDescription('usualtimeslotpicture', T_('Default timeslotrule for describing instrument time slots.'));
+    $s->parameters[] = new SettingsDescription('usualhalfdaylength', T_('Default length of a "half day" on the instruments (in hours).'));
+    $s->parameters[] = new SettingsDescription('usualfulldaylength', T_('Default length of a "full day" on the instruments (in hours).'));
+    $s->parameters[] = new SettingsDescription('usualmindatechange', T_('Default minimum notice required to change or delete a booking (in hours).'));
+    $s->parameters[] = new SettingsDescription('emailSubject', T_('Subject to use for emails sent to instrument supervisors to notify them that the instrument has been booked (instrument name is prepended).'));
+    $s->parameters[] = new SettingsDescription('emailFromName', T_('Name that booking notification emails will be shown as coming from.'));
+    ///TODO
+    //$s->parameters[] = new SettingsDescription('emailTemplate', T_('Email text that will be included in the email. The following tokens are replaced: '), SETTING_TEXTAREA);
+    $s->parameters[] = new SettingsDescription('emailRequestSubject', T_('Subject to use for emails sent to instrument supervisors to request bookings by anonymous users (instrument name is prepended).'));
+    ///TODO
+    //$s->parameters[] = new SettingsDescription('emailRequestTemplate', T_('Email text that will be included in the email. The following tokens are replaced: '), SETTING_TEXTAREA);
+    $this->sections[] = $s;
+
+    $s = new SettingsDescriptionSection('calendar', T_('Calendar'));
+    $s->parameters[] = new SettingsDescription('showphone', T_('Show users\' phone numbers on the calendar.'), SETTING_BOOLEAN);
+    $s->parameters[] = new SettingsDescription('notesbottom', T_('Show instrument notes at the bottom of the page (otherwise shown at the top).'), SETTING_BOOLEAN);
+    $this->sections[] = $s;
+
+    $s = new SettingsDescriptionSection('export', T_('Export'));
+    $s->parameters[] = new SettingsDescription('filename', T_('Filename template for creating export files. The following tokens are replaced: __action__ __what__ __date__'));
+    $s->parameters[] = new SettingsDescription('enablePDF', T_('Enable PDF export (make sure your PDF library is installed as per the Bumblebee installation instructions).'), SETTING_BOOLEAN);
+    ///TODO
+    //$s->parameters[] = new SettingsDescription('htmlWrapperFile', T_('HTML file used as a wrapper around the HTML export'), SETTING_TEXTAREA);
+    $this->sections[] = $s;
+
+    $s = new SettingsDescriptionSection('pdfexport', T_('PDF'));
+    $s->parameters[] = new SettingsDescription('size', T_('Paper size (A4, Letter, Legal etc)'));
+    $s->parameters[] = new SettingsDescription('orientation', T_('Paper orientation (Landscape or Portait)'), SETTING_CHOICELIST, array('L', 'P'));
+    $s->parameters[] = new SettingsDescription('pageWidth', T_('Width of the page with the specified orientation (in millimetres)'));
+    $s->parameters[] = new SettingsDescription('pageHeight', T_('Heoght of the page with the specified orientation (in millimetres)'));
+    $this->sections[] = $s;
+
+    $s = new SettingsDescriptionSection('billing', T_('Billing'));
+    $s->parameters[] = new SettingsDescription('filename', T_('Filename to use for exporting the data.'));
+    $s->parameters[] = new SettingsDescription('emailFromName', T_('Name to use as the sender of the emails.'));
+    $s->parameters[] = new SettingsDescription('emailSubject', T_('Subject to use on the emails.'));
+    ///TODO
+    //$s->parameters[] = new SettingsDescription('emailTemplate', T_('Template for the email text.'), SETTING_TEXTAREA);
+    $this->sections[] = $s;
+
+    $s = new SettingsDescriptionSection('sqldump', T_('Backup'));
+    $s->parameters[] = new SettingsDescription('mysqldump', T_('Command to issue to start the backup process (e.g. <code>mysqldump</code> or <code>/usr/bin/mysqldump</code>.'));
+    $s->parameters[] = new SettingsDescription('options', sprintf(T_('Commandline options to to give the backup program (e.g. <code>--complete-insert --no-create-info</code> or <code>--complete-insert --single-transaction</code>). See <a href="%s">mysqldump manual</a> for more details'), 'http://dev.mysql.com/doc/mysql/en/mysqldump.html'));
+    $this->sections[] = $s;
+
+    $s = new SettingsDescriptionSection('email', T_('Email Server'));
+    $s->parameters[] = new SettingsDescription('smtp_server', T_('Hostname or IP address of the server to use for sending outgoing email (not required if properly configured in your php.ini file).'));
+    $s->parameters[] = new SettingsDescription('smtp_port', T_('Port to connnect to for sending outgoing email (not required if properly configured in your php.ini file).'));
+    $this->sections[] = $s;
 
   }
 }
-
-//
-// [auth]
-// ; This regular expression validates the username before any further authentication tests are done
-// ;
-// ; By default, just require that the username is at least one character long:
-// validUserRegexp = "/^.+$/"
-// ;
-// ; If you are just wanting to enforce a minimum length for usernames, then
-// ; this will require usernames to be at least 4 characters long:
-// ;validUserRegexp = "/^.{4,}$/"
-// ;
-// ; Alternatively, you may wish to restrict usernames to fairly standard
-// ; unix- and windows-like usernames.
-// ; Note that this will reject any non-English (accented) characters
-// ;validUserRegexp = "/^[a-z0-9][a-z0-9@\-_.+]+$/i"
-// ;
-// ; Use the fine-grained permissions model rather than just isAdmin tests.
-// ; Note: you need to upgrade your database structure for this to work.
-// permissionsModel = true
-// ; ---- authentication methods ----
-// ; Select the authorisation methods you want to use.
-// ; Multiple ones can be selected, magic password keys in the SQL table 'users' are used to
-// ; establish which users are to be authenticated by non-local methods. These keys should
-// ; never be able to be generated by the LocalPassToken method (usually an md5 hash)
-// ;
-// ; should local users be permitted
-// useLocal = 1
-// ; method by which the password will be encoded for storage in the db.
-// ; valid values are "des", "md5", "md5_compat", "md5_emulated", "sha1"
-// ; md5_compat is the method used by default in Bumblebee v1.0.x
-// LocalPassToken = "md5"
-// ; when a user logs in, change their password in the db to the hashing method above if it is
-// ; not already in that format
-// convertEntries = false
-// ;
-// ; use a radius server if users are set up for that (see RadiusPassToken), config in radius.ini
-// useRadius = 1
-// RadiusPassToken = "--radius-auth-user"
-// ;
-// ; use an LDAP server if users are set up for that (see LDAPPassToken), config in ldap.ini
-// useLDAP = 1
-// LDAPPassToken = "--ldap-auth-user"
-// ;
-// ; ========== ADVANCED FUNCTIONS ==============
-// ; Turn on these advanced functions ONLY if you need them to debug authentication problems
-// ; or to recover a lost admin password.
-// authAdvancedSecurityHole = true
-// ;
-// ; Include verbose error messages as to why the login failed (e.g. "Login failed: username unknown")
-// ; rather than just the generic "Login failed" message. Note that turning on these messages reveals
-// ; more about your internal setup and so should not be done in a production environment.
-// verboseFailure = true
-// ; Force all login attempts to be successful regardless of whether the correct password was given
-// ; (allows forgotten admin passwords to be retrieved). Note that you NEVER want to turn this on in
-// ; a production environment!
-// recoverAdminPassword = false
-//
-// [instruments]
-// ; ---- calendar controls ----
-// ; Default times used in instrument edit pages for when the calendar.
-// ; Each instrument is configurable individually in the Edit Instruments form.
-// ; these are just the defaults for creating new instruments.
-// usualopen = "08:00"
-// usualclose = "18:00"
-// ; default time included in each booking row (display is rounded to this time). Specified in seconds.
-// usualprecision = 900
-// usualtimemarks = 4
-// ; defaults for the monthly view -- how many weeks should the calendar include,
-// ; how many full weeks history and how far in the future can the calendar go?
-// usualcallength = 4
-// usualcalhistory = 1
-// usualcalfuture = 365
-// ; default timeslot picture for a new instrument
-// usualtimeslotpicture = "[0-6]<08:00-18:00/2;18:00-32:00/1,Overnight booking>"
-// ; default length of a "half day" and "full day" for when calculating booking costs
-// usualhalfdaylength = 5
-// usualfulldaylength = 8
-// ; default minimum notice (in hours) that should be given for booking changes
-// usualmindatechange = 24
-// ; ---- booking notification templates ---
-// ; These settings are shared across all instruments. They control
-// ; what the emails sent to notify instrument supervisors look like.
-// ; The Subject: line of the email (the name of the instrument will be prepended)
-// emailSubject = "Instrument booking notification"
-// ; The From name to be used with the system email address (the instrument name will be included)
-// emailFromName = "Bumblebee System Notification"
-// ; a text file with various tokens in it for the name, username etc details of the booking
-// emailTemplate = "theme/export/emailnotificationtemplate.txt"
-// ; ----- booking request for anonymous users ------
-// ; The Subject: line of the email (the name of the instrument will be prepended)
-// emailRequestSubject = "requested instrument booking"
-// ; a text file with various tokens in it for the name, username etc details of the booking
-// emailRequestTemplate = "theme/export/emailrequesttemplate.txt"
-//
-// [calendar]
-// ; CSS styles used in the calendar view
-// todaystyle = caltoday
-// monthstyle = monodd/moneven
-// ; show phone numbers on calendar (true or false)
-// showphone = false
-// ; show instrument notes at the bottom of the page (true) or at the top (false)
-// notesbottom = true
-//
-// [export]
-// ; set the base filename to use for saving
-// ; substituted patterns are: __action__ __what__ and __date__
-// filename = bumblebee-__action__-__what__-__date__
-// enablePDF = 1
-// ; FIXME does this embedded constant still work when running without Warnings turned on?
-// defaultFormat = EXPORT_FORMAT_VIEW
-// htmlWrapperFile = "theme/export/exporttemplate.html"
-//
-// [pdfexport]
-// ; paper size and orientation. See the FPDF documentation for details about supported page sizes
-// size = "A4"
-// orientation = "L"
-// ; page heights, widths, sizes in mm.
-// ; Ensure that the size and orientation specified above agrees (e.g. A4 Landscape) with the
-// ; pageHeight and pageWidth here
-// pageWidth   = 297
-// pageHeight  = 210
-// leftMargin  = 15
-// rightMargin = 15
-// topMargin   = 15
-// bottomMargin= 15
-// ; margin added to auto calc'd column widths
-// minAutoMargin = 4
-// ; orientation in the header L, C, R
-// tableHeaderAlignment = "L"
-// ; lines between rows, use "T"
-// rowLines = ""
-// ; lines around header rows
-// headerLines = "TB"
-//
-// ; line widths in mm
-// normalLineHeight        = 5
-// headerLineHeight        = 6
-// footerLineHeight        = 4
-// sectionHeaderLineHeight = 8
-// doubleLineWidth         = 0.2
-// singleLineWidth         = 0.3
-// singleCellTopMargin     = 1
-//
-// ; colors, lines and fonts
-// ; format for colours is r,g,b where the values are 0-255. "0,0,0" is black, "255,255,255" is white.
-// normalFillColor = "224,235,255"
-// normalDrawColor = "0,0,0"
-// normalTextColor = "0,0,0"
-// normalFont      = "Arial,,12"
-//
-// sectionHeaderFillColor = "255,255,255"
-// sectionHeaderDrawColor = "0,0,0"
-// sectionHeaderTextColor = "0,0,0"
-// sectionHeaderFont      = "Arial,B,14"
-//
-// tableHeaderFillColor = "0,0,128"
-// tableHeaderDrawColor = "0,0,0"
-// tableHeaderTextColor = "255,255,255"
-// tableHeaderFont      = "Arial,B,12"
-//
-// tableFooterFillColor = "0,0,128"
-// tableFooterDrawColor = "0,0,0"
-// tableFooterTextColor = "255,255,255"
-// tableFooterFont      = "Arial,,9"
-//
-// tableTotalFillColor = "224,235,255"
-// tableTotalDrawColor = "0,0,0"
-// tableTotalTextColor = "0,0,0"
-// tableTotalFont      = "Arial,,12"
-//
-//
-// [billing]
-// ;filename = "/tmp/bumblebee-invoice-__who__-__date__.pdf"
-// filename = "bumblebee-invoice-__who__-__date__.pdf"
-// emailFromName = "Bumblebee System Reports"
-// emailSubject = "Instrument usage summary"
-// emailTemplate = "theme/export/emailbillingtemplate.txt"
-//
-// [sqldump]
-// ; options for generating the SQL backups of the database
-// ; Executable to use for generating backup and path to it if it's not in the execution path
-// ; you can use something other than mysqldump for this if you want, but it should understand
-// ; the host, user, password and database syntax that mysqldump uses.
-// ; mysqldump=/usr/bin/mysqldump
-// mysqldump=mysqldump
-// ; extra mysqldump options
-// ; e.g. --complete-insert --no-create-info are useful for moving data from one db to another
-// ; see man mysqldump or http://dev.mysql.com/doc/mysql/en/mysqldump.html
-// ;options="--complete-insert --no-create-info --lock-tables"
-// options="--complete-insert --single-transaction"
-// ;options=
-//
-// [email]
-// ; These options are only used when running PHP under windows to send email reports.
-// ; If your php.ini file is correctly set up with these values then you should leave these
-// ; variables blank and it will work just fine.
-// ;
-// ; hostname or IP address of the server to use for sending outgoing email
-// ;smtp_server = "localhost"
-// ;smtp_server = "mailhub.example.edu"
-// smtp_server = ""
-// ; port to connect to on the above server
-// ;smtp_port = 25
-// smtp_port = ""
-//
-//
-// }

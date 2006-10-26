@@ -117,9 +117,9 @@ class BasicConfigReader {
       } else if(!isset($this->data[$section])) {
         $this->data = array_merge($this->data, array($section => $other_array));
       } else {
-	$tmp = $this->data[$section];
-	$tmp = array_merge($tmp, $other_array);
-	$this->data[$section] = $tmp;
+        $tmp = $this->data[$section];
+        $tmp = array_merge($tmp, $other_array);
+        $this->data[$section] = $tmp;
       }
     } else {
       trigger_error("Tried to merge a non array into the config values");
