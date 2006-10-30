@@ -149,29 +149,6 @@ class HTMLExport {
   }
 
   /**
-  * generate the report header
-  *
-  * @return string report header
-  * @todo //TODO: i18n: report header
-  */
-  function _reportHeader() {
-    $start = $this->_daterange->getStart();
-    $stop  = $this->_daterange->getStop();
-    $s = $this->_export->description .' for '. $start->dateString() .' - '. $stop->dateString(); //FIXME: i18n
-    return $s;
-  }
-
-  /**
-  * generate the header for a section
-  *
-  * @return string section header
-  */
-  function _sectionHeader($row) {
-    $s = $row[$this->_export->breakField];
-    return $s;
-  }
-
-  /**
   * generate the HTML for a row
   *
   * @return string row
