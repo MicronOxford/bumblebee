@@ -96,6 +96,7 @@ class JoinData extends Field {
     $this->jtLeftID = $jtLeftID;
     $this->protoRow = new DBRow($joinTable, $jtLeftID, $jtLeftIDCol);
     $field = new Field($jtLeftIDCol);
+    $field->defaultValue = $jtLeftID;
     $this->protoRow->addElement($field);
     $this->protoRow->editable = 1;
     $this->protoRow->autonumbering = 0;
