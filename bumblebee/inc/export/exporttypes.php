@@ -647,7 +647,7 @@ class ExportTypeList {
     $this->_formula['rate']          = 'COALESCE(speccosts.costfullday,costs.costfullday)';
     $this->_formula['dailymarkdown'] = 'COALESCE(speccosts.dailymarkdown,costs.dailymarkdown)';
 
-    $this->_formula['discount'] =
+    $this->_formula['markdiscount'] =
                 'ROUND(GREATEST('
                     .'100*( 1 - '
                         .'('
@@ -656,6 +656,14 @@ class ExportTypeList {
                         .')'
                     .'),0)'   // CEIL         //prevent negative discounts
                 .',4)';      // ROUND(a,n)   //clean up numbers for export
+
+    $this->_formula['discount'] =
+                '(CASE WHEN '.$this->_formula['dailymarkdown'].' <= 0 '
+                  .'THEN '
+                    .'0 '
+                  .'ELSE '
+                    .$this->_formula['markdiscount'] .' '
+                .'END)';
 
     $this->_formula['fullAmount'] = $this->_formula['weightDays'].'*'.$this->_formula['rate'];
     $this->_formula['finalCost']  = $this->_formula['fullAmount']
