@@ -108,7 +108,6 @@ class ExportTypeList {
     $this->types[$type->name] = $type;
   }
 
-  /** @todo //TODO: i18n: file */
   function _createLogbook() {
     $type = new ExportType('instrument', 'bookings',
                             T_('Instrument usage log book'),
@@ -623,7 +622,12 @@ class ExportTypeList {
 
 
   function _standardFormulae() {
-  $this->_formula['weightDays'] =
+    $this->_formula['rate']          = 'COALESCE(speccosts.costfullday,costs.costfullday)';
+    $this->_formula['dailymarkdown'] = 'COALESCE(speccosts.dailymarkdown,costs.dailymarkdown)';
+    $this->_formula['hourfactor']    = 'COALESCE(speccosts.hourfactor,costs.hourfactor)';
+    $this->_formula['halfdayfactor'] = 'COALESCE(speccosts.halfdayfactor,costs.halfdayfactor)';
+
+    $this->_formula['weightDays'] =
                     'SUM('
                       .'(CASE '
                         .'WHEN TIME_TO_SEC(duration)/60/60 >= instruments.fulldaylength '
@@ -634,18 +638,15 @@ class ExportTypeList {
                             .'THEN LEAST('
                                     .'1, '
                                     .'(TIME_TO_SEC(duration)/60/60-instruments.halfdaylength)'
-                                      .'*costs.hourfactor + costs.halfdayfactor'
+                                      .'*'.$this->_formula['hourfactor'].' + '.$this->_formula['halfdayfactor']
                                   .') '
                         .'ELSE '
                             .'LEAST('
-                                    .'costs.halfdayfactor, '
-                                    .'TIME_TO_SEC(duration)/60/60*costs.hourfactor'
+                                    .$this->_formula['halfdayfactor'].', '
+                                    .'TIME_TO_SEC(duration)/60/60*'.$this->_formula['hourfactor']
                                   .') '
                       .'END)*(100-bookings.discount)/100'
                     .') ';
-
-    $this->_formula['rate']          = 'COALESCE(speccosts.costfullday,costs.costfullday)';
-    $this->_formula['dailymarkdown'] = 'COALESCE(speccosts.dailymarkdown,costs.dailymarkdown)';
 
     $this->_formula['markdiscount'] =
                 'ROUND(GREATEST('
