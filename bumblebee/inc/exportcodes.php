@@ -3,7 +3,7 @@
 * Numeric codes for defining data export types and formats
 *
 * Export types include TAB and Comma delimited, formats include the number of decimal places to use.
-* The numeric codes for report sections aren't designed to be bitshifted (they 
+* The numeric codes for report sections aren't designed to be bitshifted (they
 * are mutually exclusive options) so they are not powers of 2.
 * Formatting options may be use with bitwise addition etc.
 *
@@ -65,13 +65,13 @@ define('EXPORT_REPORT_TABLE_HEADER',       6);
 define('EXPORT_REPORT_TABLE_ROW',          7);
 /** Totals row in a data table (HTML and PDF reports) */
 define('EXPORT_REPORT_TABLE_TOTAL',        8);
-/** Footer row in a data table (HTML and PDF reports) 
+/** Footer row in a data table (HTML and PDF reports)
 * @todo //TODO: EXPORT_REPORT_TABLE_FOOTER not implemented in styling */
 define('EXPORT_REPORT_TABLE_FOOTER',       9);
 /** End of data table (HTML and PDF reports) */
 define('EXPORT_REPORT_TABLE_END',         10);
-  
-                                          
+
+
 /** Formatting code: alignment descriptions */
 define('EXPORT_HTML_ALIGN',      1);
 /** Formatting code: centre output */
@@ -86,7 +86,6 @@ define('EXPORT_HTML_ALIGN_MASK', EXPORT_HTML_CENTRE|EXPORT_HTML_RIGHT|EXPORT_HTM
 /** Formatting code: format as a number */
 define('EXPORT_HTML_NUMBER',       32);
 /** Formatting code: format as money (use defined currency symbol and 2 decimal places)
- * @todo //TODO: 2d.p. isn't a good choice for all currencies
  */
 define('EXPORT_HTML_MONEY',        EXPORT_HTML_NUMBER|64);
 /** Formatting code: format to 1 decimal place, rounding appropriately */

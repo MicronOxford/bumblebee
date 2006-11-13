@@ -18,9 +18,12 @@ require_once 'inc/bb/configreader.php';
 
 /** constants for defining export formatting and codes */
 require_once 'inc/exportcodes.php';
-/** FPDF free PDF creation library for PHP: http://fpdf.org/ */
-require_once 'fpdf/fpdf.php';
 
+define ("K_PATH_MAIN", "system-inc/tcpdf/");
+/** TCPDF free PDF creation library for PHP: http://sf.net/projects/tcpdf */
+require_once 'tcpdf/tcpdf.php';
+
+define('PDF_FONT', 'Arial');
 
 /**
 * Construct a PDF from the array representation
@@ -34,7 +37,7 @@ class PDFExport {
   var $export;
   var $filename = '/tmp/test.pdf';
   var $writeToFile = false;
-  
+
   var $orientation = 'L';
   var $size = 'A4';
   var $pageWidth   = 297;   // mm
@@ -43,11 +46,13 @@ class PDFExport {
   var $rightMargin = 15;    // mm
   var $topMargin   = 15;    // mm
   var $bottomMargin= 15;    // mm
-  
+
   var $minAutoMargin = 4;   // mm added to auto calc'd column widths
   var $tableHeaderAlignment = 'L';
   var $rowLines = '';  // use 'T' for lines between rows
   var $headerLines = 'TB';    // Top and Bottom lines on the header rows
+
+  var $fontSubstitutionTable;
 
   var $normalLineHeight = 5;
   var $headerLineHeight = 6;
@@ -56,52 +61,52 @@ class PDFExport {
   var $singleLineWidth  = 0.3;
   var $sectionHeaderLineHeight = 8;
   var $singleCellTopMargin    = 1;
-  
+
   var $normalFillColor = array(224,235,255);
   var $normalDrawColor = array(  0,  0,  0);
   var $normalTextColor = array(  0,  0,  0);
-  var $normalFont      = array('Arial','',12);
-  
+  var $normalFont      = array(PDF_FONT,'',12);
+
   var $sectionHeaderFillColor = array(255,255,255);
   var $sectionHeaderDrawColor = array(  0,  0,  0);
   var $sectionHeaderTextColor = array(  0,  0,  0);
-  var $sectionHeaderFont      = array('Arial','B',14);
-  
+  var $sectionHeaderFont      = array(PDF_FONT,'B',14);
+
   var $tableHeaderFillColor = array(  0,  0,128);
   var $tableHeaderDrawColor = array(  0,  0,  0);
   var $tableHeaderTextColor = array(255,255,255);
-  var $tableHeaderFont      = array('Arial','B',12);
-  
+  var $tableHeaderFont      = array(PDF_FONT,'B',12);
+
   var $tableFooterFillColor = array(  0,  0,128);
   var $tableFooterDrawColor = array(  0,  0,  0);
   var $tableFooterTextColor = array(255,255,255);
-  var $tableFooterFont      = array('Arial','',9);
-  
+  var $tableFooterFont      = array(PDF_FONT,'',9);
+
   var $tableTotalFillColor = array(224,235,255);
   var $tableTotalDrawColor = array(  0,  0,  0);
   var $tableTotalTextColor = array(  0,  0,  0);
-  var $tableTotalFont      = array('Arial','',12);
-  
-  
-    
+  var $tableTotalFont      = array(PDF_FONT,'',12);
+
+
+
   var $cols = array(); //=array(50,20,20,20,20,20,20,20);   //column widths
   var $colStart = array();
   var $tableRow = 0;
-  
+
   var $useBigTable = true;
-  
+
   var $DEBUG = 0;
-  
+
   function PDFExport(&$exportArray) {
     $this->ea = $exportArray;
     $this->_readConfig();
   }
-  
+
   function makePDFBuffer() {
     $this->render();
     $this->export = $this->Output();
   }
-  
+
   function render() {
     $this->pdf = new TabularPDF($this->orientation, 'mm', $this->size);
     $this->_setMetaInfo();
@@ -118,7 +123,7 @@ class PDFExport {
     } else {
       return $this->pdf->Output('', 'S');
     }
-  } 
+  }
 
   function _setMetaInfo() {
     $metaData = $this->ea->export['metadata'];
@@ -129,12 +134,12 @@ class PDFExport {
     $this->pdf->SetTitle($metaData['title']);
     $this->pdf->title = $metaData['title'];
   }
-  
+
   function _readConfig() {
     $conf = ConfigReader::getInstance();
     $simplevars = array(
-      'orientation', 'size', 'pageWidth', 'pageHeight', 
-      'leftMargin', 'rightMargin', 'topMargin', 'bottomMargin', 
+      'orientation', 'size', 'pageWidth', 'pageHeight',
+      'leftMargin', 'rightMargin', 'topMargin', 'bottomMargin',
       'minAutoMargin', 'tableHeaderAlignment', 'rowLines', 'headerLines',
       'normalLineHeight', 'headerLineHeight', 'footerLineHeight', 'sectionHeaderLineHeight',
       'doubleLineWidth', 'singleLineWidth', 'singleCellTopMargin'
@@ -150,14 +155,26 @@ class PDFExport {
       $this->$v = $conf->value('pdfexport', $v);
     }
     foreach ($cxvars as $v) {
-      $this->$v = $this->_confSplit($conf->value('pdfexport', $v));
+      $val = $conf->value('pdfexport', $v);
+      $this->$v = $this->_confSplit($val);
     }
+
+    $fonts = $conf->value('pdfexport', 'fontSubstitutions');
+    $fontList = preg_split('@[,;\n\r]@', $fonts);
+    $fontTable = array();
+    foreach ($fontList as $font) {
+      $line = explode('=', $font);
+      if (count($line) == 2) {
+        $fontTable["@$line[0]@i"] = $line[1];
+      }
+    }
+    $this->fontSubstitutionTable = $fontTable;
   }
-  
+
   function _confSplit($c) {
     return explode(',', $c);
   }
-  
+
   function _setPageMargins() {
     $this->pdf->SetMargins($this->leftMargin, $this->topMargin, $this->rightMargin);
     $this->pdf->SetAutoPageBreak(true, $this->bottomMargin);
@@ -166,7 +183,7 @@ class PDFExport {
       $this->pdf->$v = $this->$v;
     }
   }
-  
+
   function _setTableAttributes() {
     $vars = array(
       'normalLineHeight', 'headerLineHeight', 'footerLineHeight', 'sectionHeaderLineHeight',
@@ -175,16 +192,17 @@ class PDFExport {
       'sectionHeaderFillColor', 'sectionHeaderDrawColor', 'sectionHeaderTextColor',  'sectionHeaderFont',
       'tableHeaderFillColor', 'tableHeaderDrawColor', 'tableHeaderTextColor', 'tableHeaderFont',
       'tableFooterFillColor', 'tableFooterDrawColor', 'tableFooterTextColor', 'tableFooterFont',
-      'tableTotalFillColor', 'tableTotalDrawColor', 'tableTotalTextColor', 'tableTotalFont'
+      'tableTotalFillColor', 'tableTotalDrawColor', 'tableTotalTextColor', 'tableTotalFont',
+      'fontSubstitutionTable'
       );
     foreach ($vars as $v) {
       $this->pdf->$v = $this->$v;
     }
   }
-  
-  /** 
+
+  /**
   * calculate column widths
-  * 
+  *
   * @todo //TODO: make sure PDF columns don't go over right side of page
   */
   function _calcColWidths($widths, $entry) {
@@ -203,20 +221,20 @@ class PDFExport {
     }
     $taken = array_sum($this->cols);
     //if ($taken > ($this->pageWidth-$this->leftMargin-$this->rightMargin)) {
-      //FIXME: must not go over page right
+      ///FIXME: must not go over page right
     for ($col = 0; $col<count($widths); $col++) {
       if (! isset($this->cols[$col])) {
-        $this->cols[$col] = $widths[$col] 
+        $this->cols[$col] = $widths[$col]
                   / $sum*($this->pageWidth-$this->leftMargin-$this->rightMargin-$taken);
       }
     }
     $this->pdf->cols = $this->cols;
   }
-  
+
   /**
   * Calculate the width of an actual column
   *
-  * @todo //TODO: calculate width of header from actual header data (bold) rather than 1.1 * non-bold 
+  * @todo //TODO: calculate width of header from actual header data (bold) rather than 1.1 * non-bold
   */
   function _getColWidth($col, $entry) {
     //why are we doing lots of calls into the pdf here? is it bad encapsulation?
@@ -225,7 +243,7 @@ class PDFExport {
     $ea =& $this->ea->export;
     $i=0;
     $width = 0;
-    for ($key=$entry; 
+    for ($key=$entry;
         $key<count($ea)-1 && ($this->useBigTable || $ea[$key]['type'] != EXPORT_REPORT_TABLE_END);
         $key++) {
       //$this->log('key='.$key);
@@ -267,7 +285,7 @@ class PDFExport {
     //echo "WIDTH=$width.<br/>";
     return $width + $this->minAutoMargin;
   }
-  
+
   function _parseArray() {
     //$this->log('Making HTML representation of data');
     $ea =& $this->ea->export;
@@ -314,10 +332,11 @@ class PDFExport {
           $this->tableRow++;
           break;
       }
-      # unset($ea[$i]); // FIXME: free memory as we are using it up
-    }      
+      # unset($ea[$i]);
+      /// FIXME: free memory as we are using it up
+    }
   }
-   
+
   function _formatRow($row, $isHeader=false, $border=NULL) {
     $rowpdf = array();
     for ($j=0; $j<count($row); $j++) {
@@ -368,7 +387,7 @@ class PDFExport {
 * @package    Bumblebee
 * @subpackage Export
 */
-class BrandedPDF extends FPDF {
+class BrandedPDF extends TCPDF {
   var $title;
   var $pageWidth   = 297;   // mm
   var $pageHeight  = 210;   // mm
@@ -376,19 +395,21 @@ class BrandedPDF extends FPDF {
   var $rightMargin = 15;    // mm
   var $topMargin   = 15;    // mm
   var $bottomMargin= 15;    // mm
-  
+
+  var $fontSubstitutionTable;
+
   var $DEBUG = 0;
-  
+
   function BrandedPDF($orientation, $measure, $format) {
-    parent::FPDF($orientation, $measure, $format);
+    parent::TCPDF($orientation, $measure, $format);
     $this->title = T_('Bumblebee Report');
   }
-    
+
   function Header() {
     //Logo
     $this->Image('theme/export/logo.png',10,8,33);
     //Arial bold 15
-    $this->SetFont('Arial','B',15);
+    $this->SetFont(PDF_FONT,'B',15);
     //Move to the right
     $this->Cell(40);
     //Title
@@ -396,13 +417,13 @@ class BrandedPDF extends FPDF {
     //Line break
     $this->Ln(30);
   }
-  
+
   //Page footer
   function Footer() {
     //Position at 1.5 cm from bottom
     $this->SetY(-15);
     //Arial italic 8
-    $this->SetFont('Arial','I',8);
+    $this->SetFont(PDF_FONT,'I',8);
     //Page number
     $this->Cell(0,10,'Page '.$this->PageNo().'/{nb}',0,0,'C');
   }
@@ -414,7 +435,7 @@ class BrandedPDF extends FPDF {
       return parent::SetFillColor($r, $g, $b);
     }
   }
-  
+
   function SetDrawColor($r=0, $g=0, $b=0) {
     if (is_array($r)) {
       return parent::SetDrawColor($r[0], $r[1], $r[2]);
@@ -422,7 +443,7 @@ class BrandedPDF extends FPDF {
       return parent::SetDrawColor($r, $g, $b);
     }
   }
-  
+
   function SetTextColor($r=0, $g=0, $b=0) {
     if (is_array($r)) {
       return parent::SetTextColor($r[0], $r[1], $r[2]);
@@ -430,22 +451,27 @@ class BrandedPDF extends FPDF {
       return parent::SetTextColor($r, $g, $b);
     }
   }
-    
+
   function SetFont($font=0, $style=0, $size=0) {
     if (is_array($font)) {
-      return parent::SetFont($font[0], $font[1], $font[2]);
+      return parent::SetFont($this->_substituteFont($font[0]), $font[1], $font[2]);
     } else {
-      return parent::SetFont($font, $style, $size);
+      return parent::SetFont($this->_substituteFont($font), $style, $size);
     }
   }
-  
+
+  function _substituteFont($fontName) {
+    return preg_replace(array_keys($this->fontSubstitutionTable),
+                        array_values($this->fontSubstitutionTable),
+                        $fontName);
+  }
+
   function log ($string, $prio=10) {
     if ($prio <= $this->DEBUG) {
       echo $string."<br />\n";
     }
   }
 
-  
   // overload the error function to give us some better output
   function Error($msg) {
     echo '<div class="error"><b>'.T_('Error generating PDF output:').'</b><br/> '.$msg
@@ -455,7 +481,7 @@ class BrandedPDF extends FPDF {
     }
     die(T_('Exiting with error'));
   }
-  
+
 } // class BrandedPDF
 
 
@@ -473,9 +499,9 @@ class TabularPDF extends BrandedPDF {
   var $_last_sectionHeader;
   var $_last_tableHeader;
   var $_preventNewPage;
-  
+
   var $continuedHeader;
-  
+
   var $lineHeight;
   var $normalLineHeight = 5;
   var $headerLineHeight = 6;
@@ -485,37 +511,37 @@ class TabularPDF extends BrandedPDF {
   var $sectionHeaderLineHeight = 8;
   var $cellTopMargin;
   var $singleCellTopMargin    = 1;
-  
+
   var $normalFillColor = array(224,235,255);
   var $normalDrawColor = array(  0,  0,  0);
   var $normalTextColor = array(  0,  0,  0);
-  var $normalFont      = array('Arial','',12);
-  
+  var $normalFont      = array(PDF_FONT,'',12);
+
   var $sectionHeaderFillColor = array(255,255,255);
   var $sectionHeaderDrawColor = array(  0,  0,  0);
   var $sectionHeaderTextColor = array(  0,  0,  0);
-  var $sectionHeaderFont      = array('Arial','B',14);
-  
+  var $sectionHeaderFont      = array(PDF_FONT,'B',14);
+
   var $tableHeaderFillColor = array(  0,  0,128);
   var $tableHeaderDrawColor = array(  0,  0,  0);
   var $tableHeaderTextColor = array(255,255,255);
-  var $tableHeaderFont      = array('Arial','B',12);
-  
+  var $tableHeaderFont      = array(PDF_FONT,'B',12);
+
   var $tableFooterFillColor = array(  0,  0,128);
   var $tableFooterDrawColor = array(  0,  0,  0);
   var $tableFooterTextColor = array(255,255,255);
-  var $tableFooterFont      = array('Arial','',9);
-  
+  var $tableFooterFont      = array(PDF_FONT,'',9);
+
   var $tableTotalFillColor = array(224,235,255);
   var $tableTotalDrawColor = array(  0,  0,  0);
   var $tableTotalTextColor = array(  0,  0,  0);
-  var $tableTotalFont      = array('Arial','',12);
-  
+  var $tableTotalFont      = array(PDF_FONT,'',12);
+
   function TabularPDF($orientation, $measure, $format) {
     parent::BrandedPDF($orientation, $measure, $format);
     $this->continuedHeader = ' '.T_('(continued)');
   }
-    
+
 
   function _setTableFont() {
     $this->SetFillColor($this->normalFillColor);
@@ -526,7 +552,7 @@ class TabularPDF extends BrandedPDF {
     $this->lineHeight = $this->normalLineHeight;
     $this->cellTopMargin = $this->singleCellTopMargin;
   }
-  
+
   function _setSectionHeaderFont() {
     $this->SetFillColor($this->sectionHeaderFillColor);
     $this->SetDrawColor($this->sectionHeaderDrawColor);
@@ -536,7 +562,7 @@ class TabularPDF extends BrandedPDF {
     $this->lineHeight = $this->normalLineHeight;
     $this->cellTopMargin = $this->singleCellTopMargin;
   }
-  
+
   function _setTableHeaderFont() {
     $this->SetFillColor($this->tableHeaderFillColor);
     $this->SetDrawColor($this->tableHeaderDrawColor);
@@ -546,7 +572,7 @@ class TabularPDF extends BrandedPDF {
     $this->lineHeight = $this->headerLineHeight;
     $this->cellTopMargin = $this->singleCellTopMargin;
   }
-  
+
   function _setTableFooterFont() {
     $this->SetFillColor($this->tableFooterFillColor);
     $this->SetDrawColor($this->tableFooterDrawColor);
@@ -556,7 +582,7 @@ class TabularPDF extends BrandedPDF {
     $this->lineHeight = $this->footerLineHeight;
     $this->cellTopMargin = $this->singleCellTopMargin;
   }
-  
+
   function _setTableTotalFont() {
     $this->SetFillColor($this->tableTotalFillColor);
     $this->SetDrawColor($this->tableTotalDrawColor);
@@ -566,7 +592,7 @@ class TabularPDF extends BrandedPDF {
     $this->lineHeight = $this->normalLineHeight; //+ 4*$this->doubleLineWidth;
     $this->cellTopMargin = $this->singleCellTopMargin + 4*$this->doubleLineWidth;
   }
-  
+
   function sectionHeader($header, $skipAddPage=false) {
     if (!$skipAddPage) {
       $this->AddPage();                  // FIXME: doesn't add a page if no section header??
@@ -577,28 +603,28 @@ class TabularPDF extends BrandedPDF {
     $this->_row(array(array('value'=>$header,'border'=>'','align'=>'L', 'fill'=>true, 'fullWidth'=>1)));
     $this->_setTableFont();
     $this->lineHeight = $this->sectionHeaderLineHeight;
-}  
-  
+}
+
   function repeatSectionHeader() {
     $this->sectionHeader($this->_last_sectionHeader.$this->continuedHeader, true);
   }
-  
+
   function repeatTableHeader() {
     $this->tableHeader($this->_last_tableHeader);
   }
-  
+
   function reportStart() {
   }
-  
+
   function reportHeader() {
   }
-  
+
   function reportEnd() {
   }
-  
+
   function tableStart() {
   }
-  
+
   function tableHeader($data) {
     $this->_setTableHeaderFont();
     //$data[0]['fullWidth'] = 1;
@@ -606,19 +632,19 @@ class TabularPDF extends BrandedPDF {
     $this->_last_tableHeader = $data;
     $this->_setTableFont();
   }
-  
+
   function tableFooter($data) {
     $this->_setTableFooterFont();
     $this->_row($data);
     $this->_setTableFont();
   }
-  
+
   function tableTotal($data) {
     $this->_setTableTotalFont();
     $this->_row($data);
     $this->_setTableFont();
   }
-  
+
   function tableEnd() {
     $this->_preventNewPage = true;
     $currHeight = $this->lineHeight;
@@ -626,11 +652,11 @@ class TabularPDF extends BrandedPDF {
     $this->_row(array(array('value'=>'','border'=>'T','fill'=>false,'fullWidth'=>0)));
     $this->lineHeight = $currHeight;
     $this->_preventNewPage = false;
-  } 
-  
+  }
+
   function tableRow($data) {
     $this->_row($data);
-  } 
+  }
 
   function _row($data) {
     $widths = array();
@@ -645,7 +671,7 @@ class TabularPDF extends BrandedPDF {
     $nb=0;
     for($i=0; $i<count($data); $i++)
         $nb=max($nb, $this->NbLines($widths[$i], $data[$i]['value']));
-    $rowHeight = $this->lineHeight*$nb + $this->cellTopMargin; 
+    $rowHeight = $this->lineHeight*$nb + $this->cellTopMargin;
     //Issue a page break first if needed
     $this->CheckPageBreak($rowHeight);
     $y0bg  = $this->GetY();
@@ -703,6 +729,10 @@ class TabularPDF extends BrandedPDF {
     }
   }
 
+  function AcceptPageBreak() {
+    return ! $this->_preventNewPage;
+  }
+
   function NbLines($w,$txt) {
     //Computes the number of lines a MultiCell of width w will take
     $cw=&$this->CurrentFont['cw'];
@@ -730,7 +760,12 @@ class TabularPDF extends BrandedPDF {
         }
         if($c==' ')
             $sep=$i;
-        $l+=$cw[$c];
+        if(isset($cw[ord($c)])) {
+          $l+=$cw[ord($c)];
+        } else {
+          /// FIXME: Making up a width... probably should warn the user
+          $l+=$cw[ord('a')];
+        }
         if($l>$wmax) {
             if($sep==-1)
             {
@@ -749,8 +784,8 @@ class TabularPDF extends BrandedPDF {
     }
     return $nl;
   }
-  
-        
+
+
 } // class TabularPDF
 
-?> 
+?>
