@@ -8,6 +8,8 @@
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Actions
+*
+* path (bumblebee root)\inc\actions\view.php
 */
 
 /** Load ancillary functions */
@@ -16,6 +18,8 @@ checkValidInclude();
 
 /** list of choices object */
 require_once 'inc/formslib/anchortablelist.php';
+/** translated string type */
+require_once 'inc/formslib/bbstring.php';
 /** parent object */
 require_once 'inc/actions/viewbase.php';
 /** list of bookings */
@@ -54,6 +58,15 @@ class ActionView extends ActionViewBase {
   */
   function selectInstrument() {
     $instrselect = new AnchorTableList('Instrument', T_('Select which instrument to view'), 3);
+
+    $headings = array(new bbString('name', T_('name')), 
+                      new bbString('longname', T_('description')), 
+	              new bbString('location', T_('location')));   
+ 
+    $instrselect->setTableHeadings($headings);
+    $instrselect->sortByHeadings(true);
+    
+
     if ($this->auth->permitted(BBROLE_VIEW_LIST)) {
       $instrselect->connectDB('instruments',
                             array('id', 'name', 'longname', 'location')
