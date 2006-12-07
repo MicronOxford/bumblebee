@@ -30,23 +30,31 @@ require_once 'bbstring.php';
 class AnchorTableList extends AnchorList {
     /** @var integer  number of columns in the table*/
     var $numcols    = '';
+    /** @var string   html/css class for the header row of the table */
+    var $headerRowClass = 'tableHeader';
     /** @var string   html/css class for each row in the table  */
     var $trclass    = 'itemrow';
     /** @var string   html/css class for left-side table cell */
     var $tdlclass   = 'itemL';
     /** @var string   html/css class for right-side table cell */
     var $tdrclass   = 'itemR';
+    /** @var string   html/css class for anchors */
+    var $aclass     = 'itemR';
     /** @var string   html/css class for entire table */
     var $tableclass = 'selectlist';
     /** @var array    list of table headings to be put at the top of the table */
     var $tableHeading;
     /** @var boolean  make all columns in the table link to the target URL not just the first */
     var $linkAll = true;
-    /** @var boolean controls the generation of header links to sort the table by */
+    /** @var boolean  controls the generation of header links to sort the table by */
     var $useSortByHeadings = false;
-    /** @var sortby tells which header to sort by. null for default. This value will be 
-     * superseeded by the sortby paramiter in connectDB */ 
-    var $defaultSortByHeading = 'name';  
+    /** @var string   tells which header to sort by. null for default. This value will be
+     * superseeded by the sortby paramater in connectDB */
+    var $defaultSortByHeading = 'name';
+    /** @var array    data source from which the column to sort by will be read */
+    var $data = null;
+    /** @var string   key in $data in which the column name should be stored */
+    var $sortbyKey;
 
     /**
      *  Create a new AnchorTableList
@@ -59,6 +67,7 @@ class AnchorTableList extends AnchorList {
 
         $this->AnchorList($name, $description);
         $this->numcols = $numcols;
+        $this->sortbyKey = $this->name.'_sortby';
 
     } //end function AnchorTableList
 
@@ -76,13 +85,15 @@ class AnchorTableList extends AnchorList {
     /**
      * Sets which heading to sort by
      *
-     * @param turn the sort by links on and off
-     * @param the default heading to sort by
+     * @param boolean turn the sort by links on and off
+     * @param array   data source to find which heading to sort by
+     * @param string  (optional) the default heading to sort by
      *
      */
-    function sortByHeadings($sort, $heading = 'name') {
+    function sortByHeadings($sort, $data, $heading = 'name') {
 
         $this->useSortByHeadings = $sort;
+        $this->data = $data;
         $this->defaultSortByHeading = $heading;
 
     } //end function sortByHeadings
@@ -121,43 +132,33 @@ class AnchorTableList extends AnchorList {
         $tableclass = (isset($this->tableclass) ? " class='$this->tableclass'" : '');
         $t  = "<table title='$this->description' $tableclass>\n";
 
-        $fields = array_merge($_GET, $_POST);
-
         if (isset($this->tableHeadings)) {
 
-            $t .= '<tr>';
+            $t .= "<tr class='{$this->headerRowClass}'>";
 
-            if(!($this->useSortByHeadings && isSet($fields['action']))) {
+            if(! $this->useSortByHeadings) {
                 foreach ($this->tableHeadings as $heading) {
 
-                    if(is_object($heading)) {
-                        $t .="<th>$heading->getExternalRep()</th>";
+                    if(type_is_a($heading, 'bbString')) {
+                        $t .='<th>'.$heading->getExternalRep().'</th>';
 
-                    } else {      
+                    } else {
                         $t .= "<th>$heading</th>";
                     } //end if-else
                 } //end foreach
 
             } else {
 
-                $temp = $_GET;
-                unset($temp['action']);
-
-                $aclass = (isset($this->aclass) ? " class='$this->aclass'" : '');
+                $aclass = (isset($this->aclass) ? " class='{$this->aclass}'" : '');
 
                 foreach($this->tableHeadings as $heading) {
+                  $text   = type_is_a($heading, 'bbString')
+                                              ? $heading->getExternalRep() : $heading;
+                  $sortby = type_is_a($heading, 'bbString')
+                                              ? $heading->getInternalRep() : $heading;
+                  $href = str_replace('__sortby__', $sortby, $this->sortByHref);
 
-                    if(is_object($heading)) {
-
-                        $temp[$this->name.'_sortby'] = $heading->getInternalRep();
-                        $t .= "<th><a href='".makeUrl($fields['action'], $temp)
-                            ."' $aclass>".$heading->getExternalRep().'</a></th>';
-
-                    } else {
-                        $temp[$this->name.'_sortby'] = $heading;
-                        $t .= "<th><a href='".makeUrl($fields['action'], $temp)
-                            ."' $aclass>$heading</a></th>";
-                    } //end if-else
+                  $t .=  "<th><a href='".$href."' $aclass title='".T_('Sort by this column')."'>".$text.'</a></th>';
                 } //end foreach
 
             } //end if-else
@@ -177,25 +178,16 @@ class AnchorTableList extends AnchorList {
 
     /**
      *  overloading of ChoiceList's connectDB to allow for remembering the
-     *     sortby collum
+     *     sortby column
      */
-    function connectDB($table, $fields = '', $restriction = '', $order = 'name', 
+    function connectDB($table, $fields = '', $restriction = '', $order = 'name',
             $idfield = 'id', $limit = '', $join = '', $distinct = false) {
 
-	$field = array_merge($_GET, $_POST);
-
-        if(!$this->useSortByHeadings) {
-            parent::connectDB($table, $fields, $restriction, $order, $idfield, $limit,
+        if ($this->useSortByHeadings) {
+            $order = qw(issetSet($this->data, $this->sortbyKey, $this->defaultSortByHeading));
+        }
+        parent::connectDB($table, $fields, $restriction, $order, $idfield, $limit,
                     $join, $distinct);
-        } else if(isSet($field[$this->name.'_sortby'])) {
-            $field[$this->name.'_sortby'] = qw($field[$this->name.'_sortby']);
-            parent::connectDB($table, $fields, $restriction,
-                    $field[$this->name.'_sortby'],$idfield, $limit, $join,
-                    $distinct);
-        } else { 
-            parent::connectDB($table, $fields, $restriction, 
-                    $this->defaultSortByHeading, $idfield, $limit, $join, $distinct);   
-        } //end if-else-if-else
 
     } //end function connectDB
 

@@ -111,7 +111,7 @@ function db_num_rows($sql) {
 function echoSQL($echo, $success=0) {
   $conf = ConfigReader::getInstance();
   if ($conf->VerboseSQL) {
-    echo "<div class='sql'>".xssqw($echo)
+    echo "<div class='sql'>".xssqw($echo, false)
         .($success ? '<div>'.T_('(successful)').'</div>' : '')
         ."</div>";
   }

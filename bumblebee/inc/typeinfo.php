@@ -246,11 +246,12 @@ function cp1252_to_utf8($str) {
 * nasty HTML
 *
 * @param string $v string to be quoted
+* @param boolean $strip   strip slashes first
 * @return string $v with html converted to entities
 */
-function xssqw($v) {
+function xssqw($v, $strip=true) {
   // once again magic_quotes_gpc gets in the way
-  if (get_magic_quotes_gpc()) {
+  if ($strip && get_magic_quotes_gpc()) {
     // first remove any (partial or full) escaping then we'll do it properly below
     $v = stripslashes($v);
   }
