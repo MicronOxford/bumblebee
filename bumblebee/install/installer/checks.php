@@ -8,6 +8,17 @@
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Installer
+*
+* @todo   rewrite installer test suite as objects
+*         All tests in the test suite should report their outcome in a consistent manner,
+*          making it easy for humans or computer programs to understand and to process them.
+*          The following test states, defined by EARL (the Evaluation And Report Language),
+*          have proved useful:
+*          - cannotTell
+*          - fail
+*          - notApplicable
+*          - notTested
+*          - pass
 */
 
 /**
