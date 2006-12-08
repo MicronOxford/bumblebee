@@ -223,6 +223,7 @@ function makeURL($action=NULL, $list=NULL, $escape=true) {
   if ($action !== NULL) $list['action'] = $action;
   $args = array();
   foreach ($list as $field => $value) {
+    if (is_array($value)) $value = join(',', $value);
     $args[] = $field.'='.urlencode($value);
   }
   $delim = $escape ? '&amp;' : '&';
