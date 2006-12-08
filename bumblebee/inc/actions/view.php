@@ -9,7 +9,7 @@
 * @package    Bumblebee
 * @subpackage Actions
 *
-* path (bumblebee root)\inc\actions\view.php
+* path (bumblebee root)/inc/actions/view.php
 */
 
 /** Load ancillary functions */
@@ -59,13 +59,13 @@ class ActionView extends ActionViewBase {
   function selectInstrument() {
     $instrselect = new AnchorTableList('Instrument', T_('Select which instrument to view'), 3);
 
-    $headings = array(new bbString('name', T_('name')), 
-                      new bbString('longname', T_('description')), 
-	              new bbString('location', T_('location')));   
- 
+    $headings = array(new bbString('name', T_('name')),
+                      new bbString('longname', T_('description')),
+	              new bbString('location', T_('location')));
+
     $instrselect->setTableHeadings($headings);
-    $instrselect->sortByHeadings(true);
-    
+    $instrselect->sortByHeadings(true, $this->PD);
+    $instrselect->sortByHref = makeUrl('view', array($instrselect->sortbyKey => '__sortby__'));
 
     if ($this->auth->permitted(BBROLE_VIEW_LIST)) {
       $instrselect->connectDB('instruments',
