@@ -214,13 +214,20 @@ class BumblebeeAuth extends BasicAuth {
       // looking for system permissions
       return ((int) $operation & (int) $this->system_permissions) == $operation;
     } else {
-      #echo "op = ". $operation;
-      #echo "instr = " .(int) $this->instrument_permissions($instrument);
-      #echo "ok=". ((int) $this->instrument_permissions($instrument) & (int) $operation);
-      #echo "<br />";
-      return (((int) $operation)
-            & ( (int) $this->system_permissions | (int) $this->instrument_permissions($instrument) ))
-           == $operation;
+      if (is_array($instrument)) {
+        foreach ($instrument as $i) {
+          if (! $this->permitted($operation, $i)) return false;
+        }
+        return true;
+      } else {
+        #echo "op = ". $operation;
+        #echo "instr = " .(int) $this->instrument_permissions($instrument);
+        #echo "ok=". ((int) $this->instrument_permissions($instrument) & (int) $operation);
+        #echo "<br />";
+        return (((int) $operation)
+              & ( (int) $this->system_permissions | (int) $this->instrument_permissions($instrument) ))
+             == $operation;
+      }
     }
   }
 
