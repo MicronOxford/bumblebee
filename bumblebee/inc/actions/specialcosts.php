@@ -8,6 +8,8 @@
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Actions
+*
+* path (bumblebee root)/inc/actions/specialcosts.php
 */
 
 /** Load ancillary functions */

@@ -8,6 +8,8 @@
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Actions
+*
+* path (bumblebee root)/inc/actions/deletedbookings.php
 */
 
 /** Load ancillary functions */
@@ -29,10 +31,10 @@ require_once 'inc/actions/actionaction.php';
 * @subpackage Actions
 */
 class ActionDeletedBookings extends ActionAction {
-    
+
   /**
-  * Initialising the class 
-  * 
+  * Initialising the class
+  *
   * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
@@ -49,7 +51,7 @@ class ActionDeletedBookings extends ActionAction {
       $this->selectInstrument();
       return;
     }
-    $daterange = new DateRange('daterange', T_('Select date range'), 
+    $daterange = new DateRange('daterange', T_('Select date range'),
                       T_('Enter the dates over which you want to report deleted bookings'));
     $daterange->update($this->PD);
     $daterange->checkValid();
@@ -80,7 +82,7 @@ class ActionDeletedBookings extends ActionAction {
   */
   function selectInstrument() {
     $instrselect = new AnchorTableList(T_('Instrument'), T_('Select which instrument to view'));
-    $instrselect->connectDB('instruments', 
+    $instrselect->connectDB('instruments',
                             array('id', 'name', 'longname')
                             );
     $instrselect->hrefbase = makeURL('deletedbookings', array('instrid'=>'__id__'));;
@@ -100,14 +102,14 @@ class ActionDeletedBookings extends ActionAction {
     $bookings->setTableHeadings(array(T_('Date'), T_('Duration'), T_('User'), T_('Log Entry')));
     $bookings->numcols = 4;
     $bookings->deleted = true;
-    $bookings->connectDB('bookings', 
+    $bookings->connectDB('bookings',
                             array('bookings.id', 'username', 'bookwhen', 'duration','log'),
                                     'bookwhen >= '.qw($start->dateTimeString())
                               .' AND bookwhen < ' .qw($stop->dateTimeString())
                               .' AND instrument = '.qw($instrument),
-                            'bookwhen', 
-                            'bookings.id', 
-                            NULL, 
+                            'bookwhen',
+                            'bookings.id',
+                            NULL,
                             array('users'=>'userid=users.id'));
     $bookings->hrefbase = makeURL('view', array('bookid'=>'__id__', 'instrid'=>$instrument));
     $bookings->setFormat('id', '%s', array('bookwhen'),
@@ -118,4 +120,4 @@ class ActionDeletedBookings extends ActionAction {
   }
 
 } // class ActionDeletedBookings
-?> 
+?>

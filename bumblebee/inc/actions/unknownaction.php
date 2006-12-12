@@ -8,6 +8,8 @@
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Actions
+*
+* path (bumblebee root)/inc/actions/unknownaction.php
 */
 
 /** Load ancillary functions */

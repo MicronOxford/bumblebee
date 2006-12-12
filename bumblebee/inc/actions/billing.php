@@ -8,6 +8,8 @@
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Actions
+*
+* path (bumblebee root)/inc/actions/billing.php
 */
 
 /** Load ancillary functions */

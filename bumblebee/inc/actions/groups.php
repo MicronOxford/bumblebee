@@ -8,6 +8,8 @@
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Actions
+*
+* path (bumblebee root)/inc/actions/groups.php
 */
 
 /** Load ancillary functions */
@@ -30,8 +32,8 @@ require_once 'inc/actions/actionaction.php';
 class ActionGroups extends ActionAction  {
 
   /**
-  * Initialising the class 
-  * 
+  * Initialising the class
+  *
   * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
@@ -63,12 +65,12 @@ class ActionGroups extends ActionAction  {
     #echo $select->list->text_dump();
     echo $select->display();
   }
-  
+
   function edit() {
     $group = new Group($this->PD['id']);
     $group->update($this->PD);
     $group->checkValid();
-    echo $this->reportAction($group->sync(), 
+    echo $this->reportAction($group->sync(),
           array(
               STATUS_OK =>   ($this->PD['id'] < 0 ? T_('Group created') : T_('Group updated')),
               STATUS_ERR =>  T_('Group could not be changed:').' '.$group->errorMessage
@@ -89,12 +91,12 @@ class ActionGroups extends ActionAction  {
 
   function delete() {
     $group = new Group($this->PD['id']);
-    echo $this->reportAction($group->delete(), 
+    echo $this->reportAction($group->delete(),
               array(
                   STATUS_OK =>   $group->isDeleted ? T_('Group undeleted') : T_('Group deleted'),
                   STATUS_ERR =>  T_('Group could not be deleted:').'<br/><br/>'.$group->errorMessage
               )
-            );  
+            );
   }
 }
-?> 
+?>

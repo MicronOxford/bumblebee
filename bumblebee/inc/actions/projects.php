@@ -8,6 +8,8 @@
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Actions
+*
+* path (bumblebee root)/inc/actions/projects.php
 */
 
 /** Load ancillary functions */
@@ -30,8 +32,8 @@ require_once 'inc/actions/actionaction.php';
 class ActionProjects extends ActionAction {
 
   /**
-  * Initialising the class 
-  * 
+  * Initialising the class
+  *
   * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
@@ -67,7 +69,7 @@ class ActionProjects extends ActionAction {
     $project = new Project($this->PD['id']);
     $project->update($this->PD);
     $project->checkValid();
-    echo $this->reportAction($project->sync(), 
+    echo $this->reportAction($project->sync(),
           array(
               STATUS_OK =>   ($this->PD['id'] < 0 ? T_('Project created') : T_('Project updated')),
               STATUS_ERR =>  T_('Project could not be changed:').' '.$project->errorMessage
@@ -87,13 +89,13 @@ class ActionProjects extends ActionAction {
 
   function delete() {
     $project = new Project($this->PD['id']);
-    echo $this->reportAction($project->delete(), 
+    echo $this->reportAction($project->delete(),
               array(
                   STATUS_OK =>   $project->isDeleted ? T_('Project undeleted') : T_('Project deleted'),
                   STATUS_ERR =>  T_('Project could not be deleted:')
                                  .'<br/><br/>'.$project->errorMessage
               )
-            );  
+            );
   }
 
 }

@@ -8,6 +8,8 @@
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Actions
+*
+* path (bumblebee root)/inc/actions/consumables.php
 */
 
 /** Load ancillary functions */
@@ -29,8 +31,8 @@ require_once 'inc/actions/actionaction.php';
 class ActionConsumables extends ActionAction {
 
   /**
-  * Initialising the class 
-  * 
+  * Initialising the class
+  *
   * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
@@ -67,9 +69,9 @@ class ActionConsumables extends ActionAction {
     $consumable = new Consumable($this->PD['id']);
     $consumable->update($this->PD);
     $consumable->checkValid();
-    echo $this->reportAction($consumable->sync(), 
+    echo $this->reportAction($consumable->sync(),
           array(
-              STATUS_OK =>   ($this->PD['id'] < 0 
+              STATUS_OK =>   ($this->PD['id'] < 0
                                 ? T_('Consumable created') : T_('Consumable updated')),
               STATUS_ERR =>  T_('Consumable could not be changed:').' '.$consumable->errorMessage
           )
@@ -84,21 +86,21 @@ class ActionConsumables extends ActionAction {
     }
     echo "<input type='submit' name='submit' value='$submit' />";
     if ($delete) echo "<input type='submit' name='delete' value='$delete' />";
-    echo '<p>'.sprintf(T_('<a href="%s">View listing</a> for selected consumable'), 
+    echo '<p>'.sprintf(T_('<a href="%s">View listing</a> for selected consumable'),
                 makeURL('consume', array('consumableid'=>$consumable->id, 'list'=>1)))."</p>\n";
   }
 
   function delete() {
     $consumable = new Consumable($this->PD['id']);
-    echo $this->reportAction($consumable->delete(), 
+    echo $this->reportAction($consumable->delete(),
               array(
-                  STATUS_OK =>   $consumable->isDeleted ? T_('Consumable undeleted') 
+                  STATUS_OK =>   $consumable->isDeleted ? T_('Consumable undeleted')
                                                         : T_('Consumable deleted'),
                   STATUS_ERR =>  T_('Consumable could not be deleted:')
                                  .'<br/><br/>'.$consumable->errorMessage
               )
-            );  
+            );
   }
 }
 
-?> 
+?>

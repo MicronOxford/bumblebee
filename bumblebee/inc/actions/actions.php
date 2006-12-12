@@ -8,6 +8,8 @@
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Actions
+*
+* path (bumblebee root)/inc/actions/actions.php
 */
 
 /** Load ancillary functions */
@@ -141,6 +143,8 @@ class ActionListing {
         'view',       T_('View list of instruments'), T_('Main'), BBROLE_NONE);
     $this->actions[] = new ActionData('ActionCalendar', 'calendar.php',
         'calendar',   T_('View instrument calendar'), T_('Calendar'), BBROLE_NONE, -1);
+    $this->actions[] = new ActionData('ActionMultiCalendar', 'multicalendar.php',
+        'multicalendar',   T_('View combined instrument calendar'), T_('Calendar'), BBROLE_NONE, -1);
     $this->actions[] = new ActionData('ActionBook', 'book.php',
         'book',       T_('View/edit instrument bookings'), T_('Bookings'), BBROLE_NONE, -1);
     $this->actions[] = new ActionData('ActionBookContact', 'bookcontact.php',
