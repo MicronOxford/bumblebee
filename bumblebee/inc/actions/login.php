@@ -46,9 +46,9 @@ class ActionPrintLoginForm extends ActionAction {
     echo '<h2>' . T_('Login required').'</h2>';
     echo '<p>'  . T_('Please login to view or book instrument usage') . '</p>';
     $this->printLoginForm();
-    if (isset($this->PD['changeuser'])) {
-      $this->printDataReflectionForm($this->PD);
-    }
+    #if (isset($this->PD['changeuser'])) {
+      $this->printDataReflectionForm($this->PD, 'reflection_');
+    #}
   }
 
   function printLoginForm() {
@@ -72,12 +72,12 @@ class ActionPrintLoginForm extends ActionAction {
       T_('login')  );
   }
 
-  function printDataReflectionForm($data) {
+  function printDataReflectionForm($data, $basename='') {
     // save the rest of the query string for later use
     foreach ($data as $k => $v) {
       #if ($k == 'action') $k = 'nextaction';
       if ($k != 'changeuser') {
-        printf ('<input type="hidden" name="%s" value="%s" />', xssqw($k), xssqw($v));
+        printf ('<input type="hidden" name="%s" value="%s" />', $basename.xssqw($k), xssqw($v));
       }
     }
   }

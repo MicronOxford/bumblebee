@@ -227,7 +227,14 @@ class ActionFactory {
   function _eatGPCInfo() {
     //$pd = $this->_eatPathInfo();
     //return array_merge($pd, $_GET, $_POST);
-    return array_merge($_GET, $_POST);
+    $data = array_merge($_GET, $_POST);
+    foreach ($data as $k => $v) {
+      if (preg_match('@^reflection_(.+)$@', $k, $matches)) {
+        $data[$matches[1]] = $v;
+        #print "Remapped $matches[1] => $v<br />";
+      }
+    }
+    return $data;
   }
 
   /**
@@ -255,7 +262,7 @@ class ActionFactory {
   /**
   * create the action object (a descendent of ActionAction) for the user-defined verb
   */
-  function _makeaction() {
+  function _makeAction() {
     /** to reduce PHP processing overhead, include only the file that is required for this action */
     require_once $this->_actionData->include_file();
     switch ($this->_verb) {

@@ -124,9 +124,9 @@ class ActionAction {
   */
   function mungeInputData() {
     $this->PD = $this->PDATA;
-    foreach ($_POST as $k => $v) {
+/*    foreach ($_POST as $k => $v) {
       $this->PD[$k] = $v;
-    }
+    }*/
     if (isset($this->PD['id']) && $this->PD['id'] == 'showdeleted') {
       $this->PD['showdeleted'] = true;
       unset($this->PD['id']);
