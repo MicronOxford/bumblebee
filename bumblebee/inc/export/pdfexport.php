@@ -19,9 +19,8 @@ require_once 'inc/bb/configreader.php';
 /** constants for defining export formatting and codes */
 require_once 'inc/exportcodes.php';
 
-define ("K_PATH_MAIN", "system-inc/tcpdf/");
-/** TCPDF free PDF creation library for PHP: http://sf.net/projects/tcpdf */
-require_once 'tcpdf/tcpdf.php';
+/** config and class libraries for PDF export */
+require_once 'inc/export/pdfexportconfig.php';
 
 define('PDF_FONT', 'Arial');
 
