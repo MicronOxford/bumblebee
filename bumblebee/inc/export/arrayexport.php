@@ -8,6 +8,8 @@
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Export
+*
+* path (bumblebee root)/inc/export/arrayexport.php
 */
 
 /** Load ancillary functions */

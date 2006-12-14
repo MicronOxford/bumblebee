@@ -1,6 +1,6 @@
 <?php
 /**
-* Construct a PDF from the array representation
+* Configure the TCPDF library for PDF generation
 *
 * @author    Stuart Prescott
 * @copyright  Copyright Stuart Prescott
@@ -8,6 +8,8 @@
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Export
+*
+* path (bumblebee root)/inc/export/pdfexportconfig.php
 */
 
 /** Load ancillary functions */

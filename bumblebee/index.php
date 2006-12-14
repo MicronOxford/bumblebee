@@ -10,6 +10,8 @@
 * @license    http://opensource.org/licenses/gpl-license.php GNU Public License
 * @version    $Id$
 * @package    Bumblebee
+*
+* path (bumblebee root)/index.php
 */
 
 // prevent output for the moment to permit session headers
