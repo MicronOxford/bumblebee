@@ -16,14 +16,14 @@ checkValidInclude();
 
 /**
 * Simple date class to perform basic date calculations
-* 
+*
 * WARNING USING TICKS DIRECTLY IS DANGEROUS
-* 
+*
 * The ticks variable here is a little problematic... daylight saving transitions tend
-* to make it rather frought. For example, for the purposes of this system, 
+* to make it rather frought. For example, for the purposes of this system,
 * if you want to know what 4 days after 9am 20th March
 * is, you expect to get 9am 23rd March regardless of a timezone change from daylight saving.
-* 
+*
 * For example, this might not give you what you want:<code>
 * $date = new SimpleDate('2005-03-20');
 * $date->addSecs(4*24*60*60);   // add 4 days
@@ -48,6 +48,11 @@ class SimpleDate {
   */
   var $_datetimestring = '';
   /**
+  * time in string format (YYYY-MM-DD HH:MM:SS)
+  * @var string
+  */
+  var $_timestring = '';
+  /**
   * date in seconds since epoch
   * @var integer
   */
@@ -60,7 +65,7 @@ class SimpleDate {
 
   /**
   * construct a Date-Time object
-  * 
+  *
   * constructor will work with $time in the following formats:
   * - YYYY-MM-DD            (assumes 00:00:00 for time part)
   * - YYYY-MM-DD HH:MM      (assumes :00 for seconds part)
@@ -77,12 +82,12 @@ class SimpleDate {
       $this->setTicks($time->ticks);
     } else {
       $this->setStr($time);
-    } 
+    }
   }
 
   /**
   * set the date and time from a string
-  * 
+  *
   * - YYYY-MM-DD            (assumes 00:00:00)
   * - YYYY-MM-DD HH:MM      (assumes :00)
   * - YYYY-MM-DD HH:MM:SS
@@ -100,25 +105,32 @@ class SimpleDate {
     }
     return $this->_datetimestring;
   }
-  
+
+  function timeString() {
+    if ($this->_timestring === '') {
+      $this->_timestring = strftime('%H:%M:%S', $this->ticks);
+    }
+    return $this->_timestring;
+  }
+
   function dateString() {
     if ($this->_datestring === '') {
       $this->_datestring = strftime('%Y-%m-%d', $this->ticks);
     }
     return $this->_datestring;
   }
-  
+
 //   function _setStr() {
 //     #echo "SimpleDate::Str $this->ticks<br />";
 //     $this->datestring = strftime('%Y-%m-%d', $this->ticks);
 //     $this->datetimestring = strftime('%Y-%m-%d %H:%M:%S', $this->ticks);
-//     $this->isValid = $this->isValid && ($this->datestring != '' && $this->datetimestring != '' 
+//     $this->isValid = $this->isValid && ($this->datestring != '' && $this->datetimestring != ''
 //                    && $this->datestring != -1 && $this->datetimestring != -1);
 //   }
 
   /**
   * set the date and time from seconds since epoch
-  * 
+  *
   * @param mixed $t ticks
   */
   function setTicks($t) {
@@ -163,7 +175,7 @@ class SimpleDate {
     $this->_datetimestring = '';
 //     $this->_setStr();
   }
-  
+
   /**
   * add a whole number of seconds to the current date-time
   * @param integer $s seconds to add
@@ -196,7 +208,7 @@ class SimpleDate {
     $this->dayRound();
     $this->addDays(-1 * $this->dow());
   }
-  
+
   /**
   * round (down) the date-time to the start of the current month (the 1st)
   */
@@ -213,7 +225,7 @@ class SimpleDate {
     $quarter = floor(($month-1)/3)*3+1;
     $this->setTimeParts(0,0,0,1,$quarter,$this->year());
   }
-  
+
   /**
   * round (down) the date-time to the start of the current year (1st Jan)
   */
@@ -221,31 +233,31 @@ class SimpleDate {
     $this->dayRound();
     $this->addDays(-1*$this->doy());
   }
-  
-  /** 
-  * returns the number of days between two dates ($this - $date) 
+
+  /**
+  * returns the number of days between two dates ($this - $date)
   * note that it will return fractional days across daylight saving boundaries
   * @param SimpleDate $date date to subtract from this date
   */
   function daysBetween($date) {
     return $this->subtract($date) / (24 * 60 * 60);
   }
-  
-  /** 
+
+  /**
   * returns the number of days between two dates ($this - $date) accounting for daylight saving
   * @param SimpleDate $date date to subtract from this date
   */
   function dsDaysBetween($date) {
     //Calculate the number of days as a fraction, removing fractions due to daylight saving
     $numdays = $this->daysBetween($date);
-    
-    //We don't want to count an extra day (or part thereof) just because the day range 
+
+    //We don't want to count an extra day (or part thereof) just because the day range
     //includes going from summertime to wintertime so the date range includes an extra hour!
 
     $tz1 = date('Z', $this->ticks);
     $tz2 = date('Z', $date->ticks);
     if ($tz1 == $tz2) {
-      // same timezone, so return the computed amount 
+      // same timezone, so return the computed amount
       #echo "Using numdays $tz1 $tz2 ";
       return $numdays;
     } else {
@@ -255,26 +267,26 @@ class SimpleDate {
     }
   }
 
-  /** 
-  * returns the number of days (or part thereof) between two dates ($this - $d) 
+  /**
+  * returns the number of days (or part thereof) between two dates ($this - $d)
   * @param SimpleDate $date date to subtract from this date
   */
   function partDaysBetween($date) {
     //we want this to be an integer and since we want "part thereof" we'd normally round up
-    //but daylight saving might cause problems....  We also have to include the part day at 
+    //but daylight saving might cause problems....  We also have to include the part day at
     //the beginning and the end
-    
+
     $startwhole = $date;
     $startwhole->dayRound();
     $stopwhole = $this;
     $stopwhole->ticks += 24*60*60-1;
 //     $stopwhole->_setStr();
     $stopwhole->dayRound();
-    
+
     return $stopwhole->dsDaysBetween($startwhole);
   }
-   
-  /** 
+
+  /**
   * returns the number of seconds between two times
   * NB this does not specially account for daylight saving changes, so will not always give
   * the 24*60*60 for two datetimes that are 1 day apart on the calendar...!
@@ -285,7 +297,7 @@ class SimpleDate {
     return $this->ticks - $date->ticks;
   }
 
-  /** 
+  /**
   * returns a SimpleTime object for just the time component of this date time
   *
   * @return SimpleTime object of just the HH:MM:SS component of this date
@@ -295,7 +307,7 @@ class SimpleDate {
     return new SimpleTime($timestring);
   }
 
-  /** 
+  /**
   * Sets the time component of this date-time to the specified time but with the same date as currently set
   *
   * The specified time can be HH:MM HH:MM:SS, seconds since midnight or a SimpleTime object
@@ -303,26 +315,26 @@ class SimpleDate {
   */
   function setTime($s) {
     //echo $this->dump().$s.'<br/>';
-    
+
     // Benchmarks of 10000 calls to setTime($time)
-    // 
+    //
     // Original algorithm, dayRound() and then addTimeParts(); avg over 10 benchmark runs = 1.28s
     // $this->dayRound();
     // $time = new SimpleTime($s);
     // $this->addTimeParts($time->part('s'), $time->part('i'), $time->part('H'), 0,0,0);
-    
+
     // setTimeParts() directly; avg over 10 benchmark runs = 0.80s
     $time = new SimpleTime($s);
     //$this->setTimeParts(date('s', $time->ticks),date('i', $time->ticks),date('H', $time->ticks),
     //                    date('d', $this->ticks),date('m', $this->ticks),date('Y', $this->ticks));
     $this->setTimeParts($time->part('s'),        $time->part('i'),        $time->part('H'),
                         date('d', $this->ticks), date('m', $this->ticks), date('Y', $this->ticks));
-    
-    return $this;
-  }  
-    
 
-  /** 
+    return $this;
+  }
+
+
+  /**
   * Sets this SimpleDate to the earlier of $this and $t
   *
   * @param SimpleDate $t
@@ -331,7 +343,7 @@ class SimpleDate {
     $this->setTicks(min($t->ticks, $this->ticks));
   }
 
-  /** 
+  /**
   * Sets this SimpleDate to the later of $this and $t
   *
   * @param SimpleDate $t
@@ -339,11 +351,11 @@ class SimpleDate {
   function max($t) {
     $this->setTicks(max($t->ticks, $this->ticks));
   }
-  
+
   /**
   * round time down to the nearest $g time-granularity measure
   *
-  * Example: if this date time is set to 2005-11-21 17:48 and 
+  * Example: if this date time is set to 2005-11-21 17:48 and
   * $g represents 00:15:00 (i.e. 15 minutes) then this date-time would
   * be set to 2005-11-21 17:45 by rounding to the nearest 15 minutes.
   *
@@ -354,7 +366,7 @@ class SimpleDate {
     $tp->floorTime($g);
     $this->setTime($tp->timeString());
   }
-  
+
   /**
   * Add components to the current date-time
   *
@@ -384,7 +396,7 @@ class SimpleDate {
     $this->_datetimestring = '';
 //     $this->_setStr();
   }
-  
+
   /**
   * Set current date-time by components
   *
@@ -408,15 +420,15 @@ class SimpleDate {
     $this->_datetimestring = '';
 //     $this->_setStr();
   }
-  
+
   /**
-  * return the day of week of the current date. 
+  * return the day of week of the current date.
   * @return integer day of week (0 == Sunday, 6 == Saturday)
   */
   function dow() {
     return date('w', $this->ticks);
   }
-  
+
   /**
   * return the day of week of the current date as a string (always in English)
   * @return string day of week (Sunday, Monday, etc)
@@ -424,7 +436,7 @@ class SimpleDate {
   function dowStr() {
     return date('l', $this->ticks);
   }
-  
+
   /**
   * return the (short) day of week of the current date as a string (always in English)
   * @return string day of week (Sun, Mon, etc)
@@ -432,7 +444,7 @@ class SimpleDate {
   function dowShortStr() {
     return date('D', $this->ticks);
   }
-  
+
   /**
   * return the day of month
   * @return integer day of month (1..31)
@@ -440,7 +452,7 @@ class SimpleDate {
   function dom() {
     return intval(date('d', $this->ticks));  // use intval to remove the leading zero
   }
-  
+
   /**
   * return integer month of year (1..12)
   * @return integer month of year (1..12)
@@ -448,7 +460,7 @@ class SimpleDate {
   function moy() {
     return date('m', $this->ticks);
   }
-  
+
   /**
   * return the month of year of the current date as a string (always in English)
   * @return string month of the year (January, February etc)
@@ -456,7 +468,7 @@ class SimpleDate {
   function moyStr() {
     return date('F', $this->ticks);
   }
-  
+
   /**
   * return the (short) month of the year of the current date as a string (always in English)
   * @return string month of the year (Jan, Feb etc)
@@ -464,7 +476,7 @@ class SimpleDate {
   function moyShortStr() {
     return date('M', $this->ticks);
   }
-  
+
   /**
   * day of year (0..365)
   * returns 365 only in leap years
@@ -481,7 +493,7 @@ class SimpleDate {
   function year() {
     return date('Y', $this->ticks);
   }
-  
+
   /**
   * dump the datetimestring and ticks in a readable format
   * @param boolean $html (optional) use html line endings
@@ -492,7 +504,7 @@ class SimpleDate {
     $s .= ($html ? '<br />' : '') . "\n";
     return $s;
   }
-  
+
 } // class SimpleDate
 
 
@@ -519,9 +531,9 @@ class SimpleTime {
   */
   var $isValid = 1;
 
-  /** 
+  /**
   * Constructor for class
-  * 
+  *
   * Accepts the following for the initial time:
   * - HH:MM:SS
   * - HH:MM  (assumes :00 for seconds part)
@@ -538,7 +550,7 @@ class SimpleTime {
     }
   }
 
-  /** 
+  /**
   * Set time by a string
   */
   function setStr($s) {
@@ -556,8 +568,8 @@ class SimpleTime {
     }
     return $this->_timestring;
   }
-  
-  /** 
+
+  /**
   * Set time by seconds since midnight
   */
   function setTicks($t) {
@@ -580,16 +592,16 @@ class SimpleTime {
     $this->_timestring = '';
   }
 
-  /** 
+  /**
   * subtract seconds $this -  $other
-  * @param SimpleTime $other 
+  * @param SimpleTime $other
   * @return integer seconds difference
   */
   function subtract($other) {
     return $this->ticks - $other->ticks;
   }
 
-  /** 
+  /**
   * add seconds to this time
   * @param integer $s
   */
@@ -599,15 +611,15 @@ class SimpleTime {
 //     $this->_setStr();
   }
 
-  /** 
+  /**
   * return current seconds
   * @return integer current seconds since midnight
   */
   function seconds() {
     return $this->ticks;
   }
-  
-  /** 
+
+  /**
   * set this value to the earlier of $this and $other
   * @param SimpleTime $other
   */
@@ -615,7 +627,7 @@ class SimpleTime {
     $this->setTicks(min($other->ticks, $this->ticks));
   }
 
-  /** 
+  /**
   * set this value to the later of $this and $other
   * @param SimpleTime $other
   */
@@ -623,7 +635,7 @@ class SimpleTime {
     $this->setTicks(max($t->ticks, $this->ticks));
   }
 
-  /** 
+  /**
   * get a string representation that includes the number of seconds
   * @return string time value in HH:MM:SS format
   */
@@ -633,7 +645,7 @@ class SimpleTime {
 
   /**
   * round time down to the nearest $g time-granularity measure
-  * 
+  *
   * @see SimpleDate::floorTime()
   * @param SimpleTime $g time granularity
   */
@@ -641,10 +653,10 @@ class SimpleTime {
     $gt = $g->seconds();
     $this->setTicks(floor(($this->ticks+1)/$gt)*$gt);
   }
-  
+
   /**
   * round time up to the nearest $g time-granularity measure
-  * 
+  *
   * @see SimpleTime::floorTime()
   * @param SimpleTime $g time granularity
   */
@@ -652,14 +664,14 @@ class SimpleTime {
     $gt = $g->seconds();
     $this->setTicks(ceil(($this->ticks-1)/$gt)*$gt);
   }
-  
-  /** 
+
+  /**
   * Obtain hour, minute or seconds parts of the time
   *
   * return hour, minute or seconds parts of the time, emulating the date('H', $ticks) etc
   * functions, but not using them as they get too badly confused with timezones to be useful
   * in many situations
-  * 
+  *
   * @param char $s time part to obtain (valid parts: h, i, s for hours, mins, secs)
   * @return integer part of the time
   */
@@ -679,10 +691,10 @@ class SimpleTime {
     //we can't use this as we're not actually using the underlying date-time types here.
     //return date($s, $this->ticks);
   }
-  
-  /** 
+
+  /**
   * Add another time to this time
-  * 
+  *
   * @param SimpleTime $t time to add to this one
   */
   function addTime($t) {
@@ -690,7 +702,7 @@ class SimpleTime {
     $this->_timestring = '';
 //     $this->_setStr();
   }
-  
+
   /**
   * dump the timestring and ticks in a readable format
   * @param boolean $html (optional) use html line endings
@@ -704,33 +716,33 @@ class SimpleTime {
 } // class SimpleTime
 
 // We need to define these just so that the date formatting routines can always
-// return English names for the days and dates and the translation layer will 
+// return English names for the days and dates and the translation layer will
 // provide the correct translation. We can't just use setlocale() and strftime()
 // to do this because they only work if the locale is installed on the server and
 // this is frequently not the case (which is why we are using gettext emulation
 // to begin with!)
 
 if (false) { // never run this code, but define the constants so that msgformat finds them
-  $s = T_('Monday');     $s = T_('Mon'); 
+  $s = T_('Monday');     $s = T_('Mon');
   $s = T_('Tuesday');    $s = T_('Tue'); $s = T_('Tues');
-  $s = T_('Wednesday');  $s = T_('Wed'); 
-  $s = T_('Thursday');   $s = T_('Thu'); $s = T_('Thurs'); 
-  $s = T_('Friday');     $s = T_('Fri'); 
-  $s = T_('Saturday');   $s = T_('Sat'); 
-  $s = T_('Sunday');     $s = T_('Sun'); 
-  
-  $s = T_('January');    $s = T_('Jan'); 
-  $s = T_('February');   $s = T_('Feb'); 
-  $s = T_('March');      $s = T_('Mar'); 
-  $s = T_('April');      $s = T_('Apr'); 
+  $s = T_('Wednesday');  $s = T_('Wed');
+  $s = T_('Thursday');   $s = T_('Thu'); $s = T_('Thurs');
+  $s = T_('Friday');     $s = T_('Fri');
+  $s = T_('Saturday');   $s = T_('Sat');
+  $s = T_('Sunday');     $s = T_('Sun');
+
+  $s = T_('January');    $s = T_('Jan');
+  $s = T_('February');   $s = T_('Feb');
+  $s = T_('March');      $s = T_('Mar');
+  $s = T_('April');      $s = T_('Apr');
   $s = T_('May');
-  $s = T_('June');       $s = T_('Jun'); 
-  $s = T_('July');       $s = T_('Jul'); 
-  $s = T_('August');     $s = T_('Aug'); 
-  $s = T_('September');  $s = T_('Sep'); 
-  $s = T_('October');    $s = T_('Oct'); 
-  $s = T_('November');   $s = T_('Nov'); 
-  $s = T_('December');   $s = T_('Dec'); 
+  $s = T_('June');       $s = T_('Jun');
+  $s = T_('July');       $s = T_('Jul');
+  $s = T_('August');     $s = T_('Aug');
+  $s = T_('September');  $s = T_('Sep');
+  $s = T_('October');    $s = T_('Oct');
+  $s = T_('November');   $s = T_('Nov');
+  $s = T_('December');   $s = T_('Dec');
 }
 
-?> 
+?>
