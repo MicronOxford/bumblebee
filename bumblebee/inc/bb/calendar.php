@@ -61,6 +61,8 @@ class Calendar {
   var $numDays;
   /** @var integer     instrument id number for which the calendar is being displayed    */
   var $instrument;
+  /** @var array       list of instrument ids for which the calendar is being displayed    */
+  var $instrumentlist = null;
   /** @var boolean     sql errors are fatal   */
   var $fatal_sql = 1;
   /** @var BookingData list of bookings  */
@@ -83,6 +85,8 @@ class Calendar {
   var $isAdminView = 0;
   /** @var boolean    only show free/busy information and not the details of the bookings */
   var $freeBusyOnly = false;
+  /** @var boolean    show a popup layer with extra details on it on the page */
+  var $showDetails = true;
   /** @var integer    time after which the calendar should automatically reload itself (in milliseconds) */
   var $reloadInterval = 300000;  //    5 * 60 * 1000
 
@@ -94,12 +98,17 @@ class Calendar {
   *
   * @param SimpleDate $start    start time to display bookings from
   * @param SimpleDate $stop     stop time to display bookings until
-  * @param integer $instrument  what instrument number to display bookings for
+  * @param mixed      $instrument  what instrument number (or list of instrumets) to display bookings for
   */
   function Calendar($start, $stop, $instrument) {
     $this->start = $start;
     $this->stop  = $stop;
-    $this->instrument = $instrument;
+    if (is_array($instrument)) {
+      $this->instrument = $instrument[0];
+      if (count($instrument) > 1) $this->instrumentlist = $instrument;
+    } else {
+      $this->instrument = $instrument;
+    }
     $this->log('Creating calendar from '.$start->dateString().' to '.$stop->dateString(), 5);
     $this->_fill();
     $this->_insertVacancies();
@@ -140,15 +149,69 @@ class Calendar {
   * @access private
   */
   function _fill() {
-    $bookdata = new BookingData (
-          array(
-            'instrument' => $this->instrument,
-            'start'      => $this->start,
-            'stop'       => $this->stop
-               )
-                               );
-    $this->bookinglist = $bookdata->dataArray();
+    if ($this->instrumentlist !== null) {
+      $bookdata = $this->_getBookingData($this->instrumentlist);
+      $this->bookinglist = $this->_reduceList($bookdata->dataArray());
+    } else {
+      $bookdata = $this->_getBookingData($this->instrument);
+      $this->bookinglist = $bookdata->dataArray();
+    }
     //preDump($this->bookinglist);
+  }
+
+  function _getBookingData($instrument) {
+    $bookdata = new BookingData (
+        array(
+          'instrument' => $instrument,
+          'start'      => $this->start,
+          'stop'       => $this->stop
+              )
+      );
+    return $bookdata;
+  }
+
+  function _reduceList($list) {
+    $cleandata = array();
+    $numBookings = count($list);
+    if ($numBookings <= 1) return $list;
+
+    $cleandata[0] = $list[0];
+    $cleandata[0]->children[] = $list[0];
+    $now = clone($list[0]->start);
+    $idx=0;
+
+    for ($i=1; $i < $numBookings; $i++) {
+      $booking = $list[$i];
+      #print "<br/>".$booking->generateBookingTitle()."<br />";
+
+      // bookings are sorted by:
+      //   start (ascending) and then duration (descending)
+      if ($now->ticks == $booking->start->ticks) {
+        $cleandata[$idx]->children[] = $booking;
+        $this->log("ignored booking because starts match", 8);
+        continue;
+      }
+
+      if ($cleandata[$idx]->stop->ticks <= $booking->start->ticks) {
+        $this->log("copied booking across", 8);
+        $idx++;
+        $cleandata[$idx] = $booking;
+        $cleandata[$idx]->children[] = $booking;
+        $now = clone($booking->start);
+        continue;
+      }
+
+      if ($cleandata[$idx]->stop->ticks < $booking->stop->ticks) {
+        $this->log("adjusted previous booking because of overlap", 8);
+        $cleandata[$idx]->children[] = $booking;
+        $cleandata[$idx]->stop = $booking->stop;
+        continue;
+      }
+
+      $cleandata[$idx]->children[] = $booking;
+      $this->log("did nothing with this booking", 8);
+    }
+    return $cleandata;
   }
 
   /**
@@ -432,6 +495,10 @@ class Calendar {
       $time->addSecs($granularity);
     }
 
+    if (is_array($this->instrumentlist)) {
+      $this->freeBusyOnly = true;
+    }
+
     $today = new SimpleDate(time());
 
     $t = $this->_makeRefreshScript();
@@ -500,6 +567,7 @@ class Calendar {
           //echo "$class <br />\n";
           $t .= "\n\t".$b->display($class,
                                     call_user_func($this->bookhrefCallback, $b->booking->start),
+                                    $this->showDetails,
                                     $this->isAdminView)."\n";
           #$t .= '</td>';
         }
@@ -535,6 +603,10 @@ class Calendar {
       $time->addSecs($granularity);
     }
 
+    if (is_array($this->instrumentlist)) {
+      $this->freeBusyOnly = true;
+    }
+
     $today = new SimpleDate(time());
 
     $t = $this->_makeRefreshScript();
@@ -567,6 +639,7 @@ class Calendar {
         $class = $this->_getDayClass($today, $b->booking->start);
         $t .= "\n\t".$b->display($class,
                                     call_user_func($this->bookhrefCallback, $b->booking->start),
+                                    $this->showDetails,
                                     $this->isAdminView)."\n";
         #$t .= '</td>';
       }

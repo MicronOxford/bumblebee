@@ -122,4 +122,22 @@ class TimeSlot {
     return $this->_dayStop;
   }
 
+  /**
+  * construct a long description of the time slot for pop-ups
+  *
+  * @return string description
+  */
+  function generateLongDescription() {
+    return "";
+  }
+
+  /**
+  * work out the title (start and stop times) for the vacancy for display
+  *
+  * @return string title
+  */
+  function generateBookingTitle() {
+    return "";
+  }
+
 } //class TimeSlot

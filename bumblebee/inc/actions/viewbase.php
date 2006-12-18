@@ -108,11 +108,25 @@ class ActionViewBase extends ActionAction {
   * Display a heading on the page with the instrument name and location
   */
   function displayInstrumentHeader() {
+    $name = '';
+    $location = '';
+    if (is_array($this->instrument) && count($this->instrument) > 1) {
+      $name = T_('Combined instrument display');
+      $names = array();
+      foreach ($this->instrument as $i) {
+        $names[] = sprintf(T_('%s (%s)'), $this->row[$i]['longname'], $this->row[$i]['location']);
+      }
+      $location = join(', ', $names);
+    } else {
+      $name = $this->row['longname'];
+      $location = $this->row['location'];
+    }
     $t = '<h2 class="instrumentname">'
-        .xssqw($this->row['longname'])
+        .xssqw($name)
         .'</h2>'
-       .'<p class="instrumentlocation">'
-       .xssqw($this->row['location']).'</p>'."\n";
+        .'<p class="instrumentlocation">'
+        .xssqw($location)
+        .'</p>'."\n";
     $t .= $this->_instrumentNotes(false);
     return $t;
   }

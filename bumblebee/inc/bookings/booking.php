@@ -56,6 +56,10 @@ class Booking extends TimeSlot {
   var $masqusername;
   /** @var string     email address for user that booked the instrument */
   var $masqemail;
+  /** @var string     instrument name */
+  var $instrumentName;
+  /** @var string     instrument description */
+  var $instrumentDescription;
 
   /**
   *  Create a booking object
@@ -79,6 +83,8 @@ class Booking extends TimeSlot {
     $this->masquser = $arr['masquser'];
     $this->masqusername = $arr['masqusername'];
     $this->masqemail = $arr['masqemail'];
+    $this->instrumentName = $arr['instrumentname'];
+    $this->instrumentDescription = $arr['instrumentdescription'];
 
     #echo "Booking from ".$this->start->dateTimeString()." to ".$this->stop->dateTimeString()."<br />\n";
     $this->baseclass='booking';
@@ -149,7 +155,7 @@ class Booking extends TimeSlot {
     $t .= '<div class="calbookperson">'
          .'<a href="mailto:'.xssqw($this->useremail).'">'
          .xssqw($this->name).'</a></div>';
-    if ($conf->value('calendar', 'showphone') !== null && $conf->value('calendar', 'showphone')) {
+    if ($conf->value('calendar', 'showphone', false)) {
       $t .= '<div class="calphone">'
           .xssqw($this->userphone)
           .'</div>';
@@ -171,6 +177,36 @@ class Booking extends TimeSlot {
     $start = isset($this->displayStart) ? $this->displayStart : $this->start;
     $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
     return sprintf(T_('Booking from %s - %s'), $start->dateTimeString(), $stop->dateTimeString());
+  }
+
+  /**
+  * construct a long description of the time slot for pop-ups
+  *
+  * @return string description
+  */
+  function generateLongDescription($short=false) {
+    $s = '';
+    if (! $short && isset($this->children) && is_array($this->children)) {
+      $list = array();
+      foreach ($this->children as $b) {
+        $list[] = $b->generateLongDescription(true);
+      }
+      #print $s;
+      $s = '<table class="popup">'. join($list, "") .'</table>';
+    } elseif ($short) {
+      $instrument = $this->instrumentName;
+      $user = $this->name;
+      $start = isset($this->displayStart) ? $this->displayStart : $this->start;
+      $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
+      $starttime = $start->timeString();
+      $stoptime  = $stop->timeString();
+      $s = "<tr><td>$instrument</td><td>$user</td><td>$starttime</td><td>$stoptime</td></tr>";
+    } else {
+      $s = '<table class="popup">'. $this->displayInTable(2, false, false) .'</table>';
+    }
+
+    #print $s;
+    return $s;
   }
 
 } //class Booking

@@ -63,6 +63,9 @@ class ActionCalendar extends ActionViewBase {
 
 
     $this->row = quickSQLSelect('instruments', 'id', $this->instrument);
+    foreach ($this->instrument as $i) {
+      $this->row[$i] = quickSQLSelect('instruments', 'id', $i);
+    }
 
     if (isset($this->PD['isodate']) &&
                     ! isset($this->PD['bookid']) && ! isset($this->PD['startticks']) ) {
@@ -81,6 +84,11 @@ class ActionCalendar extends ActionViewBase {
       $then = new SimpleDate($this->PD['caloffset']);
       $now = new SimpleDate(time());
       $this->PD['caloffset'] = floor($then->dsDaysBetween($now));
+    }
+    if (strpos($this->instrument, ',')) {
+      $this->instrument = explode(',', $this->instrument);
+    } else {
+      $this->instrument = array($this->instrument);
     }
     echoData($this->PD, 0);
   }

@@ -84,13 +84,24 @@ class BookingCell {
   *
   * @param string  $class   class name to use for the cell
   * @param string  $href    base href to be used for making links to book/edit
+  * @param boolean $popup   provide a popup layer with extra details of the booking
   * @param boolean $isadmin provide an admin view of the data
   */
-  function display($class, $href, $isadmin=0) {
+  function display($class, $href, $popup=false, $isadmin=0) {
+    $this->_makePopupScript();
     $t = '';
     if ($this->isStart || $this->isStartDay) {
       $class .= ' '.$this->booking->baseclass;
+      $popupControl='';
+      if ($popup) {
+        $message = '<b>'.$this->booking->generateBookingTitle().'</b><br />'
+                  .$this->booking->generateLongDescription();
+        $message = rawurlencode($message);
+        $popupControl = 'onMouseOver="showCalendarPopup(\''.$message.'\');" '
+                       .'onMouseOut="hideCalendarPopup();" ';;
+      }
       $t .= '<td rowspan="'.$this->rows.'" class="'.$class.'" '
+           .$popupControl
            .'title="'.$this->booking->generateBookingTitle().'">';
       $this->booking->href = $href;
       $t .= $this->booking->displayInCell($isadmin);
@@ -101,4 +112,27 @@ class BookingCell {
     return $t;
   }
 
+  function _makePopupScript() {
+    static $onceOnly = false;
+
+    if ($onceOnly) return;
+    $onceOnly = true;
+
+    $width = 500;
+    $offsety = 50;
+    echo "
+      <script type='text/javascript'>
+      function showCalendarPopup(message) {
+        var realdata=unescape(message);
+        if (realdata.length > 0) return overlib(realdata, WIDTH, $width, OFFSETY, $offsety);
+      }
+      function hideCalendarPopup() {
+        return nd();
+      }
+      </script>
+    ";
+  }
+
+
 } //class BookingCell
+?>

@@ -86,7 +86,9 @@ class BookingData {
         .'masq.name AS masquser, '
         .'masq.username AS masqusername, '
         .'masq.email AS masqemail, '
-        .'projects.name AS project '
+        .'projects.name AS project, '
+        .'instruments.name AS instrumentname, '
+        .'instruments.longname AS instrumentdescription '
         .'FROM '.$TABLEPREFIX.'bookings AS bookings '
         .'LEFT JOIN '.$TABLEPREFIX.'users AS users ON '
             .'bookings.userid=users.id '
@@ -94,15 +96,26 @@ class BookingData {
             .'bookings.bookedby=masq.id '
         .'LEFT JOIN '.$TABLEPREFIX.'projects AS projects ON '
             .'bookings.projectid=projects.id '
+        .'LEFT JOIN '.$TABLEPREFIX.'instruments AS instruments ON '
+            .'bookings.instrument=instruments.id '
         .'WHERE '.($this->includeDeleted ? '' : 'bookings.deleted<>1 AND ');
     if ($this->id) {
       $q .= 'bookings.id='.qw($this->id);
     } else {
-      $q .= 'bookings.userid<>0 AND bookings.instrument='.qw($this->instrument).' '
-            .'HAVING (bookwhen <= '.qw($this->start).' AND stoptime > '.qw($this->start).') '
+      $q .= 'bookings.userid<>0 AND ';
+      if (is_array($this->instrument)) {
+        $q .= 'bookings.instrument IN ('.join(array_qw($this->instrument),',').') ';
+      } else {
+        $q .= 'bookings.instrument='.qw($this->instrument).' ';
+      }
+
+      $q .= 'HAVING (bookwhen <= '.qw($this->start).' AND stoptime > '.qw($this->start).') '
             .'OR (bookwhen < '.qw($this->stop).' AND stoptime >= '.qw($this->stop).') '
             .'OR (bookwhen >= '.qw($this->start).' AND stoptime <= '.qw($this->stop).')'
            .' ORDER BY bookwhen';
+      if (is_array($this->instrument)) {
+        $q .= ', duration DESC';
+      }
     }
 
     if ($this->id) {
