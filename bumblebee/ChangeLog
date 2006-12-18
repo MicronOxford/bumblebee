@@ -14,6 +14,7 @@
 	* feature: allow currency symbols to be put into fields without
 	  raising an error (closes #1583138)
 	* feature: don't lose form data if the user's session times out
+	* feature: show multiple instruments on the one calendar
 	* bugfix: enforce future booking restrictions when making
 	  bookings (closes #1567290)
 	* bugfix: dropdown list no longer overlaps existing bookings
