@@ -422,7 +422,7 @@ tr.tableHeader {
   border-bottom: 1px solid black;
   background-color: #000066;
   color: #ffffff;
-  size: 105%;
+  font-size: 105%;
 }
 
 .tableHeader th {
@@ -481,6 +481,23 @@ input.radioitem {
 
 .calendarcomment {
    padding-top: 2em;
+}
+
+table.popup {
+  padding: 1em;
+  border-collapse: collapse;
+/*  border: 1px solid #3333cc;*/
+  font-size: 90%;
+  width: 100%;
+}
+
+.popup tr {
+  margin: 0.2em;
+}
+
+.popup td {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
 }
 
 #masquerade {
