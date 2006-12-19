@@ -179,6 +179,7 @@ class DBRow extends DBO {
     }
     $this->log('syncing: changed='.$this->changed.' valid='.$this->isValid);
     if ($this->use2StepSync) {
+      $this->log('starting two-step sync');
       $this->_twoStageSync();
     }
     $sql_result = STATUS_NOOP;

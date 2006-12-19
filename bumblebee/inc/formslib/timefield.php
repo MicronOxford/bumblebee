@@ -208,6 +208,7 @@ class TimeField extends Field {
     while ($this->extendDropDown && count($ends) < $this->maxSlotsDropDown && is_object($nextSlot)) {
       #echo "Looking for next start. ";
       #echo $nextStart->dateTimeString()." ";
+      #echo "Limit is ". $this->maxDateDropDown->dateTimeString()."<br />";
       $nextSlot = $this->list->findSlotByStart($nextStart);
       if (! is_object($nextSlot)) {
         // this should never really happen....

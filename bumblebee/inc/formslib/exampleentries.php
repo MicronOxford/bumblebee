@@ -70,9 +70,9 @@ class ExampleEntries {
   */
   function fill($id) {
     #echo "Filling for $id";
-    $safeid = qw($id);
+    $ids = join(',', array_qw(explode(',', $id)));
     $this->list = new DBChoiceList($this->table, $this->columnreturn,
-                             "{$this->columnmatch}=$safeid",
+                             "{$this->columnmatch} IN ($ids)",
                              $this->order,
                              $this->columnmatch, $this->limit);
   }

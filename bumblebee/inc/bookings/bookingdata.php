@@ -157,7 +157,7 @@ class BookingData {
 class NextBooking {
   /** @var string   start of the query (SQL date-time string)  */
   var $start;
-  /** @var integer  instrument id number of interest  */
+  /** @var mixed    instrument id number or list of ids of interest  */
   var $instrument;
   /** @var SimpleDate  start of the next booking (null if none) */
   var $booking = null;
@@ -170,7 +170,7 @@ class NextBooking {
   * Obtain the booking listing within defined parameters
   *
   * @param SimpleDate  $start       start date for searching for the next booking
-  * @param integer     $instrument  id for the instrument to check
+  * @param mixed       $instrument  id for the instrument to check or list of ids
   */
   function NextBooking($start, $instrument) {
     $s = new SimpleDate($start);
@@ -189,8 +189,13 @@ class NextBooking {
     $q = 'SELECT bookings.id AS bookid, '
         .'bookwhen '
         .'FROM '.$TABLEPREFIX.'bookings AS bookings '
-        .'WHERE bookings.userid<>0 AND bookings.instrument='.qw($this->instrument).' '
-        .'AND bookwhen > '.qw($this->start).' '
+        .'WHERE bookings.userid<>0 AND ';
+    if (is_array($this->instrument)) {
+      $q .= 'bookings.instrument IN ('.join(array_qw($this->instrument),',').') ';
+    } else {
+      $q .= 'bookings.instrument='.qw($this->instrument).' ';
+    }
+    $q .= 'AND bookwhen > '.qw($this->start).' '
         .'ORDER BY bookwhen '
         .'LIMIT 1';
 

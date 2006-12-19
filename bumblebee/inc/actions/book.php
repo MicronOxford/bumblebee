@@ -81,6 +81,9 @@ class ActionBook extends ActionViewBase {
     }
 
     $this->row = quickSQLSelect('instruments', 'id', $this->instrument);
+    foreach ($this->instrument as $i) {
+      $this->row[$i] = quickSQLSelect('instruments', 'id', $i);
+    }
 
     if (isset($this->PD['delete']) && isset($this->PD['bookid'])) {
       $this->deleteBooking();
@@ -102,6 +105,16 @@ class ActionBook extends ActionViewBase {
       trigger_error($err, E_USER_WARNING);
       return;
     }
+  }
+
+  function mungeInputData() {
+    parent::mungeInputData();
+    if (strpos($this->instrument, ',')) {
+      $this->instrument = explode(',', $this->instrument);
+    } else {
+      $this->instrument = array($this->instrument);
+    }
+    echoData($this->PD, 0);
   }
 
   /**

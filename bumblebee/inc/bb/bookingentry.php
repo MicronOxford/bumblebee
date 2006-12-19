@@ -52,7 +52,7 @@ class BookingEntry extends DBRow {
   var $minunbook;
   /** @var boolean          object not fully constructed (using short constructor for deleting booking only  */
   var $isShort = false;
-  /** @var integer          instrument id number */
+  /** @var array            list of instrument id numbers */
   var $instrumentid;
 
   /**
@@ -60,7 +60,7 @@ class BookingEntry extends DBRow {
   *
   * @param integer       $id           booking id number (existing number or -1 for new)
   * @param BumblebeeAuth $auth         authorisation object
-  * @param integer       $instrumentid instrument id of instrument to be booked
+  * @param array         $instrumentid list of instrument id of instruments to be booked
   * @param integer       $minunbook    minimum notice to be given for unbooking (optional)
   * @param string        $ip           IP address of person making booking (for recording) (optional)
   * @param SimpleDate    $start        when the booking should start (optional)
@@ -87,7 +87,7 @@ class BookingEntry extends DBRow {
     $f = new ReferenceField('instrument', T_('Instrument'));
     $f->extraInfo('instruments', 'id', 'name');
     $f->duplicateName = 'instrid';
-    $f->defaultValue = $instrumentid;
+    $f->defaultValue = join(',', $instrumentid);
     $this->addElement($f);
     $f = new TextField('startticks');
     $f->hidden = 1;
@@ -260,6 +260,18 @@ class BookingEntry extends DBRow {
   * - update the representation of times
   */
   function sync() {
+    if (is_array($this->instrumentid) && count($this->instrumentid) > 1) {
+      $status = STATUS_ERR;
+      foreach ($this->children as $c) {
+        $status = $c->sync();
+        if ($status == STATUS_ERR) {
+          $this->errorMessage .= $c->errorMessage;
+          return $status;
+        }
+      }
+      return $status;
+    }
+
     $status = parent::sync();
     if ($status & STATUS_OK) {
       $this->_sendBookingEmail();
@@ -332,6 +344,7 @@ class BookingEntry extends DBRow {
     if (! $instrument['emailonbooking']) {
       return;
     }
+
     $emails = array();
     foreach(preg_split('/,\s*/', $instrument['supervisors']) as $username) {
       $user = quickSQLSelect('users', 'username', $username);
@@ -434,6 +447,23 @@ class BookingEntry extends DBRow {
   **/
   function _checkIsFree() {
     global $TABLEPREFIX;
+
+    if (is_array($this->instrumentid) && count($this->instrumentid) > 1) {
+      $this->children = array();
+      foreach ($this->instrumentid as $instr) {
+        $clone = clone($this);
+        $clone->instrumentid = $instr;
+        $clone->fields['instrument']->value = $instr;
+        $status = $clone->_checkIsFree();
+        $this->children[] = $clone;
+        if (! $status) {
+          $this->errorMessage .= $clone->errorMessage;
+          return $status;
+        }
+      }
+      return $status;
+    }
+
     if (! $this->changed) return 1;
     #preDump($this);
     $doubleBook = 0;
