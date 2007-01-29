@@ -1,4 +1,4 @@
-2006-10-XX Stuart Prescott <bumblebee@nanonanonano.net>
+2007-02-XX Stuart Prescott <bumblebee@nanonanonano.net>
 	* feature: anonymous browsing mode (disabled by default)
 	* feature: internals now use new permissions model
 	* feature: interface for editing permissions
@@ -27,10 +27,11 @@
 	* bugfix: suppress blank pages in PDF output (closes #1595875)
 	* bugfix: correct calcs when not using discount billing
 	  (closes #1577762)
+	* bugfix: don't record consumable usage if no project is set
 	* janitorial: clean up some PHP4isms (function prototypes same in
 	  subclasses; TZ set)
 
-2006-10-XX Seth Sims <sims1001@alltel.net>
+2007-02-XX Seth Sims <sims1001@alltel.net>
 	* feature: double entry password model included
 	* feature: make entire row in lists a link
 	* feature: make DROP commands in the installer optional
@@ -87,7 +88,7 @@
 	* use php-gettext to support locales
 	* gettext-ised for i18n
 
-2006-10-XX Stuart Prescott <bumblebee@nanonanonano.net>
+2007-02-XX Stuart Prescott <bumblebee@nanonanonano.net>
 	* bugfix: use UNION ALL not UNION to join consumables and
 	  instrument usage data in billing reports (closes #1577754)
 	* bugfix: exclude projectid==0 from export data functions
