@@ -64,15 +64,10 @@ $pageheader = $action->title;
 $pageBaseRef = makeURL($action->_verb);
 /** display the HTML header section */
 include 'theme/pageheader.php';
+/** popup information control */
+include 'inc/popups.php';
 /** display the start of the html content */
 include 'theme/contentheader.php';
-
-// Include the overlib javascript library: (c) Erik Bosrup
-// http://www.bosrup.com/web/overlib/
-echo '<div id="overDiv" style="position:absolute; visibility:hide;z-index:1000;"></div>';
-echo '<script type="text/javascript" src="'
-              .$conf->value('display', 'overlib_location', 'system-inc/overlib')
-              .'/overlib.js"></script>';
 
 echo '<div id="bumblebeecontent">';
 echo formStart(makeURL($action->nextaction));

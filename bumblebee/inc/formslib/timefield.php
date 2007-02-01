@@ -285,12 +285,10 @@ class TimeField extends Field {
       <input type='hidden' id='{$this->namebase}{$this->name}-switch' name='{$this->namebase}{$this->name}-switch' value='' />
       <script type='text/javascript'>
         function $func() {
-          var id1 = document.getElementById('$id1');
-          id1.style.display = 'none';
+          hideDiv('$id1');
           var switchfield = document.getElementById('{$this->namebase}{$this->name}-switch');
           switchfield.value = 'varfield';
-          var id2 = document.getElementById('$id2');
-          id2.style.display = 'inline';
+          showDiv('$id2');
         }
       </script>
       <a href='javascript:$func();'>".T_('edit times')."</a>

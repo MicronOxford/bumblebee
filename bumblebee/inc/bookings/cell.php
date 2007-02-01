@@ -123,11 +123,10 @@ class BookingCell {
     echo "
       <script type='text/javascript'>
       function showCalendarPopup(message) {
-        var realdata=unescape(message);
-        if (realdata.length > 0) return overlib(realdata, WIDTH, $width, OFFSETY, $offsety);
+        showPopup(message, $width, $offsety);
       }
       function hideCalendarPopup() {
-        return nd();
+        return hidePopup();
       }
       </script>
     ";
