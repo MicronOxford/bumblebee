@@ -20,6 +20,8 @@ require_once 'inc/bb/configreader.php';
 
 /** date maniuplation objects */
 require_once 'inc/date.php';
+/** URL manipulation/generation functions */
+require_once 'inc/menu.php';
 /** parent object */
 require_once 'inc/actions/actionaction.php';
 
@@ -47,6 +49,10 @@ class ActionViewBase extends ActionAction {
   function ActionViewBase($auth, $PDATA) {
     parent::ActionAction($auth, $PDATA);
     $this->mungeInputData();
+  }
+
+  function mungeInputData() {
+    parent::mungeInputData();
     $this->instrument = issetSet($this->PD, 'instrid',0);
   }
 

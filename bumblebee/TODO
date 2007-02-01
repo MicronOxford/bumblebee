@@ -4,7 +4,6 @@ $Id$
 ----------------------
 Base system features:
   * [ 1583205 ] Mass setting permissions
-  * [ 1578376 ] Groups of instruments on the calendar view
   * [ 1574626 ] list view of bookings
 
 Installer:
@@ -46,6 +45,7 @@ Features:
   * limit certain users to specific ranges of time on a particular instrument (Gordon Holtslander)
   * adminconfirm bookings (display on calendar or not?)
   * recurring scheduling
+  * import a set of users, allocate them to a single project and a list of instruments (from names or id numbers) from either a CSV of tab-delim file
 
 User interface:
   * mark some pages as cachable so that back button doesn't lose user input; provide reset button

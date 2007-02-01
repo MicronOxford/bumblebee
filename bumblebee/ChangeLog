@@ -15,6 +15,7 @@
 	  raising an error (closes #1583138)
 	* feature: don't lose form data if the user's session times out
 	* feature: show multiple instruments on the one calendar
+	  (closes #1578376)
 	* bugfix: enforce future booking restrictions when making
 	  bookings (closes #1567290)
 	* bugfix: dropdown list no longer overlaps existing bookings

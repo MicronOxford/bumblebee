@@ -24,6 +24,8 @@ require_once 'inc/bb/calendar.php';
 require_once 'inc/date.php';
 /** parent object */
 require_once 'inc/actions/viewbase.php';
+/** Data reflector object */
+require_once 'inc/formslib/datareflector.php';
 
 /**
 * View a bookings calendar and make bookings
@@ -43,19 +45,18 @@ class ActionCalendar extends ActionViewBase {
   */
   function ActionCalendar($auth, $PDATA) {
     parent::ActionViewBase($auth, $PDATA);
-    $this->mungeInputData();
-  }
+    #$this->mungeInputData();
 
-  function go() {
+    // catch bad arguments and send them back to the front page straight away
     if (! isset($this->PD['instrid'])
           || $this->PD['instrid'] < 1
           || $this->PD['instrid'] == '') {
-      $err = 'Invalid action specification in actions/calendar.php::go(): no instrument specified: received "' . xssqw($this->PD['instrid']) .'"';
-      $this->log($err);
-      trigger_error($err, E_USER_WARNING);
-      return;
+      header("Location: ". makeURL());
+      exit;
     }
+  }
 
+  function go() {
     if (! $this->auth->permitted(BBROLE_VIEW_CALENDAR, $this->instrument)) {
       $this->_viewCalendarForbidden();
       return;
@@ -67,6 +68,7 @@ class ActionCalendar extends ActionViewBase {
       $this->row[$i] = quickSQLSelect('instruments', 'id', $i);
     }
 
+    echo $this->_makeCalendarConfigDialogue();
     if (isset($this->PD['isodate']) &&
                     ! isset($this->PD['bookid']) && ! isset($this->PD['startticks']) ) {
       $this->instrumentDay();
@@ -89,6 +91,28 @@ class ActionCalendar extends ActionViewBase {
       $this->instrument = explode(',', $this->instrument);
     } else {
       $this->instrument = array($this->instrument);
+    }
+    if (isset($this->PD['configureview'])) {
+      $this->instrument = array($this->instrument[0]);
+      foreach ($this->PD as $key => $value) {
+        if (preg_match('@^Instrument-(\d+)-include$@', $key, $matches)) {
+          $id = $matches[1];
+          if ($value && isset($this->PD["Instrument-$id-instrument"])) {
+            $this->instrument[] = $this->PD["Instrument-$id-instrument"];
+          }
+        }
+        $data = array();
+      }
+
+      /// FIXME: forcing a reload with a Location: header seems ugly and possibly fragile.
+      // force a reload of the page, converting from a POST to a GET so that
+      // later refreshes of the calendar can happen without generating a warning to the user
+      if (isset($this->PD['caloffset'])) {
+        $d['caloffset'] = $this->PD['caloffset'];
+      }
+      $d['instrid'] = join($this->instrument, ',');
+      header("Location: ". makeURL('calendar', $d, false));
+      exit;
     }
     echoData($this->PD, 0);
   }
@@ -264,6 +288,66 @@ class ActionCalendar extends ActionViewBase {
     } else {
       return '';
     }
+  }
+
+  function _makeCalendarConfigDialogue() {
+    $t = '';
+    $reflector = new DataReflector();
+    $reflector->excludeLogin();
+    $reflector->excludeRegex('@^Instrument-(\d+)-.+@');
+    $t .= $reflector->display($this->PD);
+
+    $div = 'bumblebeeCalendarControls';
+    $func = $div.'_toggler';
+    $t .=  "
+      <script type='text/javascript'>
+        function $func(show) {
+          if (show) {
+            hideDiv('toggle$div');
+            showDiv('$div');
+          } else {
+            hideDiv('$div');
+            showDiv('toggle$div');
+          }
+        }
+      </script>";
+
+    $t .= '<div id="bumblebeeCalendarControls" style="display: none;">';
+
+    $t .= "<div style='text-align: right'><a href='javascript:$func(false)'>".T_('close').'</a></div>';
+
+    $t .= '<fieldset>'
+          .'<legend>'.T_('Select Instruments').'</legend>'
+          . $this->_makeInstrumentAddDialogue()
+          .'</fieldset>'
+          . '<input type="submit" name="configureview" value="'.T_('Apply').'" />';
+
+    $t .= '</div>';
+
+    $t .= '<div id="bumblebeeCalendarControlsSwitch">';
+    $t .= "<div id='toggle$div'>"
+          ."<a href='javascript:$func(true)'>".T_('Calendar controls').'</a>'
+          ."</div>";
+    $t .= '</div>';
+    return $t;
+  }
+
+  function _makeInstrumentAddDialogue() {
+    $t = '';
+    $selectRow = new nonDBRow('instrumentselect', NULL,
+              T_('Select which instruments you want to add to this calendar'));
+    $select = new CheckBoxTableList(T_('Instrument'), T_('Select which instruments to add'));
+    $hidden = new TextField('instrument');
+    $select->addFollowHidden($hidden);
+    $include = new CheckBox('include', T_('Show'));
+    $select->addCheckBox($include);
+    $select->connectDB('instruments', array('id', 'name'),
+                   "id != {$this->instrument[0]}");
+    $select->setFormat('id', '%s', array('name'));
+    $select->valueList = $this->instrument;
+    $selectRow->addElement($select);
+
+    return $selectRow->displayInTable(4);
   }
 
   /**

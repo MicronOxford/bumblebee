@@ -15,7 +15,7 @@ body {
 }
 
 #headerLeft {
-  height: 75px; 
+  height: 75px;
   width: 90px;
 }
 
@@ -54,4 +54,18 @@ body {
 
 #bumblebeecontent {
   margin-left: 12em;
+}
+
+#bumblebeeCalendarControls {
+  position: absolute;
+  top: 6em;
+  right: 6em;
+  z-index: 1000;
+  border: 1px solid #333399;
+  background: white;
+  padding: 1em;
+}
+
+#bumblebeeCalendarControlsSwitch {
+  float: right;
 }
