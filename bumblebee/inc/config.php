@@ -43,12 +43,6 @@ if ($conf->value('main', 'ExtraIncludePath', false)) {
   set_include_path($REBASE_INSTALL.($conf->value('main','ExtraIncludePath')).PATH_SEPARATOR.get_include_path());
 }
 
-if ($conf->value('error_handling', 'UseDBug', false) && ! $NON_FATAL_CONFIG) {
-  // include the dBug pretty printer for error and debugging dumps
-  // http://dbug.ospinto.com/
-  include_once 'dBug.php';
-}
-
 if (! $NON_FATAL_CONFIG) {
   /** load the language pack */
   require_once 'i18n.php';
