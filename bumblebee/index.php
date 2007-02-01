@@ -64,10 +64,10 @@ $pageheader = $action->title;
 $pageBaseRef = makeURL($action->_verb);
 /** display the HTML header section */
 include 'theme/pageheader.php';
-/** popup information control */
-include 'inc/popups.php';
 /** display the start of the html content */
 include 'theme/contentheader.php';
+/** popup information control */
+include 'inc/popups.php';
 
 echo '<div id="bumblebeecontent">';
 echo formStart(makeURL($action->nextaction));
