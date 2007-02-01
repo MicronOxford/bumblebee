@@ -57,28 +57,26 @@ class AnchorTableList extends AnchorList {
     var $sortbyKey;
 
     /**
-     *  Create a new AnchorTableList
-     *
-     * @param string $name   the name of the field (db name, and html field name
-     * @param string $description  used in the html title of the list
-     * @param integer $numcols (optional) number of columns in the table
-     */
+    *  Create a new AnchorTableList
+    *
+    * @param string $name   the name of the field (db name, and html field name
+    * @param string $description  used in the html title of the list
+    * @param integer $numcols (optional) number of columns in the table
+    */
     function AnchorTableList($name, $description='', $numcols=2) {
-
-        $this->AnchorList($name, $description);
-        $this->numcols = $numcols;
-        $this->sortbyKey = $this->name.'_sortby';
-
+      $this->AnchorList($name, $description);
+      $this->numcols = $numcols;
+      $this->sortbyKey = $this->name.'_sortby';
     } //end function AnchorTableList
 
     /**
-     *  Accessor method to set the table column headings
-     *
-     * @param array   new headings to use for the table
-     */
+    *  Accessor method to set the table column headings
+    *
+    * @param array   new headings to use for the table
+    */
     function setTableHeadings($headings) {
 
-        $this->tableHeadings = $headings;
+      $this->tableHeadings = $headings;
 
     } //end function setTableHeadings
 
@@ -91,102 +89,100 @@ class AnchorTableList extends AnchorList {
      *
      */
     function sortByHeadings($sort, $data, $heading = 'name') {
-
-        $this->useSortByHeadings = $sort;
-        $this->data = $data;
-        $this->defaultSortByHeading = $heading;
-
+      $this->useSortByHeadings = $sort;
+      $this->data = $data;
+      $this->defaultSortByHeading = $heading;
     } //end function sortByHeadings
 
     function format($data) {
-        //preDump($this);
-        $aclass  = (isset($this->aclass) ? " class='$this->aclass'" : '');
-        $trclass  = (isset($this->trclass) ? " class='$this->trclass'" : '');
-        $tdlclass  = (isset($this->tdlclass) ? " class='$this->tdlclass'" : '');
-        $tdrclass  = (isset($this->tdrclass) ? " class='$this->tdrclass'" : '');
-        $linkformat = "<a href='".str_replace('__id__', $data[$this->formatid], $this->hrefbase)."'$aclass>"
-            ."%s</a>";
-        $t  = "<tr $trclass>"
-            ."<td $tdlclass>";
-        $t .= sprintf($linkformat, $this->formatter[0]->format($data));
-        $t .= "</td>\n";
+      //preDump($this);
+      $aclass  = (isset($this->aclass) ? " class='$this->aclass'" : '');
+      $trclass  = (isset($this->trclass) ? " class='$this->trclass'" : '');
+      $tdlclass  = (isset($this->tdlclass) ? " class='$this->tdlclass'" : '');
+      $tdrclass  = (isset($this->tdrclass) ? " class='$this->tdrclass'" : '');
+      $linkformat = "<a href='".str_replace('__id__', $data[$this->formatid], $this->hrefbase)."'$aclass>"
+          ."%s</a>";
+      $t  = "<tr $trclass>"
+          ."<td $tdlclass>";
+      $t .= sprintf($linkformat, $this->formatter[0]->format($data));
+      $t .= "</td>\n";
 
-        for ($i=2; $i<=$this->numcols; $i++) {
+      for ($i=2; $i<=$this->numcols; $i++) {
 
-            $t .= "<td $tdrclass>";
+        $t .= "<td $tdrclass>";
 
-            if ($this->linkAll) {
-                $t .= sprintf($linkformat, $this->formatter[$i-1]->format($data));
-            } else {
-                $t .= $this->formatter[$i-1]->format($data);
-            } //end if-else
+        if ($this->linkAll) {
+            $t .= sprintf($linkformat, $this->formatter[$i-1]->format($data));
+        } else {
+            $t .= $this->formatter[$i-1]->format($data);
+        } //end if-else
 
-            $t .= "</td>";
-        } //end for
+          $t .= "</td>";
+      } //end for
 
-        $t .= "</tr>\n";
-        return $t;
+      $t .= "</tr>\n";
+      return $t;
     } //end function format
 
     function display() {
-        $tableclass = (isset($this->tableclass) ? " class='$this->tableclass'" : '');
-        $t  = "<table title='$this->description' $tableclass>\n";
+      $tableclass = (isset($this->tableclass) ? " class='$this->tableclass'" : '');
+      $t  = "<table title='$this->description' $tableclass>\n";
 
-        if (isset($this->tableHeadings)) {
+      if (isset($this->tableHeadings)) {
 
-            $t .= "<tr class='{$this->headerRowClass}'>";
+        $t .= "<tr class='{$this->headerRowClass}'>";
 
-            if(! $this->useSortByHeadings) {
-                foreach ($this->tableHeadings as $heading) {
+        if(! $this->useSortByHeadings) {
+          foreach ($this->tableHeadings as $heading) {
 
-                    if(type_is_a($heading, 'bbString')) {
-                        $t .='<th>'.$heading->getExternalRep().'</th>';
-
-                    } else {
-                        $t .= "<th>$heading</th>";
-                    } //end if-else
-                } //end foreach
+            if(type_is_a($heading, 'bbString')) {
+                $t .='<th>'.$heading->getExternalRep().'</th>';
 
             } else {
-
-                $aclass = (isset($this->aclass) ? " class='{$this->aclass}'" : '');
-
-                foreach($this->tableHeadings as $heading) {
-                  $text   = type_is_a($heading, 'bbString')
-                                              ? $heading->getExternalRep() : $heading;
-                  $sortby = type_is_a($heading, 'bbString')
-                                              ? $heading->getInternalRep() : $heading;
-                  $href = str_replace('__sortby__', $sortby, $this->sortByHref);
-
-                  $t .=  "<th><a href='".$href."' $aclass title='".T_('Sort by this column')."'>".$text.'</a></th>';
-                } //end foreach
-
+                $t .= "<th>$heading</th>";
             } //end if-else
+          } //end foreach
 
-            $t .= "</tr>\n";
-        } //end if
+        } else {
 
-        if (is_array($this->list->choicelist)) {
-            foreach ($this->list->choicelist as $v) {
-                $t .= $this->format($v);
-            } //end foreach
-        } //end if
+          $aclass = (isset($this->aclass) ? " class='{$this->aclass}'" : '');
 
-        $t .= "</table>\n";
-        return $t;
+          foreach($this->tableHeadings as $heading) {
+            $text   = type_is_a($heading, 'bbString')
+                                        ? $heading->getExternalRep() : $heading;
+            $sortby = type_is_a($heading, 'bbString')
+                                        ? $heading->getInternalRep() : $heading;
+            $href = str_replace('__sortby__', $sortby, $this->sortByHref);
+
+            $t .=  "<th><a href='".$href."' $aclass title='".T_('Sort by this column')."'>".$text.'</a></th>';
+          } //end foreach
+
+        } //end if-else
+
+        $t .= "</tr>\n";
+      } //end if
+
+      if (is_array($this->list->choicelist)) {
+        foreach ($this->list->choicelist as $v) {
+          $t .= $this->format($v);
+        } //end foreach
+      } //end if
+
+      $t .= "</table>\n";
+      return $t;
     } //end function display()
 
     /**
-     *  overloading of ChoiceList's connectDB to allow for remembering the
-     *     sortby column
-     */
+    *  overloading of ChoiceList's connectDB to allow for remembering the
+    *     sortby column
+    */
     function connectDB($table, $fields = '', $restriction = '', $order = 'name',
             $idfield = 'id', $limit = '', $join = '', $distinct = false) {
 
-        if ($this->useSortByHeadings) {
-            $order = qw(issetSet($this->data, $this->sortbyKey, $this->defaultSortByHeading));
-        }
-        parent::connectDB($table, $fields, $restriction, $order, $idfield, $limit,
+      if ($this->useSortByHeadings) {
+        $order = q(issetSet($this->data, $this->sortbyKey, $this->defaultSortByHeading));
+      }
+      parent::connectDB($table, $fields, $restriction, $order, $idfield, $limit,
                     $join, $distinct);
 
     } //end function connectDB

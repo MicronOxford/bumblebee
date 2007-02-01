@@ -78,6 +78,16 @@ function is_alphabetic($var) {
 /**
 * Quote data for passing to the database, enclosing data in quotes etc
 *
+* @param string $v string to be quoted
+* @return string '$v' with slashes added as appropriate.
+*/
+function qw($v) {
+  return "'".q($v)."'";
+}
+
+/**
+* Quote data for passing to the database
+*
 * Fixes programatically generated data so that it is correctly escaped. Deals
 * with magic_quotes_gpc to remove slashes so that the input is sensible and
 * doesn't end up accummulating escape characters with multiple submissions.
@@ -91,10 +101,10 @@ function is_alphabetic($var) {
 * injection vector rather than closing it.
 * For more info see:          http://shiflett.org/archive/184
 *
-* @param string $v string to be quoted
-* @return string '$v' with slashes added as appropriate.
+* @param string     $v string to be quoted
+* @return string    $v with slashes added as appropriate.
 */
-function qw($v) {
+function q($v) {
   if (! isUTF8($v)) {
     $orig = $v;
     // badness is here. this means that the user has tried to change the input
@@ -127,7 +137,7 @@ function qw($v) {
     // just add in the slashes
     $v = addslashes($v);
   }
-  return "'".$v."'";
+  return $v;
 }
 
 /**
