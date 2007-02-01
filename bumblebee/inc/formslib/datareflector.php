@@ -68,19 +68,32 @@ class DataReflector {
   /**
   *  Exclude these fields from the reflection
   *
-  * @param array $arr list of fields to exclude
+  * @param mixed  $arr single field or list of fields to exclude
   */
   function exclude($arr) {
-    $this->excludes = $arr;
+    if (! is_array($arr)) {
+      $this->excludes[] = $arr;
+    } else {
+      $this->excludes = array_merge($this->excludes, $arr);
+    }
   }
 
   /**
   *  Exclude the fields that match these regexps from the reflection
   *
-  * @param array $arr list of regexps to use for exclusion
+  * @param mixed   $arr single regexp or list of regexps to use for exclusion
   */
   function excludeRegEx($arr) {
-    $this->excludesRegEx = $arr;
+    if (! is_array($arr)) {
+      $this->excludesRegEx[] = $arr;
+    } else {
+      $this->excludesRegEx = array_merge($this->excludesRegEx, $arr);
+    }
+  }
+
+  function excludeLogin() {
+    $this->excludes[] = 'username';
+    $this->excludes[] = 'pass';
   }
 
 } // class DataReflector
