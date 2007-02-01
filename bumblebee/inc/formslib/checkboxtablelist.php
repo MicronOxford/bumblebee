@@ -56,7 +56,8 @@ class CheckBoxTableList extends ChoiceList {
   var $includeSelectAll = false;
   /** @var array of arary of checkboxes   for individual customisation of boxes before display */
   var $boxMatrix = NULL;
-
+  /** @var array    list of values thar are checked */
+  var $valueList = array();
   var $currentNumCols;
   var $currentRow;
 
@@ -150,7 +151,7 @@ class CheckBoxTableList extends ChoiceList {
     $t .= $fh->hidden() . $h->hidden();
     $t .= "</td>\n";
     for ($i=1; $i<=$this->numExtraInfoCols; $i++) {
-      $t .= "<td $tdrclass>"
+      $t .= "<td $tdlclass>"
            .$this->formatter[$i]->format($data);
       $t .= "</td>";
     }
@@ -159,8 +160,11 @@ class CheckBoxTableList extends ChoiceList {
       if ($this->boxMatrix !== NULL) {
         $cb = $this->boxMatrix[$j][$i];
       } else {
-        $cb = $this->checkboxes[$i];
+        $cb = clone($this->checkboxes[$i]);
         $cb->namebase = $namebase;
+        if (in_array($fh->value, $this->valueList)) {
+          $cb->value = 1;
+        }
       }
       $t .= "<td $tdrclass>".$cb->selectable().'</td>';
     }
