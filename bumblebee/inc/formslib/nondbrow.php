@@ -223,7 +223,8 @@ class nonDBRow {
   * @return string  html table
   */
   function displayInTable($numCols=2, $extraClass='') {
-    $t  = '<h3>'.$this->longname.'</h3>';
+    $t = '';
+    if ($this->longname !== NULL) $t  = '<h3>'.$this->longname.'</h3>';
     $t .= '<table class="tabularobject '.$extraClass.'" title="'.$this->description.'">';
     if (is_array($this->headings)) {
       $t .= '<tr>';
