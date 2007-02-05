@@ -76,6 +76,11 @@ class ActionAction {
   */
   var $ob_flush_ok = 1;
   /**
+  * The action should be read-only; no data should be changed
+  * @var    boolean
+  */
+  var $readOnly = true;
+  /**
   * Default status messages that are returned to the user.
   * @var    array
   */
@@ -223,6 +228,47 @@ class ActionAction {
     }
   }
 
+  /**
+  * Display a message to the user explaining that the requested action cannot be
+  * performed as the object is "readonly".
+  *
+  * This is designed to be used with the magic token verification system that requires
+  * that the form that is submitted by the user contains some additional secret data that
+  * was provided by the installation. This is designed to prevent attacks through getting
+  * users to visit specially crafted URLs or to submit malicious forms.
+  *
+  * @param  string    $message    message to show to the user explaining that the action cannot be processed
+  * @see    http://www.debian-administration.org/articles/465
+  */
+  function readOnlyError($message=null) {
+    if ($message !== null) {
+      print $message;
+    } else {
+      printf('<div class="error">%s</div>',
+          T_('The requested objects are read-only as I can\'t verify the validity of the form you submitted.')
+        );
+    }
+  }
+
+  /**
+  * Cleanse the input data of all fields except for the specifed whitelisted fields
+  *
+  * Removes all user-submitted data fields from the $ActionAction::PD array except for
+  * the fields that are explicitly whitelisted in the function call.
+  *
+  * @param mixed   $fields     single field name or list of fields to whitelist
+  */
+  function _dataCleanse($fields) {
+    if (! is_array($fields)) $fields = array($fields);
+    $data = $this->PD;
+    $this->PD = array();
+
+    foreach ($fields as $f) {
+      if (isset($data[$f])) {
+        $this->PD[$f] = $data[$f];
+      }
+    }
+  }
 
 } //class ActionAction
 

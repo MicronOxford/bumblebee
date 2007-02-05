@@ -20,6 +20,8 @@ require_once 'inc/bb/configreader.php';
 
 /** parent object */
 require_once 'inc/actions/actionaction.php';
+/** Data reflector object */
+require_once 'inc/formslib/datareflector.php';
 
 /**
 * Print a polite login form
@@ -48,9 +50,9 @@ class ActionPrintLoginForm extends ActionAction {
     echo '<h2>' . T_('Login required').'</h2>';
     echo '<p>'  . T_('Please login to view or book instrument usage') . '</p>';
     $this->printLoginForm();
-    #if (isset($this->PD['changeuser'])) {
+    if (! $this->readOnly) {
       $this->printDataReflectionForm($this->PD, 'reflection_');
-    #}
+    }
   }
 
   function printLoginForm() {
@@ -76,12 +78,12 @@ class ActionPrintLoginForm extends ActionAction {
 
   function printDataReflectionForm($data, $basename='') {
     // save the rest of the query string for later use
-    foreach ($data as $k => $v) {
-      #if ($k == 'action') $k = 'nextaction';
-      if ($k != 'changeuser') {
-        printf ('<input type="hidden" name="%s" value="%s" />', $basename.xssqw($k), xssqw($v));
-      }
-    }
+    $reflector = new DataReflector($basename);
+    $reflector->excludeLogin();
+    $reflector->exclude('changeuser');
+/*    $reflector->addLimit(array('action', 'forceaction', $basename.'action', $basename.'forceaction'),
+                         array('view', 'calendar'));*/
+    echo $reflector->display($this->PD);
   }
 
 }

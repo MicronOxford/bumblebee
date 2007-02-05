@@ -43,7 +43,7 @@ class ActionBookContact extends ActionAction {
   }
 
   function go() {
-    if (isset($this->PD['contactme'])) {
+    if (isset($this->PD['contactme']) && ! $this->readOnly) {
       $this->sendContactRequest();
     } else {
       // show both a contact form and a change-user form
@@ -138,7 +138,7 @@ class ActionBookContact extends ActionAction {
 
     echo '<br /><br />';
     echo formEnd();
-    echo formStart(makeURL('bookcontact'), 'contactform', false);
+    echo formStart(makeURL('bookcontact'), $auth->makeValidationTag(), 'contactform', false);
 
     echo '<fieldset>';
     echo '<h2>Contact us</h2>';

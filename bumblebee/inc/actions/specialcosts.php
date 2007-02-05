@@ -58,8 +58,13 @@ class ActionSpecialCosts extends ActionAction {
         $this->selectInstrument();
       }
     } elseif (isset($this->PD['delete'])) {
-      $this->delete();
+      if ($this->readOnly) {
+        $this->readOnlyError();
+      } else {
+        $this->delete();
+      }
     } else {
+      if ($this->readOnly) $this->_dataCleanse(array('project', 'instrument', 'createnew'));
       $this->edit();
     }
     echo "<br /><br /><a href='".makeURL('specialcosts')."'>".T_('Return to special costs list')."</a>";

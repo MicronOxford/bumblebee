@@ -26,7 +26,7 @@ require_once 'inc/bb/user.php';
 *
 * @package    Bumblebee
 * @subpackage Actions
-* @todo //TODO: extend form to include current password and duplicate password
+* @todo //TODO: extend form to include current password for auth
 */
 class ActionPassword extends ActionAction {
 
@@ -43,6 +43,7 @@ class ActionPassword extends ActionAction {
   }
 
   function go() {
+    if ($this->readOnly) $this->_dataCleanse('id');
     $this->edit();
     echo "<br /><br /><a href='".makeURL('')."'>".T_('Return to main menu')."</a>";
   }

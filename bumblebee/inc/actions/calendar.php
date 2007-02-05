@@ -62,11 +62,7 @@ class ActionCalendar extends ActionViewBase {
       return;
     }
 
-
-    $this->row = quickSQLSelect('instruments', 'id', $this->instrument);
-    foreach ($this->instrument as $i) {
-      $this->row[$i] = quickSQLSelect('instruments', 'id', $i);
-    }
+    if (! $this->_loadMultiInstrument()) return;
 
     echo $this->_makeCalendarConfigDialogue();
     if (isset($this->PD['isodate']) &&

@@ -75,6 +75,7 @@ class ActionBook extends ActionViewBase {
               || $this->PD['instrid'] < 1
               || $this->PD['instrid'] == '')) {
        $booking = quickSQLSelect('bookings', 'id', $this->PD['bookid']);
+       if (! isset($booking['id'])) return $this->_UnknownBooking();
        $this->instrument = $booking['instrument'];
        $start = new SimpleDate($booking['bookwhen']);
        $this->PD['isodate'] = $start->dateString();
@@ -85,11 +86,14 @@ class ActionBook extends ActionViewBase {
       $this->row[$i] = quickSQLSelect('instruments', 'id', $i);
     }
 
-    if (isset($this->PD['delete']) && isset($this->PD['bookid'])) {
+    if (isset($this->PD['delete']) && isset($this->PD['bookid']) && ! $this->readOnly) {
       $this->deleteBooking();
       echo $this->_calendarViewLink($this->instrument);
-    } elseif (isset($this->PD['bookid']) && isset($this->PD['edit'])) {
-      $this->editBooking();
+    } elseif (isset($this->PD['bookid']) && isset($this->PD['edit']) && ! $this->readOnly) {
+      $this->editBooking(true);
+      echo $this->_calendarViewLink($this->instrument);
+    } elseif (isset($this->PD['bookid']) && isset($this->PD['editform'])) {
+      $this->editBooking(false);
       echo $this->_calendarViewLink($this->instrument);
     } elseif (isset($this->PD['bookid'])) {
       $this->viewBooking();
@@ -136,15 +140,15 @@ class ActionBook extends ActionViewBase {
   /**
   * Editing an existing booking
   */
-  function editBooking() {
+  function editBooking($doSync) {
     $start = new SimpleDate(issetSet($this->PD, 'startticks'));
-    $this->_editCreateBooking($this->PD['bookid'], $start->dateTimeString(), -1);
+    $this->_editCreateBooking($this->PD['bookid'], $start->dateTimeString(), -1, $doSync);
   }
 
   /**
   * Do the hard work to edit or create the booking
   */
-  function _editCreateBooking($bookid, $start, $duration) {
+  function _editCreateBooking($bookid, $start, $duration, $doSync=false) {
     $ip = $this->auth->getRemoteIP();
     //echo $ip;
     $booking = new BookingEntry($bookid, $this->auth, $this->instrument, $this->row['mindatechange'],$ip,
@@ -156,12 +160,15 @@ class ActionBook extends ActionViewBase {
     $booking->update($this->PD);
     $booking->checkValid();
     echo $this->displayInstrumentHeader();
-    echo $this->reportAction($booking->sync(),
-              array(
-                  STATUS_OK =>   ($bookid < 0 ? T_('Booking made') : T_('Booking updated')),
-                  STATUS_ERR =>  T_('Booking could not be made:').'<br/><br/>'.$booking->errorMessage
-              )
-            );
+
+    if ($doSync) {
+      echo $this->reportAction($booking->sync(),
+                array(
+                    STATUS_OK =>   ($bookid < 0 ? T_('Booking made') : T_('Booking updated')),
+                    STATUS_ERR =>  T_('Booking could not be made:').'<br/><br/>'.$booking->errorMessage
+                )
+              );
+    }
     echo $booking->display();
     $submit = ($booking->id < 0) ? T_('Make booking') : T_('Update booking');
     $delete = ($booking->id >= 0 && $booking->deletable) ? T_('Delete booking') : '';
@@ -183,10 +190,10 @@ class ActionBook extends ActionViewBase {
     if ($this->_isOwnBooking || $adminEdit) {
       echo "<p><a href='"
             .makeURL('book',
-                array('instrid' => $this->instrument,
-                      'bookid'  => $this->PD['bookid'],
-                      'edit'    => 1,
-                      'isodate' => $this->PD['isodate']))
+                array('instrid'  => $this->instrument,
+                      'bookid'   => $this->PD['bookid'],
+                      'editform' => 1,
+                      'isodate'  => $this->PD['isodate']))
             ."'>". T_('Edit booking') ."</a></p>\n";
     }
   }

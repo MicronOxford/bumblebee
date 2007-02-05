@@ -86,6 +86,32 @@ class BasicAuth {
   }
 
   /**
+  * Generate a pseudo-random tag that is unique to this user and installation
+  *
+  * The tag is unique to this user and this installation of Bumblebee so that it
+  * can be used to test whether the submitted data is from a Bumblebee-produced
+  * form or if it is perhaps from a spoofed source.
+  *
+  * @see http://www.debian-administration.org/articles/465
+  * @returns string    tag unique to this user and installation
+  */
+  function makeValidationTag() {
+    return md5(session_id());
+  }
+
+  /**
+  * Test if the magic tag in the form matches the magic tag for this user
+  *
+  * @see makeValidationTag()
+  *
+  * @param   string    $tag     submitted tag to be tested
+  * @returns boolean            the submitted tag is valid
+  */
+  function isValidTag($tag) {
+    return $tag == $this->makeValidationTag();
+  }
+
+  /**
   * test function to see if user is logge in
   *
   * @returns boolean  user is logged in

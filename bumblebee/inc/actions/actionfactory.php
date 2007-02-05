@@ -122,6 +122,7 @@ class ActionFactory {
     $this->nextaction = $this->_actionData->next_action();
     $this->title = $this->_actionData->title();
     $this->_action = $this->_makeAction();
+    $this->_action->readOnly = ! $this->checkMagic();
   }
 
   /**
@@ -237,6 +238,10 @@ class ActionFactory {
       }
     }
     return $data;
+  }
+
+  function checkMagic() {
+    return $this->_auth->isValidTag(issetSet($_POST, 'magicTag', NULL));
   }
 
   /**

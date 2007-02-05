@@ -65,7 +65,11 @@ class ActionConsume extends ActionAction {
         $this->listConsumeUser($this->PD['user'], $daterange);
       }
     } elseif (isset($this->PD['delete'])) {
-      $this->delete();
+      if ($this->readOnly) {
+        $this->readOnlyError();
+      } else {
+        $this->delete();
+      }
     } elseif (
                 (! isset($this->PD['id'])) &&
                 (
@@ -79,6 +83,7 @@ class ActionConsume extends ActionAction {
         $this->selectConsumeConsumable();
       }
     } else {
+      if ($this->readOnly) $this->_dataCleanse(array('id', 'user', 'consumableid'));
       $this->edit();
     }
     echo "<br /><br /><a href='".makeURL('consume')."'>".T_('Return to consumable use list')."</a>";

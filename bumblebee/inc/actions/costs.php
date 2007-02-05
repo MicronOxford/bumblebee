@@ -49,7 +49,8 @@ class ActionCosts extends ActionAction {
     if (! isset($this->PD['userclass'])) {
       $this->selectUserClass();
     } else {
-      $this->editCost();
+      if ($this->readOnly) $this->_dataCleanse('userclass');
+      $this->edit();
     }
     echo "<br /><br /><a href='".makeURL('costs')."'>"
                               .T_('Return to costs list')      ."</a><br /><br />";
@@ -95,7 +96,7 @@ class ActionCosts extends ActionAction {
   *
   * @return void nothing
   */
-  function editCost() {
+  function edit() {
     $classCost = new ClassCost($this->PD['userclass']);
     $classCost->update($this->PD);
     $classCost->checkValid();

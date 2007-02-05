@@ -46,8 +46,13 @@ class ActionInstruments extends ActionAction {
     if (! isset($this->PD['id'])) {
       $this->select(issetSet($this->PD, 'showdeleted', false));
     } elseif (isset($this->PD['delete'])) {
-      $this->delete();
+      if ($this->readOnly) {
+        $this->readOnlyError();
+      } else {
+        $this->delete();
+      }
     } else {
+      if ($this->readOnly) $this->_dataCleanse('id');
       $this->edit();
     }
     echo "<br /><br /><a href='".makeURL('instruments')."'>".T_('Return to instruments list')."</a>";

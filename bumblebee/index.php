@@ -70,7 +70,7 @@ include 'theme/contentheader.php';
 include 'inc/popups.php';
 
 echo '<div id="bumblebeecontent">';
-echo formStart(makeURL($action->nextaction));
+echo formStart(makeURL($action->nextaction), $auth->makeValidationTag());
 
 if (! $auth->isLoggedIn()) {
   echo $auth->loginError();
@@ -93,7 +93,15 @@ if (! $action->ob_flush_ok()) {
   $action->returnBufferedStream();
 }
 
-function formStart($url, $id='bumblebeeform', $showAutocomplete=true) {
+/**
+* Create the start of a form
+*
+* @param string   $url       URL that the form should be submitted to
+* @param string   $magicTag  form validation tag to show that the form was not spoofed
+* @param string   $id        xml ID of the form element
+* @param boolean  $showAutocomplete    include a (non-standard) comment about form Autocompletion
+*/
+function formStart($url, $magicTag, $id='bumblebeeform', $showAutocomplete=true) {
   $conf = ConfigReader::getInstance();
   $autocomplete = "";
   if ($showAutocomplete &&
@@ -109,9 +117,14 @@ function formStart($url, $id='bumblebeeform', $showAutocomplete=true) {
       action='$url'
       id='$id'
       $autocomplete >
-    ";
+    "
+    .sprintf('<input type="hidden" name="magicTag" value="%s" />', xssqw($magicTag));
 }
 
+/**
+* Finish a form
+*
+*/
 function formEnd() {
   return '</form>';
 }

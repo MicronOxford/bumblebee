@@ -39,13 +39,14 @@ class ActionSettings extends ActionAction {
   }
 
   function go() {
-    $this->editConfig();
+    if ($this->readOnly) $this->_dataCleanse(null);
+    $this->edit();
   }
 
   /**
   * Display the current config and accept changes
   */
-  function editConfig() {
+  function edit() {
     $set = new Settings();
     $set->update($this->PD);
     $set->checkValid();

@@ -233,10 +233,47 @@ class ActionViewBase extends ActionAction {
     return $this->auth->permitted($permission, $this->instrument);
   }
 
+  function _loadMultiInstrument() {
+    $this->row = quickSQLSelect('instruments', 'id', $this->instrument);
+    if (! isset($this->row['id'])) {
+      $this->_UnknownInstrument();
+      return false;
+    }
+    foreach ($this->instrument as $i) {
+      $this->row[$i] = quickSQLSelect('instruments', 'id', $i);
+      if (! isset($this->row['id'])) {
+        $this->_UnknownInstrument();
+        return false;
+      }
+    }
+    return true;
+  }
 
   function _Forbidden($message=null) {
     if ($message == null) {
       $message = T_('Sorry, you are not permitted to do that with this instrument.');
+    }
+    echo $this->reportAction(STATUS_FORBIDDEN,
+                array(
+                  STATUS_FORBIDDEN => $message
+                )
+              );
+  }
+
+  function _UnknownInstrument($message=null) {
+    if ($message == null) {
+      $message = T_('Sorry, that instrument does not exist.');
+    }
+    echo $this->reportAction(STATUS_FORBIDDEN,
+                array(
+                  STATUS_FORBIDDEN => $message
+                )
+              );
+  }
+
+  function _UnknownBooking($message=null) {
+    if ($message == null) {
+      $message = T_('Sorry, that booking does not exist.');
     }
     echo $this->reportAction(STATUS_FORBIDDEN,
                 array(

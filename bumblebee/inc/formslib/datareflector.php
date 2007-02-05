@@ -29,10 +29,16 @@ checkValidInclude();
 * @subpackage FormsLibrary
 */
 class DataReflector {
+  /** @var string  basename that will be appended to all keys */
+  var $basename = '';
   /** @var array   list of fields to exclude from the datareflector */
   var $excludes = array();
-  /** @var string  list of regexp fields to exclude from the datareflector  */
+  /** @var array   list of regexp fields to exclude from the datareflector  */
   var $excludesRegEx = array();
+  /** @var array   list of list of keys that have value restrictions */
+  var $limitKeys = array();
+  /** @var array   list of list of values that are acceptable for the limited keys */
+  var $limitValues = array();
   /** @var integer   debug level    */
   var $DEBUG = 0;
 
@@ -51,18 +57,35 @@ class DataReflector {
   function display($PD) {
     $t = '';
     foreach ($PD as $key => $val) {
-      if (in_array($key, $this->excludes)) {
-        break;
+      if ($this->_includeKey($key, $val)) {
+      // then we should be included in the reflection
+        $t .= sprintf('<input type="hidden" name="%s" value="%s" />',
+                        $this->basename.xssqw($key),
+                        xssqw($val)
+                    );
       }
-      foreach ($this->excludesRegEx as $re) {
-        if (preg_match($re, $key)) {
-          break(2);
-        }
-      }
-      // if we got this far then we should be included.
-      $t .= '<input type="hidden" name="'.xssqw($key).'" value="'.xssqw($val).'" />';
     }
     return $t;
+  }
+
+  function _includeKey($key, $val) {
+    if (in_array($key, $this->excludes)) {
+      return false;
+    }
+    foreach ($this->excludesRegEx as $re) {
+      if (preg_match($re, $key)) {
+        return false;
+      }
+    }
+    foreach ($this->limitKeys as $seq => $lk) {
+      if (in_array($key, $lk)) {
+        // a restricted key; check that the key's value is OK
+        if (! in_array($val, $this->limitValues[$seq])) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   /**
@@ -94,6 +117,12 @@ class DataReflector {
   function excludeLogin() {
     $this->excludes[] = 'username';
     $this->excludes[] = 'pass';
+    $this->excludes[] = 'magicTag';
+  }
+
+  function addLimit($keys, $values) {
+    $this->limitKeys[] = $keys;
+    $this->limitValues[] = $values;
   }
 
 } // class DataReflector
