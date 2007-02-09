@@ -20,7 +20,7 @@ checkValidInclude();
 require_once 'inc/config.php';
 $conf = ConfigReader::getInstance();
 
-$MENUCONTENTS = $usermenu->getMenu();
+$MENUCONTENTS = (isset($usermenu) && $usermenu !== null) ? $usermenu->getMenu() : '';
 $BasePath     = $conf->BasePath;
 ?>
 <body>

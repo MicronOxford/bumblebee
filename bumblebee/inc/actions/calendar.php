@@ -51,8 +51,8 @@ class ActionCalendar extends ActionViewBase {
     if (! isset($this->PD['instrid'])
           || $this->PD['instrid'] < 1
           || $this->PD['instrid'] == '') {
-      header("Location: ". makeURL());
-      exit;
+      redirectUser(makeAbsURL());
+      // never returns
     }
   }
 
@@ -107,8 +107,8 @@ class ActionCalendar extends ActionViewBase {
         $d['caloffset'] = $this->PD['caloffset'];
       }
       $d['instrid'] = join($this->instrument, ',');
-      header("Location: ". makeURL('calendar', $d, false));
-      exit;
+      redirectUser(makeURL('calendar', $d, false));
+      // never returns
     }
     echoData($this->PD, 0);
   }

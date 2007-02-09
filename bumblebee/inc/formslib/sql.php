@@ -8,7 +8,7 @@
 *
 * @todo //TODO: work out why we didn't just use PEAR::DB and be done with it right from the beginning
 *
-* @author    Stuart Prescott
+* @author     Stuart Prescott
 * @copyright  Copyright Stuart Prescott
 * @license    http://opensource.org/licenses/gpl-license.php GNU Public License
 * @version    $Id$
@@ -31,6 +31,7 @@ require_once('inc/statuscodes.php');
 * @return integer status from statuscodes
 */
 function db_quiet($q, $fatal_sql=0) {
+  //preDump(debug_backtrace());
   // returns from statuscodes
   $sql = mysql_query($q);
   echoSQL($q);
@@ -49,6 +50,7 @@ function db_quiet($q, $fatal_sql=0) {
 * @return resource mysql query handle
 */
 function db_get($q, $fatal_sql=0) {
+  //preDump(debug_backtrace());
   // returns from statuscodes or a db handle
   $sql = mysql_query($q);
   echoSQL($q);
@@ -189,6 +191,8 @@ function quickSQLSelect($table, $key, $value, $fatal=1, $countonly=0) {
 * @return string database version
 */
 function db_get_version() {
+  $conf = ConfigReader::getInstance();
+  if (! $conf->status->database) return "unavailable";
   return mysql_get_server_info();
 }
 

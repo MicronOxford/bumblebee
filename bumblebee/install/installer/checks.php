@@ -80,12 +80,12 @@ function check_preinst($data) {
       $s[] = "GOOD: PECL RADIUS extension found for RADIUS authentication.";
     }
   }
-  // check kit: see if FPDF is installed
-  if (! (@ include 'fpdf/fpdf.php')) {
-    $s[] = "WARNING: Free PDF library <a href='http://www.fpdf.org/'>FPDF</a> not found. Will not be able to generate PDF reports.";
+  // check kit: see if TCPDF is installed
+  if (! (@ include 'tcpdf/tcpdf.php')) {
+    $s[] = "WARNING: Free PDF library <a href='http://tcpdf.sf.net/'>TCPDF</a> not found. Will not be able to generate PDF reports.";
     $warn = true;
   } else {
-    $s[] = "GOOD: FPDF library found for generating PDF reports.";
+    $s[] = "GOOD: TCPDF library found for generating PDF reports.";
   }
 
   // check username: make sure admin username meets Bumblebee requirements\

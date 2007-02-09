@@ -273,4 +273,15 @@ function makeAbsURL($target=NULL, $escape=true) {
   return $serverPart . $pathPart;
 }
 
+/**
+* Bounces the user to an alternative location, terminating execution of this script
+*
+* @param    string   $location    URL that the user should be redirected to
+* @returns  NEVER RETURNS
+*/
+function redirectUser($location) {
+  header("Location: ". $location);
+  exit;
+}
+
 ?>

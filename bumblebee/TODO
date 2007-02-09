@@ -11,6 +11,8 @@ Installer:
   * make anonymous user for browsing?
   * test log file exists, writable
   * include database version in settings table
+  * make tests more robust
+  * static function for config and E_STRICT
 
 Testing/optimisation:
   * report generation memory usage (can't generate NMR report for Q1 2006)

@@ -24,10 +24,9 @@ require_once 'inc/typeinfo.php';
 
 /** Load in PHP4/5 compatability layer */
 require_once 'inc/compat.php';
+
 /** Load in the user configuration data */
 require_once 'inc/config.php';
-/** check the user's credentials, create a session to record them */
-
 
 /** start the database session */
 require_once 'inc/db.php';
@@ -36,62 +35,31 @@ $conf = & ConfigReader::getInstance();
 $conf->mergeDatabaseTable();
 $conf->ParseConfig();
 
-require_once 'inc/bb/auth.php';
-$auth = new BumblebeeAuth($_POST);
-
-/** get the configuration values. */
-require_once 'inc/bb/configreader.php';
-$conf = ConfigReader::getInstance();
+$auth = null;
+if (! $conf->status->offline) {
+  /** check the user's credentials, create a session to record them */
+  require_once 'inc/bb/auth.php';
+  $auth = new BumblebeeAuth($_POST);
+}
 
 /** Load the action factory to work out what should be done in this instance of the script */
 require_once 'inc/actions/actionfactory.php';
-$action = new ActionFactory($auth);
+$action = new ActionFactory($auth, $conf->status->offline ? "offline" : null);
 if ($action->ob_flush_ok()) {
   // some actions will dump back a file, so we might not actually want to output content so far.
   // all is ready to roll now, start the output again.
   ob_end_flush();
 }
 
-/** load the user and/or admin menu */
-require_once 'inc/menu.php';
-$usermenu = new UserMenu($auth, $action->_verb);
-$usermenu->showMenu = ($auth->isLoggedIn() && $action->_verb != 'logout');
-$usermenu->actionListing = $action->actionListing;
-
-// $pagetitle can be used in theme/pageheader.php
-$pagetitle  = $action->title . ' : ' . $conf->value('main', 'SiteTitle');
-$pageheader = $action->title;
-$pageBaseRef = makeURL($action->_verb);
-/** display the HTML header section */
-include 'theme/pageheader.php';
-/** display the start of the html content */
-include 'theme/contentheader.php';
-/** popup information control */
-include 'inc/popups.php';
-
-echo '<div id="bumblebeecontent">';
-echo formStart(makeURL($action->nextaction), $auth->makeValidationTag());
-
-if (! $auth->isLoggedIn()) {
-  echo $auth->loginError();
-}
-
-if ($auth->isSystemAdmin() && file_exists("install") && ! $conf->value('error_handling', 'ignore_installer', false)) {
-  printf('<div class="error">%s</div>',
-      T_('The installer still exists. This is a security risk. Please delete it.'));
-}
-$action->go();
-echo formEnd();
-echo "</div>";
-
-/** display the page footer and close off the html page */
-include 'theme/pagefooter.php';
+makeMainPage($action, $auth);
 
 if (! $action->ob_flush_ok()) {
   // some actions will dump back a file, and we never want all the HTML guff to end up in it...
   ob_end_clean();
   $action->returnBufferedStream();
 }
+
+#################################################################################################
 
 /**
 * Create the start of a form
@@ -127,6 +95,76 @@ function formStart($url, $magicTag, $id='bumblebeeform', $showAutocomplete=true)
 */
 function formEnd() {
   return '</form>';
+}
+
+function pageStart($action, $auth) {
+  $conf = ConfigReader::getInstance();
+
+  // $usermenu variable is used inside the template
+  /** load the user and/or admin menu */
+  require_once 'inc/menu.php';
+  $usermenu = new UserMenu($auth, $action->verb());
+  $usermenu->showMenu = (! $conf->status->offline &&
+                            $auth->isLoggedIn() &&
+                            $action->verb() != 'logout');
+  $usermenu->actionListing = $action->actionListing;
+
+  // $page* variables can be used in theme/pageheader.php
+  $pagetitle  = $action->title . ' : ' . $conf->value('main', 'SiteTitle');
+  $pageheader = $action->title;
+  $pageBaseRef = makeURL($action->verb());
+
+  /** display the HTML header section */
+  include 'theme/pageheader.php';
+  /** display the start of the html content */
+  include 'theme/contentheader.php';
+  /** popup information control */
+  include 'inc/popups.php';
+}
+
+
+function pageShowErrors($auth) {
+  $conf = ConfigReader::getInstance();
+
+  // Login Errors
+  if (! $auth->isLoggedIn() && $err = $auth->loginError()) {
+    echo '<div class="error">' . $err . '</div>';
+  }
+
+  // Installer still present error
+  if ($auth->isSystemAdmin() && file_exists('install') && ! $conf->value('error_handling', 'ignore_installer', false)) {
+    printf('<div class="error">%s</div>',
+        T_('The installer still exists. This is a security risk. Please delete it.'));
+  }
+}
+
+function pageStop() {
+  global $BUMBLEBEEVERSION;
+  /** display the page footer and close off the html page */
+  include 'theme/pagefooter.php';
+}
+
+
+function makeMainPage($action, $auth) {
+  $conf = ConfigReader::getInstance();
+
+  pageStart($action, $auth);
+
+  echo '<div id="bumblebeecontent">';
+
+  if (! $conf->status->offline) {
+    echo formStart(makeURL($action->nextaction), $auth->makeValidationTag());
+    pageShowErrors($auth);
+  } else {
+    echo formStart(makeURL($action->nextaction), '');
+  }
+
+  $action->go();
+
+  echo formEnd();
+  echo '</div>';
+
+  pageStop();
 }
 
 ?>

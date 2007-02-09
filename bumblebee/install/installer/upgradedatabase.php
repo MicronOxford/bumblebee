@@ -2,7 +2,7 @@
 /**
 * Upgrade the database to the latest version used by Bumblebee
 *
-* @author    Stuart Prescott
+* @author     Stuart Prescott
 * @copyright  Copyright Stuart Prescott
 * @license    http://opensource.org/licenses/gpl-license.php GNU Public License
 * @version    $Id$
@@ -128,6 +128,8 @@ function DB_upgrade_BB_1_1_permissions() {
           ."parameter VARCHAR(64) CHARACTER SET utf8 NOT NULL, "
           ."value TEXT"
        .") DEFAULT CHARACTER SET utf8;\n";
+  $s .= "INSERT INTO {$TABLEPREFIX}settings VALUES ('meta', 'dbversion', '1.1.5');\n";
+  $s .= "INSERT INTO {$TABLEPREFIX}settings VALUES ('meta', 'configured', '1.1.5');\n";
   $notes .= " The new configuration system stores all your settings in the database to make configuration easier.";
 
   return array($s, $notes);

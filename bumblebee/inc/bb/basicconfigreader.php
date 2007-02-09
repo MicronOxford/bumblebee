@@ -36,11 +36,11 @@ class BasicConfigReader {
     $constructed = true;
   }
 
-  function & getInstance() {
+  /*static*/ function & getInstance() {
     return BasicConfigReader::_instanceManager();
   }
 
-  function & _instanceManager($newInstance = null) {
+  /*static*/ function & _instanceManager($newInstance = null) {
     static $instance = array();
 
     if ($newInstance == null) {

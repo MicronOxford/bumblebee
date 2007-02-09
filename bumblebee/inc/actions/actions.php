@@ -138,6 +138,8 @@ class ActionListing {
         'unknown',    T_('Oops! I cannot do that!'), T_('Unknown'), BBROLE_NONE, -1);
     $this->actions[] = new ActionData('ActionUnknown', 'unknownaction.php',
         'forbidden!', T_('No, you cannot do that'), T_('Forbidden'), BBROLE_NONE, -1);
+    $this->actions[] = new ActionData('ActionOffline', 'offline.php',
+        'offline', T_('System Offline'), T_('System Offline'), BBROLE_NONE, -1);
 
     $this->actions[] = new ActionData('ActionView', 'view.php',
         'view',       T_('View list of instruments'), T_('Main'), BBROLE_NONE);

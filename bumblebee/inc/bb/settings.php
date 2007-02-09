@@ -82,7 +82,7 @@ class Settings extends NonDBRow {
     $this->dumpheader = 'Settings object';
   }
 
-  function display() {
+  function display($data=NULL) {
     $t = '';
     foreach($this->sections as $s) {
       $t .= $s->displayInTable();

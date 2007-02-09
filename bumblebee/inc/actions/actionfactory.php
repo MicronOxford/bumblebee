@@ -110,14 +110,15 @@ class ActionFactory {
   * - set up the title tag for the browser
   * - create the ActionAction descendent object that will perform the task
   *
-  * @param BumblebeeAuth $auth  user login credentials object
+  * @param BumblebeeAuth $auth      user login credentials object
+  * @param string        $forceVerb force a particular action
   */
-  function ActionFactory($auth) {
+  function ActionFactory($auth, $forceVerb=null) {
     $this->_auth = $auth;
     #$this->PDATA = $this->_eatPathInfo();
     $this->PDATA = $this->_eatGPCInfo();
     $this->actionListing = new ActionListing();
-    $this->_verb = $this->_checkActions();
+    $this->_verb = $this->_checkActions($forceVerb);
     $this->_actionData = $this->actionListing->actions[$this->_verb];
     $this->nextaction = $this->_actionData->next_action();
     $this->title = $this->_actionData->title();
@@ -132,6 +133,10 @@ class ActionFactory {
     $this->_action->go();
   }
 
+  function verb() {
+    return $this->_verb;
+  }
+
   /**
   * Determine what action should be performed.
   *
@@ -140,9 +145,12 @@ class ActionFactory {
   * - looking for hints in the user-supplied data for what the correct action is
   * - checking that the user is an admin user if admin functions were requested
   *
-  * @return string the name of the action (verb) to be undertaken
+  * @param string        $forceVerb  force a particular action
+  * @return string                   the name of the action (verb) to be undertaken
   */
-  function _checkActions() {
+  function _checkActions($forceVerb) {
+    if ($forceVerb !== null) return $forceVerb;
+
     $action = '';
 
     # first, we need to determine if we are actually logged in or not
@@ -241,7 +249,7 @@ class ActionFactory {
   }
 
   function checkMagic() {
-    return $this->_auth->isValidTag(issetSet($_POST, 'magicTag', NULL));
+    return isset($this->_auth) && $this->_auth->isValidTag(issetSet($_POST, 'magicTag', NULL));
   }
 
   /**

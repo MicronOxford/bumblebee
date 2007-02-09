@@ -2,7 +2,7 @@
 /**
 * Collate some stats on the current usage of the system (number of bookings etc)
 *
-* @author    Stuart Prescott
+* @author     Stuart Prescott
 * @copyright  Copyright Stuart Prescott
 * @license    http://opensource.org/licenses/gpl-license.php GNU Public License
 * @version    $Id$

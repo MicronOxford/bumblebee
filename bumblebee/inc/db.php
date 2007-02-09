@@ -19,6 +19,7 @@ require_once 'inc/typeinfo.php';
 checkValidInclude();
 
 require_once 'inc/bb/configreader.php';
+require_once 'inc/menu.php';
 
 $conf = & ConfigReader::getInstance();
 $conf->MergeFile('db.ini');
@@ -45,8 +46,9 @@ if (($connection = mysql_pconnect($conf->value('database', 'host'),
   // we successfully logged on to the database
   // automatically use UTF-8 for the connection encoding
   db_quiet("SET NAMES 'utf8'");
+  $conf->status->database = true;
 } else {
-  $errcode = $NON_FATAL_DB ? E_USER_NOTICE : E_USER_ERROR;
+
   $errmsg  = sprintf(T_('<p>Sorry, I couldn\'t connect to the database, so there\'s nothing I can presently do. This could be due to a booking system misconfiguration, or a failure of the database subsystem.</p><p>If this persists, please contact the <a href="mailto:%s">booking system administrator</a>.</p>'), $conf->AdminEmail);
 
   if ($DB_CONNECT_DEBUG) {
@@ -54,7 +56,14 @@ if (($connection = mysql_pconnect($conf->value('database', 'host'),
               .'<br />Connected using parameters <pre>'
               .print_r($conf->getSection('database'),true).'</pre>';
   }
-  trigger_error($errmsg, $errcode);
+  $conf->status->database = false;
+  $conf->status->offline = true;
+
+  $conf->status->messages[] = $errmsg;
+
+  if ($NON_FATAL_DB) {
+    trigger_error($errmsg, E_USER_NOTICE);
+  }
 }
 
 

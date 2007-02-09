@@ -18,6 +18,8 @@ checkValidInclude();
 
 /** include parent */
 require_once 'inc/bb/basicconfigreader.php';
+/** include parent */
+require_once 'inc/systemstatus.php';
 
 class ConfigReader extends BasicConfigReader {
 
@@ -34,6 +36,14 @@ class ConfigReader extends BasicConfigReader {
   var $VerboseSQL = false;
   /** @var boolean  user supplied data will be dumped to the browser for debugging purposes */
   var $VerboseData = false;
+
+  /** @var SystemStatus    maintain tabs on the system status */
+  var $status;
+
+  function ConfigReader() {
+    parent::BasicConfigReader();
+    $this->status = new SystemStatus();
+  }
 
   function ParseConfig($fatalErrors=true) {
     $this->AdminEmail = $this->value('main', 'AdminEmail', '');  ///FIXME: work out a default?
