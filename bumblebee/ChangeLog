@@ -16,6 +16,8 @@
 	* feature: don't lose form data if the user's session times out
 	* feature: show multiple instruments on the one calendar
 	  (closes #1578376)
+	* feature: provide a more polite way of telling the user that the
+	  system is offline
 	* bugfix: enforce future booking restrictions when making
 	  bookings (closes #1567290)
 	* bugfix: dropdown list no longer overlaps existing bookings
