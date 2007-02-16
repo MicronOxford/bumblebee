@@ -101,6 +101,13 @@ define('EXPORT_HTML_NUMBER_MASK',  EXPORT_HTML_MONEY|EXPORT_HTML_DECIMAL_MASK);
 /** Formatting code: create an automatic total of the data for this column in the table */
 define('EXPORT_CALC_TOTAL',        2048);
 
+/** Formatting code: format value as date-time according to locale settings */
+define('EXPORT_HTML_DATETIME',     4096);
+/** Formatting code: format value as date according to locale settings */
+define('EXPORT_HTML_DATE',         8192);
+/** Formatting code: format value as time according to locale settings */
+define('EXPORT_HTML_TIME',         16384);
+
 /**
 * convert a string name for an export into the defined numeric code
 *

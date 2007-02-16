@@ -12,7 +12,6 @@ Installer:
   * test log file exists, writable
   * include database version in settings table
   * make tests more robust
-  * static function for config and E_STRICT
 
 Testing/optimisation:
   * report generation memory usage (can't generate NMR report for Q1 2006)
@@ -20,10 +19,10 @@ Testing/optimisation:
 * 1.2 series: desirable
 -----------------------
 Features:
-  * polite "offline" mode
+  * [90%] polite "offline" mode (testing)
   * trap unconfigured and send to installer
   * trap configured and get out of installer
-  * i18n: date/time customisation
+  * [70%] i18n: date/time customisation (docs of what fns are used where; widespread use)
   * logging included in more places
   * fix dropdown truncation (also for multi-byte chars)
 

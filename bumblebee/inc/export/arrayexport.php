@@ -244,6 +244,16 @@ class ArrayExport {
       default:
         //echo ($format& EXPORT_HTML_NUMBER_MASK).'<br/>';
     }
+    if ($format & EXPORT_HTML_DATETIME) {
+      $date = new SimpleDate($val);
+      $val = $date->getShortDateTimeString();
+    } elseif ($format & EXPORT_HTML_DATE) {
+      $date = new SimpleDate($val);
+      $val = $date->getShortDateString();
+    } elseif ($format & EXPORT_HTML_TIME) {
+      $time = new SimpleTime($val);
+      $val = $time->getShortString();
+    }
     return $val;
   }
 

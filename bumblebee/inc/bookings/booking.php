@@ -110,9 +110,9 @@ class Booking extends TimeSlot {
   */
   function displayInTable($cols, $displayAdmin, $displayOwner) {
     $t = '<tr><td>'.T_('Booking ID').'</td><td>'.$this->id.'</td></tr>'."\n"
-       . '<tr><td>'.T_('Start').'</td><td>'.$this->start->dateTimeString().'</td></tr>'."\n"
-       . '<tr><td>'.T_('Stop').'</td><td>'.$this->stop->dateTimeString().'</td></tr>'."\n"
-       . '<tr><td>'.T_('Duration').'</td><td>'.$this->duration->timeString()/*.$bookinglength*/.'</td></tr>'."\n"
+       . '<tr><td>'.T_('Start').'</td><td>'.$this->start->getShortDateTimeString().'</td></tr>'."\n"
+        . '<tr><td>'.T_('Stop').'</td><td>'.$this->stop->getShortDateTimeString().'</td></tr>'."\n"
+        . '<tr><td>'.T_('Duration').'</td><td>'.$this->duration->getShortString()/*.$bookinglength*/.'</td></tr>'."\n"
        . '<tr><td>'.T_('User').'</td><td><a href="mailto:'.xssqw($this->useremail).'">'.xssqw($this->name).'</a> ('.xssqw($this->username).')</td></tr>'."\n"
        . '<tr><td>'.T_('Comments').'</td><td>'.xssqw($this->comments).'</td></tr>'."\n"
        . '<tr><td>'.T_('Log').'</td><td>'.xssqw($this->log).'</td></tr>'."\n";
@@ -147,12 +147,12 @@ class Booking extends TimeSlot {
         $freeBusyStr = T_('Busy from %s to %s');
         $busyStr     = T_('busy');
       }
-      $timedescription = sprintf($freeBusyStr, $start->dateTimeString(), $stop->dateTimeString());
+      $timedescription = sprintf($freeBusyStr, $start->getShortDateTimeString(), $stop->shortDateTimeString());
       return "<div title='$timedescription'>$busyStr</div>";
     }
     static $viewEditStr = null;
     if ($viewEditStr === null) $viewEditStr = T_('View or edit booking from %s to %s');
-    $timedescription = sprintf($viewEditStr, $start->dateTimeString(), $stop->dateTimeString());
+    $timedescription = sprintf($viewEditStr, $start->getShortDateTimeString(), $stop->getShortDateTimeString());
     //$timedescription = $this->start->timeString().' - '.$this->stop->timeString();
     $isodate = $start->dateString();
     $t = '';
@@ -187,7 +187,7 @@ class Booking extends TimeSlot {
 
     $start = isset($this->displayStart) ? $this->displayStart : $this->start;
     $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
-    return sprintf($bookingStr, $start->dateTimeString(), $stop->dateTimeString());
+    return sprintf($bookingStr, $start->getShortDateTimeString(), $stop->getShortDateTimeString());
   }
 
   /**
@@ -209,8 +209,8 @@ class Booking extends TimeSlot {
       $user = $this->name;
       $start = isset($this->displayStart) ? $this->displayStart : $this->start;
       $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
-      $starttime = $start->timeString();
-      $stoptime  = $stop->timeString();
+      $starttime = $start->getShortTimeString();
+      $stoptime  = $stop->getShortTimeString();
       $s = "<tr><td>$instrument</td><td>$user</td><td>$starttime</td><td>$stoptime</td></tr>";
     } else {
       $s = '<table class="popup">'. $this->displayInTable(2, false, false) .'</table>';

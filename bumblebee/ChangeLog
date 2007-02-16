@@ -18,6 +18,8 @@
 	  (closes #1578376)
 	* feature: provide a more polite way of telling the user that the
 	  system is offline
+	* feature: i18n of the date, time and currency display functions
+	* feature: i18n of the number input functions
 	* bugfix: enforce future booking restrictions when making
 	  bookings (closes #1567290)
 	* bugfix: dropdown list no longer overlaps existing bookings
@@ -52,7 +54,7 @@
 	  clashes
 	* feature: give option of different password hashing schemes for
 	  the users table
-	* vastly improved German translation thanks to Jürgen Fricke
+	* vastly improved German translation thanks to Jrgen Fricke
 
 2006-06-01 Stuart Prescott <bumblebee@nanonanonano.net>
 	* 1.1.3 release

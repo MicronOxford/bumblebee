@@ -445,7 +445,7 @@ class ActionExport extends BufferedAction {
   function _reportHeader() {
     $start = $this->_daterange->getStart();
     $stop  = $this->_daterange->getStop();
-    $s = sprintf($this->_export->header, $start->dateString(), $stop->dateString());
+    $s = sprintf($this->_export->header, $start->getShortDateString(), $stop->getShortDateString());
     return $s;
   }
 

@@ -119,8 +119,8 @@ class ExportTypeList {
     $type->join[] = array('table' => 'instruments', 'condition' =>  'instruments.id=bookings.instrument');
     $type->join[] = array('table' => 'projects', 'condition' =>  'bookings.projectid=projects.id');
     $type->fields = array(
-                      new sqlFieldName('bookwhen', T_('Date/Time'), '', EXPORT_HTML_LEFT, '*'),
-                      new sqlFieldName('duration', T_('Length'),    '', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('bookwhen', T_('Date/Time'), '', EXPORT_HTML_LEFT|EXPORT_HTML_DATETIME, '*'),
+                      new sqlFieldName('duration', T_('Length'),    '', EXPORT_HTML_LEFT|EXPORT_HTML_TIME, '*'),
                       new sqlFieldName('username', T_('Username'),  '', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('users.name', T_('Name'), 'user_name', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('instruments.name', T_('Instrument'), 'instrument_name'),
@@ -274,7 +274,7 @@ class ExportTypeList {
                       new sqlFieldName('consumables.longname', T_('Item Name'), 'consumable_longname', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('CONCAT(consumables.name, \': \', consumables.longname)',
                                       T_('Item'), 'consumable_title', EXPORT_HTML_LEFT, 20),
-                      new sqlFieldName('usewhen', T_('Date'), '', EXPORT_HTML_LEFT, '*'),
+                      new sqlFieldName('usewhen', T_('Date'), '', EXPORT_HTML_LEFT|EXPORT_HTML_DATE, '*'),
                       new sqlFieldName('username', T_('Username'), '', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('users.name', T_('Name'), 'user_name', EXPORT_HTML_LEFT, '*'),
                       new sqlFieldName('projects.name', T_('Project'), 'project_name', EXPORT_HTML_LEFT, 10),

@@ -68,8 +68,8 @@ class Vacancy extends TimeSlot {
   */
   function displayInTable() {
     return '<tr><td>Vacant'
-            .'</td><td>'.$this->start->dateTimeString()
-            .'</td><td>'.$this->stop->dateTimeString()
+            .'</td><td>'.$this->start->getShortDateTimeString()
+            .'</td><td>'.$this->stop->getShortDateTimeString()
             .'</td><td>'
             .'</td></tr>'."\n";
   }
