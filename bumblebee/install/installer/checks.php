@@ -2,7 +2,7 @@
 /**
 * Pre- and post-install checks of the setup
 *
-* @author    Stuart Prescott
+* @author     Stuart Prescott
 * @copyright  Copyright Stuart Prescott
 * @license    http://opensource.org/licenses/gpl-license.php GNU Public License
 * @version    $Id$
@@ -72,7 +72,7 @@ function check_preinst($data) {
     } else {
       $s[] = "GOOD: LDAP extension found for LDAP authentication.";
     }
-    if (! PEAR::loadExtension('radius')) {
+    if (! extension_loaded('radius')) {
       //$b = new Auth("RADIUS", array("servers" => array()), "", false);    // hangs if radius module not installed
       $s[] = "WARNING: PHP's <a href='http://pecl.php.net/package/radius'>RADIUS extension</a> was not found. RADIUS authentication unavailable.";
       $warn = true;

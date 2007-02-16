@@ -14,6 +14,8 @@
 * path (bumblebee root)/index.php
 */
 
+error_reporting(E_ALL | E_STRICT);
+
 // prevent output for the moment to permit session headers
 ob_start();
 
@@ -34,6 +36,11 @@ require_once 'inc/db.php';
 $conf = & ConfigReader::getInstance();
 $conf->mergeDatabaseTable();
 $conf->ParseConfig();
+
+
+/** load the language pack */
+require_once 'inc/i18n.php';
+
 
 $auth = null;
 if (! $conf->status->offline) {

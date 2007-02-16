@@ -38,7 +38,7 @@ class ConfigReader extends BasicConfigReader {
   var $VerboseData = false;
 
   /** @var SystemStatus    maintain tabs on the system status */
-  var $status;
+  var $status = null;
 
   function ConfigReader() {
     parent::BasicConfigReader();
@@ -46,6 +46,9 @@ class ConfigReader extends BasicConfigReader {
   }
 
   function ParseConfig($fatalErrors=true) {
+    if ($this->status === null) $this->status = new SystemStatus();
+
+
     $this->AdminEmail = $this->value('main', 'AdminEmail', '');  ///FIXME: work out a default?
 
     $this->BasePath   = $this->value('main', 'BasePath');   ///FIXME: work out a default?
@@ -61,8 +64,8 @@ class ConfigReader extends BasicConfigReader {
       if (! defined('LOAD_ALL_PHP_FILES')) {
         if ($this->data['error_handling']['AllWarnings']) {
           //this is nice for development but probably turn it off for production
-          #error_reporting(E_ALL | E_STRICT); #force all warnings to be echoed
-          error_reporting(E_ALL); #force all warnings to be echoed
+          error_reporting(E_ALL | E_STRICT); #force all warnings to be echoed
+          #error_reporting(E_ALL); #force all warnings to be echoed
           /** load all php files */
           define('LOAD_ALL_PHP_FILES', 1);
         } else {

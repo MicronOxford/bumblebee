@@ -16,9 +16,21 @@
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
-require_once 'inc/formslib/sql.php';
+if (version_compare(PHP_VERSION, "5") >= 0) {
+  // Conditionally include the singleton functions if PHP5 is being used
+  require_once 'inc/bb/basicconfigreadersingleton_php5.php';
 
-class BasicConfigReader {
+} else {
+  // pull in the singleton file and translate the PHP5 to PHP4 (that is still known to work)
+  $file = file_get_contents('inc/bb/basicconfigreadersingleton_php5.php', true);
+  $file = preg_replace(
+            array('@static function@', '@<\?php@', '@\?>@'),
+            array('function',          '',         ''),
+            $file);
+  eval($file);
+}
+
+class BasicConfigReader extends BasicConfigReaderSingleton {
 
   var $data;
 
@@ -26,35 +38,8 @@ class BasicConfigReader {
 
   var $configFileLocation = null;
 
-  function BasicConfigReader() {
-    static $constructed = false;
-    #echo "Constructor called";
-    if ($constructed) {
-      trigger_error('ConfigReader is a singleton. Instantiate it only once if you must (and you must instantiate it once if you want to inherit it) and then use getInstance()', E_USER_ERROR);
-    }
-    BasicConfigReader::_instanceManager($this);
-    $constructed = true;
-  }
-
-  /*static*/ function & getInstance() {
-    return BasicConfigReader::_instanceManager();
-  }
-
-  /*static*/ function & _instanceManager($newInstance = null) {
-    static $instance = array();
-
-    if ($newInstance == null) {
-      if (count($instance) < 1 || $instance[0] == null) {
-        #echo "Making instance";
-        $instance[0] = new BasicConfigReader();
-      }
-      #echo "Returning instance";
-      return $instance[0];
-    } else {
-      #echo "registering instance";
-      $instance[0] = & $newInstance;
-      return $instance[0];
-    }
+  function BasicConfig() {
+    parent::BasicConfigReaderSingleton();
   }
 
   function SetFileLocation($directory) {
