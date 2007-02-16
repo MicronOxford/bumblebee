@@ -477,4 +477,29 @@ function currencyValueCleaner($value) {
   return trim($value);
 }
 
+function numberFormatter($value, $dp) {
+  $conf = ConfigReader::getInstance();
+  return number_format($value, $dp,
+                       $conf->value('language', 'decimal_separator',   '.'),
+                       $conf->value('language', 'thousands_separator', ''));
+}
+
+function currencyFormatter($value) {
+  $conf = ConfigReader::getInstance();
+  $s = number_format($value,
+                      $conf->value('language', 'money_decimal_places',   2),
+                      $conf->value('language', 'decimal_separator',      '.'),
+                      $conf->value('language', 'thousands_separator',    ''));
+  return sprintf($conf->value('language', 'money_format',   '$%s'), $s);
+}
+
+function commaFloat($str) {
+  if(strstr($str, ',')) {
+    $str = str_replace('.', '',  $str); // remove dots that are (thousand seps)
+    $str = str_replace(',', '.', $str); // replace ',' with '.'
+  }
+  return floatval($str); // take some last chances with floatval
+}
+
+
 ?>

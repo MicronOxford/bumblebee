@@ -43,17 +43,6 @@ if ($conf->value('main', 'ExtraIncludePath', false)) {
   set_include_path($REBASE_INSTALL.($conf->value('main','ExtraIncludePath')).PATH_SEPARATOR.get_include_path());
 }
 
-if (! $NON_FATAL_CONFIG) {
-  /** load the language pack */
-  require_once 'i18n.php';
-
-  // As of PHP5.0, we *must* set the timezone for date calculations, otherwise
-  // many errors will be emitted. For a list of timezones, see
-  //     http://php.net/manual/en/timezones.php
-  $tz = $conf->value('language', 'timezone', 'Europe/London');
-  date_default_timezone_set($tz);
-}
-
 /**
 * $BUMBLEBEEVERSION is the installed version of the software
 * @global string $BUMBLEBEEVERSION

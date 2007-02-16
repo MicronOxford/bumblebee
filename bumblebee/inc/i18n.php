@@ -38,6 +38,14 @@ require_once 'inc/logging.php';
 // than the PHP4 default iso8859-1
 ini_set('default_charset', 'utf-8');
 
+$conf = ConfigReader::getInstance();
+
+// As of PHP5.0, we *must* set the timezone for date calculations, otherwise
+// many errors will be emitted. For a list of timezones, see
+//     http://php.net/manual/en/timezones.php
+$tz = $conf->value('language', 'timezone', 'Europe/London');
+date_default_timezone_set($tz);
+
 // this could be done per-user, but that would be more difficult...
 //$locale = (isset($_GET['lang']))? $_GET['lang'] : DEFAULT_LOCALE;
 $locale = $conf->value('language', 'locale');
