@@ -88,7 +88,11 @@ class Vacancy extends TimeSlot {
       $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
       $startticks = $start->ticks;
       $stopticks = $stop->ticks;
-      $timedescription = sprintf(T_('Make booking from %s to %s'), $start->dateTimeString(), $stop->dateTimeString());
+
+      static $timeDescStr = null;
+      if ($timeDescStr === null) $timeDescStr = T_('Make booking from %s to %s');
+
+      $timedescription = sprintf($timeDescStr, $start->getShortDateTimeString(), $stop->getShortDateTimeString());
       //$timedescription = $this->start->timeString().' - '.$this->stop->timeString();
       $isodate = $start->dateString();
       $t .= '<div style="float:right;">'
@@ -122,9 +126,13 @@ class Vacancy extends TimeSlot {
     $start = isset($this->displayStart) ? $this->displayStart : $this->original->start;
     $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->original->stop;
     if ($this->isDisabled) {
-      $t = sprintf(T_('Unavailable from %s to %s'), $start->dateTimeString(), $stop->dateTimeString());
+      static $unavailableStr =  null;
+      if ($unavailableStr === null) $unavailableStr = T_('Unavailable from %s to %s');
+      $t = sprintf($unavailableStr, $start->getShortDateTimeString(), $stop->getShortDateTimeString());
     } else {
-      $t = sprintf(T_('Vacant from %s to %s'), $start->dateTimeString(), $stop->dateTimeString());
+      static $vacantStr =  null;
+      if ($vacantStr === null) $vacantStr = T_('Vacant from %s to %s');
+      $t = sprintf($vacantStr, $start->getShortDateTimeString(), $stop->getShortDateTimeString());
     }
     return $t;
   }

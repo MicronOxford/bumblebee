@@ -14,6 +14,9 @@
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
+/** config system */
+require_once 'inc/bb/configreader.php';
+
 /**
 * Simple date class to perform basic date calculations
 *
@@ -38,20 +41,10 @@ checkValidInclude();
 */
 class SimpleDate {
   /**
-  * date in string format (YYYY-MM-DD)
+  * cache of date in string format
   * @var string
   */
-  var $_datestring = '';
-  /**
-  * date and time in string format (YYYY-MM-DD HH:MM:SS)
-  * @var string
-  */
-  var $_datetimestring = '';
-  /**
-  * time in string format (YYYY-MM-DD HH:MM:SS)
-  * @var string
-  */
-  var $_timestring = '';
+  var $_cache = array();
   /**
   * date in seconds since epoch
   * @var integer
@@ -96,37 +89,203 @@ class SimpleDate {
   function setStr($s) {
     $this->isValid = 1;
     $this->_setTicks($s);
-    //$this->_setStr();
   }
 
   function dateTimeString() {
-    if ($this->_datetimestring === '') {
-      $this->_datetimestring = strftime('%Y-%m-%d %H:%M:%S', $this->ticks);
+    if (! isset($this->_cache['datetime'])) {
+      $this->_cache['datetime'] = strftime('%Y-%m-%d %H:%M:%S', $this->ticks);
     }
-    return $this->_datetimestring;
+    return $this->_cache['datetime'];
   }
 
   function timeString() {
-    if ($this->_timestring === '') {
-      $this->_timestring = strftime('%H:%M:%S', $this->ticks);
+    if (! isset($this->_cache['time'])) {
+      $this->_cache['time'] = strftime('%H:%M:%S', $this->ticks);
     }
-    return $this->_timestring;
+    return $this->_cache['time'];
   }
 
   function dateString() {
-    if ($this->_datestring === '') {
-      $this->_datestring = strftime('%Y-%m-%d', $this->ticks);
+    if (! isset($this->_cache['date'])) {
+      $this->_cache['date'] = strftime('%Y-%m-%d', $this->ticks);
     }
-    return $this->_datestring;
+    return $this->_cache['date'];
   }
 
-//   function _setStr() {
-//     #echo "SimpleDate::Str $this->ticks<br />";
-//     $this->datestring = strftime('%Y-%m-%d', $this->ticks);
-//     $this->datetimestring = strftime('%Y-%m-%d %H:%M:%S', $this->ticks);
-//     $this->isValid = $this->isValid && ($this->datestring != '' && $this->datetimestring != ''
-//                    && $this->datestring != -1 && $this->datetimestring != -1);
-//   }
+  /**
+  * get a short string representation for the current locale
+  *
+  * @return string time value in short time format
+  */
+  function getShortDateString() {
+    if (! isset($this->_cache['lshortDate'])) {
+      $conf = ConfigReader::getInstance();
+      $format = $conf->value('language', 'date_shortdate', 'Y-m-d');
+      $this->_cache['lshortDate'] = $this->getStringByFormat($format);
+    }
+    return $this->_cache['lshortDate'];
+  }
+
+  /**
+  * get a short string representation for the current locale
+  *
+  * @return string time value in short time format
+  */
+  function getShortTimeString() {
+    if (! isset($this->_cache['lshortTime'])) {
+      $conf = ConfigReader::getInstance();
+      $format = $conf->value('language', 'date_shorttime', 'H:i');
+      $this->_cache['lshortTime'] = $this->getStringByFormat($format);
+    }
+    return $this->_cache['lshortTime'];
+  }
+
+  /**
+  * get a short string representation for the current locale
+  *
+  * @return string time value in short time format
+  */
+  function getShortDateTimeString() {
+    if (! isset($this->_cache['lshortDateTime'])) {
+      $conf = ConfigReader::getInstance();
+      $format = $conf->value('language', 'date_shortdatetime', 'Y-m-d H:i');
+      $this->_cache['lshortDateTime'] = $this->getStringByFormat($format);
+    }
+    return $this->_cache['lshortDateTime'];
+  }
+
+  /**
+  * get a long string representation for the current locale
+  *
+  * @return string time value in long time format
+  */
+  function getLongDateString() {
+    if (! isset($this->_cache['llongDate'])) {
+      $conf = ConfigReader::getInstance();
+      $format = $conf->value('language', 'date_longdate', 'D F j, Y');
+      $this->_cache['llongDate'] = $this->getStringByFormat($format);
+    }
+    return $this->_cache['llongDate'];
+  }
+
+  /**
+  * get a long string representation for the current locale
+  *
+  * @return string time value in long time format
+  */
+  function getLongTimeString() {
+    if (! isset($this->_cache['llongTime'])) {
+      $conf = ConfigReader::getInstance();
+      $format = $conf->value('language', 'date_longtime', 'H:i:s');
+      $this->_cache['llongTime'] = $this->getStringByFormat($format);
+    }
+    return $this->_cache['llongTime'];
+  }
+
+  /**
+  * get a long string representation for the current locale
+  *
+  * @return string time value in long time format
+  */
+  function getLongDateTimeString() {
+    if (! isset($this->_cache['llongDateTime'])) {
+      $conf = ConfigReader::getInstance();
+      $format = $conf->value('language', 'date_longdatetime', 'H:i:s, D F j, Y');
+      $this->_cache['llongDateTime'] = $this->getStringByFormat($format);
+    }
+    return $this->_cache['llongDateTime'];
+  }
+
+  /**
+  * Get a string representation of this time in the specified format
+  *
+  * Recognised format characters are as follows:
+  *
+  * d	Day of the month, 2 digits with leading zeros	01 to 31
+  * D	A textual representation of a day, three letters	Mon through Sun
+  * j	Day of the month without leading zeros	1 to 31
+  * l (lowercase 'L')	A full textual representation of the day of the week	Sunday through Saturday
+  *
+  * F	A full textual representation of a month, such as January or March	January through December
+  * m	Numeric representation of a month, with leading zeros	01 through 12
+  * M	A short textual representation of a month, three letters	Jan through Dec
+  * n	Numeric representation of a month, without leading zeros	1 through 12
+  *
+  * Y	A full numeric representation of a year, 4 digits	Examples: 1999 or 2003
+  * y	A two digit representation of a year	Examples: 99 or 03
+  *
+  * a	Lowercase Ante meridiem and Post meridiem	am or pm
+  * A	Uppercase Ante meridiem and Post meridiem	AM or PM
+  * g	12-hour format of an hour without leading zeros	1 through 12
+  * G	24-hour format of an hour without leading zeros	0 through 23
+  * h	12-hour format of an hour with leading zeros	01 through 12
+  * H	24-hour format of an hour with leading zeros	00 through 23
+  * i	Minutes with leading zeros	00 to 59
+  * s	Seconds, with leading zeros	00 through 59
+  *
+  * @return string time value in short time format
+  */
+  function getStringByFormat($format) {
+    static $i18n = null;
+    if ($i18n === null) {
+      $i18n = date_make_translation_array();
+    }
+    $s = '';  // return string
+    $c = '';  // current character
+    $p = '';  // previous character
+
+    #print "Analysing $format";
+    $formatLen = strlen($format);
+    for ($i=0; $i<$formatLen; $i++) {
+      $c = $format[$i];
+      if ($i > 0 && $format[$i-1] == '\\') {
+        $s .= $c;
+        next;
+      }
+      #print " $i: $c ($s)...";
+
+      switch ($c) {
+        // day
+        case 'd':
+        case 'j':
+        // month
+        case 'm':
+        case 'n':
+        // year
+        case 'y':
+        case 'Y':
+        // time
+        case 'g':
+        case 'G':
+        case 'h':
+        case 'H':
+        case 'i':
+        case 's':
+          $s .= date($c, $this->ticks);
+          break;
+
+        // day
+        case 'D':
+        case 'l':
+        // month
+        case 'F':
+        case 'M':
+        // time
+        case 'a':
+        case 'A':
+          $s .= $i18n[date($c, $this->ticks)];
+          #$s .= date($c, $this->ticks);
+          break;
+
+        case '\\':
+          break;
+        default:
+          $s .= $c;
+          break;
+      }
+    }
+    return $s;
+  }
 
   /**
   * set the date and time from seconds since epoch
@@ -136,8 +295,7 @@ class SimpleDate {
   function setTicks($t) {
     $this->isValid = 1;
     $this->ticks = $t;
-    $this->_datestring = '';
-    $this->_datetimestring = '';
+    $this->_cache = array();
     //$this->_setStr();
   }
 
@@ -145,8 +303,7 @@ class SimpleDate {
     #echo "SimpleDate::Ticks $s<br />";
     #preDump(debug_backtrace());
     $this->ticks = strtotime($s);
-    $this->_datestring = '';
-    $this->_datetimestring = '';
+    $this->_cache = array();
     $this->isValid = $this->isValid && ($this->ticks != '' && $this->ticks != -1);
   }
 
@@ -171,9 +328,7 @@ class SimpleDate {
     } else {
       $this->ticks += $t;
     }
-    $this->_datestring = '';
-    $this->_datetimestring = '';
-//     $this->_setStr();
+    $this->_cache = array();
   }
 
   /**
@@ -182,9 +337,7 @@ class SimpleDate {
   */
   function addSecs($s) {
     $this->ticks += $s;
-    $this->_datestring = '';
-    $this->_datetimestring = '';
-//     $this->_setStr();
+    $this->_cache = array();
   }
 
   /**
@@ -392,9 +545,7 @@ class SimpleDate {
                             date('d',$this->ticks) + $day,
                             date('y',$this->ticks) + $year
                         );
-    $this->_datestring = '';
-    $this->_datetimestring = '';
-//     $this->_setStr();
+    $this->_cache = array();
   }
 
   /**
@@ -416,9 +567,7 @@ class SimpleDate {
                             $day,
                             $year
                         );
-    $this->_datestring = '';
-    $this->_datetimestring = '';
-//     $this->_setStr();
+    $this->_cache = array();
   }
 
   /**
@@ -430,19 +579,19 @@ class SimpleDate {
   }
 
   /**
-  * return the day of week of the current date as a string (always in English)
+  * return the day of week of the current date as a string (in current language)
   * @return string day of week (Sunday, Monday, etc)
   */
   function dowStr() {
-    return date('l', $this->ticks);
+    return $this->_T_(date('l', $this->ticks));
   }
 
   /**
-  * return the (short) day of week of the current date as a string (always in English)
+  * return the (short) day of week of the current date as a string (in current language)
   * @return string day of week (Sun, Mon, etc)
   */
   function dowShortStr() {
-    return date('D', $this->ticks);
+    return $this->_T_(date('D', $this->ticks));
   }
 
   /**
@@ -462,19 +611,19 @@ class SimpleDate {
   }
 
   /**
-  * return the month of year of the current date as a string (always in English)
+  * return the month of year of the current date as a string (in current language)
   * @return string month of the year (January, February etc)
   */
   function moyStr() {
-    return date('F', $this->ticks);
+    return $this->_T_(date('F', $this->ticks));
   }
 
   /**
-  * return the (short) month of the year of the current date as a string (always in English)
+  * return the (short) month of the year of the current date as a string (in current language)
   * @return string month of the year (Jan, Feb etc)
   */
   function moyShortStr() {
-    return date('M', $this->ticks);
+    return $this->_T_(date('M', $this->ticks));
   }
 
   /**
@@ -505,6 +654,17 @@ class SimpleDate {
     return $s;
   }
 
+  /**
+  * translate an individual date-related word (day of week, month of year)
+  *
+  * @param string   $word    word to translate
+  * @returns string          translated word
+  */
+  function _T_($word) {
+    $i18n = date_make_translation_array();
+    return $i18n[$word];
+  }
+
 } // class SimpleDate
 
 
@@ -516,10 +676,10 @@ class SimpleDate {
 */
 class SimpleTime {
   /**
-  * current time in string format (HH:MM:SS)
-  * @var string
+  * cache of string formatted data
+  * @var array
   */
-  var $_timestring = '';
+  var $_cache = array();
   /**
   * current time in integer seconds since midnight
   * @var integer
@@ -558,15 +718,11 @@ class SimpleTime {
     //$this->_setStr();
   }
 
-//   function _setStr() {
-//     $this->timestring = sprintf('%02d:%02d', $this->ticks/3600, ($this->ticks%3600)/60);
-//   }
-
   function timeString() {
-    if ($this->_timestring === '') {
-      $this->_timestring = sprintf('%02d:%02d', $this->ticks/3600, ($this->ticks%3600)/60);;
+    if (! isset($this->_cache['time'])) {
+      $this->_cache['time'] = sprintf('%02d:%02d', $this->ticks/3600, ($this->ticks%3600)/60);;
     }
-    return $this->_timestring;
+    return $this->_cache['time'];
   }
 
   /**
@@ -574,8 +730,7 @@ class SimpleTime {
   */
   function setTicks($t) {
     $this->ticks = $t;
-    $this->_timestring = '';
-//     $this->_setStr();
+    $this->_cache = array();
   }
 
   function _setTicks($s) {
@@ -589,7 +744,7 @@ class SimpleTime {
       $this->ticks = 0;
       $this->inValid = 0;
     }
-    $this->_timestring = '';
+    $this->_cache = array();
   }
 
   /**
@@ -607,8 +762,7 @@ class SimpleTime {
   */
   function addSecs($s) {
     $this->ticks += $s;
-    $this->_timestring = '';
-//     $this->_setStr();
+    $this->_cache = array();
   }
 
   /**
@@ -644,10 +798,116 @@ class SimpleTime {
   }
 
   /**
+  * get a short string representation for the current locale
+  *
+  * @return string time value in short time format
+  */
+  function getShortString() {
+    if (! isset($this->_cache['short'])) {
+      $conf = ConfigReader::getInstance();
+      $format = $conf->value('language', 'date_shorttime', 'H:i');
+      $this->_cache['short'] = $this->getStringByFormat($format);
+    }
+    return $this->_cache['short'];
+  }
+
+  /**
+  * get a long string representation for the current locale
+  *
+  * @return string time value in long time format
+  */
+  function getLongString() {
+    if (! isset($this->_cache['long'])) {
+      $conf = ConfigReader::getInstance();
+      $format = $conf->value('language', 'date_longtime', 'H:i:s');
+      $this->_cache['long'] = $this->getStringByFormat($format);
+    }
+    return $this->_cache['long'];
+  }
+
+  /**
+  * Get a string representation of this time in the specified format
+  *
+  * Recognised format characters are as follows:
+  *
+  * a	Lowercase Ante meridiem and Post meridiem	am or pm
+  * A	Uppercase Ante meridiem and Post meridiem	AM or PM
+  * g	12-hour format of an hour without leading zeros	1 through 12
+  * G	24-hour format of an hour without leading zeros	0 through 23
+  * h	12-hour format of an hour with leading zeros	01 through 12
+  * H	24-hour format of an hour with leading zeros	00 through 23
+  * i	Minutes with leading zeros	00 to 59
+  * s	Seconds, with leading zeros	00 through 59
+  *
+  * @return string time value in short time format
+  */
+  function getStringByFormat($format) {
+    // cache the AM/PM data to reduce time spent in i18n function
+    static $i18n = null;
+    if ($i18n === null) {
+      $i18n = array();
+      $i18n['am'] = T_('am');
+      $i18n['AM'] = T_('AM');
+      $i18n['pm'] = T_('pm');
+      $i18n['PM'] = T_('PM');
+    }
+
+    $s = '';  // return string
+    $c = '';  // current character
+    $p = '';  // previous character
+
+    #print "Analysing $format";
+    $formatLen = strlen($format);
+    for ($i=0; $i<$formatLen; $i++) {
+      $c = $format[$i];
+      if ($i > 0 && $format[$i-1] == '\\') {
+        $s .= $c;
+        next;
+      }
+      #print " $i: $c ($s)...";
+
+      switch ($c) {
+        case 'a':
+          $s .= $i18n[$this->part('a')];
+          break;
+        case 'A':
+          $s .= $i18n[$this->part('A')];
+          break;
+        case 'g':
+          $s .= ($this->part('h')-1) % 12 + 1;
+          break;
+        case 'G':
+          $s .= $this->part('h');
+          break;
+        case 'h':
+          $s .= sprintf('%02d', ($this->part('h')-1) % 12 + 1);
+          break;
+        case 'H':
+          $s .= sprintf('%02d', $this->part('h'));
+          break;
+        case 'i':
+          $s .= sprintf('%02d', $this->part('i'));
+          break;
+        case 's':
+          $s .= sprintf('%02d', $this->part('s'));
+          break;
+        case '\\':
+          break;
+        default:
+          $s .= $c;
+          break;
+      }
+      #print " $s<br />";
+    }
+    return $s;
+  }
+
+  /**
   * round time down to the nearest $g time-granularity measure
   *
   * @see SimpleDate::floorTime()
-  * @param SimpleTime $g time granularity
+timestring = '';
+//     $this->_setStr();  * @param SimpleTime $g time granularity
   */
   function floorTime($g) {
     $gt = $g->seconds();
@@ -680,13 +940,17 @@ class SimpleTime {
       //we don't actually care about zero padding in this case.
       case 'H':
       case 'h':
-        return floor($this->ticks/(60*60));
+        return floor($this->ticks/(3600));
       //let's just allow 'm' to give minutes as well, as it's easier
       case 'i':
       case 'm':
         return floor(($this->ticks%3600) / 60);
       case 's':
         return floor($this->ticks % 60);
+      case 'a':
+        return ($this->ticks % 86400 < 43200) ? 'am' : 'pm';
+      case 'A':
+        return ($this->ticks % 86400 < 43200) ? 'AM' : 'PM';
     }
     //we can't use this as we're not actually using the underlying date-time types here.
     //return date($s, $this->ticks);
@@ -699,8 +963,7 @@ class SimpleTime {
   */
   function addTime($t) {
     $this->ticks += $t->ticks;
-    $this->_timestring = '';
-//     $this->_setStr();
+    $this->_cache = array();
   }
 
   /**
@@ -715,34 +978,66 @@ class SimpleTime {
   }
 } // class SimpleTime
 
+
 // We need to define these just so that the date formatting routines can always
 // return English names for the days and dates and the translation layer will
 // provide the correct translation. We can't just use setlocale() and strftime()
 // to do this because they only work if the locale is installed on the server and
 // this is frequently not the case (which is why we are using gettext emulation
 // to begin with!)
+function date_make_translation_array() {
+  static $i18n = null;
 
-if (false) { // never run this code, but define the constants so that msgformat finds them
-  $s = T_('Monday');     $s = T_('Mon');
-  $s = T_('Tuesday');    $s = T_('Tue'); $s = T_('Tues');
-  $s = T_('Wednesday');  $s = T_('Wed');
-  $s = T_('Thursday');   $s = T_('Thu'); $s = T_('Thurs');
-  $s = T_('Friday');     $s = T_('Fri');
-  $s = T_('Saturday');   $s = T_('Sat');
-  $s = T_('Sunday');     $s = T_('Sun');
+  if ($i18n !== null) return $i18n;
 
-  $s = T_('January');    $s = T_('Jan');
-  $s = T_('February');   $s = T_('Feb');
-  $s = T_('March');      $s = T_('Mar');
-  $s = T_('April');      $s = T_('Apr');
-  $s = T_('May');
-  $s = T_('June');       $s = T_('Jun');
-  $s = T_('July');       $s = T_('Jul');
-  $s = T_('August');     $s = T_('Aug');
-  $s = T_('September');  $s = T_('Sep');
-  $s = T_('October');    $s = T_('Oct');
-  $s = T_('November');   $s = T_('Nov');
-  $s = T_('December');   $s = T_('Dec');
+  $i18n = array();
+  $i18n['Monday']    = T_('Monday');
+  $i18n['Mon']       = T_('Mon');
+  $i18n['Tuesday']   = T_('Tuesday');
+  $i18n['Tue']       = T_('Tue');
+  $i18n['Tues']      = T_('Tue');
+  $i18n['Wednesday'] = T_('Wednesday');
+  $i18n['Wed']       = T_('Wed');
+  $i18n['Thursday']  = T_('Thursday');
+  $i18n['Thu']       = T_('Thu');
+  $i18n['Thurs']     = T_('Thu');
+  $i18n['Friday']    = T_('Friday');
+  $i18n['Fri']       = T_('Fri');
+  $i18n['Saturday']  = T_('Saturday');
+  $i18n['Sat']       = T_('Sat');
+  $i18n['Sunday']    = T_('Sunday');
+  $i18n['Sun']       = T_('Sun');
+
+  $i18n['January']   = T_('January');
+  $i18n['Jan']       = T_('Jan');
+  $i18n['February']  = T_('February');
+  $i18n['Feb']       = T_('Feb');
+  $i18n['March']     = T_('March');
+  $i18n['Mar']       = T_('Mar');
+  $i18n['April']     = T_('April');
+  $i18n['Apr']       = T_('Apr');
+  $i18n['May']       = T_('May');
+  $i18n['June']      = T_('June');
+  $i18n['Jun']       = T_('Jun');
+  $i18n['July']      = T_('July');
+  $i18n['Jul']       = T_('Jul');
+  $i18n['August']    = T_('August');
+  $i18n['Aug']       = T_('Aug');
+  $i18n['September'] = T_('September');
+  $i18n['Sep']       = T_('Sep');
+  $i18n['October']   = T_('October');
+  $i18n['Oct']       = T_('Oct');
+  $i18n['November']  = T_('November');
+  $i18n['Nov']       = T_('Nov');
+  $i18n['December']  = T_('December');
+  $i18n['Dec']       = T_('Dec');
+
+  $i18n['am'] = T_('am');
+  $i18n['AM'] = T_('AM');
+  $i18n['pm'] = T_('pm');
+  $i18n['PM'] = T_('PM');
+
+  return $i18n;
 }
 
 ?>

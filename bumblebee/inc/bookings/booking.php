@@ -141,10 +141,18 @@ class Booking extends TimeSlot {
     $start = isset($this->displayStart) ? $this->displayStart : $this->start;
     $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
     if ($this->freeBusyOnly) {
-      $timedescription = sprintf(T_('Busy from %s to %s'), $start->dateTimeString(), $stop->dateTimeString());
-      return "<div title='$timedescription'>".T_('busy')."</div>";
+      static $freeBusyStr = null;
+      static $busyStr = null;
+      if ($freeBusyStr === null) {
+        $freeBusyStr = T_('Busy from %s to %s');
+        $busyStr     = T_('busy');
+      }
+      $timedescription = sprintf($freeBusyStr, $start->dateTimeString(), $stop->dateTimeString());
+      return "<div title='$timedescription'>$busyStr</div>";
     }
-    $timedescription = sprintf(T_('View or edit booking from %s to %s'), $start->dateTimeString(), $stop->dateTimeString());
+    static $viewEditStr = null;
+    if ($viewEditStr === null) $viewEditStr = T_('View or edit booking from %s to %s');
+    $timedescription = sprintf($viewEditStr, $start->dateTimeString(), $stop->dateTimeString());
     //$timedescription = $this->start->timeString().' - '.$this->stop->timeString();
     $isodate = $start->dateString();
     $t = '';
@@ -174,9 +182,12 @@ class Booking extends TimeSlot {
   * @return string title
   */
   function generateBookingTitle() {
+    static $bookingStr = null;
+    if ($bookingStr === null) $bookingStr = T_('Booking from %s - %s');
+
     $start = isset($this->displayStart) ? $this->displayStart : $this->start;
     $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
-    return sprintf(T_('Booking from %s - %s'), $start->dateTimeString(), $stop->dateTimeString());
+    return sprintf($bookingStr, $start->dateTimeString(), $stop->dateTimeString());
   }
 
   /**

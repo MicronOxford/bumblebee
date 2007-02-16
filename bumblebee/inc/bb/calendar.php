@@ -503,16 +503,24 @@ class Calendar {
 
     $t = $this->_makeRefreshScript();
 
-    $t .= '<table class="tabularobject calendar" summary="'.T_('Extended view of instrument bookings').'">';
+    $t .= '<table class="tabularobject calendar" summary="'
+                    .T_('Extended view of instrument bookings').'">';
     $weekstart = clone($this->start);
     $weekstart->addDays(-7);
     $t .= '<tr><th colspan="2"></th>';
     for ($day=0; $day<7; $day++) {
       $current = clone($weekstart);
       $current->addDays($day);
-      $t .= '<th class="caldow">'.T_($current->dowShortStr()).'</th>';
+      $t .= '<th class="caldow">'
+              .($conf->value('calendar', 'shortdaynames', true) ? $current->dowShortStr()
+                                                                : $current->dowStr())
+              .'</th>';
     }
     $t .= '</tr>';
+
+    // load up this translation once outside the main loop
+    $zoomStr = T_('Zoom in on %s');
+
     for ($row = 0; $row < $numRows; $row++) {
       $dayRow = $row % $numRowsPerDay;
       if ($dayRow == 0) {
@@ -523,20 +531,15 @@ class Calendar {
           $current->addDays($day);
           $isodate = $current->dateString();
           $class = $this->_getDayClass($today, $current);
-          $zoomwords = sprintf(T_('Zoom in on %s'), $isodate);
+          $zoomwords = sprintf($zoomStr, $isodate);
           $t .= '<td class="caldatecell '.$class.'">';
           $t .= '<div style="float:right;"><a href="'.$this->zoomhref.'&amp;isodate='.$isodate.'" '
                   .'class="but" title="'.$zoomwords .'">'
-              .'<img src="'.$conf->BasePath.'/theme/images/zoom.png" '
+               .'<img src="'.$conf->BasePath.'/theme/images/zoom.png" '
                   .'alt="'.$zoomwords .'" class="calicon" /></a></div>'."\n";
           $t .= '<div class="caldate">'
-                . $current->dom();
-          $t .= '<span class="calmonth '
-          #.($month == $lastmonth ? "contmonth" : "startmonth") . "'> "
-            .'startmonth' . '"> '
-            . T_($current->moyStr())
-          .'</span>';
-          $t .= '</div>';
+                  .$current->getShortDateString()
+                .'</div>';
           $t .= '</td>';
         }
         $t .= '</tr>';
@@ -546,7 +549,7 @@ class Calendar {
       if ($dayRow % $reportPeriod == 0) {
         //$t .= '<td colspan="2" rowspan="'.$reportPeriod.'">';
         $t .= '<td rowspan="'.$reportPeriod.'" class="timemark">';
-        $t .= $timecolumn[$dayRow]->timeString();
+        $t .= $timecolumn[$dayRow]->getShortString();
         $t .= '</td>';
       }
       for ($day=0; $day<7; $day++) {
@@ -615,13 +618,8 @@ class Calendar {
     $t .= '<tr><td class="dummy"></td><th></th>';
     $t .= '<td class="caldayzoom">';
     $t .= '<div class="caldate">'
-          . $this->start->dom();
-    $t .= '<span class="calmonth '
-    #.($month == $lastmonth ? "contmonth" : "startmonth") . "'> "
-      .'startmonth' . '"> '
-      .T_($this->start->moyStr())
-    .'</span>';
-    $t .= '</div>';
+            .$this->start->getLongDateString()
+          .'</div>';
     $t .= '</td>';
     $t .= '</tr>';
     for ($row = 0; $row < $numRows; $row++) {
