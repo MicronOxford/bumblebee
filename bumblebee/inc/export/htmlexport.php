@@ -187,7 +187,7 @@ class HTMLExport {
           $align='';
       }
       $align = ($align!='' ? 'align='.$align : '');
-      $t .= '<td '.$align.'>'.htmlentities($val).'</td>';
+      $t .= '<td '.$align.'>'.htmlentities($val, ENT_QUOTES, 'UTF-8').'</td>';
     } else {
       $t .= '<th>'.htmlentities($val).'</th>';
     }

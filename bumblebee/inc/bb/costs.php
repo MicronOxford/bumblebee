@@ -14,6 +14,7 @@
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
+require_once 'inc/bb/configreader.php';
 
 /** parent object */
 require_once 'inc/formslib/dbrow.php';
@@ -34,6 +35,9 @@ class ClassCost extends DBRow {
     $this->DBRow('userclass', $id);
     $this->editable = 1;
     $this->use2StepSync = 1;
+
+    $conf = ConfigReader::getInstance();
+
     $f = new IdField('id', T_('UserClass ID'));
     $f->editable = 0;
     $f->duplicateName = 'userclass';
@@ -55,13 +59,18 @@ class ClassCost extends DBRow {
     //$instrfield->setFormat('id', '%s', array('name'), ' (%40.40s)', $classexample);
     $f->addKeys($userfield,$instrfield);
 
-    $cost = new CurrencyField('costfullday', T_('Full day cost'),
+    $cost = new CurrencyField('costfullday',
+                              sprintf(T_('Full day cost (%s)'),
+                                  sprintf($conf->value('language', 'money_format', '$%s'), '')),
                           T_('Cost of instrument use for a full day'));
     $attrs = array('size' => '6');
-    $cost->setAttr($attrs);
+    $cost->setAttr(array_merge($attrs,
+                    array('float' => true,
+                      'precision' => $conf->value('language', 'money_decimal_places', 2))));
     $f->addElement($cost);
     $hours= new TextField('hourfactor', T_('Hourly rate multiplier'),
                           T_('Proportion of daily rate charged per hour'));
+    $attrs = array('size' => '6', 'float' => true, 'precision' => 3);
     $hours->setAttr($attrs);
     $f->addElement($hours);
     $halfs= new TextField('halfdayfactor', T_('Half-day rate multiplier'),

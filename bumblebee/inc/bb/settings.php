@@ -269,16 +269,23 @@ class SettingsDescriptionList {
     $s->parameters[] = new SettingsDescription('LogLevel', T_('Log level determining how much should be logged. Integer from 0 to 10 where: <br /> 0 nothing<br /> 1 masquerading<br /> 2 modifying users, instruments etc<br /> 3 deleting bookings<br /> 4 login and logout events<br /> 5 making bookings<br />  9 miscellaneous notices, locale failures<br />  10 lots of debug noise.'));
     $this->sections[] = $s;
 
-    $s = new SettingsDescriptionSection('language', T_('Regional'));
-    $s->parameters[] = new SettingsDescription('VerboseSQL', T_('Locale to use for generating messages. The list of locales available can be seen in the locale/ directory within your installation or on the Bumblebee website. If you choose a locale that doesn\'t exist, you\'ll get the interface in English.'));
+    $s = new SettingsDescriptionSection('language', T_('Regional settings'));
+    $s->parameters[] = new SettingsDescription('locale', T_('Locale to use for generating messages. The list of locales available can be seen in the locale/ directory within your installation or on the Bumblebee website. If you choose a locale that doesn\'t exist, you\'ll get the interface in English.'));
     $s->parameters[] = new SettingsDescription('translation_base', T_('Location on disk of Bumblebee\'s translation files (paths relative to index.php are OK).'));
     $s->parameters[] = new SettingsDescription('timezone', sprintf(T_('Timezone in which the instruments are located. (<a href="%s">list of acceptable values</a>)'), 'http://php.net/manual/en/timezones.php'));
-    $s->parameters[] = new SettingsDescription('date_cal_short', T_('Short date format for display on the calendar (e.g. "16 May")'));
-    $s->parameters[] = new SettingsDescription('date_long', T_('Long date format for display in tool tips and menus (e.g. "13:15, 16 May 2006")'));
-    $s->parameters[] = new SettingsDescription('date_cal_shortnames', T_('Use short weekday names across the top of the calendar display (e.g. "Mon")'), SETTING_BOOLEAN);
+    $s->parameters[] = new SettingsDescription('date_shortdate', sprintf(T_('Format string for showing dates in short form. (<a href="%s">list of acceptable format codes</a>)'), 'http://php.net/date'));
+    $s->parameters[] = new SettingsDescription('date_longdate', sprintf(T_('Format string for showing dates in long form. (<a href="%s">list of acceptable format codes</a>)'), 'http://php.net/date'));
+    $s->parameters[] = new SettingsDescription('date_shorttime', sprintf(T_('Format string for showing times in short form. (<a href="%s">list of acceptable format codes</a>)'), 'http://php.net/date'));
+    $s->parameters[] = new SettingsDescription('date_longtime', sprintf(T_('Format string for showing times in long form. (<a href="%s">list of acceptable format codes</a>)'), 'http://php.net/date'));
+    $s->parameters[] = new SettingsDescription('date_shortdatetime', sprintf(T_('Format string for showing date-time in short form. (<a href="%s">list of acceptable format codes</a>)'), 'http://php.net/date'));
+    $s->parameters[] = new SettingsDescription('date_longdatetime', sprintf(T_('Format string for showing date-time in long form. (<a href="%s">list of acceptable format codes</a>)'), 'http://php.net/date'));
+
     $s->parameters[] = new SettingsDescription('week_offset', T_('Day to start weekly calendar on (0 = Sunday, 1 = Monday, ..., 6 = Saturday)'));
-    //$s->parameters[] = new SettingsDescription('decimal_separator', T_('Decimal separator for printing numbers.'));
-    $s->parameters[] = new SettingsDescription('moneyFormat', T_('Format string for currency amounts -- include your currency symbol and the number of significant figures as an sprintf format string (e.g. <code>$%.2f</code> <code>&euro;%.2f</code> <code>&pound;%.2f</code> <code>&yen;%.0f</code>)'));
+    $s->parameters[] = new SettingsDescription('decimal_separator', T_('Decimal separator for printing numbers (decimal point "." or decimal comma ",").'));
+    $s->parameters[] = new SettingsDescription('thousands_separator', T_('Thousands separator for printing numbers (",", "" or ".").'));
+    $s->parameters[] = new SettingsDescription('use_comma_floats', T_('Accept data using the European input convention of using a decimal comma rather than a decimal point (e.g. 1.234,67) in numeric input fields. You can use decimal commas at the same time as decimal points as long as you don\'t also want to use thousands separators at all. (Note: the values are always stored using internally decimal points so you can change this setting safely.)'));
+    $s->parameters[] = new SettingsDescription('money_format', T_('Format string for currency amounts -- include your currency symbol and %s to indicate where the amount should go (e.g. <code>$%s</code> <code>%s&euro;</code> <code>&pound;%s</code> <code>&yen;%s</code>)'));
+    $s->parameters[] = new SettingsDescription('money_decimal_places', T_('Number of decimal places to show money amounts to.'));
     $s->parameters[] = new SettingsDescription('removedCurrencySymbols', T_('Currency symbols that should be stripped off the beginning or end of a currency amount to make it into a pure number for storing it in the database.'));
     $this->sections[] = $s;
 
@@ -326,6 +333,7 @@ class SettingsDescriptionList {
     $s->parameters[] = new SettingsDescription('showphone', T_('Show users\' phone numbers on the calendar.'), SETTING_BOOLEAN);
     $s->parameters[] = new SettingsDescription('notesbottom', T_('Show instrument notes at the bottom of the page (otherwise shown at the top).'), SETTING_BOOLEAN);
     $this->sections[] = $s;
+    $s->parameters[] = new SettingsDescription('shortdaynames', T_('Use short weekday names across the top of the calendar display (e.g. "Mon")'), SETTING_BOOLEAN);
 
     $s = new SettingsDescriptionSection('export', T_('Export'));
     $s->parameters[] = new SettingsDescription('filename', T_('Filename template for creating export files. The following tokens are replaced: __action__ __what__ __date__'));

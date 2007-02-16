@@ -230,13 +230,16 @@ class ArrayExport {
     $conf = ConfigReader::getInstance();
     switch ($format & EXPORT_HTML_NUMBER_MASK) {
       case EXPORT_HTML_MONEY:
-        $val = sprintf($conf->value('language', 'moneyFormat', '$%.2f'), $val);
+        $val = currencyFormatter($val);
+        break;
+      case EXPORT_HTML_INTEGER:
+        $val = numberFormatter($val, 0);
         break;
       case EXPORT_HTML_DECIMAL_1:
-        $val = sprintf('%.1f', $val);
+        $val = numberFormatter($val, 1);
         break;
       case EXPORT_HTML_DECIMAL_2:
-        $val = sprintf('%.2f', $val);
+        $val = numberFormatter($val, 2);
         break;
       default:
         //echo ($format& EXPORT_HTML_NUMBER_MASK).'<br/>';

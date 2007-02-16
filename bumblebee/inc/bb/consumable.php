@@ -14,6 +14,8 @@
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
+require_once 'inc/bb/configreader.php';
+
 /** parent object */
 require_once 'inc/formslib/dbrow.php';
 /** uses fields */
@@ -32,6 +34,9 @@ class Consumable extends DBRow {
     $this->DBRow('consumables', $id);
     $this->editable = 1;
     $this->deleteFromTable = 0;
+
+    $conf = ConfigReader::getInstance();
+
     $f = new IdField('id', T_('Consumable ID'));
     $f->editable = 0;
     $this->addElement($f);
@@ -46,9 +51,14 @@ class Consumable extends DBRow {
     $f->isValidTest = 'is_nonempty_string';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new CurrencyField('cost', T_('Unit cost'), T_('Cost per item'));
+    $f = new CurrencyField('cost',
+                           sprintf(T_('Unit cost (%s)'),
+                                    sprintf($conf->value('language', 'money_format', '$%s'), '')),
+                            T_('Cost per item'));
     $f->required = 1;
-    $f->setAttr($attrs);
+    $f->setAttr(array_merge($attrs,
+                array('float' => true,
+                      'precision' => $conf->value('language', 'money_decimal_places', 2))));
     $this->addElement($f);
     $this->fill();
     $this->dumpheader = 'Consumables object';

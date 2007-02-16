@@ -85,15 +85,16 @@ define('EXPORT_HTML_ALIGN_MASK', EXPORT_HTML_CENTRE|EXPORT_HTML_RIGHT|EXPORT_HTM
 
 /** Formatting code: format as a number */
 define('EXPORT_HTML_NUMBER',       32);
-/** Formatting code: format as money (use defined currency symbol and 2 decimal places)
- */
+/** Formatting code: format as money (use defined currency symbol and 2 decimal places) */
 define('EXPORT_HTML_MONEY',        EXPORT_HTML_NUMBER|64);
 /** Formatting code: format to 1 decimal place, rounding appropriately */
-define('EXPORT_HTML_DECIMAL_1',    EXPORT_HTML_NUMBER|128);  // round to 1 sig figs
+define('EXPORT_HTML_INTEGER',      EXPORT_HTML_NUMBER|128);  // round to integer
+/** Formatting code: format to 1 decimal place, rounding appropriately */
+define('EXPORT_HTML_DECIMAL_1',    EXPORT_HTML_NUMBER|256);  // round to 1 sig figs
 /** Formatting code: format to 2 decimal places, rounding appropriately */
-define('EXPORT_HTML_DECIMAL_2',    EXPORT_HTML_NUMBER|256);  // round to 2 sig figs
+define('EXPORT_HTML_DECIMAL_2',    EXPORT_HTML_NUMBER|512);  // round to 2 sig figs
 /** Formatting code: format to x decimal places  bitmask */
-define('EXPORT_HTML_DECIMAL_MASK', EXPORT_HTML_DECIMAL_1|EXPORT_HTML_DECIMAL_2);
+define('EXPORT_HTML_DECIMAL_MASK', EXPORT_HTML_INTEGER|EXPORT_HTML_DECIMAL_1|EXPORT_HTML_DECIMAL_2);
 /** Formatting code: format as a number bitmask */
 define('EXPORT_HTML_NUMBER_MASK',  EXPORT_HTML_MONEY|EXPORT_HTML_DECIMAL_MASK);
 
