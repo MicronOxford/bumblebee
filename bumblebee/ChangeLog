@@ -20,6 +20,7 @@
 	  system is offline
 	* feature: i18n of the date, time and currency display functions
 	* feature: i18n of the number input functions
+	* feature: autodetect the installation path where possible
 	* bugfix: enforce future booking restrictions when making
 	  bookings (closes #1567290)
 	* bugfix: dropdown list no longer overlaps existing bookings
