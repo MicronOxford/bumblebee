@@ -51,14 +51,32 @@ class ConfigReader extends BasicConfigReader {
 
     $this->AdminEmail = $this->value('main', 'AdminEmail', '');  ///FIXME: work out a default?
 
-    $this->BasePath   = $this->value('main', 'BasePath');   ///FIXME: work out a default?
-    if (substr($this->BasePath, 0, 1) != '/' && ! $this->configError) {
-      // the first character of the path must be a slash
-      // the user is never going to be able to log on when it's like this, so let's kill it off.
-      trigger_error('Bumblebee misconfiguration: please make sure that the BasePath parameter in bumblebee.ini is only the path portion of the URL and does not include the server name. (Hint: should start with a "/" and be something like "/bumblebee" or "/departments/chemistry/equipment")', $fatalErrors ? E_USER_ERROR : E_USER_NOTICE);
+    $script_source = preg_replace('@//+@', '/', $_SERVER['SCRIPT_NAME']);
+
+    $this->BasePath   = $this->value('main', 'BasePath');
+    if ($this->BasePath === null || substr($this->BasePath, 0, 1) != '/') {
+      if (preg_match('@install/\w+.php@', $script_source)) {
+        $this->BasePath = preg_replace('@install/\w+.php@', '', $script_source);
+      } else {
+        $this->BasePath = preg_replace('@/index.php@', '', $script_source);
+      }
+      if (strlen($this->BasePath) == 0) $this->BasePath = '/';
     }
 
-    $this->BaseURL    = $this->value('main', 'BaseURL');    ///FIXME: work out a default?
+//     if (substr($this->BasePath, 0, 1) != '/' && ! $this->configError) {
+//       // the first character of the path must be a slash
+//       // the user is never going to be able to log on when it's like this, so let's kill it off.
+//       trigger_error('Bumblebee misconfiguration: please make sure that the BasePath parameter in bumblebee.ini is only the path portion of the URL and does not include the server name. (Hint: should start with a "/" and be something like "/bumblebee" or "/departments/chemistry/equipment")', $fatalErrors ? E_USER_ERROR : E_USER_NOTICE);
+//     }
+
+    $this->BaseURL    = $this->value('main', 'BaseURL');    //FIXME: work out a default?
+    if ($this->BaseURL === null || (substr($this->BaseURL, 0, 1) != '/' && substr($this->BaseURL, 0, 4) != 'http')) {
+      if (preg_match('@install/\w+.php@', $script_source)) {
+        $this->BaseURL = preg_replace('@install/\w+.php@', 'index.php', $script_source);
+      } else {
+        $this->BaseURL = $script_source;
+      }
+    }
 
     if ($fatalErrors) {
       if (! defined('LOAD_ALL_PHP_FILES')) {
@@ -79,7 +97,8 @@ class ConfigReader extends BasicConfigReader {
     $this->VerboseSQL  = $this->value('error_handling', 'VerboseSQL', false);
     $this->VerboseData = $this->value('error_handling', 'VerboseData', false);
 
-    $this->SessionIndex = md5(dirname(__FILE__));
+//     echo "'$script_source'";
+    $this->SessionIndex = md5($script_source);
   }
 
 }

@@ -47,12 +47,12 @@ class InstallStep {
 
   function makePrevButton($name) {
     if ($name == NULL) $name = $this->name;
-    return $this->makeButton('&laquo '.$name);
+    return $this->makeButton('&laquo; '.$name);
   }
 
   function makeNextButton($name) {
     if ($name == NULL) $name = $this->name;
-    return $this->makeButton($name.' &raquo');
+    return $this->makeButton($name.' &raquo;');
   }
 
   function makeButton($name) {

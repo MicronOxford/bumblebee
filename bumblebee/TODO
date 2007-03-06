@@ -22,7 +22,6 @@ Features:
   * [90%] polite "offline" mode (testing)
   * trap unconfigured and send to installer
   * trap configured and get out of installer
-  * [70%] i18n: date/time customisation (docs of what fns are used where; widespread use)
   * logging included in more places
   * fix dropdown truncation (also for multi-byte chars)
 

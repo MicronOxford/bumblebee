@@ -249,10 +249,18 @@ function check_postinst($data) {
     $htbbdata[] = @ file_get_contents($htbb[1]);
     if ($htbbdata[0] || $htbbdata[1]) {
       // then something was downloaded
+      // strip the magicTag out of the html as it changes every time
+      $htbbdata[0] = preg_replace('@name="magicTag" value=".+?"@', '', $htbbdata[0]);
+      $htbbdata[1] = preg_replace('@name="magicTag" value=".+?"@', '', $htbbdata[1]);
       if ($htbbdata[0] != $htbbdata[1]) {
         $s[] = "ERROR: I got different results when I tried to go to <a href='$htbb[0]' target='_blank'>check 1</a> "
               ."and <a href='$htbb[1]' target='_blank'>check 2</a>.";
               //echo "......".$htbbdata[0]."......".$htbbdata[1]."......";
+              #for ($len=0; $len < strlen($htbbdata[0]); $len++) {
+              #  if ($htbbdata[0]{$len} != $htbbdata[1]{$len}) {
+              #    print "$len ".$htbbdata[0]{$len}.'  '.$htbbdata[1]{$len}."<br/>";
+              #  }
+              #}
         $error = true;
       } elseif (! preg_match('/Bumblebee/', $htbbdata[0])) {
         $s[] = "WARNING: I was able to find a webpage at your <a href='$htbb[0]' target='_blank'>configured location</a>, "

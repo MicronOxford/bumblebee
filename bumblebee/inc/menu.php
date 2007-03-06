@@ -270,6 +270,8 @@ function makeAbsURL($target=NULL, $escape=true) {
     $pathPart = $conf->BasePath . $target;
   }
 
+  $pathPart = preg_replace('@//+@', '/', $pathPart);
+
   return $serverPart . $pathPart;
 }
 
