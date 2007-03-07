@@ -80,7 +80,7 @@ class ConfigReader extends BasicConfigReader {
 
     if ($fatalErrors) {
       if (! defined('LOAD_ALL_PHP_FILES')) {
-        if ($this->data['error_handling']['AllWarnings']) {
+        if ($this->value('error_handling', 'AllWarnings', false)) {
           //this is nice for development but probably turn it off for production
           error_reporting(E_ALL | E_STRICT); #force all warnings to be echoed
           #error_reporting(E_ALL); #force all warnings to be echoed
