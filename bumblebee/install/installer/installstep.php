@@ -30,9 +30,9 @@ class InstallStep {
     $this->prev = $step;
   }
 
-  function getNextButton($name=NULL) {
+  function getNextButton($name=NULL, $waitNext=false) {
     if ($this->next == NULL) return '';
-    return $this->next->makeNextButton($name);
+    return $this->next->makeNextButton($name, $waitNext);
   }
 
   function getPrevButton($name=NULL) {
@@ -50,13 +50,14 @@ class InstallStep {
     return $this->makeButton('&laquo; '.$name);
   }
 
-  function makeNextButton($name) {
+  function makeNextButton($name, $waitNext=false) {
     if ($name == NULL) $name = $this->name;
-    return $this->makeButton($name.' &raquo;');
+    return $this->makeButton($name.' &raquo;', $waitNext);
   }
 
-  function makeButton($name) {
-    return "<input type='submit' name='{$this->action}' value='{$name}' />";
+  function makeButton($name, $disabled=false) {
+    $dis = ($disabled ? "disabled='1'" : '');
+    return "<input type='submit' name='{$this->action}' id='{$this->action}' value='{$name}' $dis />";
   }
 }
 
@@ -92,11 +93,11 @@ class InstallStepCollection {
     return $t;
   }
 
-  function getPrevNextButtons($prev=NULL, $next=NULL) {
+  function getPrevNextButtons($prev=NULL, $next=NULL, $waitNext=false) {
     if ($prev   === NULL) $prev = 'Previous';
     if ($next   === NULL) $next = 'Continue';
     return $this->steps[$this->index]->getPrevButton($prev).' '
-          .$this->steps[$this->index]->getNextButton($next);
+          .$this->steps[$this->index]->getNextButton($next, $waitNext);
   }
 
   function getPrevReloadNextButtons($prev=NULL, $reload=NULL, $next=NULL) {
@@ -121,6 +122,10 @@ class InstallStepCollection {
 
   function increment() {
     $this->index++;
+  }
+
+  function getNextActionName() {
+    return $this->steps[$this->index+1]->action;
   }
 
 }

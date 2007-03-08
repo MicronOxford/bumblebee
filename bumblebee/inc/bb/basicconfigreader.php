@@ -95,7 +95,7 @@ class BasicConfigReader extends BasicConfigReaderSingleton {
   }
 
   /** merge an array into the config data. If a section is provided the array is added as a new sub key */
-  function mergeConfig($other_array, $section = null) {
+  function MergeConfig($other_array, $section = null) {
     if(is_array($other_array)) {
       if($section == null) {
         $this->data = array_merge($this->data, $other_array);
@@ -111,7 +111,7 @@ class BasicConfigReader extends BasicConfigReaderSingleton {
     }
   }
 
-  function mergeDatabaseTable($table = 'settings', $sectionColumn = 'section',
+  function MergeDatabaseTable($table = 'settings', $sectionColumn = 'section',
                               $parameterColumn = 'parameter', $valueColumn = 'value') {
     global $TABLEPREFIX;
     $q = "SELECT $sectionColumn as section, $parameterColumn as parameter, $valueColumn as value from $TABLEPREFIX$table";

@@ -13,10 +13,12 @@
 
 function startHTML($title, $head='') {
   ?>
-    <html>
+  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
       <head>
         <title><?php echo $title; ?></title>
-        <style>
+        <style type="text/css">
               .good  { color: green;  font-weight: bolder; }
               .warn  { color: orange; font-weight: bolder; }
               .error { color: red;    font-weight: bolder; }
@@ -25,6 +27,15 @@ function startHTML($title, $head='') {
               fieldset fieldset {background-color: #f9ffff;}
               h2 { padding-top: 0; margin-top: 0;}
         </style>
+        <script type='text/javascript'>
+        //<![CDATA[
+          function enableButton(id) {
+            var but = document.getElementById(id);
+            but.disabled = false;
+            return true;
+          }
+        //]]>
+        </script>
         <?php echo $head; ?>
       </head>
       <body>
@@ -36,7 +47,7 @@ function startHTML_install($data, $steps) {
   startHTML($title);
   ?>
       <h1>Bumblebee Setup Script</h1>
-      <form action='install.php' method='POST'>
+      <form action='install.php' method='post'>
       <input type='hidden' name='havedata' value='1' />
       <div id="stepnum">Step <?php print $steps->getIndex(); ?> of <?php print $steps->numSteps();?></div>
       <div id="stepbar">
@@ -55,7 +66,7 @@ function startHTML_upgrade($data, $steps) {
   startHTML($title);
   ?>
       <h1>Bumblebee Upgrade Script</h1>
-      <form action='upgrade.php' method='POST'>
+      <form action='upgrade.php' method='post'>
       <input type='hidden' name='havedata' value='1' />
       <div id="stepnum">Step <?php print $steps->getIndex(); ?> of <?php print $steps->numSteps();?></div>
       <div id="stepbar">
@@ -144,7 +155,7 @@ function printField($name, $value, $hidden, $type='text') {
   }
 }
 
-function printDatabaseSetupForm($values) {
+function printDatabaseSetupForm($values, $next) {
   ?>
   <fieldset id='dbsetup'>
     <legend>Database setup</legend>
@@ -164,7 +175,9 @@ function printDatabaseSetupForm($values) {
     <tr><td width='50%' valign='top'>
     <fieldset>
       <legend>Manual setup</legend>
-      <input type='submit' name='submitsql' value='Download database script' />
+      <input type='submit' name='submitsql' value='Download database script'
+            <?php echo jsEnableButtonClick($next); ?>
+      />
             <br/>
             Save the SQL file and then load it into the database using either phpMyAdmin or
             the mysql command line tools, <i>e.g.</i>:
@@ -221,6 +234,10 @@ function genericCleanupInstructions($values, $steps) {
       <?php print $steps->getPrevNextButtons(); ?>
     </div>
   <?php
+}
+
+function jsEnableButtonClick($name) {
+  return "onClick='return enableButton(\"$name\");'";
 }
 
 ?>

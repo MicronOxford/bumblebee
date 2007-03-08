@@ -26,6 +26,7 @@ require_once 'installer/sqlload.php';
 require_once 'installer/checks.php';
 require_once 'installer/createdatabase.php';
 require_once 'installer/constructini.php';
+require_once 'installer/loadconfig.php';
 
 require_once 'installer/installstep.php';
 
@@ -175,7 +176,7 @@ function printStepPreInst($values, $steps) {
 function printStepDatabase($values, $steps) {
   startHTML_install($values, $steps);
   reflectUserData($values, false);
-  printDatabaseSetupForm($values);
+  printDatabaseSetupForm($values, $steps->getNextActionName());
   if (isset($values['loadsql-results'])) {
     ?>
       <fieldset>
@@ -192,7 +193,7 @@ function printStepDatabase($values, $steps) {
   }
   ?>
     <div id='buttonbar'>
-      <?php print $steps->getPrevNextButtons(); ?>
+      <?php print $steps->getPrevNextButtons(null, null, ! isset($values['loadsql-results'])); ?>
     </div>
   <?php
   endHTML();
@@ -207,10 +208,11 @@ function printStepDBini($values, $steps) {
       Bumblebee needs to know what username and password to use for connecting to your database.
       Download the <code>db.ini</code> file (which will contain the values specified above)
       and save it into your Bumblebee installation on the webserver as <code>config/db.ini</code>.<br />
-      <input type='submit' name='submitini' value='Generate db.ini file' />
+      <input type='submit' name='submitini' value='Generate db.ini file'
+        <?php echo jsEnableButtonClick($steps->getNextActionName()); ?> />
     </fieldset>
     <div id='buttonbar'>
-      <?php print $steps->getPrevNextButtons(); ?>
+      <?php print $steps->getPrevNextButtons(null, null, true); ?>
     </div>
   <?php
   endHTML();

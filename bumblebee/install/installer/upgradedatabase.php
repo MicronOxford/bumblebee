@@ -13,14 +13,31 @@
 require_once 'loadconfig.php';
 loadInstalledConfig();
 
+function checkDatabaseVersion(&$data) {
+  global $BUMBLEBEEVERSION;
+  $data['old_db_version'] = getCurrentDBVersion();
+  $data['old_version']    = $data['old_db_version'];
+  $data['new_version']    = $BUMBLEBEEVERSION;
+  $data['new_db_version'] = $data['new_version']; #substr($data['new_version'], 0, strrpos($data['new_version'], '.'));
+  if (version_compare($data['old_db_version'], $data['new_db_version']) == -1) {
+    // then the db needs upgrading
+    $data['db_upgrade'] = true;
+  } else {
+    $data["db_upgrade"] = false;
+  }
+}
+
+
+
 // we will need auth rights to alter the structure of the table to actually perform these operations
 // as per the installer, we give the option of making an SQL file for the user to make use of using
 // either command line tools or phpMyAdmin, or we execute the statements for the user.
 
 function getCurrentDBVersion() {
+  global $TABLEPREFIX;
   // there is no defined way of working out what version of the database the installation
   // is using (at least not for anything in the 1.x series). We'll have to guess.
-  $structure = db_get_single('SHOW CREATE TABLE users');
+  $structure = db_get_single("SHOW CREATE TABLE {$TABLEPREFIX}users");
   #print "Apparent structure is ".$structure[1]."<br />";
   if (strpos($structure[1], 'utf8') === false) {
     return "1.0";
@@ -31,7 +48,8 @@ function getCurrentDBVersion() {
   if (strpos($structure[1], 'permissions') === false) {
     return "1.1.4";
   }
-  return "1.1.9";
+  $conf = ConfigReader::getInstance();
+  return $conf->value('meta', 'dbversion', '1.1.4');
 }
 
 function makeUpgradeSQL($initial) {
@@ -53,7 +71,7 @@ function makeUpgradeSQL($initial) {
     }
   }
   $settingComment = "-- Bumblebee SQL load file for ".$_SERVER['SERVER_NAME']."\n"
-                   ."-- date: ".date('r', time())."\n"
+                   ."-- date: ".gmdate('r', time())."\n"
                    ."--\n"
                    ."-- Load this file using phpMyAdmin or on the MySQL command line tools:\n"
                    ."--     mysql -p --user someuser < upgrade.sql\n"
@@ -111,7 +129,7 @@ function DB_upgrade_BB_1_1_passwd() {
 function DB_upgrade_BB_1_1_permissions() {
   $conf = ConfigReader::getInstance();
   global $TABLEPREFIX;
-  require 'inc/permissions.php';
+  require_once 'inc/permissions.php';
   $default = BBPERM_USER_BASIC | BBPERM_USER_PASSWD;
   $admin = BBPERM_ADMIN_ALL;
   $s = "USE {$conf->value('database', 'database')};\n";
@@ -130,7 +148,7 @@ function DB_upgrade_BB_1_1_permissions() {
        .") DEFAULT CHARACTER SET utf8;\n";
   $s .= "INSERT INTO {$TABLEPREFIX}settings VALUES ('meta', 'dbversion', '1.1.5');\n";
   $s .= "INSERT INTO {$TABLEPREFIX}settings VALUES ('meta', 'configured', '1.1.5');\n";
-  $notes .= " The new configuration system stores all your settings in the database to make configuration easier.";
+  $notes .= " The new configuration system can store most of your settings in the database to make configuration easier.";
 
   return array($s, $notes);
 }

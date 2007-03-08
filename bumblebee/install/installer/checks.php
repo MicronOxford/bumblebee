@@ -31,7 +31,7 @@ function check_preinst($data) {
   ini_set('track_errors', true);
   // check kit: check that a Bumblebee installation can be found
   $REBASE_INSTALL = '..'.DIRECTORY_SEPARATOR;
-  set_include_path($REBASE_INSTALL.PATH_SEPARATOR.get_include_path());
+  mungeIncludePath($REBASE_INSTALL);
   $NON_FATAL_CONFIG = true;
   $php_errormsg = '';
   if (@ include 'inc/config.php') {

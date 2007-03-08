@@ -38,6 +38,10 @@ function getSetupDefaults() {
 * Work out an SQL load file from the defaults and the user input
 */
 function constructSQL($source, $replacements, $includeAdmin) {
+
+  mungeIncludePath('..'.DIRECTORY_SEPARATOR);
+  require_once('inc/permissions.php');
+
   $sqlSourceFile = $source;
 
   $sqlTablePrefix       = $replacements['sqlTablePrefix'];
@@ -89,6 +93,8 @@ function constructSQL($source, $replacements, $includeAdmin) {
   // make the admin user
   $sql = preg_replace("/INSERT INTO (users)/",
                       "INSERT INTO $sqlTablePrefix\$1", $sql);
+  $sql = preg_replace("/BBPERM_ADMIN_ALL/",
+                      BBPERM_ADMIN_ALL, $sql);
 
   $sql = preg_replace("/\('$bbDefaultAdmin','$bbDefaultAdminName',MD5\('$bbDefaultAdminPass'\),1\)/",
                       "('$bbAdmin','$bbAdminName','".md5($bbAdminPass)."',1);", $sql);

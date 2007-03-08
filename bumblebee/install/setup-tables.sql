@@ -250,6 +250,6 @@ CREATE TABLE settings (
 ) DEFAULT CHARACTER SET utf8;
 
 --     Create an admin user
-INSERT INTO users (username,name,passwd,isadmin) VALUES
-  ('BumblebeeAdmin','Queen Bee',MD5('defaultpassword123'),1)
+INSERT INTO users (username,name,passwd,permissions) VALUES
+  ('BumblebeeAdmin','Queen Bee',MD5('defaultpassword123'),BBPERM_ADMIN_ALL)
 ;
