@@ -14,8 +14,6 @@
 * path (bumblebee root)/index.php
 */
 
-error_reporting(E_ALL | E_STRICT);
-
 // prevent output for the moment to permit session headers
 ob_start();
 
