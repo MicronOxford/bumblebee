@@ -1,4 +1,5 @@
-2007-02-XX Stuart Prescott <bumblebee@nanonanonano.net>
+2007-03-12 Stuart Prescott <bumblebee@nanonanonano.net>
+	* 1.1.5 release
 	* feature: anonymous browsing mode (disabled by default)
 	* feature: internals now use new permissions model
 	* feature: interface for editing permissions
@@ -37,7 +38,7 @@
 	* janitorial: clean up some PHP4isms (function prototypes same in
 	  subclasses; TZ set)
 
-2007-02-XX Seth Sims <sims1001@alltel.net>
+2007-03-12 Seth Sims <sims1001@alltel.net>
 	* feature: double entry password model included
 	* feature: make entire row in lists a link
 	* feature: make DROP commands in the installer optional
