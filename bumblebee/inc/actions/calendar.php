@@ -26,6 +26,14 @@ require_once 'inc/date.php';
 require_once 'inc/actions/viewbase.php';
 /** Data reflector object */
 require_once 'inc/formslib/datareflector.php';
+/** manage user settings for the calendar */
+require_once 'inc/formslib/nondbrow.php';
+/** user settings for the calendar: list of checkboxes */
+require_once 'inc/formslib/checkboxtablelist.php';
+/** user settings for the calendar: checkboxes for input */
+require_once 'inc/formslib/checkbox.php';
+/** user settings for the calendar: text fields for input */
+require_once 'inc/formslib/textfield.php';
 
 /**
 * View a bookings calendar and make bookings
