@@ -19,7 +19,7 @@ checkValidInclude();
 /**  permissions definitions */
 require_once 'inc/permissions.php';
 
-if (LOAD_ALL_PHP_FILES) {
+if (defined('LOAD_ALL_PHP_FILES') && LOAD_ALL_PHP_FILES) {
   /**  basic functions (user functions) */
   require_once 'login.php';
   require_once 'logout.php';

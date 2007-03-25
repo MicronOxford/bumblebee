@@ -82,6 +82,7 @@ class ConfigReader extends BasicConfigReader {
       if (! defined('LOAD_ALL_PHP_FILES')) {
         if ($this->value('error_handling', 'AllWarnings', false)) {
           //this is nice for development but probably turn it off for production
+          if (! defined('E_STRICT')) define('E_STRICT', 2048);
           error_reporting(E_ALL | E_STRICT); #force all warnings to be echoed
           #error_reporting(E_ALL); #force all warnings to be echoed
           /** load all php files */
@@ -89,7 +90,6 @@ class ConfigReader extends BasicConfigReader {
         } else {
           error_reporting(E_ERROR); #only errors should be echoed
           /** load only the php files required to fullfill this request) */
-          define('LOAD_ALL_PHP_FILES', 0);
         }
       }
     }
