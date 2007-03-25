@@ -65,6 +65,15 @@ function echoData($v, $DEBUG=0) {
   }
 }
 
+/**
+* provide some information about the function that called the current bit of code
+*
+* @returns string  the filename and function of the calling code
+*/
+function debug_caller() {
+  $l = debug_backtrace();
+  return "file= ". $l[1]['file'] .", line=".$l[1]['line'];
+}
 
 /**
 * is variable composed purely of alphabetic data [A-Za-z_-]
