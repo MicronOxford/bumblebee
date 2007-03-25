@@ -98,9 +98,7 @@ class BumblebeeAuth extends BasicAuth {
   }
 
   function isInstrumentAdmin($instr) {
-    trigger_error("using deprecated isInstrumentAdmin", E_USER_NOTICE);
-    $l = debug_backtrace();
-    print "file= ". $l[0]['file'] .", line=".$l[0]['line']."\n<br />";
+    trigger_error("Use of deprecated isInstrumentAdmin function: ".debug_caller(), E_USER_NOTICE);
     return $this->isSystemAdmin() ||
           ($this->instrument_permissions($instr) & BBPERM_INSTR_BOOK_FUTURE);
   }
