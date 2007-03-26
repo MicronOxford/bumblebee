@@ -28,10 +28,10 @@ require_once 'inc/export/xmlexportbase.php';
 * @subpackage Export
 */
 class HTMLExport extends XMLExportBase {
-  
+
   /** @var boolean      export the data as one big table with header rows between sections  */
   var $bigtable = true;
- 
+
   /** @var string       header to the report  */
   var $header;
 
@@ -41,12 +41,12 @@ class HTMLExport extends XMLExportBase {
   * @param ArrayExport  &$exportArray
   */
   function HTMLExport(&$exportArray) {
-      parent::XMLExportBase($exportArray); 
+      parent::XMLExportBase($exportArray);
   }
-            
+
   function do_start(&$data, &$metadata = NULL) { return '<div id="bumblebeeExport">'; }
   function do_end(&$data, &$metadata = NULL) { return (!$this->bigtable)?('</div>'):('</table></div>'); }
- 
+
   function do_header(&$data, &$metadata = NULL) {
 
       $this->header = $data;
@@ -91,15 +91,15 @@ class HTMLExport extends XMLExportBase {
       return '<tr class="header">' .$this->_formatRowHTML($data, true) .'</tr>'.EOL;
 
   } //end do_report_table_header
-  
+
   function do_table_total(&$data, &$metadata = NULL) {
-      
+
       return '<tr class="totals">'.$this->_formatRowHTML($data).'</tr>'.EOL;
 
   } //end do_report_table_total
 
   function do_table_footer(&$data, &$metadata = NULL) {
-      
+
       return '<tr class="footer">'.$this->_formatRowHTML($data).'</tr>'.EOL;
 
   } //end do_report_table_footer
@@ -107,7 +107,7 @@ class HTMLExport extends XMLExportBase {
   function do_table_row(&$data, &$metadata = NULL) {
 
       return '<tr>'.$this->_formatRowHTML($data).'</tr>'.EOL;
- 
+
   } //end do_export_report_table_row
 
   /**
@@ -157,7 +157,7 @@ class HTMLExport extends XMLExportBase {
   /**
    * embed the html within a blank page to create the report in a separate window
    *
-   * @return nothing 
+   * @return nothing
    * @todo //TODO: potential memory hog (stores HTML output in three places at once)
    */
     function get_export_new_window() {
@@ -170,12 +170,23 @@ class HTMLExport extends XMLExportBase {
 	    $this->replace_array['/__BASEPATH__/'] = $conf->BasePath;
 
 	    $this->_wrapBuffer($filename);
-	    $enchtml = rawurlencode($this->export);
+	    #$enchtml = rawurlencode($this->export);
+	    $badchars = array(
+	           '/"/'       =>    '\u0022',
+	           "/'/"       =>    '\u0027',
+	           '/</'       =>    '\u003c',
+	           '/>/'       =>    '\u003e',
+	           '/&/'       =>    '\u0026',
+	           "/\n/"      =>    '\n',
+	           "/\r/"      =>    '\r');
+	    $enchtml = preg_replace(array_keys($badchars),
+	                            array_values($badchars),
+	                            $this->export);
 	    $jsbuf = '<script type="text/javascript">
 		    <!--
 		    function BBwriteAll(data) {
 			    bboutwin = window.open("", "bumblebeeOutput", "");
-			    bboutwin.document.write(unescape(data));
+			    bboutwin.document.write(data);
 			    bboutwin.document.close();
 		    }
 
@@ -189,10 +200,10 @@ class HTMLExport extends XMLExportBase {
 	    return $jsbuf;
     }
 
- 
+
   function do_finalize() {
 
-     
+
   } //end do_finalize
 
 
