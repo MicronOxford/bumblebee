@@ -267,7 +267,7 @@ class ActionExport extends BufferedAction {
     }
     if ($this->format & EXPORT_FORMAT_USEHTML) {
       $htmlExport = new HTMLExport($exportArray);
-      $htmlExport->makeHTMLBuffer();
+      $htmlExport->makeBuffer();
     }
 
     //finally, direct the data towards its output
@@ -291,10 +291,10 @@ class ActionExport extends BufferedAction {
       // the data itself will be dumped later by the action driver (index.php)
     } elseif ($this->format == EXPORT_FORMAT_VIEWOPEN) {
       $this->unbuffer();
-      echo $htmlExport->wrapHTMLBuffer();
+      echo $htmlExport->get_export_new_window();
     } else {
       $this->unbuffer();
-      echo $htmlExport->export;
+      echo $htmlExport->get_export();
     }
   }
 
