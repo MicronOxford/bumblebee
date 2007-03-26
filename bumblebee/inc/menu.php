@@ -236,10 +236,14 @@ function makeURL($action=NULL, $list=NULL, $escape=true) {
 /**
 * Create an absolute URL for an anchor (include protocol and port)
 *
-* @param mixed   $target
-* @param array   $list      (optional) key => value data to be added to the URL
+* @param mixed   $target    what the URL should point to
 * @param boolean $escape    use &amp; rather than & in the URL
 * @return  string  Absolute URL
+*
+* If $target is an array, then $target[0] is the action and $target[1] is
+* the list of parameters that will be passed to makeURL().
+*
+* If $target is a scalar, it will be appended to the URL as is.
 */
 function makeAbsURL($target=NULL, $escape=true) {
 
