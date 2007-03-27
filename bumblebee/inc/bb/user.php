@@ -46,7 +46,7 @@ class User extends DBRow {
     $conf = ConfigReader::getInstance();
 
     $this->DBRow('users', $id);
-    #$this->DEBUG=10;
+    $this->DEBUG=10;
     $this->_auth = $auth;
     $this->editable = ! $passwdOnly;
     $this->use2StepSync = 1;
@@ -209,10 +209,12 @@ class User extends DBRow {
       }
     }
     if ($this->_authMethod != 'Local') {
-     $this->fields['passwd']->crypt_method = '';
-    } else {
-     $this->fields['passwd']->crypt_method = $this->_magicPassList['Local'];
+      $this->fields['passwd']->encode = false;
     }
+//     $this->fields['passwd']->crypt_method = '';
+//     } else {
+//      $this->fields['passwd']->crypt_method = $this->_magicPassList['Local'];
+//     }
     $this->fields['auth_method']->set($this->_authMethod);
     //echo $this->fields['passwd']->value;
   }
@@ -226,7 +228,7 @@ class User extends DBRow {
     //echo $this->fields['auth_method']->changed.'/'.$this->fields['passwd']->value;
     $this->_authMethod = $this->fields['auth_method']->getValue();
     if ($this->_authMethod == 'Local') {
-      $this->fields['passwd']->crypt_method = $this->_magicPassList['Local'];
+//       $this->fields['passwd']->crypt_method = $this->_magicPassList['Local'];
       if (in_array($this->fields['passwd']->value, $this->_magicPassList)) {
         $this->fields['passwd']->value = '';
       }
@@ -251,9 +253,10 @@ class User extends DBRow {
             /*&& $this->fields['passwd']->value != ''*/
             && $this->fields['passwd']->value != $this->_magicPassList[$this->_authMethod]) {
         $this->log('User::sync(): indulging in password munging, '. $this->_authMethod);
-        $this->fields['passwd']->set($this->_magicPassList[$this->_authMethod]);
-        $this->fields['passwd']->crypt_method = '';
+        $this->fields['passwd']->encode = 0;
         $this->fields['passwd']->changed = 1;
+        $this->fields['passwd']->set($this->_magicPassList[$this->_authMethod]);
+//         $this->fields['passwd']->crypt_method = '';
         $this->changed = 1;
 
       } elseif ($this->_authMethod == 'Local' && $this->fields['passwd']->value == ''

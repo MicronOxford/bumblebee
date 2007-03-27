@@ -289,14 +289,14 @@ class BasicAuth {
   function _auth_via_radius($username, $password) {
     require_once 'Auth/Auth.php';
     $conf = & ConfigReader::getInstance();
-    $conf->MergeFile('radius.ini', '_auth_radius');
+    $conf->MergeFile('radius.ini');
     $params = array(
-                "servers" => array(array($conf->value('_auth_radius', 'host'),
+                "servers" => array(array($conf->value('radius', 'host'),
                                          0,
-                                         $conf->value('_auth_radius', 'key'),
+                                         $conf->value('radius', 'key'),
                                          3, 3)
                                   ),
-                "authtype" => $conf->value('_auth_radius', 'authtype')
+                "authtype" => $conf->value('radius', 'authtype')
                 );
     // start the PEAR::Auth system using RADIUS authentication with the parameters
     // we have defined here for this config. Do not display a login box on error.

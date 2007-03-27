@@ -27,8 +27,10 @@ require_once 'inc/passwords.php';
 * @todo //TODO:  js to check double entry passwd is the same
 */
 class PasswdField extends TextField {
-  /** @var string  algorithm used to encrypt the data  */
-  var $crypt_method = 'md5_compat';
+  //** @var string  algorithm used to encrypt the data  */
+  //var $crypt_method = 'md5_compat';
+  /** @var boolean   encode the data before sending to the database */
+  var $encode = true;
 
   /**
   *  Create a new password field object
@@ -84,8 +86,12 @@ class PasswdField extends TextField {
       $name = $this->name;
     }
     if (! $this->sqlHidden && $this->value != '') {
-      $pass = makePasswordHash($this->value);
-      return $name ."='$pass'";
+      if ($this->encode) {
+        $pass = makePasswordHash($this->value);
+        return $name ."='$pass'";
+      } else {
+        return $name .'='. qw($this->value);
+      }
     } else {
       return '';
     }
