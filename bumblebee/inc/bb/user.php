@@ -46,7 +46,7 @@ class User extends DBRow {
     $conf = ConfigReader::getInstance();
 
     $this->DBRow('users', $id);
-    $this->DEBUG=10;
+    #$this->DEBUG=10;
     $this->_auth = $auth;
     $this->editable = ! $passwdOnly;
     $this->use2StepSync = 1;
