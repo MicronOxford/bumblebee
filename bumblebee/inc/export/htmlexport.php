@@ -44,10 +44,10 @@ class HTMLExport extends XMLExportBase {
       parent::XMLExportBase($exportArray);
   }
 
-  function do_start(&$data, &$metadata = NULL) { return '<div id="bumblebeeExport">'; }
-  function do_end(&$data, &$metadata = NULL) { return (!$this->bigtable)?('</div>'):('</table></div>'); }
+  function do_start(&$data, $metadata=NULL) { return '<div id="bumblebeeExport">'; }
+  function do_end(&$data, $metadata = NULL) { return (!$this->bigtable)?('</div>'):('</table></div>'); }
 
-  function do_header(&$data, &$metadata = NULL) {
+  function do_header(&$data, $metadata = NULL) {
 
       $this->header = $data;
 
@@ -60,7 +60,7 @@ class HTMLExport extends XMLExportBase {
       return $temp;
   } //end do_report_header
 
-  function do_section_header(&$data, &$metadata = NULL) {
+  function do_section_header(&$data, $metadata = NULL) {
 
         if(!$this->bigtable) {
 
@@ -72,39 +72,39 @@ class HTMLExport extends XMLExportBase {
                         .xssqw($data).'</td></tr>'.EOL;
   } //end do_report_section_header
 
-  function do_table_start(&$data, &$metadata = NULL) {
+  function do_table_start(&$data, $metadata = NULL) {
 
       if(!$this->bigtable) {
            return '<table class="exportdata">'.EOL;
       } //end if
   } //end do_report_table_start
 
-  function do_table_end(&$data, &$metadata = NULL) {
+  function do_table_end(&$data, $metadata = NULL) {
 
       if(!$this->bigtable) {
            return '</table>'.EOL;
       } //end if
   } //end do_report_table_end
 
-  function do_table_header(&$data, &$metadata = NULL) {
+  function do_table_header(&$data, $metadata = NULL) {
 
       return '<tr class="header">' .$this->_formatRowHTML($data, true) .'</tr>'.EOL;
 
   } //end do_report_table_header
 
-  function do_table_total(&$data, &$metadata = NULL) {
+  function do_table_total(&$data, $metadata = NULL) {
 
       return '<tr class="totals">'.$this->_formatRowHTML($data).'</tr>'.EOL;
 
   } //end do_report_table_total
 
-  function do_table_footer(&$data, &$metadata = NULL) {
+  function do_table_footer(&$data, $metadata = NULL) {
 
       return '<tr class="footer">'.$this->_formatRowHTML($data).'</tr>'.EOL;
 
   } //end do_report_table_footer
 
-  function do_table_row(&$data, &$metadata = NULL) {
+  function do_table_row(&$data, $metadata = NULL) {
 
       return '<tr>'.$this->_formatRowHTML($data).'</tr>'.EOL;
 

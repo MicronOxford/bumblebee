@@ -1,7 +1,7 @@
 <?php
 /**
 * A base type that for classes that build xml-based (xhtml, excel, etc.) exports from
-* the array export. 
+* the array export.
 *
 * @author     Seth Sims
 * @copyright  Copyright Seth Sims
@@ -25,7 +25,7 @@ require_once 'inc/exportcodes.php';
 define('EOL', "\n");
 
 /**
-* abstract base type for xml-based exports. 
+* abstract base type for xml-based exports.
 *
 * @package    Bumblebee
 * @subpackage Export
@@ -36,7 +36,7 @@ class XMLExportBase {
   /** @var ArrayExport  data to export    */
   var $ea;
   /** @var Array        the array to be passed to preg_rep */
-  var $replace_array; 
+  var $replace_array;
 
   /**
   *  Create the HTMLExport object
@@ -46,7 +46,7 @@ class XMLExportBase {
   function XMLExportBase(&$exportArray) {
     $this->ea =& $exportArray;
   }
- 
+
   /**
   * parse the data in the array export.
   *
@@ -54,16 +54,16 @@ class XMLExportBase {
   *
   * This function is the workhorse of this family of classes and should not be overridden.
   * It calls the event handling functions declared abstract in this class. They sould
-  * return a string to be appended to the running contents variable. 
+  * return a string to be appended to the running contents variable.
   *     This function unsets parts of the export array no longer needed. It counts on the
   * fact that when unset is called on an array element the elements are not renumbered.
   * This is a php 4/php 5 behavior and if it this behavior changes the function will
-  * no longer work. 
+  * no longer work.
   */
   function makeBuffer() {
 
       $ea =& $this->ea->export;
-      
+
       $this->handle_metadata($ea['metadata']);
       unset($ea['metadata']);
 
@@ -111,14 +111,14 @@ class XMLExportBase {
 
 	      case EXPORT_REPORT_TABLE_FOOTER:
 		  $contents .= $this->do_table_footer($ea[$i]['data']);
-		  break; 
+		  break;
 	  } // end switch
 
 	  unset($ea[$i]);
-	  $contents .= EOL; 
+	  $contents .= EOL;
       } //end for
 
-      $contents = preg_replace('/\$/', '&#'.ord('$').';', $contents); 
+      $contents = preg_replace('/\$/', '&#'.ord('$').';', $contents);
       $this->export =& $contents;
       $this->do_finalize();
   } //end makeBuffer
@@ -142,29 +142,29 @@ class XMLExportBase {
       $this->replace_array['/__SUBJECT__/']  = $metadata['subject'];
 
   } // end handle_metadata
- 
-  //TODO comment what these things should do to create a proper export 
-  function do_start(&$data, &$metadata = NULL){ _trigger_error(); }
-  function do_end(&$data, &$metadata = NULL){ _trigger_error(); }
-  function do_header(&$data, &$metadata = NULL) { _trigger_error(); }
-  function do_section_header(&$data, &$metadata = NULL){ _trigger_error(); }
-  function do_section_footer(&$data, &$metadata = NULL){ _trigger_error(); }
-  function do_table_start(&$data, &$metadata = NULL) { _trigger_error(); }
-  function do_table_end(&$data, &$metadata = NULL) { _trigger_error(); }
-  function do_table_header(&$data, &$metadata = NULL){ _trigger_error(); }
-  function do_table_row(&$data, &$metadata = NULL){ _trigger_error(); }
-  function do_table_total(&$data, &$metadata = NULL){ _trigger_error(); }
+
+  //TODO comment what these things should do to create a proper export
+  function do_start(&$data, $metadata = NULL){ _trigger_error(); }
+  function do_end(&$data, $metadata = NULL){ _trigger_error(); }
+  function do_header(&$data, $metadata = NULL) { _trigger_error(); }
+  function do_section_header(&$data, $metadata = NULL){ _trigger_error(); }
+  function do_section_footer(&$data, $metadata = NULL){ _trigger_error(); }
+  function do_table_start(&$data, $metadata = NULL) { _trigger_error(); }
+  function do_table_end(&$data, $metadata = NULL) { _trigger_error(); }
+  function do_table_header(&$data, $metadata = NULL){ _trigger_error(); }
+  function do_table_row(&$data, $metadata = NULL){ _trigger_error(); }
+  function do_table_total(&$data, $metadata = NULL){ _trigger_error(); }
 
   /** This function is called to allow the subclass to do any final cleanup before the data is echoed out
-   *    
-   *  @return nothing 
+   *
+   *  @return nothing
    *
    *  Allows the subclass to do final clean up such as embedding the export into a template with _wrapBuffer
    */
   function do_finalize() { _trigger_error(); }
 
   /** return the proper file extention of this export */
-  function get_file_extention(){ _trigger_error(); } 
+  function get_file_extention(){ _trigger_error(); }
 
   /** return the mime type for this export */
   function get_mime_type(){ _trigger_error(); }
@@ -184,14 +184,14 @@ class XMLExportBase {
   * Embeds the data in replace_array into the template file pointed to by path.
   *
   * @var string path to the template file
-  * @return nothing 
+  * @return nothing
   * @todo           //TODO reduce this things memory footprint
   */
   function _wrapBuffer($path) {
     $fd = fopen($path, 'r');
     $contents = fread($fd, filesize ($path));
     fclose($fd);
-   
+
     $this->replace_array['/__CONTENTS__/'] =& $this->export;
 
     foreach($this->replace_array as $pattern => $replacement) {
@@ -199,11 +199,11 @@ class XMLExportBase {
         $contents = preg_replace($pattern, $replacement, $contents);
 
     } //end foreach
-   
+
     $this->export =& $contents;
   } //end _wrapBuffer
 
 
-} // class XMLExportBase 
+} // class XMLExportBase
 
 ?>
