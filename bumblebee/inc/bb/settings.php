@@ -19,6 +19,7 @@ require_once 'inc/formslib/nondbrow.php';
 require_once 'inc/formslib/textfield.php';
 require_once 'inc/formslib/textarea.php';
 require_once 'inc/formslib/checkbox.php';
+require_once 'inc/formslib/droplist.php';
 require_once 'inc/formslib/dummyfield.php';
 
 /**
