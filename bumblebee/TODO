@@ -1,5 +1,14 @@
 $Id$
 
+* Ongoing
+---------
+  * track dependencies:
+    - PEAR::Auth
+    - TCPDF
+    - PHP-gettext
+    - overlib
+
+
 * 1.2 series: required
 ----------------------
 Base system features:
