@@ -61,13 +61,16 @@ function checkConfigured() {
         ) {
       // version: needs initial installation
       $conf->status->installRequired = true;
-      $conf->status->messages[] = sprintf(T_('This appears to be a new installation and requires configuring. Please go to the <a href="%s">installation pages</a> to finish the installation process'), makeAbsURL('/install/install.php'));
+      $conf->status->messages[] = sprintf(T_('This appears to be a new installation and requires configuring. Please use the installation pages to finish either <a href="%s">the installation process</a> or <a href="%s">the upgrade process</a>.'),
+                makeAbsURL('/install/install.php'),
+                makeAbsURL('/install/upgrade.php'));
     } else {
       // old version: needs upgrading
       $conf->status->upgradeRequired = true;
-      $conf->status->messages[] = sprintf(T_('The system is unavailable while the software is being upgraded. If you are the Bumblebee administrator, please go to the <a href="%s">installation pages</a> to finish the upgrade process'), makeAbsURL('/install/upgrade.php'));
+      $conf->status->messages[] = sprintf(T_('The system is unavailable while the software is being upgraded. If you are the Bumblebee administrator, please go to the <a href="%s">installation pages</a> to finish the upgrade process'),
+                makeAbsURL('/install/upgrade.php'));
     }
-    #$conf->status->messages[] = "Current: $BUMBLEBEEVERSION, known: ". $conf->value('meta', 'dbversion', '2.0');
+    #$conf->status->messages[] = "Software: $BUMBLEBEEVERSION, db: ". $conf->value('meta', 'dbversion', '2.0'). " config: ". $conf->value('meta', 'configuredversion', '2.0');
     #$conf->status->messages[] = file_exists('install') ? "Installer found" : "no installer";
   }
 }
