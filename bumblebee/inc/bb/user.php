@@ -296,6 +296,7 @@ class User extends DBRow {
     $p[BBPERM_ADMIN_EXPORT]           = T_('Admin: export usage data');
     $p[BBPERM_ADMIN_BILLING]          = T_('Admin: send out billing emails');
     $p[BBPERM_ADMIN_BACKUPDB]         = T_('Admin: backup database');
+    $p[BBPERM_ADMIN_CONFIG]           = T_('Admin: change system config');
     return $p;
   }
 
