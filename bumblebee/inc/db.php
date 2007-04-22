@@ -48,7 +48,6 @@ if (($connection = mysql_pconnect($conf->value('database', 'host'),
   db_quiet("SET NAMES 'utf8'");
   $conf->status->database = true;
 } else {
-
   $errmsg  = sprintf(T_('<p>Sorry, I couldn\'t connect to the database, so there\'s nothing I can presently do. This could be due to a booking system misconfiguration, or a failure of the database subsystem.</p><p>If this persists, please contact the <a href="mailto:%s">booking system administrator</a>.</p>'), $conf->AdminEmail);
 
   if ($DB_CONNECT_DEBUG) {

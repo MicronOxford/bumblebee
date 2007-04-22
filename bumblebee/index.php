@@ -21,12 +21,14 @@ define('BUMBLEBEE', true);
 /** Load ancillary functions */
 require_once 'inc/typeinfo.php';
 
-
 /** Load in PHP4/5 compatability layer */
 require_once 'inc/compat.php';
 
 /** Load in the user configuration data */
 require_once 'inc/config.php';
+
+/** Load i18n layer */
+require_once 'inc/i18n.php';
 
 /** start the database session */
 require_once 'inc/db.php';
@@ -35,10 +37,11 @@ $conf = & ConfigReader::getInstance();
 $conf->MergeDatabaseTable();
 $conf->ParseConfig();
 
-
 /** load the language pack */
-require_once 'inc/i18n.php';
+require_once 'inc/i18nconfig.php';
 
+// check to see if the system requires upgrading and if it does, mark it as being offline.
+checkConfigured();
 
 $auth = null;
 if (! $conf->status->offline) {

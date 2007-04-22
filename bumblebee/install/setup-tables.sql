@@ -253,3 +253,8 @@ CREATE TABLE settings (
 INSERT INTO users (username,name,passwd,permissions) VALUES
   ('BumblebeeAdmin','Queen Bee',MD5('defaultpassword123'),BBPERM_ADMIN_ALL)
 ;
+--     Create some settings to show that we have been installed
+INSERT INTO settings (section,parameter,value) VALUES
+  ('meta','configuredversion','BUMBLEBEEVERSION'),
+  ('meta','dbversion','BUMBLEBEEVERSION')
+;

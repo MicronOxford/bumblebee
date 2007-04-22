@@ -43,6 +43,35 @@ if ($conf->value('main', 'ExtraIncludePath', false)) {
   set_include_path($REBASE_INSTALL.($conf->value('main','ExtraIncludePath')).PATH_SEPARATOR.get_include_path());
 }
 
+function checkConfigured() {
+  global $BUMBLEBEEVERSION;
+  $conf = & ConfigReader::getInstance();
+  if (version_compare($conf->value('meta', 'configuredversion', $BUMBLEBEEVERSION),
+                      $BUMBLEBEEVERSION
+                     ) === -1
+      ||
+      version_compare($conf->value('meta', 'dbversion',         $BUMBLEBEEVERSION),
+                      $BUMBLEBEEVERSION
+                     ) === -1
+      ) {
+    // old version found
+    $conf->status->offline = true;
+    if (($conf->value('meta', 'configuredversion', $BUMBLEBEEVERSION) == '0.0.0')
+        && file_exists('install')
+        ) {
+      // version: needs initial installation
+      $conf->status->installRequired = true;
+      $conf->status->messages[] = sprintf(T_('This appears to be a new installation and requires configuring. Please go to the <a href="%s">installation pages</a> to finish the installation process'), makeAbsURL('/install/install.php'));
+    } else {
+      // old version: needs upgrading
+      $conf->status->upgradeRequired = true;
+      $conf->status->messages[] = sprintf(T_('The system is unavailable while the software is being upgraded. If you are the Bumblebee administrator, please go to the <a href="%s">installation pages</a> to finish the upgrade process'), makeAbsURL('/install/upgrade.php'));
+    }
+    #$conf->status->messages[] = "Current: $BUMBLEBEEVERSION, known: ". $conf->value('meta', 'dbversion', '2.0');
+    #$conf->status->messages[] = file_exists('install') ? "Installer found" : "no installer";
+  }
+}
+
 /**
 * $BUMBLEBEEVERSION is the installed version of the software
 * @global string $BUMBLEBEEVERSION

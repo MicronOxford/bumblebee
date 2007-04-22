@@ -10,6 +10,7 @@
 * @subpackage Installer
 */
 
+require_once 'installer/loadconfig.php';
 
 function getSetupDefaults() {
   $defaults = array();
@@ -38,9 +39,12 @@ function getSetupDefaults() {
 * Work out an SQL load file from the defaults and the user input
 */
 function constructSQL($source, $replacements, $includeAdmin) {
+  global $BUMBLEBEEVERSION;
 
   mungeIncludePath('..'.DIRECTORY_SEPARATOR);
   require_once('inc/permissions.php');
+
+  loadInstalledConfig();
 
   $sqlSourceFile = $source;
 
@@ -95,9 +99,13 @@ function constructSQL($source, $replacements, $includeAdmin) {
                       "INSERT INTO $sqlTablePrefix\$1", $sql);
   $sql = preg_replace("/BBPERM_ADMIN_ALL/",
                       BBPERM_ADMIN_ALL, $sql);
+  $sql = preg_replace("/BUMBLEBEEVERSION/",
+                      $BUMBLEBEEVERSION, $sql);
 
-  $sql = preg_replace("/\('$bbDefaultAdmin','$bbDefaultAdminName',MD5\('$bbDefaultAdminPass'\),1\)/",
-                      "('$bbAdmin','$bbAdminName','".md5($bbAdminPass)."',1);", $sql);
+  $sql = preg_replace("/\('$bbDefaultAdmin','$bbDefaultAdminName',MD5\('$bbDefaultAdminPass'\),/",
+                      "('$bbAdmin','$bbAdminName','".md5($bbAdminPass)."',", $sql);
+
+  // clear our comments and blank lines from the output
   $sql = preg_replace('/^(.*?)--.*$/',
                       '$1', $sql);
   $sql = preg_grep('/^\s*$/', $sql, PREG_GREP_INVERT);

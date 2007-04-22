@@ -130,7 +130,7 @@ define('BBPERM_ADMIN_BACKUPDB',           BBROLE_ADMIN_BACKUPDB);
 define('BBPERM_ADMIN_CONFIG',             BBROLE_ADMIN_CONFIG);
 
 /** Permission: Admin user can do anything */
-define('BBPERM_ADMIN_ALL',              -1);
+define('BBPERM_ADMIN_ALL',               4294967295);    // 2^32 - 1
 
 // FINE-GRAINED INSTRUMENT PERMISSIONS
 /** Permission: View instrument booking sheet (free/busy only) */
@@ -165,10 +165,20 @@ define('BBPERM_INSTR_BASIC',            BBPERM_INSTR_VIEW | BBPERM_INSTR_VIEW_BO
 define('BBPERM_INSTR_READONLY',         BBPERM_INSTR_VIEW);
 
 /** Permission: Instrument admin all functions */
-define('BBPERM_INSTR_ALL',               -1);
+define('BBPERM_INSTR_ALL',               4294967295);     // 2^32 - 1
 
 // Anonymous user's permissions:
 // BBPERM_USER_LOGOUT
 
+
+function bb_debug_list_perms() {
+  print "<pre>";
+  foreach (get_defined_constants() as $const => $value) {
+    if (preg_match("/^BBPERM_/", $const) || preg_match("/^BBROLE_/", $const)) {
+      printf("%40s => %s\n", $const, $value);
+    }
+  }
+  print "</pre>";
+}
 
 ?>

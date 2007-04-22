@@ -27,6 +27,11 @@ class SystemStatus {
   var $offline = false;
 
   var $messages = array();
+
+  var $upgradeRequired = false;
+
+  var $installRequired = false;
+
 }
 
 ?>

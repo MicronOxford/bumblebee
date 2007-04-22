@@ -43,9 +43,9 @@ class ActionOffline extends ActionAction {
 
     echo T_('Sorry, this service is not currently available. Please try again later.');
 
-    echo '<div class="error"><p>'
-            .join($conf->status->messages, '</p></p>')
-          .'</p></div>';
+    echo '<div class="error">'
+            .join($conf->status->messages, "\n\n")
+          .'</div>';
 
     // Cause the page to reload back to the start page periodically to see if things
     // are alive again.
