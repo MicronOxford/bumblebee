@@ -19,8 +19,12 @@ function checkDatabaseVersion(&$data) {
   $data['old_version']    = $data['old_db_version'];
   $data['new_version']    = $BUMBLEBEEVERSION;
   $data['new_db_version'] = $data['new_version']; #substr($data['new_version'], 0, strrpos($data['new_version'], '.'));
+  $data['db_upgrade'] = true;
+
+//   return;
+
   if (version_compare($data['old_db_version'], $data['new_db_version']) == -1) {
-    // then the db needs upgrading
+    //then the db needs upgrading
     $data['db_upgrade'] = true;
   } else {
     $data["db_upgrade"] = false;
@@ -35,6 +39,7 @@ function checkDatabaseVersion(&$data) {
 
 function getCurrentDBVersion() {
   global $TABLEPREFIX;
+  global $BUMBLEBEEVERSION;
   // there is no defined way of working out what version of the database the installation
   // is using (at least not for anything in the 1.x series). We'll have to guess.
   $structure = db_get_single("SHOW CREATE TABLE {$TABLEPREFIX}users");
@@ -48,6 +53,8 @@ function getCurrentDBVersion() {
   if (strpos($structure[1], 'permissions') === false) {
     return "1.1.4";
   }
+  // After v1.1.5, the database should contain the version information so
+  // further guesses are not required.
   $conf = ConfigReader::getInstance();
   return $conf->value('meta', 'dbversion', '1.1.4');
 }
@@ -59,6 +66,7 @@ function makeUpgradeSQL($initial) {
   $u['1.1.5'] = "DB_upgrade_BB_1_1_permissions";
   #$u['1.2'] = "DB_upgrade_BB_1_2";
   #$u['1.3'] = "DB_upgrade_BB_1_3";
+  $u['999.999'] = "DB_upgrade_always";
   $sql = '';
   $releasenotes = array();
   foreach ($u as $version => $function) {
@@ -70,6 +78,7 @@ function makeUpgradeSQL($initial) {
       $releasenotes[] = $upgrade[1];
     }
   }
+
   $settingComment = "-- Bumblebee SQL load file for ".$_SERVER['SERVER_NAME']."\n"
                    ."-- date: ".gmdate('r', time())."\n"
                    ."--\n"
@@ -122,7 +131,7 @@ function DB_upgrade_BB_1_1_passwd() {
   global $TABLEPREFIX;
   $s = "USE ".$conf->value('database', 'database').";\n";
   $s .= "ALTER TABLE {$TABLEPREFIX}users CHANGE passwd passwd VARCHAR(50) NOT NULL;\n";
-  $notes = "The password field is made larger to accommodate more secure methods for storing encode passwods.";
+  $notes = "The password field is made larger to accommodate more secure methods for storing encode passwords.";
   return array($s, $notes);
 }
 
@@ -146,9 +155,22 @@ function DB_upgrade_BB_1_1_permissions() {
           ."parameter VARCHAR(64) CHARACTER SET utf8 NOT NULL, "
           ."value TEXT"
        .") DEFAULT CHARACTER SET utf8;\n";
-  $s .= "INSERT INTO {$TABLEPREFIX}settings VALUES ('meta', 'dbversion', '1.1.5');\n";
-  $s .= "INSERT INTO {$TABLEPREFIX}settings VALUES ('meta', 'configured', '1.1.5');\n";
   $notes .= " The new configuration system can store most of your settings in the database to make configuration easier.";
+
+  return array($s, $notes);
+}
+
+
+
+function DB_upgrade_always() {
+  global $BUMBLEBEEVERSION;
+
+  $s .= "DELETE FROM {$TABLEPREFIX}settings WHERE section='meta' AND parameter='dbversion';\n";
+  $s .= "DELETE FROM {$TABLEPREFIX}settings WHERE section='meta' AND parameter='configuredversion';\n";
+  $s .= "INSERT INTO {$TABLEPREFIX}settings VALUES ('meta', 'dbversion', '$BUMBLEBEEVERSION');\n";
+  $s .= "INSERT INTO {$TABLEPREFIX}settings VALUES ('meta', 'configuredversion', '$BUMBLEBEEVERSION');\n";
+
+  $notes = "Update the database meta-data.";
 
   return array($s, $notes);
 }
