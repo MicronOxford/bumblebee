@@ -48,9 +48,12 @@ class ActionView extends ActionViewBase {
 
   function go() {
     $this->selectInstrument();
-    $this->showMyBookings();
-    $this->showMyProjectBookings();
-    $this->showMyGroupBookings();
+
+	if(!$this->auth->anonymous) {
+		$this->showMyBookings();
+		$this->showMyProjectBookings();
+		$this->showMyGroupBookings();
+	} //end if
   }
 
   /**

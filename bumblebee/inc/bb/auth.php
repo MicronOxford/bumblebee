@@ -74,6 +74,8 @@ class BumblebeeAuth extends BasicAuth {
         && $conf->value('display', 'AnonymousAllowed', false)) {
       $data['username'] = $conf->value('display', 'AnonymousUsername');
       $data['pass']     = $conf->value('display', 'AnonymousPassword');
+
+      $this->anonymous = true;
     }
   }
 
