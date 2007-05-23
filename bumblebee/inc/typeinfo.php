@@ -510,5 +510,27 @@ function commaFloat($str) {
   return floatval($str); // take some last chances with floatval
 }
 
+/**
+* Check the a path to see if a file exists
+*
+* @param   string  $file  filename to search for in the include path
+* @param   string  $path  (optional) the search path to use, defaults to the include_path
+* @return  mixed          false if file doesn't exist, filename if it does exist
+*/
+function file_exists_path ($file, $path=null) {
+  // fill out the optional argument
+  if ($path === null) $path = get_include_path();
+
+  $pathlist = explode(PATH_SEPARATOR, $path);
+
+  // work through each element of the path to look for the file
+  foreach ($pathlist as $dir) {
+    $filepath = $path .DIRECTORY_SEPARATOR. $file;
+    if (file_exists($filepath)) {
+      return $filepath;
+    }
+  }
+  return false;
+}
 
 ?>

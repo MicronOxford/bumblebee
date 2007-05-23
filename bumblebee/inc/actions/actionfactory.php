@@ -278,8 +278,14 @@ class ActionFactory {
   * create the action object (a descendent of ActionAction) for the user-defined verb
   */
   function _makeAction() {
-    /** to reduce PHP processing overhead, include only the file that is required for this action */
-    require_once $this->_actionData->include_file();
+    // to reduce PHP processing overhead, include only the file that is required for this action
+    // but make sure that the file actually exists first.
+    $includefile = file_exists_path($this->_actionData->include_file(), "inc/actions");
+    if ($includefile === false || ! is_readable($includefile)) {
+      return new ActionUnknown($this->_original_verb);
+    }
+
+    require_once $includefile;
     switch ($this->_verb) {
       case 'forbidden!':
         return new ActionUnknown($this->_original_verb, 1);
