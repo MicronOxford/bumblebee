@@ -138,7 +138,7 @@ class ActionBookContact extends ActionAction {
 
     echo '<br /><br />';
     echo formEnd();
-    echo formStart(makeURL('bookcontact'), $auth->makeValidationTag(), 'contactform', false);
+    echo formStart(makeURL('bookcontact'), $this->auth->makeValidationTag(), 'contactform', false);
 
     echo '<fieldset>';
     echo '<h2>Contact us</h2>';
