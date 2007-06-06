@@ -5,6 +5,7 @@
 
 2007-04-XX Seth Sims <sims1001@alltel.net>
 	* feature: XML exporter class as base for all XML exports
+	* bugfix: allow "anonymous" user to log in
 
 2007-03-12 Stuart Prescott <bumblebee@nanonanonano.net>
 	* 1.1.5 release
