@@ -74,13 +74,16 @@ class ActionPrintLoginForm extends ActionAction {
       T_('Username:'),
       T_('Password:'),
       T_('login')  );
+    if ($this->auth->changeUser()) {
+      print "<input name='changeuser' type='hidden' value='1' />";
+    }
   }
 
   function printDataReflectionForm($data, $basename='') {
     // save the rest of the query string for later use
     $reflector = new DataReflector($basename);
     $reflector->excludeLogin();
-    $reflector->exclude('changeuser');
+    #$reflector->exclude('changeuser');
 /*    $reflector->addLimit(array('action', 'forceaction', $basename.'action', $basename.'forceaction'),
                          array('view', 'calendar'));*/
     echo $reflector->display($this->PD);

@@ -136,8 +136,8 @@ class BasicAuth {
   function loginError() {
     $conf = ConfigReader::getInstance();
     if ($this->DEBUG ||
-          ($conf->value('auth', 'authAdvancedSecurityHole') &&
-           $conf->value('auth', 'verboseFailure'))) {
+          ($conf->value('auth', 'authAdvancedSecurityHole', false) &&
+           $conf->value('auth', 'verboseFailure', false))) {
       return xssqw($this->_error);
     } elseif (strpos($this->_error, ':') !== false) {
       // protect any additional info that is in the error string:
@@ -216,7 +216,7 @@ class BasicAuth {
     $conf = ConfigReader::getInstance();
     // a login attempt must have a password
     if (! isset($data['pass']) ) {
-      $this->_error = 'Login failed: no password specified.';
+      $this->_error = T_('Login failed: no password specified.');
       return false;
     }
     // test the username to make sure it looks valid

@@ -53,16 +53,23 @@ class BumblebeeAuth extends BasicAuth {
   function BumblebeeAuth($data, $recheck = false, $table='users') {
     $this->_checkAnonymous($data);
 
-    parent::BasicAuth($data, $recheck || $this->_changeUser(), $table);
+    parent::BasicAuth($data, $recheck || $this->changeUser(), $table);
 
     if ($this->_loggedin) {
       // set up Authorisation parts
       $this->_loadPermissions();
       $this->_checkMasq();
+
+      $conf = ConfigReader::getInstance();
+      if ($conf->value('display', 'AnonymousAllowed', false) &&
+          $this->username == $conf->value('display', 'AnonymousUsername')) {
+        $this->anonymous = true;
+      }
+
     }
   }
 
-  function _changeUser() {
+  function changeUser() {
     if (isset($_POST['changeuser']) || isset($_GET['changeuser'])) {
       return true;
     }
@@ -74,8 +81,6 @@ class BumblebeeAuth extends BasicAuth {
         && $conf->value('display', 'AnonymousAllowed', false)) {
       $data['username'] = $conf->value('display', 'AnonymousUsername');
       $data['pass']     = $conf->value('display', 'AnonymousPassword');
-
-      $this->anonymous = true;
     }
   }
 

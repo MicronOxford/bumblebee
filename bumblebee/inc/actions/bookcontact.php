@@ -128,10 +128,12 @@ class ActionBookContact extends ActionAction {
 
     echo '<fieldset>';
     echo '<h2>Login details</h2>';
-    ActionPrintLoginForm::printLoginForm();
+
+    $login = new ActionPrintLoginForm($this->auth, array());
+    $login->printLoginForm();
     $data = $this->PD;
     $data['changeuser']=1;
-    ActionPrintLoginForm::printDataReflectionForm($data);
+    $login->printDataReflectionForm($data);
     echo '<input type="hidden" name="changeuser" value="1" />';
     echo '<input type="hidden" name="forceaction" value="book" />';
     echo '</fieldset>';

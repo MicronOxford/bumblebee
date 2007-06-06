@@ -138,11 +138,18 @@ class UserMenu {
     if (! $this->showMenu) {
       return '';
     }
+
+    if($this->_auth->anonymous) {
+      $this->actionListing->actions[] = new ActionData('ActionLogin', 'login.php',
+                  array('login', array('changeuser'=>1)), _('Login'), T_('Login'), BBROLE_NONE);
+    } //endif
+
     $menu  = '<div'.($this->menuDivId ? ' id="'.$this->menuDivId.'"' :'' ).'>';
     $menu .= $this->menuStart;
     $menu .= $this->_constructMenuEntries();
     if ($this->_auth->amMasqed() && $this->_verb != 'masquerade')
           $menu .= $this->_getMasqAlert();
+    
     $menu .= $this->_getHelpMenu();
     $menu .= $this->menuStop;
     $menu .= '</div>';
@@ -172,8 +179,17 @@ class UserMenu {
             $t .= $this->headerStart.$this->adminHeader.$this->headerStop;
           }
         }
+
+        $name = $action->name();
+
+        if(is_array($name)) { 
+          $get_string = makeURL($name[0], $name[1]);
+        } else { 
+          $get_string = makeURL($name);
+        } //end if-else
+
         $t .= $this->itemStart
-              .'<a href="'.makeURL($action->name()).'">'.$action->menu().'</a>'
+              .'<a href="'.$get_string.'">'.$action->menu().'</a>'
             .$this->itemStop;
       }
       #print "<br/>";
