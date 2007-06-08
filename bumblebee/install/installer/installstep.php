@@ -16,10 +16,12 @@ class InstallStep {
   var $next = NULL;
   var $name;
   var $action;
+  var $hidden = false;
 
-  function InstallStep($name, $action) {
+  function InstallStep($name, $action, $hidden=false) {
     $this->name = $name;
     $this->action = $action;
+    $this->hidden = $hidden;
   }
 
   function setNext($step) {
@@ -86,9 +88,13 @@ class InstallStepCollection {
 
   function getStepButtons() {
     $t = '';
+    $stepnum=1;
     foreach ($this->steps as $num => $s) {
-      $t .= "<input type='submit' name='{$s->action}' value='$num. {$s->name}'"
+      if ($s->hidden) continue;
+
+      $t .= "<input type='submit' name='{$s->action}' value='$stepnum. {$s->name}'"
         .($this->index<$num ? " disabled='1'" : "")." />";
+      $stepnum++;
     }
     return $t;
   }
@@ -126,6 +132,10 @@ class InstallStepCollection {
 
   function getNextActionName() {
     return $this->steps[$this->index+1]->action;
+  }
+
+  function getThisActionName() {
+    return $this->steps[$this->index]->action;
   }
 
 }

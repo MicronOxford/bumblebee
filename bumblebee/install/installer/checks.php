@@ -295,13 +295,13 @@ function check_postinst($data) {
 * @param array $results
 * @return string pretty printed results
 */
-function parseTests($r) {
+function parseTests($results) {
   $replace = array(
               '/^GOOD:/'    => '<span class="good">GOOD:</span>',
               '/^WARNING:/' => '<span class="warn">WARNING:</span>',
               '/^ERROR:/'   => '<span class="error">ERROR:</span>'
              );
-  $s = preg_replace(array_keys($replace), array_values($replace), $r);
+  $s = preg_replace(array_keys($replace), array_values($replace), $results);
   return join($s, "<br />\n");
 }
 

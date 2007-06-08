@@ -1,6 +1,7 @@
 2007-04-XX Stuart Prescott <bumblebee@nanonanonano.net>
 	* feature: bump upgraded installations across to the upgrade script
 	* feature: bump unfinished installations across to the install script
+	* feature: install script can now set up anonymous browsing, language and TZ
 	* bugfix: reenable RADIUS and LDAP auth methods
 
 2007-04-XX Seth Sims <sims1001@alltel.net>

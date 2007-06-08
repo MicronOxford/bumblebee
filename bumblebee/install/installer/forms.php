@@ -10,7 +10,6 @@
 * @subpackage Installer
 */
 
-
 function startHTML($title, $head='') {
   ?>
   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 Strict//EN"
@@ -201,6 +200,120 @@ function printDatabaseSetupForm($values, $next) {
     </fieldset>
     </td></tr>
     </table>
+  </fieldset>
+  <?php
+}
+
+function printManualSettingsSetupForm($values, $next) {
+  loadInstalledConfig();
+  $conf = ConfigReader::getInstance();
+  ?>
+  <style>
+    table.paramlist, .paramlist td {
+      border: 1px solid gray;
+      border-collapse: collapse;
+    }
+    .paramlist td {
+      padding: 0.2em 1em 0.2em 1em;
+    }
+  </style>
+  <fieldset id='settingsmanual'>
+    <legend>(a) Manual Configuration: edit the bumblebee.ini file</legend>
+    <p>You now need to customise your <code>bumblebee.ini</code> file. This file can be found in
+    the <code>config/</code> directory of your installation. The most important things for you
+    to customise are in the first section of the file.</p>
+    <p>Please refer to the
+    <a href="http://bumblebeeman.sourceforge.net/documentation/configure">documentation</a>
+    for more information on how to do this.</p>
+    <p>Some settings can be configured through the database (see below), but some settings will
+    require you to edit the <code>config/bumblebee.ini</code> configuration file (e.g.
+    how can your installation look up who to contact in the case of a database failure if
+    that setting is stored in the database?).</p>
+    <table class="paramlist">
+    <tr>
+      <th>Parameter</th>
+      <th>Current value (from bumblebee.ini)</th>
+    </tr>
+    <tr>
+      <td>Site title (page title)</td>
+      <td><?php echo xssqw($conf->value('main', 'SiteTitle')); ?></td>
+    </tr>
+    <tr>
+      <td>Copyright owner (page footer)</td>
+      <td><?php echo xssqw($conf->value('main', 'CopyrightOwner')); ?></td>
+    </tr>
+    <tr>
+      <td>Administrative email (page footer, error messages)</td>
+      <td><?php echo xssqw($conf->value('main', 'AdminEmail')); ?></td>
+    </tr>
+    <tr>
+      <td>System email (sending email)</td>
+      <td><?php echo xssqw($conf->value('main', 'SystemEmail')); ?></td>
+    </tr>
+    </table>
+  </fieldset>
+  <?php
+}
+
+function printAutoSettingsSetupForm($values, $next) {
+  $conf = ConfigReader::getInstance();
+  ?>
+  <style>
+    .name {
+      display: block;
+      font-weight: bold;
+    }
+    .description {
+      
+    }
+  </style>
+  <fieldset id='settingsauto'>
+    <legend>(b) Additional Customisation</legend>
+    <label>
+      <span class="name">Anonymous browsing</span>
+      <input type='checkbox' name='makeAnonymous' value='1' checked="0" />
+      <span class="description">
+        allow users who are not logged in to see what instruments you have and when they are available
+        (this is done with a special "anonymous" user; you can control which instruments are visible)
+      </span>
+    </label><br /><br />
+    <label>
+      <span class="name">Interface language</span>
+      <input type='textbox' name='locale' value='en_GB' />
+      <!-- FIXME: can we replace this with a dropdown list of installed translations? -->
+      <span class="description">
+        Set the interface language. At present, there aren't many languages available 
+        (would you like to contribute a translation? 
+        <a href="http://bumblebeeman.sf.net/contact">Excellent!</a>).
+        The list of locales available can be seen in the <code>locale/</code> directory within your
+        installation or on the 
+        <a href="http://bumblebeeman.sf.net/documentation/install">Bumblebee website</a>. 
+        If you choose a locale that doesn't exist,
+        you'll get the interface in English.
+      </span>
+    </label><br /><br />
+    <label>
+      <span class="name">Time Zone</span>
+      <input type='textbox' name='timezone' value='Europe/London' />
+      <span class="description">
+        The time zone in which the instruments reside (i.e., when you say tomorrow, what do you mean?).
+        Note that the date, time and time zone on your server must also be set correctly!.
+        For a list of acceptable values, please see the
+        <a href="http://php.net/manual/en/timezones.php">PHP time zone documentation</a>.
+      </span>
+    </label><br /><br />
+  </fieldset>
+  <?php
+}
+
+function printRunAutoSettingsSetupForm($values, $next) {
+  $conf = ConfigReader::getInstance();
+  ?>
+  <fieldset id='settingsauto'>
+    <legend>(b) Additional Customisation</legend>
+    <?php 
+      echo $values['customise-results'];
+    ?>
   </fieldset>
   <?php
 }

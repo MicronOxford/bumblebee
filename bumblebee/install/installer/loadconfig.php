@@ -2,7 +2,7 @@
 /**
 * Upgrade the database to the latest version used by Bumblebee
 *
-* @author    Stuart Prescott
+* @author     Stuart Prescott
 * @copyright  Copyright Stuart Prescott
 * @license    http://opensource.org/licenses/gpl-license.php GNU Public License
 * @version    $Id$

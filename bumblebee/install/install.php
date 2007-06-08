@@ -27,6 +27,7 @@ require_once 'installer/checks.php';
 require_once 'installer/createdatabase.php';
 require_once 'installer/constructini.php';
 require_once 'installer/loadconfig.php';
+require_once 'installer/settings.php';
 
 require_once 'installer/installstep.php';
 
@@ -35,8 +36,10 @@ $steps->addStep(new InstallStep('Usernames',          'do_userdata'));
 $steps->addStep(new InstallStep('Pre-install check',  'do_preinst'));
 $steps->addStep(new InstallStep('Create database',    'do_database'));
 $steps->addStep(new InstallStep('Copy db.ini',        'do_dbini'));
-$steps->addStep(new InstallStep('Customise',          'do_customise'));
 $steps->addStep(new InstallStep('Post-install check', 'do_postinst'));
+$steps->addStep(new InstallStep('Customise',          'do_manualcustomise'));
+$steps->addStep(new InstallStep('Customise',          'do_autocustomise', true));
+$steps->addStep(new InstallStep('Customise',          'do_runautocustomise', true));
 $steps->addStep(new InstallStep('Clean-up',           'do_cleanup'));
 
 $steps->setCurrent(1);
@@ -86,22 +89,38 @@ if (isset($_POST['submitini'])) {
 }
 
 $steps->increment();
-if (isset($_POST['do_customise'])) {
-  printStepCustomise($userSubmitted, $steps);
-  exit;
-}
-
-$steps->increment();
 if (isset($_POST['do_postinst'])) {
-  $userSubmitted['preinst-results']  = check_preinst($userSubmitted);
-  $userSubmitted['postinst-results'] = check_postinst($userSubmitted);
+  $userSubmitted['preinst-results']   = check_preinst($userSubmitted);
+  loadInstalledConfig();
+  $userSubmitted['postinst-results']  = check_postinst($userSubmitted);
   printStepPostInst($userSubmitted, $steps);
   exit;
 }
 
 $steps->increment();
+if (isset($_POST['do_manualcustomise'])) {
+  loadInstalledConfig();
+  printStepManualCustomise($userSubmitted, $steps);
+  exit;
+}
+
+$steps->increment();
+if (isset($_POST['do_autocustomise'])) {
+  loadInstalledConfig();
+  printStepAutoCustomise($userSubmitted, $steps);
+  exit;
+}
+
+$steps->increment();
+if (isset($_POST['do_runautocustomise'])) {
+  loadInstalledConfig();
+  $userSubmitted['customise-results'] = updateUserSettings($userSubmitted);
+  printStepRunAutoCustomise($userSubmitted, $steps);
+  exit;
+}
+
+$steps->increment();
 if (isset($_POST['do_cleanup'])) {
-  require_once 'installer/loadconfig.php';
   loadInstalledConfig();
   $conf = ConfigReader::getInstance();
   $userSubmitted['BASEURL'] = $conf->BaseURL;
@@ -218,19 +237,36 @@ function printStepDBini($values, $steps) {
   endHTML();
 }
 
-function printStepCustomise($values, $steps) {
+function printStepManualCustomise($values, $steps) {
   startHTML_install($values, $steps);
   reflectUserData($values, false);
+  printManualSettingsSetupForm($values, $steps->getNextActionName());
   ?>
-    <fieldset id='dbini'>
-      <legend>Customise Installation</legend>
-      <p>You now need to customise your <code>bumblebee.ini</code> file. This file can be found in
-      the <code>config/</code> directory of your installation. The most important things for you
-      to customise are in the first couple of sections of the file.</p>
-      <p>Please refer to the
-      <a href="http://bumblebeeman.sourceforge.net/documentation/configure">documentation</a>
-      for more information on how to do this.</p>
-    </fieldset>
+    <div id='buttonbar'>
+      <?php print $steps->getPrevReloadNextButtons(); ?>
+    </div>
+  <?php
+  endHTML();
+}
+
+function printStepAutoCustomise($values, $steps) {
+  startHTML_install($values, $steps);
+  reflectUserData($values, false);
+  printAutoSettingsSetupForm($values, $steps->getNextActionName());
+  ?>
+    <div id='buttonbar'>
+      <?php print $steps->getPrevNextButtons(); ?>
+    </div>
+  <?php
+  endHTML();
+}
+
+
+function printStepRunAutoCustomise($values, $steps) {
+  startHTML_install($values, $steps);
+  reflectUserData($values, false);
+  printRunAutoSettingsSetupForm($values, $steps->getNextActionName());
+  ?>
     <div id='buttonbar'>
       <?php print $steps->getPrevNextButtons(); ?>
     </div>

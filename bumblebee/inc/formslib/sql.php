@@ -204,4 +204,8 @@ function db_get_name() {
   return 'MySQL';
 }
 
+function db_last_error() {
+  return mysql_error();
+}
+
 ?>
