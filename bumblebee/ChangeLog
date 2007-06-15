@@ -2,6 +2,7 @@
 	* feature: bump upgraded installations across to the upgrade script
 	* feature: bump unfinished installations across to the install script
 	* feature: install script can now set up anonymous browsing, language and TZ
+	* feature: provide some styling on the install scripts
 	* bugfix: reenable RADIUS and LDAP auth methods
 
 2007-04-XX Seth Sims <sims1001@alltel.net>

@@ -102,24 +102,30 @@ class InstallStepCollection {
   function getPrevNextButtons($prev=NULL, $next=NULL, $waitNext=false) {
     if ($prev   === NULL) $prev = 'Previous';
     if ($next   === NULL) $next = 'Continue';
-    return $this->steps[$this->index]->getPrevButton($prev).' '
-          .$this->steps[$this->index]->getNextButton($next, $waitNext);
+    return '<div class="navButtons">'
+          .$this->steps[$this->index]->getPrevButton($prev).' '
+          .$this->steps[$this->index]->getNextButton($next, $waitNext)
+          .'</div>';
   }
 
   function getPrevReloadNextButtons($prev=NULL, $reload=NULL, $next=NULL) {
     if ($prev   === NULL) $prev = 'Previous';
     if ($reload === NULL) $reload = 'Reload';
     if ($next   === NULL) $next = 'Continue';
-    return $this->steps[$this->index]->getPrevButton($prev).' '
+    return '<div class="navButtons">'
+          .$this->steps[$this->index]->getPrevButton($prev).' '
           .$this->steps[$this->index]->getThisButton($reload).' '
-          .$this->steps[$this->index]->getNextButton($next);
+          .$this->steps[$this->index]->getNextButton($next)
+          .'</div>';
   }
 
   function getPrevSkipToButtons($skip=1, $prev=NULL, $next=NULL) {
     if ($prev   === NULL) $prev = 'Previous';
     if ($next   === NULL) $next = 'Continue';
-    return $this->steps[$this->index]->getPrevButton($prev).' '
-          .$this->steps[$this->index+$skip]->getNextButton($next);
+    return '<div class="navButtons">'
+          .$this->steps[$this->index]->getPrevButton($prev).' '
+          .$this->steps[$this->index+$skip]->getNextButton($next)
+          .'</div>';
   }
 
   function setCurrent($num) {

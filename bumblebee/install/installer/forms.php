@@ -11,34 +11,7 @@
 */
 
 function startHTML($title, $head='') {
-  ?>
-  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-  <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-      <head>
-        <title><?php echo $title; ?></title>
-        <style type="text/css">
-              .good  { color: green;  font-weight: bolder; }
-              .warn  { color: orange; font-weight: bolder; }
-              .error { color: red;    font-weight: bolder; }
-              blockquote {border: 1px solid #333399; margin: 1em; padding: 1em;}
-              fieldset { background-color: #f9f9ff;}
-              fieldset fieldset {background-color: #f9ffff;}
-              h2 { padding-top: 0; margin-top: 0;}
-        </style>
-        <script type='text/javascript'>
-        //<![CDATA[
-          function enableButton(id) {
-            var but = document.getElementById(id);
-            but.disabled = false;
-            return true;
-          }
-        //]]>
-        </script>
-        <?php echo $head; ?>
-      </head>
-      <body>
-  <?php
+  include 'templates/header.php';
 }
 
 function startHTML_install($data, $steps) {
@@ -81,11 +54,7 @@ function startHTML_upgrade($data, $steps) {
 }
 
 function endHTML() {
-  ?>
-      </form>
-      </body>
-    </html>
-  <?php
+  include 'templates/footer.php';
 }
 
 
