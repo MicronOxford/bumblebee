@@ -57,7 +57,7 @@ class DropList extends ChoiceList {
 
 
   function selectable() {
-    $t = "<select name='$this->namebase$this->name'>";
+    $t = "<select name='$this->formname$this->namebase$this->name'>";
     foreach ($this->list->choicelist as $v) {
       $t .= $this->format($v);
     }

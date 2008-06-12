@@ -30,7 +30,7 @@ class TextArea extends TextField {
   }
 
   function selectable() {
-    $t  = '<textarea name="'.$this->namebase.$this->name.'" ';
+    $t  = '<textarea name="'.$this->formname.$this->namebase.$this->name.'" ';
     $t .= 'title="'.$this->description.'" ';
     $t .= (isset($this->attr['rows']) ? 'rows="'.$this->attr['rows'].'" ' : '');
     $t .= (isset($this->attr['cols']) ? 'cols="'.$this->attr['cols'].'" ' : '');

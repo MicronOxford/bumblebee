@@ -193,6 +193,30 @@ function DateTimeField($name, $longname='', $description='') {
   }
 
   /**
+  *  Sets a new name base for row and all fields within it
+  *
+  * The name base is prepended to the field name in all html name="" sequences for the widgets
+  * @param string $newname  new name-base to use
+  */
+  function setNamebase($newname='') {
+    $this->namebase = $newname;
+    $this->time->setNamebase($newname);
+    $this->date->setNamebase($newname);
+  }
+
+  /**
+  *  Sets a form name base for row and all fields within it
+  *
+  * The name base is prepended to the field name in all html name="" sequences for the widgets
+  * @param string $newname  new name-base to use
+  */
+  function setFormName($newname='') {
+    $this->formname = $newname;
+    $this->time->setFormname($newname);
+    $this->date->setFormname($newname);
+  }
+
+  /**
   * return a SQL-injection-cleansed string that can be used in an SQL
   * UPDATE or INSERT statement. i.e. "name='Stuart'".
   *

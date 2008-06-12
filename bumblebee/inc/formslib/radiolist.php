@@ -47,7 +47,7 @@ class RadioList extends ChoiceList {
     #echo "<pre>".print_r($data,1)."</pre>";
     #echo $this->value;
     $selected = ($data[$this->formatid] == $this->getValue() ? ' checked="1" ' : '');
-    $t  = '<label><input type="radio" name="'.$this->name.'" '  
+    $t  = '<label><input type="radio" name="'.$this->formname.$this->namebase.$this->name.'" '  
          .'value="'.$data[$this->formatid].'" '.$selected.' /> ';
     foreach (array_keys($this->formatter) as $k) {
       $t .= $this->formatter[$k]->format($data);

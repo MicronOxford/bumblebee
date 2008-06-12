@@ -100,7 +100,7 @@ class DBRow extends DBO {
   *  @return boolean data is valid
   */
   function update($data) {
-    $this->log('DBRow:'.$this->namebase.' Looking for updates:');
+    $this->log('DBRow:'.$this->formname.$this->namebase.' Looking for updates:');
     // First, check to see if this record is new
     if ($this->id == -1 && ! $this->ignoreId) {
       $this->insertRow = 1;
@@ -110,7 +110,7 @@ class DBRow extends DBO {
     // user about to fill the form in?
     $this->newObject = 1;
     foreach (array_keys($this->fields) as $k) {
-      if ($k != $this->idfield && isset($data[$this->namebase.$k]) && ! $this->fields[$k]->hidden) {
+      if ($k != $this->idfield && isset($data[$this->formname.$this->namebase.$k]) && ! $this->fields[$k]->hidden) {
         $this->log('I AM NOT NEW '.$k.':changed');
         $this->newObject = 0;
         break;
@@ -340,6 +340,7 @@ class DBRow extends DBO {
       $this->fields[$el->name]->namebase = $this->namebase;
       #echo "Altered field $el->name to $this->namebase\n";
     }
+    $this->fields[$el->name]->setFormname($this->formname);
     if ($this->fields[$el->name]->suppressValidation == -1) {
       $this->fields[$el->name]->suppressValidation = $this->suppressValidation;
       #echo "Altered field $el->name to $this->namebase\n";

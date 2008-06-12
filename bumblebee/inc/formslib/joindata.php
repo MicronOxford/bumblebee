@@ -157,6 +157,7 @@ class JoinData extends Field {
     #echo "NAME={$this->name}";
     $this->rows[$rowNum] = clone($this->protoRow);
     $this->rows[$rowNum]->setNamebase($this->namebase.$this->name.'-'.$rowNum.'-');
+    $this->rows[$rowNum]->setFormname($this->formname);
 
     #for ($i=0; $i<=$rowNum; $i++) {
     #  echo "NB = ". $this->rows[$i]->namebase."<br />";
@@ -394,6 +395,17 @@ class JoinData extends Field {
       $this->rows[$i]->setNamebase($namebase);
     }
     $this->protoRow->setNamebase($namebase);
+  }
+
+
+  /**
+  * Set the form name of the rows
+  */
+  function setFormname($name='') {
+    for ($i=0; $i < $this->number; $i++) {
+      $this->rows[$i]->setFormname($name);
+    }
+    $this->protoRow->setFormname($name);
   }
 
   /**

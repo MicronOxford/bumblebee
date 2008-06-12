@@ -86,7 +86,7 @@ class DateField extends Field {
   * @return string html presentation
   */
   function selectable() {
-    $t  = "<input type='text' name='$this->namebase$this->name' "
+    $t  = "<input type='text' name='$this->formname$this->namebase$this->name' "
         ."value='".xssqw($this->date->dateString())."' ";
     $t .= (isset($this->attr['size']) ? "size='".$this->attr['size']."' " : "");
     $t .= (isset($this->attr['maxlength']) ? "maxlength='".$this->attr['maxlength']."' " : "");
@@ -95,7 +95,7 @@ class DateField extends Field {
   }
 
   function hidden() {
-    return "<input type='hidden' name='$this->namebase$this->name' "
+    return "<input type='hidden' name='$this->formname$this->namebase$this->name' "
            ."value='".xssqw($this->value)."' />";
   }
 

@@ -148,7 +148,7 @@ class ChoiceList extends Field {
         $t .= $this->selectable();
       } else {
         $t .= $this->selectedValue();
-        $t .= "<input type='hidden' name='{$this->name}' value='{$this->value}' />";
+        $t .= "<input type='hidden' name='{$this->formname}{$this->namebase}{$this->name}' value='{$this->value}' />";
       }
       $t .= "</td>\n";
       for ($i=0; $i<$cols-2; $i++) {

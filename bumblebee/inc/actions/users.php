@@ -43,7 +43,7 @@ class ActionUsers extends ActionAction {
   }
 
   function go() {
-    if (! isset($this->PD['id'])) {
+    if (! isset($this->PD['edituserid'])) {
       $this->select(issetSet($this->PD, 'showdeleted', false));
     } elseif (isset($this->PD['delete'])) {
       if ($this->readOnly) {
@@ -52,7 +52,7 @@ class ActionUsers extends ActionAction {
         $this->delete();
       }
     } else {
-      if ($this->readOnly) $this->_dataCleanse('id');
+      if ($this->readOnly) $this->_dataCleanse('edituserid');
       $this->edit();
     }
     echo "<br /><br /><a href='".makeURL('users')."'>".T_('Return to user list')."</a>";
@@ -64,19 +64,21 @@ class ActionUsers extends ActionAction {
     $select->connectDB('users', array('id', 'name', 'username'));
     $select->list->prepend(array('-1', T_('Create new user')));
     $select->list->append(array('showdeleted', T_('Show deleted users')));
-    $select->hrefbase = makeURL('users', array('id'=>'__id__'));
+    $select->hrefbase = makeURL('users', array('edituserid'=>'__id__'));
     $select->setFormat('id', '%s', array('name'), ' %s', array('username'));
     echo $select->display();
   }
 
   function edit() {
-    $user = new User($this->auth, $this->PD['id']);
+    $user = new User($this->auth, $this->PD['edituserid']);
+    // add a formname to the user object to prevent autocomplete getting to happy with "username" and "password" fields
+    $user->setFormName('edituser');
     $user->update($this->PD);
     #$project->fields['defaultclass']->invalid = 1;
     $user->checkValid();
     echo $this->reportAction($user->sync(),
           array(
-              STATUS_OK =>   ($this->PD['id'] < 0 ? T_('User created') : T_('User updated')),
+              STATUS_OK =>   ($this->PD['edituserid'] < 0 ? T_('User created') : T_('User updated')),
               STATUS_ERR =>  T_('User could not be changed:').' '.$user->errorMessage
           )
         );
@@ -93,7 +95,7 @@ class ActionUsers extends ActionAction {
   }
 
   function delete() {
-    $user = new User($this->auth, $this->PD['id']);
+    $user = new User($this->auth, $this->PD['edituserid']);
     echo $this->reportAction($user->delete(),
               array(
                   STATUS_OK =>   $user->isDeleted ? T_('User undeleted') : T_('User deleted'),

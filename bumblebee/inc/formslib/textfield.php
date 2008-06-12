@@ -92,7 +92,7 @@ class TextField extends Field {
         issetSet($this->attr, 'float', false) && $precision = issetSet($this->attr, 'precision', false)) {
       $value = numberFormatter($value, $precision);
     }
-    $t  = '<input type="text" name="'.$this->namebase.$this->name.'" ';
+    $t  = '<input type="text" name="'.$this->formname.$this->namebase.$this->name.'" ';
     $t .= 'title="'.$this->description.'" ';
     $t .= 'value="'.xssqw($value).'" ';
     $t .= (isset($this->attr['size']) ? 'size="'.$this->attr['size'].'" ' : '');
@@ -102,7 +102,7 @@ class TextField extends Field {
   }
 
   function hidden() {
-    return "<input type='hidden' name='$this->namebase$this->name' "
+    return "<input type='hidden' name='$this->formname$this->namebase$this->name' "
            ."value='".xssqw($this->getValue())."' />";
   }
 

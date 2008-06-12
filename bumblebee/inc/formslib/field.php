@@ -70,6 +70,8 @@ class Field {
   var $errorclass = 'error';
   /** @var string   prepended to the name of the field in the html id and hence in the data array */
   var $namebase;
+  /** @var string   prepended to the name of the field in the html id and hence in the data array */
+  var $formname;
   /** @var string   function to call to check that the data is valid */
   var $isValidTest = 'isset';
   /** @var string   function to call to clean the data string before testing if valid */
@@ -120,8 +122,8 @@ class Field {
   * @return boolean  did the value of this object change?
   */
   function update($data) {
-    if (isset($data["$this->namebase$this->name"]) || $this->useNullValues) {
-      $newval = issetSet($data, "$this->namebase$this->name");
+    if (isset($data["$this->formname$this->namebase$this->name"]) || $this->useNullValues) {
+      $newval = issetSet($data, "$this->formname$this->namebase$this->name");
       $this->log("$this->name, $this->value, $newval ($this->useNullValues)");
       if (isset($this->valueCleaner) && is_callable($this->valueCleaner)) {
         $newval = call_user_func($this->valueCleaner, $newval);
@@ -242,7 +244,7 @@ class Field {
   * html representation of this field as a "hidden" form widget
   */
   function hidden() {
-    return "<input type='hidden' name='$this->namebase$this->name' "
+    return "<input type='hidden' name='$this->formname$this->namebase$this->name' "
            ."value='".xssqw($this->getValue())."' />";
   }
 
@@ -295,10 +297,19 @@ class Field {
   /**
   * set the namebase for the data storage in the html form
   *
-  * @param boolean $editable  new editable state
+  * @param string $namebase  tag to be added to the form element's name
   */
   function setNamebase($namebase='') {
-    $this->namebase = $namebase;
+    $this->namebase = $this->namebase . $namebase;
+  }
+
+  /**
+  * set the form name for the data storage in the html form
+  *
+  * @param string $namebase  tag to be added to the existing form element's name
+  */
+  function setFormName($namebase='') {
+    $this->formname = $namebase;
   }
 
   /**

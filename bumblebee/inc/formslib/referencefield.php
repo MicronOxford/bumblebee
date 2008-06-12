@@ -61,7 +61,7 @@ class ReferenceField extends Field {
     $t .= xssqw($this->getValue());
     $refdata = array('id'=>$this->getValue());
     $t .= ' ('. $this->example->format($refdata).')';
-    $t .= "<input type='hidden' name='$this->namebase$this->name' "
+    $t .= "<input type='hidden' name='$this->formname$this->namebase$this->name' "
          ."value='".xssqw($this->getValue())."' />";
     if (isset($this->duplicateName)) {
       $t .= "<input type='hidden' name='$this->duplicateName' "

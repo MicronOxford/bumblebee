@@ -37,7 +37,7 @@ class DummyField extends Field {
   }
 
   function displayInTable($cols=3) {
-    $t = "<input type='hidden' name='{$this->namebase}{$this->name}' "
+    $t = "<input type='hidden' name='{$this->formname}{$this->namebase}{$this->name}' "
              ."value='".xssqw($this->value)."' />";
     return $t;
   }

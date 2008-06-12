@@ -44,7 +44,6 @@ class User extends DBRow {
 
   function User($auth, $id, $passwdOnly=false) {
     $conf = ConfigReader::getInstance();
-
     $this->DBRow('users', $id);
     #$this->DEBUG=10;
     $this->_auth = $auth;

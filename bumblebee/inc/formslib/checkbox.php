@@ -56,7 +56,7 @@ class CheckBox extends Field {
       $t .= $this->selectable();
     } else {
       $t .= xssqw($this->value);
-      $t .= "<input type='hidden' name='$this->namebase$this->name' "
+      $t .= "<input type='hidden' name='$this->formname$this->namebase$this->name' "
            ."value='".xssqw($this->value)."' />";
     }
     $t .= "</td>\n";
@@ -68,7 +68,7 @@ class CheckBox extends Field {
   }
 
   function selectable() {
-    $t  = "<input type='checkbox' name='$this->namebase$this->name' "
+    $t  = "<input type='checkbox' name='$this->formname$this->namebase$this->name' "
          ."value='1' ";
     $t .= (($this->getValue()) ? 'checked="1"' : '');
     $t .= '/>';

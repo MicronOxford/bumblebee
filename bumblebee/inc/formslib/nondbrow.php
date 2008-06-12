@@ -51,6 +51,8 @@ class nonDBRow {
   var $editable = 1;
   /** @var string   prefixed to all name="$field[name]" sections of the html code */
   var $namebase;
+  /** @var string   prefixed to all name="$field[name]" sections of the html code */
+  var $formname;
   /** @var string   current error message  */
   var $errorMessage = '';
   /** @var boolean  the fields in this row have changed cf the database */
@@ -167,9 +169,10 @@ class nonDBRow {
       $this->fields[$el->name]->editable = $this->editable;
     }
     if (! isset($this->fields[$el->name]->namebase)) {
-      $this->fields[$el->name]->namebase = $this->namebase;
+      $this->fields[$el->name]->setNamebase($this->namebase);
       #echo "Altered field $el->name to $this->namebase\n";
     }
+    $this->fields[$el->name]->setFormname($this->formname);
     if ($this->fields[$el->name]->suppressValidation == -1) {
       $this->fields[$el->name]->suppressValidation = $this->suppressValidation;
       #echo "Altered field $el->name to $this->namebase\n";

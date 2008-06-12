@@ -56,6 +56,8 @@ class DBO {
   var $fatal_sql = 1;
   /** @var string   prefixed to all name="$field[name]" sections of the html code */
   var $namebase;
+  /** @var string   prefixed to all name="$field[name]" sections of the html code */
+  var $formname;
   /** @var string   current error message  */
   var $errorMessage = '';
   /** @var integer  status code from operation from statuscodes.php  */
@@ -95,6 +97,19 @@ class DBO {
     $this->namebase = $newname;
     foreach (array_keys($this->fields) as $k) {
       $this->fields[$k]->setNamebase($newname);
+    }
+  }
+
+  /**
+  *  Sets a form name base for row and all fields within it
+  *
+  * The name base is prepended to the field name in all html name="" sequences for the widgets
+  * @param string $newname  new name-base to use
+  */
+  function setFormName($newname='') {
+    $this->formname = $newname;
+    foreach (array_keys($this->fields) as $k) {
+      $this->fields[$k]->setFormName($newname);
     }
   }
 

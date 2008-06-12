@@ -116,10 +116,11 @@ class Bitmask extends TextField {
     $fieldSet = false;
     $s = $this->select;   // see note above for why we have this horrible hack
     $s->namebase = $this->namebase;
+    $s->formname = $this->formname;
     $s->MakeBoxMatrix();
     for ($i=0; $i<count($s->list->choicelist); $i++) {
-      $fieldname  = $s->boxMatrix[$i][0]->namebase . $s->boxMatrix[$i][0]->name;
-      $fieldvalue = $s->boxMatrix[$i][0]->namebase . 'value';
+      $fieldname  = $s->boxMatrix[$i][0]->formname . $s->boxMatrix[$i][0]->namebase . $s->boxMatrix[$i][0]->name;
+      $fieldvalue = $s->boxMatrix[$i][0]->formname . $s->boxMatrix[$i][0]->namebase . 'value';
       #echo "/$fieldname/$fieldvalue/";
       if (isset($data[$fieldname]) && isset($data[$fieldvalue])) {
         $value |= $data[$fieldvalue];
@@ -131,7 +132,7 @@ class Bitmask extends TextField {
       #echo "#$value<br />";
     }
     if ($fieldSet) {
-      $data[$this->namebase.$this->name] = $value;
+      $data[$this->formname.$this->namebase.$this->name] = $value;
     }
     $this->select = $s;
 
@@ -146,6 +147,7 @@ class Bitmask extends TextField {
     #echo "Set Name=({$this->namebase},{$this->name})<br />";
     parent::set($value);
     $s = $this->select;
+    $s->formname = $this->formname;
     $s->namebase = $this->namebase;
     $s->MakeBoxMatrix();
     $this->select = $s;
@@ -172,7 +174,7 @@ class Bitmask extends TextField {
   function wrapHTMLBuffer($contents) {
     if (! $this->showHideButtons) return $contents;
 
-    $id = preg_replace('/[^\w]/', '_', $this->namebase.$this->name);
+    $id = preg_replace('/[^\w]/', '_', $this->formname.$this->namebase.$this->name);
     $func = "toggle$id";
 
     $jsbuf = "

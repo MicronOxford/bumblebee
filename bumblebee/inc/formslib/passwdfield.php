@@ -45,7 +45,7 @@ class PasswdField extends TextField {
   }
 
   function selectable() {
-    $t  = '<input type="password" name="'.$this->namebase.$this->name.'" ';
+    $t  = '<input type="password" name="'.$this->formname.$this->namebase.$this->name.'" ';
     $t .= (isset($this->attr['size']) ? 'size="'.$this->attr['size'].'" ' : '');
     $t .= (isset($this->attr['maxlength']) ? 'maxlength="'.$this->attr['maxlength'].'" ' : '');
     $t .= '/>';

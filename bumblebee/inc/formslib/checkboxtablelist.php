@@ -135,7 +135,7 @@ class CheckBoxTableList extends ChoiceList {
     $tdlclass  = (isset($this->tdlclass) ? " class='$this->tdlclass'" : '');
     $tdrclass  = (isset($this->tdrclass) ? " class='$this->tdrclass'" : '');
 
-    $namebase = $this->namebase.$this->name.'-'.$j.'-';
+    $namebase = $this->formname.$this->namebase.$this->name.'-'.$j.'-';
     $fh = $this->followHidden;
     $fh->value = $data[$this->followHiddenField];
     $fh->namebase = $namebase;
@@ -184,6 +184,7 @@ class CheckBoxTableList extends ChoiceList {
       for ($i=0; $i<$this->numcols; $i++) {
         $this->boxMatrix[$j][$i] = clone($this->checkboxes[$i]);
         $this->boxMatrix[$j][$i]->namebase = $this->namebase.$this->name.'-'.$j.'-';
+        $this->boxMatrix[$j][$i]->formname = $this->formname;
       }
     }
   }

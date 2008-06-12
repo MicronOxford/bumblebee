@@ -120,8 +120,8 @@ class TimeField extends Field {
         $t .= $this->droplist->selectable();
         break;
       case TF_FREE:
-        $fixedname = $this->namebase.$this->name.'-fixed';
-        $varname   = $this->namebase.$this->name.'-var';
+        $fixedname = $this->formname.$this->namebase.$this->name.'-fixed';
+        $varname   = $this->formname.$this->namebase.$this->name.'-var';
         $t .= "<span id='$fixedname'>";
         if ($this->isStart) {
           $t .= $this->time->timeString();
@@ -245,6 +245,8 @@ class TimeField extends Field {
     $this->droplist = new DropList($this->name, $this->description);
     $this->droplist->setValuesArray($dropVals, 'id', 'iv');
     $this->droplist->setFormat('id', '%s', array('iv'));
+    $this->droplist->setNamebase($this->namebase);
+    $this->droplist->setFormname($this->formname);
     //preDump($durations);
     //for ($j = count($durations)-1; $j >=0 && $durations[$j] != $this->value; $j--) {
     //}
@@ -261,7 +263,7 @@ class TimeField extends Field {
    * @return string html for field
    */
   function _prepareFreeField($append='', $hidden=false) {
-    $t  = "<input type='text' name='{$this->namebase}{$this->name}$append' "
+    $t  = "<input type='text' name='{$this->formname}{$this->namebase}{$this->name}$append' "
         ."value='".xssqw($this->time->timeString())."' ";
     $t .= (isset($this->attr['size']) ? "size='".$this->attr['size']."' " : "");
     $t .= (isset($this->attr['maxlength']) ? "maxlength='".$this->attr['maxlength']."' " : "");
@@ -282,11 +284,11 @@ class TimeField extends Field {
     $func = preg_replace('/[^\w]/', '_', "hideunhide$id1");
     $t = "
 
-      <input type='hidden' id='{$this->namebase}{$this->name}-switch' name='{$this->namebase}{$this->name}-switch' value='' />
+      <input type='hidden' id='{$this->formname}{$this->namebase}{$this->name}-switch' name='{$this->formname}{$this->namebase}{$this->name}-switch' value='' />
       <script type='text/javascript'>
         function $func() {
           hideDiv('$id1');
-          var switchfield = document.getElementById('{$this->namebase}{$this->name}-switch');
+          var switchfield = document.getElementById('{$this->formname}{$this->namebase}{$this->name}-switch');
           switchfield.value = 'varfield';
           showDiv('$id2');
         }
@@ -333,8 +335,8 @@ class TimeField extends Field {
    * @return boolean the value was updated
    */
   function update($data) {
-    if (isset($data{$this->namebase.$this->name.'-switch'}) && $data{$this->namebase.$this->name.'-switch'}) {
-      $data{$this->namebase.$this->name} = $data{$this->namebase.$this->name.'-varfield'};
+    if (isset($data{$this->formname.$this->namebase.$this->name.'-switch'}) && $data{$this->formname.$this->namebase.$this->name.'-switch'}) {
+      $data{$this->formname.$this->namebase.$this->name} = $data{$this->formname.$this->namebase.$this->name.'-varfield'};
     }
     if (parent::update($data)) {
       $this->setTime($this->value);
