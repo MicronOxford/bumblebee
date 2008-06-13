@@ -3,10 +3,11 @@ $Id$
 * Ongoing
 ---------
   * track dependencies:
-    - PEAR::Auth
-    - TCPDF
-    - PHP-gettext
-    - overlib
+    - PEAR::Auth             http://pear.php.net/package/Auth/download
+    - TCPDF                  http://sourceforge.net/project/showfiles.php?group_id=128076
+    - PHP-gettext            http://download.savannah.gnu.org/releases/php-gettext/
+    - overlib                http://www.bosrup.com/web/overlib/?Download
+    - dBug                   http://dbug.ospinto.com/
 
 
 * 1.2 series: required
