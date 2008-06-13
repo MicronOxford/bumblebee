@@ -131,7 +131,7 @@ class ActionBook extends ActionViewBase {
     $this->log($start->dateTimeString().', '.$duration->timeString().', '.$start->dow());
 
     if ($this->MakeBookingPermitted($start)) {
-      $this->_editCreateBooking(-1, $start->dateTimeString(), $duration->timeString());
+      $this->_editCreateBooking(-1, $start->dateTimeString(), $duration->timeString(), true);
     } else {
       $this->_createBookingForbidden();
     }
@@ -168,6 +168,8 @@ class ActionBook extends ActionViewBase {
                     STATUS_ERR =>  T_('Booking could not be made:').'<br/><br/>'.$booking->errorMessage
                 )
               );
+    } else {
+      #echo "Didn't sync because instructed not to.";
     }
     echo $booking->display();
     $submit = ($booking->id < 0) ? T_('Make booking') : T_('Update booking');

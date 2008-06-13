@@ -68,7 +68,7 @@ class BookingEntry extends DBRow {
   * @param string        $granlist     timeslotrule picture (optional)
   */
   function BookingEntry($id, $auth, $instrumentid, $minunbook='', $ip='', $start='', $duration='', $granlist='') {
-    //$this->DEBUG = 10;
+    $this->DEBUG = 0;
     $this->DBRow('bookings', $id);
     $this->deleteFromTable = 0;
     $this->_checkAuth($auth, $instrumentid);
@@ -261,6 +261,7 @@ class BookingEntry extends DBRow {
   */
   function sync() {
     if (is_array($this->instrumentid) && count($this->instrumentid) > 1) {
+      $this->log("Checking array of instrument ids");
       $status = STATUS_ERR;
       foreach ($this->children as $c) {
         $status = $c->sync();
