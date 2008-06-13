@@ -38,7 +38,7 @@ define ("K_PATH_URL", "http://localhost/_OPENSOURCE/tcpdf/");
 /**
 * path for PDF fonts
 */
-define ("FPDF_FONTPATH", K_PATH_MAIN."fonts/");
+define ("K_PATH_FONTS", K_PATH_MAIN."fonts/");
 
 /**
 * cache directory for temporary files (full path)

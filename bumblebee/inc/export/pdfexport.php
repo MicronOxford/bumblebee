@@ -429,7 +429,17 @@ class BrandedPDF extends TCPDF {
     $this->Cell(0,10,'Page '.$this->PageNo().'/{nb}',0,0,'C');
   }
 
-  function SetFillColor($r=0, $g=0, $b=0) {
+  /**
+  * Defines the color used for all filling operations (filled rectangles and cell backgrounds). It can be expressed in RGB components or gray scale. The method can be called before the first page is created and the value is retained from page to page.
+  * @param int $col1 Gray level for single color, or Red color for RGB, or Cyan color for CMYK. Value between 0 and 255
+  * @param int $col2 Green color for RGB, or Magenta color for CMYK. Value between 0 and 255
+  * @param int $col3 Blue color for RGB, or Yellow color for CMYK. Value between 0 and 255
+  * @param boolean $storeprev [unused] if true stores the current color on $bgcolor array.
+  * @param int $col4 [unused] Key (Black) color for CMYK. Value between 0 and 255
+  * @since 1.3
+  * @see SetFillColorArray(), SetDrawColor(), SetTextColor(), Rect(), Cell(), MultiCell()
+  */
+  function SetFillColor($r=0, $g=0, $b=0, $unused=false, $unused=-1) {
     if (is_array($r)) {
       return parent::SetFillColor($r[0], $r[1], $r[2]);
     } else {
@@ -437,7 +447,16 @@ class BrandedPDF extends TCPDF {
     }
   }
 
-  function SetDrawColor($r=0, $g=0, $b=0) {
+  /**
+  * Defines the color used for all drawing operations (lines, rectangles and cell borders). It can be expressed in RGB components or gray scale. The method can be called before the first page is created and the value is retained from page to page.
+  * @param int $col1 Gray level for single color, or Red color for RGB, or Cyan color for CMYK. Value between 0 and 255
+  * @param int $col2 Green color for RGB, or Magenta color for CMYK. Value between 0 and 255
+  * @param int $col3 Blue color for RGB, or Yellow color for CMYK. Value between 0 and 255
+  * @param int $col4 Key (Black) color for CMYK. Value between 0 and 255
+  * @since 1.3
+  * @see SetDrawColorArray(), SetFillColor(), SetTextColor(), Line(), Rect(), Cell(), MultiCell()
+  */
+  function SetDrawColor($r=0, $g=0, $b=0, $unused=-1) {
     if (is_array($r)) {
       return parent::SetDrawColor($r[0], $r[1], $r[2]);
     } else {
@@ -445,7 +464,17 @@ class BrandedPDF extends TCPDF {
     }
   }
 
-  function SetTextColor($r=0, $g=0, $b=0) {
+  /**
+  * Defines the color used for text. It can be expressed in RGB components or gray scale. The method can be called before the first page is created and the value is retained from page to page.
+  * @param int $col1 Gray level for single color, or Red color for RGB, or Cyan color for CMYK. Value between 0 and 255
+  * @param int $col2 Green color for RGB, or Magenta color for CMYK. Value between 0 and 255
+  * @param int $col3 Blue color for RGB, or Yellow color for CMYK. Value between 0 and 255
+  * @param boolean $storeprev if true stores the current color on $fgcolor array.
+  * @param int $col4 Key (Black) color for CMYK. Value between 0 and 255
+  * @since 1.3
+  * @see SetTextColorArray(), SetDrawColor(), SetFillColor(), Text(), Cell(), MultiCell()
+  */
+  function SetTextColor($r=0, $g=0, $b=0, $unused=false, $unused1=-1) {
     if (is_array($r)) {
       return parent::SetTextColor($r[0], $r[1], $r[2]);
     } else {
@@ -453,7 +482,7 @@ class BrandedPDF extends TCPDF {
     }
   }
 
-  function SetFont($font=0, $style=0, $size=0) {
+  function SetFont($font, $style='', $size=0) {
     if (is_array($font)) {
       return parent::SetFont($this->_substituteFont($font[0]), $font[1], $font[2]);
     } else {
