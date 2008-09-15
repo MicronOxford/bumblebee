@@ -111,7 +111,6 @@ class Calendar {
     }
     $this->log('Creating calendar from '.$start->dateString().' to '.$stop->dateString(), 5);
     $this->_fill();
-    $this->_insertVacancies();
     //print $this->displayAsTable();
   }
 
@@ -136,6 +135,7 @@ class Calendar {
    * @param string $pic   timeslot picture for this instrument and this calendar
    */
   function setTimeSlotPicture($pic) {
+    $this->_insertVacancies();
     $this->timeslots = new TimeSlotRule($pic);
     //break bookings over the predefined pictures
     $this->log('Breaking up bookings according to defined rules');
@@ -469,6 +469,149 @@ class Calendar {
     return $t;
   }
 
+  /**
+  * Generate html for the booking details in a table with rowspan based on the duration of the booking
+  *
+  * @return string   html representation of the calendar
+  */
+  function displayMonthAsList() {
+    $conf = ConfigReader::getInstance();
+    if (is_array($this->instrumentlist)) {
+      $this->freeBusyOnly = true;
+    }
+
+    $today = new SimpleDate(time());
+
+    $viewday = T_('View day');
+    
+    $t = $this->_makeRefreshScript();
+    
+    if (count($this->bookinglist) == 0) {
+      $t .= '<br/><br/>';
+      $t .= T_('No bookings found in this period');
+      return $t;
+    }
+
+    $t .= '<h3>'.T_('List of bookings').'</h3>';
+    $t .= '<table class="tabularobject calendar" summary="'
+                    .T_('List view of instrument bookings').'">';
+
+    if (! $this->freeBusyOnly) {
+      $t .= sprintf('<tr><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th></tr>', 
+                          T_('ID'), T_('Start'), T_('Stop'), T_('Duration'), T_('User'), T_('Comments'), '');
+      foreach ($this->bookinglist as $b) {
+        #$t .= '<tr><td>'.$v[0].'</td><td>'.$v[1].'</td></tr>'."\n";
+        $duration = new SimpleTime($b->stop->subtract($b->start));
+        $isodate  = $b->start->dateString();
+        $class = $this->_getDayClass($today, $b->start);
+
+        $t .= sprintf('<tr class="%s"><td><a href="%s">%d</a></td><td>%s</td><td>%s</td><td>%s</td>
+                      <td><a href="mailto:%s">%s</a> (%s)</td><td>%s</td><td><a href="%s">%s</a></td></tr>',
+              $class,
+              call_user_func($this->bookhrefCallback, $b->start)."&amp;isodate=$isodate&amp;bookid={$b->id}",
+              $b->id,
+              $b->start->dateTimeString(),
+              $b->stop->dateTimeString(),
+              $duration->timeString(),
+              $b->useremail, $b->name, $b->username,
+              $b->comments,
+              $this->zoomhref.'&amp;isodate='.$isodate, $viewday
+          );
+      }
+    } else {
+      $t .= sprintf('<tr><th></th><th>%s</th><th>%s</th><th>%s</th></tr>', 
+                                  T_('Start'), T_('Stop'), T_('Duration'));
+      foreach ($this->bookinglist as $b) {
+        #$t .= '<tr><td>'.$v[0].'</td><td>'.$v[1].'</td></tr>'."\n";
+        $duration = new SimpleTime($b->stop->subtract($b->start));
+        $t .= sprintf('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>',
+              T_('Busy'),
+              $b->start->dateTimeString(),
+              $b->stop->dateTimeString(),
+              $duration->timeString()
+          );
+      }
+    }
+    $t .= '</table>';
+
+    return $t;
+    
+    $t .= '<tr><th colspan="2"></th>';
+    for ($day=0; $day<7; $day++) {
+      $current = clone($weekstart);
+      $current->addDays($day);
+      $t .= '<th class="caldow">'
+              .($conf->value('calendar', 'shortdaynames', true) ? $current->dowShortStr()
+                                                                : $current->dowStr())
+              .'</th>';
+    }
+    $t .= '</tr>';
+
+    // load up this translation once outside the main loop
+    $zoomStr = T_('Zoom in on %s');
+
+
+
+    for ($row = 0; $row < $numRows; $row++) {
+      $dayRow = $row % $numRowsPerDay;
+      if ($dayRow == 0) {
+        $weekstart->addDays(7);
+        $t .= '<tr><td colspan="2"></td>';
+        for ($day=0; $day<7; $day++) {
+          $current = clone($weekstart);
+          $current->addDays($day);
+          $isodate = $current->dateString();
+          $class = $this->_getDayClass($today, $current);
+          $zoomwords = sprintf($zoomStr, $isodate);
+          $t .= '<td class="caldatecell '.$class.'">';
+          $t .= '<div style="float:right;"><a href="'.$this->zoomhref.'&amp;isodate='.$isodate.'" '
+                  .'class="but" title="'.$zoomwords .'">'
+               .'<img src="'.$conf->BasePath.'/theme/images/zoom.png" '
+                  .'alt="'.$zoomwords .'" class="calicon" /></a></div>'."\n";
+          $t .= '<div class="caldate">'
+                  .$current->getShortDateString()
+                .'</div>';
+          $t .= '</td>';
+        }
+        $t .= '</tr>';
+      }
+      $t .= '<tr><td class="dummy"></td>';
+      //$t .= '<tr><td class="dummy"><img src="/1x1.png" height="5" width="1" alt="" /></td>';
+      if ($dayRow % $reportPeriod == 0) {
+        //$t .= '<td colspan="2" rowspan="'.$reportPeriod.'">';
+        $t .= '<td rowspan="'.$reportPeriod.'" class="timemark">';
+        $t .= $timecolumn[$dayRow]->getShortString();
+        $t .= '</td>';
+      }
+      for ($day=0; $day<7; $day++) {
+        $current = clone($weekstart);
+        $current->addDays($day);
+        #$currentidx = $current->dsDaysBetween($this->start);
+        // calculate the day number directly from the cell information rather than
+        // using date-time functions. (add a small qty to the value so that floor doesn't
+        // round down to the next integer below due to fp precision)
+        $currentidx = floor($row / $numRowsPerDay + 0.05) * 7 + $day;
+        if (isset($matrix[$currentidx][$dayRow])) {
+          #$t .= '<td>';
+          #preDump($matrix[$currentidx]->rows[$dayRow]);
+          $b =& $matrix[$currentidx][$dayRow];
+          $b->booking->freeBusyOnly = $this->freeBusyOnly;
+          $class = $this->_getDayClass($today, $b->booking->start);
+          $class .= ($b->booking->isDisabled ? ' disabled' : '');
+          //echo "$class <br />\n";
+          $t .= "\n\t".$b->display($class,
+                                    call_user_func($this->bookhrefCallback, $b->booking->start),
+                                    $this->showDetails,
+                                    $this->isAdminView)."\n";
+          #$t .= '</td>';
+        }
+      }
+      $t .= '</tr>';
+    }
+    $t .= '</table>';
+    return $t;
+  }
+  
   /**
   * Generate html for the booking details in a table with rowspan based on the duration of the booking
   *

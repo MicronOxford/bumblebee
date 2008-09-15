@@ -44,7 +44,7 @@ class OutputFormatter {
   * @return string formatted data
   */
   function format($data) {
-    #echo "Formatting string";
+    #echo "Formatting string for $this->format with " . join(",", $data) ."<br />\n";
     $fields = is_array($this->formatfields) ? $this->formatfields : array($this->formatfields);
     $s = array();
     foreach ($fields as $v) {
@@ -58,6 +58,7 @@ class OutputFormatter {
         if ($val !== '' && $val !== NULL) $s[] = $val;
       }
     }
+    #echo "ended up with ". join(",",$s) . "<br/><br/>\n";
     return count($s) ? vsprintf($this->format, $s) : '';
   }
 

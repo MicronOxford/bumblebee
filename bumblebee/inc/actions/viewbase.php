@@ -111,6 +111,17 @@ class ActionViewBase extends ActionAction {
   }
 
   /**
+  * Makes a link back to the current list view
+  *
+  * @return string URL string for link back to calendar list view
+  */
+  function _calendarListViewLink($instrument) {
+    return '<br /><br /><a href="'.
+        makeURL('calendar', array('instrid'=>$instrument, 'caloffset'=>$this->_offset(), 'listview'=>1))
+      .'">'.T_('Return to list view') .'</a>';
+  }
+
+  /**
   * Display a heading on the page with the instrument name and location
   */
   function displayInstrumentHeader() {

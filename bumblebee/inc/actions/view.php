@@ -60,11 +60,15 @@ class ActionView extends ActionViewBase {
   * Select which instrument for which the calendar should be displayed
   */
   function selectInstrument() {
-    $instrselect = new AnchorTableList('Instrument', T_('Select which instrument to view'), 3);
+    $conf = ConfigReader::getInstance();
+    
+    $instrselect = new AnchorTableList('Instrument', T_('Select which instrument to view'), 4);
 
     $headings = array(new bbString('name', T_('name')),
                       new bbString('longname', T_('description')),
-	              new bbString('location', T_('location')));
+                      new bbString('location', T_('location')),
+                      new bbString('view', T_('view')),
+                     );
 
     $instrselect->setTableHeadings($headings);
     $instrselect->sortByHeadings(true, $this->PD);
@@ -84,7 +88,17 @@ class ActionView extends ActionViewBase {
                             array('permissions'=>'instrid=id'));
     }
     $instrselect->hrefbase = makeURL('calendar', array('instrid'=>'__id__'));
-    $instrselect->setFormat('id', '%s', array('name'), ' %50.50s', array('longname'), ' %20.20s', array('location'));
+    
+    $listurl   = preg_replace('/__id__/', '%d', makeURL('calendar', array('instrid'=>'__id__', 'listview'=>1)));
+    $linksview = sprintf("</a><a href='%s' style='display:inline'><img src='%s/theme/images/view_icon.png' width='16' height='16' alt='%s' /></a>&nbsp;<a href='%s' style='display:inline'><img src='%s/theme/images/view_text.png' width='16' height='16' alt='%s' /></a><a>",
+                          $listurl, $conf->BasePath, T_("calendar view"), $listurl, $conf->BasePath, T_("list view")
+                        );
+    $instrselect->setFormat('id', '%s', array('name'),
+                                  ' %50.50s', array('longname'),
+                                  ' %20.20s', array('location'),
+#                                  '<a href="%s">list</a>', array(makeURL('calendar', array('instrid'=>'__id__', 'listview'=>1)))
+                                  $linksview, array('id', 'id')
+                            );
     echo '<h2>' . T_('Please select an instrument to view') . '</h2>';
     echo $instrselect->display();
   }
