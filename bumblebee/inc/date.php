@@ -734,10 +734,10 @@ class SimpleTime {
   }
 
   function _setTicks($s) {
-    if (preg_match('/^(\d\d):(\d\d):(\d\d)$/', $s, $t)) {
+    if (preg_match('/^(\d+):(\d\d):(\d\d)$/', $s, $t)) {
       #preDump($t);
       $this->ticks = $t[1]*3600+$t[2]*60+$t[3];
-    } elseif (preg_match('/^(\d\d):(\d\d)$/', $s, $t) || preg_match('/^(\d):(\d\d)$/', $s, $t)) {
+    } elseif (preg_match('/^(\d+):(\d\d)$/', $s, $t)) {
       #preDump($t);
       $this->ticks = $t[1]*3600+$t[2]*60;
     } else {

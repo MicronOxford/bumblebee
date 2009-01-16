@@ -456,8 +456,7 @@ function is_valid_time($v) {
 * @todo //TODO: can this be relaxed to be more user-friendly without introducing errors
 */
 function is_valid_nonzero_time($v) {
-  return (preg_match('/^\d\d:\d\d/',$v) || preg_match('/^\d\d:\d\d:\d\d/',$v))
-            && ! preg_match('/^00:00/',$v) && ! preg_match('/^00:00:00/',$v);
+  return (preg_match('/^\d+:\d\d(:\d\d)?/',$v) && ! preg_match('/^0+:00(:00)?/',$v));
 }
 
 /**
