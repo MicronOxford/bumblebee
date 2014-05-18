@@ -1,7 +1,7 @@
 /* $Id$ */
 
 body {
-  background: #fafafa url("/bumblebee/theme/images/background.png");
+  background: #fafafa;
   background-repeat: repeat;
 /*   background-repeat: repeat-y; */
 /*   background-position: right; */
@@ -9,20 +9,20 @@ body {
 
 #header {
   position: relative;
-  border-bottom: 3px solid #0000cc;
+  border-bottom: 3px solid #002147;
   margin-bottom: 1em;
   background: white;
 }
 
 #headerLeft {
-  height: 75px; 
-  width: 90px;
+  height: 76px;
+  width: 250px;
 }
 
 #headerRight {
   margin-left: 1em;
   position: absolute;
-  left: 100px;
+  left: 250px;
   top: 0px;
 }
 
@@ -35,7 +35,7 @@ body {
 #bumblebeefooter {
   padding-top: 5em;
   margin-top: 1em;
-  border-top: 3px solid #0000cc;
+  border-top: 3px solid #002147;
   clear: both;
 }
 

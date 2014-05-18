@@ -20,12 +20,10 @@
 
 <div id="header">
   <div id="headerLeft">
-    <a href='http://bumblebeeman.sf.net/' title="Bumblebee">
-      <img src='<?php echo $BASEPATH ?>/theme/images/logo.png' alt="Bumblebee logo" />
-    </a>
+         <img src='<?php echo $BASEPATH ?>/theme/images/oxford_university.gif' alt="University of Oxford" />
   </div>
   <div id="headerRight">
-    <h1><?php print T_('Bumblebee Instrument Bookings'); ?></h1>
+    <h1>Department of Biochemistry Instrument Booking</h1>
   </div>
 </div>
 

@@ -98,7 +98,7 @@ class ActionMasquerade extends ActionAction {
     echo '<h3>Masquerade finished</h3>'
           .'<p>Oh well. All good things have to come to an end. '
           .'The music has stopped and you have taken your mask off. </p>'
-          .'<p>Hope you didn\'t get too much of a surprise when eveyrone else took their masks off too!</p>';
+          .'<p>Hope you didn\'t get too much of a surprise when everyone else took their masks off too!</p>';
   }
   
 } //ActionMasquerade

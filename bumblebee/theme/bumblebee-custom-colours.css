@@ -229,3 +229,7 @@ tr.itemrow:hover {
 #bumblebeeExport tr.totals {
   background-color: #f0f0ff;
 }
+
+#headerRight h1 {
+  font-size: large;
+}

@@ -41,19 +41,20 @@ class ActionPrintLoginForm extends ActionAction {
       <table>
       <tr>
         <td>%s</td>
-        <td><input name="username" type="text" size="16" /></td>
-      </tr>
-      <tr>
-        <td>%s</td>
-        <td><input name="pass" type="password" size="16" /></td>
+        <td><input name="user" type="text" size="16" value="',
+      T_('Username:')  );
+        echo $_SERVER['WEBAUTH_USER'];
+        echo '" disabled  />
+      <input name="username" type="hidden" size="16" value="';
+        echo $_SERVER['WEBAUTH_USER'];
+      printf('" />
+      <input name="pass" type="hidden" size="16" value="abc123" /></td>
       </tr>
       <tr>
         <td></td>
         <td><input name="submit" type="submit" value="%s" /></td>
       </tr>
       </table>',
-      T_('Username:'),
-      T_('Password:'),
       T_('login')  );
   }
 }

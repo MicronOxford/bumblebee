@@ -135,8 +135,9 @@ class ActionListing {
     
     $this->actions[] = new ActionData('ActionView', 'view.php', 
         'view',       T_('View/edit instrument bookings'), T_('Main'), BBPERM_USER_ALL);
-    $this->actions[] = new ActionData('ActionPassword', 'password.php', 
-        'passwd',     T_('Change password'), T_('Change password'),    BBPERM_USER_PASSWD);
+## JR ## Remove Change Password option
+#    $this->actions[] = new ActionData('ActionPassword', 'password.php',
+#        'passwd',     T_('Change password'), T_('Change password'),    BBPERM_USER_PASSWD);
     $this->actions[] = new ActionData('ActionPrintLoginForm', 'login.php', 
         'login',      T_('Login'), T_('Login'), BBPERM_USER_ALL, -1, 'view');
     $this->actions[] = new ActionData('ActionMasquerade', 'masquerade.php', 

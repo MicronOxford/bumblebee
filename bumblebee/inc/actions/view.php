@@ -214,6 +214,7 @@ class ActionView extends ActionAction {
     $cal->setOutputStyles('', $CONFIG['calendar']['todaystyle'], 
                 preg_split('{/}',$CONFIG['calendar']['monthstyle']), 'm');
     echo $this->displayInstrumentHeader($row);
+    echo "<a href='".makeURL('view')."'>". T_('Return to instrument list') ."</a><br />";
     echo $this->_linksForwardBack(($offset-$callength),
                                   0,($offset+$callength),
                                   $totaloffset <= $row['calfuture'] || $this->_isAdminView);

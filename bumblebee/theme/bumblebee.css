@@ -33,8 +33,6 @@ pre {
   border: 1px solid #aaaaff;
   margin: 0.5em 3em 0.5em 3em;
   padding: 0.5em;
-  max-height: 40em;
-  overflow: auto;
 }
 
 a img {

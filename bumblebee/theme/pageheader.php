@@ -25,13 +25,13 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title><?php echo $pagetitle?></title>
   <link rel="stylesheet" href="<?php echo $BASEPATH?>/theme/bumblebee.css" type="text/css" />
   <link rel="stylesheet" href="<?php echo $BASEPATH?>/theme/bumblebee-custom-colours.css" type="text/css" />
   <link rel="stylesheet" href="<?php echo $BASEPATH?>/theme/pagelayout.css" type="text/css" />
   <link rel="icon" href="<?php echo $BASEPATH?>/theme/images/favicon.ico" />
   <link rel="shortcut icon" href="<?php echo $BASEPATH?>/theme/images/favicon.ico" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   
 <?php
   include 'inc/jsfunctions.php'
