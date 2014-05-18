@@ -1,6 +1,6 @@
 <?php
 /**
-* Edit/create/delete special instrument usage costs 
+* Edit/create/delete special instrument usage costs
 *
 * @author    Stuart Prescott
 * @copyright  Copyright Stuart Prescott
@@ -8,8 +8,14 @@
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Actions
+*
+* path (bumblebee root)/inc/actions/specialcosts.php
 */
-  
+
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** specialcosts object */
 require_once 'inc/bb/specialcosts.php';
 /** list of choices */
@@ -18,7 +24,7 @@ require_once 'inc/formslib/anchortablelist.php';
 require_once 'inc/actions/actionaction.php';
 
 /**
-* Edit/create/delete special instrument usage costs 
+* Edit/create/delete special instrument usage costs
 *
 * @package    Bumblebee
 * @subpackage Actions
@@ -26,8 +32,8 @@ require_once 'inc/actions/actionaction.php';
 class ActionSpecialCosts extends ActionAction {
 
   /**
-  * Initialising the class 
-  * 
+  * Initialising the class
+  *
   * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
@@ -52,13 +58,18 @@ class ActionSpecialCosts extends ActionAction {
         $this->selectInstrument();
       }
     } elseif (isset($this->PD['delete'])) {
-      $this->delete();
+      if ($this->readOnly) {
+        $this->readOnlyError();
+      } else {
+        $this->delete();
+      }
     } else {
+      if ($this->readOnly) $this->_dataCleanse(array('project', 'instrument', 'createnew'));
       $this->edit();
     }
     echo "<br /><br /><a href='".makeURL('specialcosts')."'>".T_('Return to special costs list')."</a>";
   }
-  
+
   function mungeInputData() {
     parent::mungeInputData();
     $this->PD['createnew'] = isset($this->PD['createnew']) && $this->PD['createnew'];
@@ -99,9 +110,9 @@ class ActionSpecialCosts extends ActionAction {
     $select = new AnchorTableList(T_('Projects'), T_('Select project to view rates'));
     $select->connectDB('projects', array('id', 'name', 'longname'),
                             'projectid IS NOT NULL',
-                            'name', 
-                            'id', 
-                            NULL, 
+                            'name',
+                            'id',
+                            NULL,
                             array('projectrates'=>'projectrates.projectid=projects.id'), true);
     $select->list->prepend(array('-1', T_('Create new project rate')));
     $select->hrefbase = makeURL('specialcosts', array('project'=>'__id__'));
@@ -131,9 +142,9 @@ class ActionSpecialCosts extends ActionAction {
     $select = new AnchorTableList(T_('Instruments'), T_('Select instrument to view rates'));
     $select->connectDB('instruments', array('id', 'name', 'longname'),
                             'projectid='.qw($this->PD['project']),
-                            'name', 
-                            'id', 
-                            NULL, 
+                            'name',
+                            'id',
+                            NULL,
                             array('projectrates'=>'projectrates.instrid=instruments.id'), true);
     $select->list->prepend(array('-1', T_('Create new project rate')));
     $select->hrefbase = makeURL('specialcosts', array('instrument'=>'__id__', 'createnew'=>$this->PD['createnew'], 'project'=>$this->PD['project']));
@@ -150,9 +161,9 @@ class ActionSpecialCosts extends ActionAction {
     $select = new AnchorTableList(T_('Instruments'), T_('Select instrument to create rate'));
     $select->connectDB('instruments', array('id', 'name', 'longname'),
                             'projectid IS NULL',        //find rows *not* in the join
-                            'name', 
-                            'id', 
-                            NULL, 
+                            'name',
+                            'id',
+                            NULL,
                             array('projectrates'=>'projectrates.instrid=instruments.id AND projectrates.projectid='.qw($this->PD['project'])), true);
     $select->hrefbase = makeURL('specialcosts', array('instrument'=>'__id__', 'createnew'=>$this->PD['createnew'], 'project'=>$this->PD['project']));
     $select->setFormat('id', '%s', array('name'), '%50.50s', array('longname'));
@@ -163,7 +174,7 @@ class ActionSpecialCosts extends ActionAction {
     list($id, $specCost) = $this->_getCostObject();
     $specCost->update($this->PD);
     $specCost->checkValid();
-    echo $this->reportAction($specCost->sync(), 
+    echo $this->reportAction($specCost->sync(),
           array(
               STATUS_OK =>   ($id < 0 ? T_('Cost schedule created') : T_('Cost schedule updated')),
               STATUS_ERR =>  T_('Cost schedule could not be changed:').' '.$specCost->errorMessage
@@ -185,20 +196,20 @@ class ActionSpecialCosts extends ActionAction {
 
   function delete() {
     list($id, $cost) = $this->_getCostObject();
-    echo $this->reportAction($cost->delete(), 
+    echo $this->reportAction($cost->delete(),
               array(
                   STATUS_OK =>   T_('Cost deleted'),
                   STATUS_ERR =>  T_('Cost could not be deleted:').'<br/><br/>'.$cost->errorMessage
               )
-            );  
+            );
   }
 
   /**
-  * Create a SpecialCost object 
+  * Create a SpecialCost object
   *
-  * @return array ($id, $special_cost) 
+  * @return array ($id, $special_cost)
   */
-  function _getCostObject() {    
+  function _getCostObject() {
     if ($this->PD['createnew']) {
       $id = -1;
     } else {
@@ -206,12 +217,12 @@ class ActionSpecialCosts extends ActionAction {
                                             array($this->PD['project'], $this->PD['instrument']));
       $id = (is_array($row) && isset($row['rate'])) ? $row['rate'] : -1;
     }
-    $specCost = new SpecialCost($id, $this->PD['project'], $this->PD['instrument']);  
+    $specCost = new SpecialCost($id, $this->PD['project'], $this->PD['instrument']);
     return array($id, $specCost);
   }
-  
-  
+
+
 } //ActionSpecialCost
 
 
-?> 
+?>

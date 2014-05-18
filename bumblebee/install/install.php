@@ -10,6 +10,8 @@
 * @subpackage Installer
 */
 
+define('BUMBLEBEE', true);
+
 $sqlSourceFile = 'setup-tables.sql';
 $sqlSetupFilename = 'bumblebee.sql';
 $iniSourceFile = 'db.ini';
@@ -24,6 +26,8 @@ require_once 'installer/sqlload.php';
 require_once 'installer/checks.php';
 require_once 'installer/createdatabase.php';
 require_once 'installer/constructini.php';
+require_once 'installer/loadconfig.php';
+require_once 'installer/settings.php';
 
 require_once 'installer/installstep.php';
 
@@ -32,12 +36,15 @@ $steps->addStep(new InstallStep('Usernames',          'do_userdata'));
 $steps->addStep(new InstallStep('Pre-install check',  'do_preinst'));
 $steps->addStep(new InstallStep('Create database',    'do_database'));
 $steps->addStep(new InstallStep('Copy db.ini',        'do_dbini'));
-$steps->addStep(new InstallStep('Customise',          'do_customise'));
 $steps->addStep(new InstallStep('Post-install check', 'do_postinst'));
+$steps->addStep(new InstallStep('Customise',          'do_manualcustomise'));
+$steps->addStep(new InstallStep('Customise',          'do_autocustomise', true));
+$steps->addStep(new InstallStep('Customise',          'do_runautocustomise', true));
 $steps->addStep(new InstallStep('Clean-up',           'do_cleanup'));
 
 $steps->setCurrent(1);
 $userSubmitted = array_merge(getSetupDefaults(), $_POST);
+
 if (! isset($_POST['havedata']) || isset($_POST['do_userdata'])) {
   printStepUserForm($userSubmitted, $steps);
   exit;
@@ -48,16 +55,17 @@ if (isset($_POST['do_preinst'])) {
   $userSubmitted['preinst-results'] = check_preinst($userSubmitted);
   printStepPreInst($userSubmitted, $steps);
   exit;
-} 
+}
 
 $steps->increment();
 if (isset($_POST['do_database'])) {
   printStepDatabase($userSubmitted, $steps);
   exit;
-} 
+}
 // do the database setup parts
 if (isset($_POST['submitsql'])) {
-  $s = constructSQL($sqlSourceFile, $userSubmitted, $_POST['includeAdmin']);
+  $includeAdmin = isset($_POST['includeAdmin']) ? $_POST['includeAdmin'] : false;
+  $s = constructSQL($sqlSourceFile, $userSubmitted, $includeAdmin);
   outputTextFile($sqlSetupFilename, $s);
   exit;
 }
@@ -73,7 +81,7 @@ $steps->increment();
 if (isset($_POST['do_dbini'])) {
   printStepDBini($userSubmitted, $steps);
   exit;
-} 
+}
 if (isset($_POST['submitini'])) {
   $s = constructini($iniSourceFile, $userSubmitted);
   outputTextFile($iniSetupFilename, $s);
@@ -81,27 +89,44 @@ if (isset($_POST['submitini'])) {
 }
 
 $steps->increment();
-if (isset($_POST['do_customise'])) {
-  printStepCustomise($userSubmitted, $steps);
-  exit;
-} 
-
-$steps->increment();
 if (isset($_POST['do_postinst'])) {
-  $userSubmitted['preinst-results']  = check_preinst($userSubmitted);
-  $userSubmitted['postinst-results'] = check_postinst($userSubmitted);
+  $userSubmitted['preinst-results']   = check_preinst($userSubmitted);
+  loadInstalledConfig();
+  $userSubmitted['postinst-results']  = check_postinst($userSubmitted);
   printStepPostInst($userSubmitted, $steps);
   exit;
-} 
+}
+
+$steps->increment();
+if (isset($_POST['do_manualcustomise'])) {
+  loadInstalledConfig();
+  printStepManualCustomise($userSubmitted, $steps);
+  exit;
+}
+
+$steps->increment();
+if (isset($_POST['do_autocustomise'])) {
+  loadInstalledConfig();
+  printStepAutoCustomise($userSubmitted, $steps);
+  exit;
+}
+
+$steps->increment();
+if (isset($_POST['do_runautocustomise'])) {
+  loadInstalledConfig();
+  $userSubmitted['customise-results'] = updateUserSettings($userSubmitted);
+  printStepRunAutoCustomise($userSubmitted, $steps);
+  exit;
+}
 
 $steps->increment();
 if (isset($_POST['do_cleanup'])) {
-  require_once 'installer/loadconfig.php';
   loadInstalledConfig();
-  $userSubmitted['BASEURL'] = $BASEURL;
+  $conf = ConfigReader::getInstance();
+  $userSubmitted['BASEURL'] = $conf->BaseURL;
   printStepCleanup($userSubmitted, $steps);
   exit;
-} 
+}
 
 printErrorMessage("I can't work out what you want me to do");
 exit;
@@ -119,7 +144,7 @@ function printStepUserForm($values, $steps) {
     <fieldset>
       <legend>Input data</legend>
       <table>
-        <?php 
+        <?php
           printInstallFormFields($values, false);
         ?>
       </table>
@@ -170,7 +195,7 @@ function printStepPreInst($values, $steps) {
 function printStepDatabase($values, $steps) {
   startHTML_install($values, $steps);
   reflectUserData($values, false);
-  printDatabaseSetupForm($values);
+  printDatabaseSetupForm($values, $steps->getNextActionName());
   if (isset($values['loadsql-results'])) {
     ?>
       <fieldset>
@@ -179,7 +204,7 @@ function printStepDatabase($values, $steps) {
         <blockquote>
           <?php print $values['loadsql-results']; ?>
         </blockquote>
-        <p>If it all went well, then proceed to the next step. Otherwise, try to fix any 
+        <p>If it all went well, then proceed to the next step. Otherwise, try to fix any
         errors (wrong username and password, perhaps) in the forms and have another go using
         the script or try to fix it up using phpMyAdmin.</p>
       </fieldset>
@@ -187,7 +212,7 @@ function printStepDatabase($values, $steps) {
   }
   ?>
     <div id='buttonbar'>
-      <?php print $steps->getPrevNextButtons(); ?>
+      <?php print $steps->getPrevNextButtons(null, null, ! isset($values['loadsql-results'])); ?>
     </div>
   <?php
   endHTML();
@@ -202,8 +227,33 @@ function printStepDBini($values, $steps) {
       Bumblebee needs to know what username and password to use for connecting to your database.
       Download the <code>db.ini</code> file (which will contain the values specified above)
       and save it into your Bumblebee installation on the webserver as <code>config/db.ini</code>.<br />
-      <input type='submit' name='submitini' value='Generate db.ini file' />
+      <input type='submit' name='submitini' value='Generate db.ini file'
+        <?php echo jsEnableButtonClick($steps->getNextActionName()); ?> />
     </fieldset>
+    <div id='buttonbar'>
+      <?php print $steps->getPrevNextButtons(null, null, true); ?>
+    </div>
+  <?php
+  endHTML();
+}
+
+function printStepManualCustomise($values, $steps) {
+  startHTML_install($values, $steps);
+  reflectUserData($values, false);
+  printManualSettingsSetupForm($values, $steps->getNextActionName());
+  ?>
+    <div id='buttonbar'>
+      <?php print $steps->getPrevReloadNextButtons(); ?>
+    </div>
+  <?php
+  endHTML();
+}
+
+function printStepAutoCustomise($values, $steps) {
+  startHTML_install($values, $steps);
+  reflectUserData($values, false);
+  printAutoSettingsSetupForm($values, $steps->getNextActionName());
+  ?>
     <div id='buttonbar'>
       <?php print $steps->getPrevNextButtons(); ?>
     </div>
@@ -211,19 +261,12 @@ function printStepDBini($values, $steps) {
   endHTML();
 }
 
-function printStepCustomise($values, $steps) {
+
+function printStepRunAutoCustomise($values, $steps) {
   startHTML_install($values, $steps);
   reflectUserData($values, false);
+  printRunAutoSettingsSetupForm($values, $steps->getNextActionName());
   ?>
-    <fieldset id='dbini'>
-      <legend>Customise Installation</legend>
-      <p>You now need to customise your <code>bumblebee.ini</code> file. This file can be found in
-      the <code>config/</code> directory of your installation. The most important things for you
-      to customise are in the first couple of sections of the file.</p>
-      <p>Please refer to the 
-      <a href="http://bumblebeeman.sourceforge.net/documentation/configure">documentation</a>
-      for more information on how to do this.</p>
-    </fieldset>
     <div id='buttonbar'>
       <?php print $steps->getPrevNextButtons(); ?>
     </div>
@@ -237,7 +280,7 @@ function printStepPostInst($values, $steps) {
   ?>
     <fieldset>
       <legend>Post-installation check</legend>
-      <p>The setup script is having a look around your system to see if everything is OK for Bumblebee 
+      <p>The setup script is having a look around your system to see if everything is OK for Bumblebee
       (just as it did before) as well as looking at how your installation went...</p>
       <blockquote>
         <?php print $values['preinst-results']; ?>

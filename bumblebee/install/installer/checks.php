@@ -2,12 +2,23 @@
 /**
 * Pre- and post-install checks of the setup
 *
-* @author    Stuart Prescott
+* @author     Stuart Prescott
 * @copyright  Copyright Stuart Prescott
 * @license    http://opensource.org/licenses/gpl-license.php GNU Public License
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Installer
+*
+* @todo   rewrite installer test suite as objects
+*         All tests in the test suite should report their outcome in a consistent manner,
+*          making it easy for humans or computer programs to understand and to process them.
+*          The following test states, defined by EARL (the Evaluation And Report Language),
+*          have proved useful:
+*          - cannotTell
+*          - fail
+*          - notApplicable
+*          - notTested
+*          - pass
 */
 
 /**
@@ -20,10 +31,10 @@ function check_preinst($data) {
   ini_set('track_errors', true);
   // check kit: check that a Bumblebee installation can be found
   $REBASE_INSTALL = '..'.DIRECTORY_SEPARATOR;
-  set_include_path($REBASE_INSTALL.PATH_SEPARATOR.get_include_path());
+  mungeIncludePath($REBASE_INSTALL);
   $NON_FATAL_CONFIG = true;
   $php_errormsg = '';
-  if (@ include 'inc/config.php') {   // FIXME file moved for v1.2
+  if (@ include 'inc/config.php') {
     $s[] = "GOOD: Found installation of Bumblebee version $BUMBLEBEEVERSION.";
   } else {
     $s[] = "ERROR: I couldn't find any evidence of a Bumblebee installation here. PHP said:<blockquote>\n$php_errormsg</blockquote>";
@@ -36,7 +47,7 @@ function check_preinst($data) {
   } else {
     $s[] = "GOOD: Configuration loaded successfully";
   }
-  // check kit: check that php-gettext can be found 
+  // check kit: check that php-gettext can be found
   if (! @ include_once 'php-gettext/gettext.inc') {
     $s[] = "WARNING: <a href='https://savannah.nongnu.org/projects/php-gettext/'>php-gettext</a> internationali[sz]ation layer not found. Translations will not be available. "
            ."PHP said:<pre>\n$php_errormsg</pre>";
@@ -55,13 +66,13 @@ function check_preinst($data) {
   } else {
     // check individually for LDAP and RADIUS here? but will that just cause a PHP crash if they are not installed?
     if (! extension_loaded('ldap')) {
-      //$b = new Auth("LDAP", array(), '', false); 
+      //$b = new Auth("LDAP", array(), '', false);
       $s[] = "WARNING: PHP's <a href='http://php.net/ldap'>LDAP extension</a> was not found. LDAP authentication unavailable.";
       $warn = true;
     } else {
       $s[] = "GOOD: LDAP extension found for LDAP authentication.";
     }
-    if (! PEAR::loadExtension('radius')) {
+    if (! extension_loaded('radius')) {
       //$b = new Auth("RADIUS", array("servers" => array()), "", false);    // hangs if radius module not installed
       $s[] = "WARNING: PHP's <a href='http://pecl.php.net/package/radius'>RADIUS extension</a> was not found. RADIUS authentication unavailable.";
       $warn = true;
@@ -69,12 +80,12 @@ function check_preinst($data) {
       $s[] = "GOOD: PECL RADIUS extension found for RADIUS authentication.";
     }
   }
-  // check kit: see if FPDF is installed
-  if (! (@ include 'fpdf/fpdf.php')) {
-    $s[] = "WARNING: Free PDF library <a href='http://www.fpdf.org/'>FPDF</a> not found. Will not be able to generate PDF reports.";
+  // check kit: see if TCPDF is installed
+  if (! (@ include 'tcpdf/tcpdf.php')) {
+    $s[] = "WARNING: Free PDF library <a href='http://tcpdf.sf.net/'>TCPDF</a> not found. Will not be able to generate PDF reports.";
     $warn = true;
   } else {
-    $s[] = "GOOD: FPDF library found for generating PDF reports.";
+    $s[] = "GOOD: TCPDF library found for generating PDF reports.";
   }
 
   // check username: make sure admin username meets Bumblebee requirements\
@@ -140,7 +151,7 @@ function check_postinst($data) {
   $REBASE_INSTALL = '..'.DIRECTORY_SEPARATOR;
   $NON_FATAL_CONFIG = true;
   $php_errormsg = '';
-  if ((! @ require 'inc/config.php') || $php_errormsg !== '') {
+  if ((! @ require_once 'inc/config.php') || $php_errormsg !== '') {
     $s[] = "ERROR: Configuration didn't load properly. "
            ."Bumblebee said:<blockquote>\n$php_errormsg</blockquote>";
     $error = true;
@@ -160,10 +171,12 @@ function check_postinst($data) {
   }
   if (! $error) {
     // check that the admin user can log into the system
+    echo '<!-- checking admin login -->';
     require_once 'inc/bb/auth.php';
-    $_POST['username'] = $data['bbAdmin'];
-    $_POST['pass']     = $data['bbAdminPass'];
-    $auth = @ new BumblebeeAuth(true);
+    $loginData = array();
+    $loginData['username'] = $data['bbAdmin'];
+    $loginData['pass']     = $data['bbAdminPass'];
+    $auth = @ new BumblebeeAuth($loginData, true);
     if (! $auth->isLoggedIn()) {
       $auth->DEBUG=10;
       $s[] = "ERROR: Admin user cannot log in to Bumblebee with username and password supplied. Bumblebee said:"
@@ -176,7 +189,9 @@ function check_postinst($data) {
   }
 
   // check to see if ini files are accessible to outsiders using HTTP
-  $htdbini    = 'http://'.$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].$BASEPATH.'/config/db.ini';
+  echo '<!-- checking access to config files -->';
+  require_once 'inc/menu.php';
+  $htdbini    = makeAbsURL('/config/db.ini');
   $localdbini = '..'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'db.ini';
   if (! ini_get('allow_url_fopen')) {
     $s[] = "WARNING: The accessibility of your ini files (and passwords!) to outsiders cannot be checked."
@@ -206,7 +221,7 @@ function check_postinst($data) {
     } elseif (preg_match('/\s404 Not Found/', $php_errormsg)) {
       $s[] = "WARNING: db.ini file gave a 404 Not Found error. If you have manually moved the config files "
             ."out of the webserver's file tree then that's fine, but if you haven't done this then your "
-            ."setup in <code>bumblebee.ini</code> is specifying an incorrect location for your Bumblebee installation.";
+            ."setup in <code>bumblebee.ini</code> is specifying an incorrect location for your Bumblebee installation. (I looked in <code>$htdbini</code> and <code>$localdbini</code>.)";
     } else {
         $s[] = "WARNING: db.ini file appears to be protected against downloading, "
               ."but I didn't get a 403 Forbidden error. "
@@ -217,10 +232,11 @@ function check_postinst($data) {
         $warn = true;
     }
   }
-  
+
   // check to see if bumblebee.ini has the right place for the installation
-  $htbb[]  = 'http://'.$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].$BASEURL;
-  $htbb[]  = 'http://'.$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].$BASEPATH.'/';
+  echo '<!-- checking ini file base location -->';
+  $htbb[]  = makeAbsURL();
+  $htbb[]  = makeAbsURL('/');
   if (! ini_get('allow_url_fopen')) {
     $s[] = "WARNING: I can't test to see that your bumblebee.ini file points to the right URL.."
           ."You can enable the PHP option <code>allow_url_fopen</code> in the <code>php.ini</code> file and rerun this test,"
@@ -233,24 +249,32 @@ function check_postinst($data) {
     $htbbdata[] = @ file_get_contents($htbb[1]);
     if ($htbbdata[0] || $htbbdata[1]) {
       // then something was downloaded
+      // strip the magicTag out of the html as it changes every time
+      $htbbdata[0] = preg_replace('@name="magicTag" value=".+?"@', '', $htbbdata[0]);
+      $htbbdata[1] = preg_replace('@name="magicTag" value=".+?"@', '', $htbbdata[1]);
       if ($htbbdata[0] != $htbbdata[1]) {
         $s[] = "ERROR: I got different results when I tried to go to <a href='$htbb[0]' target='_blank'>check 1</a> "
               ."and <a href='$htbb[1]' target='_blank'>check 2</a>.";
-              echo "......".$htbbdata[0]."......".$htbbdata[1]."......";
+              //echo "......".$htbbdata[0]."......".$htbbdata[1]."......";
+              #for ($len=0; $len < strlen($htbbdata[0]); $len++) {
+              #  if ($htbbdata[0]{$len} != $htbbdata[1]{$len}) {
+              #    print "$len ".$htbbdata[0]{$len}.'  '.$htbbdata[1]{$len}."<br/>";
+              #  }
+              #}
         $error = true;
       } elseif (! preg_match('/Bumblebee/', $htbbdata[0])) {
         $s[] = "WARNING: I was able to find a webpage at your <a href='$htbb[0]' target='_blank'>configured location</a>, "
               ."but I couldn't find any evidence that it was a Bumblebee installation.";
         $warn = true;
       } else {
-        $s[] = "GOOD: I could find your installation using http.";
+        $s[] = "GOOD: I could find your installation through your web server (found at {$htbb[0]} and {$htbb[1]}).";
       }
     } else {
       $s[] = "ERROR: I couldn't find a web page at your  <a href='$htbb[0]' target='_blank'>configured location</a>.";
       $error = true;
     }
   }
-  
+
   if ($error) {
     $s[] = "<b>Errors were detected. Please fix them and reload this page.</b>";
   }
@@ -271,13 +295,13 @@ function check_postinst($data) {
 * @param array $results
 * @return string pretty printed results
 */
-function parseTests($r) {
+function parseTests($results) {
   $replace = array(
               '/^GOOD:/'    => '<span class="good">GOOD:</span>',
               '/^WARNING:/' => '<span class="warn">WARNING:</span>',
               '/^ERROR:/'   => '<span class="error">ERROR:</span>'
              );
-  $s = preg_replace(array_keys($replace), array_values($replace), $r);
+  $s = preg_replace(array_keys($replace), array_values($replace), $results);
   return join($s, "<br />\n");
 }
 
@@ -303,6 +327,6 @@ function passwordStrength($password) {
   }
   // password is exceedingly poor
   return array(1, "This password is very weak. $advice");
-} 
+}
 
 ?>

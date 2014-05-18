@@ -10,8 +10,10 @@
 * @subpackage FormsLibrary
 */
 
-/** type checking and data manipulation */
+/** Load ancillary functions */
 require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** type checking and data manipulation */
 require_once 'validtester.php';
 /** status codes for success/failure of database actions */
@@ -68,8 +70,12 @@ class Field {
   var $errorclass = 'error';
   /** @var string   prepended to the name of the field in the html id and hence in the data array */
   var $namebase;
+  /** @var string   prepended to the name of the field in the html id and hence in the data array */
+  var $formname;
   /** @var string   function to call to check that the data is valid */
   var $isValidTest = 'isset';
+  /** @var string   function to call to clean the data string before testing if valid */
+  var $valueCleaner = null;
   /** @var boolean  don't generate an SQL name=value representation for this field  */
   var $sqlHidden = 0;
   /** @var boolean  this field requires two-stage sync */
@@ -96,14 +102,14 @@ class Field {
 
   /**
   * update the value of the object with the user-supplied data in $data
-  * 
+  *
   * $data is most probably from POST data etc.
   *
   * The validity of the data is *not* checked at this stage, the object
   * only takes the user-supplied value.
   *
   * $data is an array with the data relevant to this field being
-  * in the key $this->namebase.$this->name. 
+  * in the key $this->namebase.$this->name.
   *
   * For example:
   * <code>
@@ -116,9 +122,13 @@ class Field {
   * @return boolean  did the value of this object change?
   */
   function update($data) {
-    if (isset($data["$this->namebase$this->name"]) || $this->useNullValues) {
-      $newval = issetSet($data, "$this->namebase$this->name");
+    if (isset($data["$this->formname$this->namebase$this->name"]) || $this->useNullValues) {
+      $newval = issetSet($data, "$this->formname$this->namebase$this->name");
       $this->log("$this->name, $this->value, $newval ($this->useNullValues)");
+      if (isset($this->valueCleaner) && is_callable($this->valueCleaner)) {
+        $newval = call_user_func($this->valueCleaner, $newval);
+      }
+
       if ($this->editable) {
         // we ignore new values if the field is not editable
         if ($this->changed = ($this->getValue() != $newval)) {
@@ -141,8 +151,8 @@ class Field {
   }
 
   /**
-  * Check the validity of the current data value. 
-  * 
+  * Check the validity of the current data value.
+  *
   * This also checks the validity of the data even if the data is not newly-entered.
   * Returns true if the specified validity tests are passed:
   *  -   is the field required to be filled in && is it filled in?
@@ -165,10 +175,10 @@ class Field {
   }
 
   /**
-  * set the value of this field 
+  * set the value of this field
   *
   * <b>without</b> validation or checking to see whether the field has changed.
-  * 
+  *
   * @param string   the new value for this field
   */
   function set($value) {
@@ -182,10 +192,11 @@ class Field {
   * Generates a string that represents this field that can be used in an SQL
   * UPDATE or INSERT statement. i.e. "name='Stuart'".
   *
-  * @param string optional SQL name to use to change the default
+  * @param string  optional SQL name to use to change the default
+  * @param boolean optional force the generation of the command
   * @return string  in SQL assignable form
   */
-  function sqlSetStr($name='') {
+  function sqlSetStr($name='', $force=false) {
     if (! $this->sqlHidden) {
       if (empty($name)) {
         $name = $this->name;
@@ -205,10 +216,11 @@ class Field {
   * @access public
   */
   function setattr($attrs) {
+    if (! is_array($attrs)) return;
     $this->attr = array_merge($this->attr, $attrs);
   }
 
-  /** 
+  /**
   * Quick and dirty display of the field status
   *
   * @return string simple text representation of the class's value and attributes
@@ -221,22 +233,22 @@ class Field {
     return $t;
   }
 
-  /** 
+  /**
   * Generic display function
   */
   function display() {
     return $this->text_dump();
   }
 
-  /** 
+  /**
   * html representation of this field as a "hidden" form widget
   */
   function hidden() {
-    return "<input type='hidden' name='$this->namebase$this->name' "
+    return "<input type='hidden' name='$this->formname$this->namebase$this->name' "
            ."value='".xssqw($this->getValue())."' />";
   }
 
-  /** 
+  /**
   * render this form widget in an html table
   *
   * @param integer $cols  number of columns to be included in table (padding cols will be added)
@@ -245,7 +257,7 @@ class Field {
   function displayInTable($cols=3) {
   }
 
-  /** 
+  /**
   * return the current value as text and the widget as a hidden form element
   *
   * @return string current value
@@ -253,8 +265,8 @@ class Field {
   */
   function selectedValue() {
   }
-  
-  /** 
+
+  /**
   * return an html representation of the widget
   *
   * @return string html widget
@@ -274,23 +286,32 @@ class Field {
   }
 
   /**
-  * set whether this field is editable or not 
+  * set whether this field is editable or not
   *
   * @param boolean $editable  new editable state
   */
   function setEditable($editable=1) {
     $this->editable = $editable;
   }
-  
+
   /**
   * set the namebase for the data storage in the html form
   *
-  * @param boolean $editable  new editable state
+  * @param string $namebase  tag to be added to the form element's name
   */
   function setNamebase($namebase='') {
-    $this->namebase = $namebase;
+    $this->namebase = $this->namebase . $namebase;
   }
-  
+
+  /**
+  * set the form name for the data storage in the html form
+  *
+  * @param string $namebase  tag to be added to the existing form element's name
+  */
+  function setFormName($namebase='') {
+    $this->formname = $namebase;
+  }
+
   /**
   * Generic logging function
   *
@@ -302,7 +323,18 @@ class Field {
       echo $logstring."<br />\n";
     }
   }
-  
+
+  /**
+  * PHP5 clone method
+  *
+  * PHP5 clone statement will perform only a shallow copy of the object. Any subobjects must also be cloned
+  */
+  function __clone() {
+    // Force a copy of contents of $this->list
+    //echo "Cloning field";
+    if (is_object($this->attr)) $this->attr = clone($this->attr);
+  }
+
 } // class Field
 
-?> 
+?>

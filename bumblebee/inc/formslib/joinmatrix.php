@@ -10,6 +10,10 @@
 * @subpackage FormsLibrary
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** parent object */
 require_once 'field.php';
 /** uses ID field objects */
@@ -51,7 +55,7 @@ class JoinMatrix extends Field {
   var $joinTable;
   /** @var string  column in the join table that is the ID field for entries (unused) */
   var $jtIdField;
-  
+
   /** @var string   value of the key for the left table that should be constant */
   var $jtConstKeyId;
   /** @var string   column name in the join table for the column with keys/Ids from the left table (id will be constant throughout the process) */
@@ -64,7 +68,7 @@ class JoinMatrix extends Field {
   var $key1;
   /** @var array    list of Field objects to be included along the header of the matrix */
   var $header1 = array();
-  
+
   /** @var string   column name in the join table for the column with keys/Ids from the right table (id will vary throughout the process) */
   var $jtVarKeyCol;
   /** @var string   name of the right table */
@@ -73,7 +77,7 @@ class JoinMatrix extends Field {
   var $table2IdCol;
   /** @var Field    representation of the key for the right table  */
   var $key2;
-  
+
   /** @var DBRow    prototype DBRow object that is replicated for each entry in the join table (1:many join) */
   var $protoRow;
   /** @var array    list of DBRow objects for each row returned in a 1:many join */
@@ -136,7 +140,7 @@ class JoinMatrix extends Field {
   * Add key Fields for the id columns in the left and right tables
   *
   * @param Field $key1   key field for left table (unused?)
-  * @param Field $key2   key field for right table 
+  * @param Field $key2   key field for right table
   */
   function addKeys($key1, $key2) {
     $this->key1 = $key1;
@@ -144,9 +148,9 @@ class JoinMatrix extends Field {
     $this->key2 = $key2;
     //$this->key2->namebase = $this->table2;
   }
-  
+
   /**
-  * set the id that this object will match in the left table 
+  * set the id that this object will match in the left table
   *
   * @param integer   $id    id from the left table to match
   */
@@ -155,7 +159,7 @@ class JoinMatrix extends Field {
     $this->_fillFromProto();
     //preDump($this);
   }
-  
+
   /**
   * populates the matrix from the database
   *
@@ -198,6 +202,7 @@ class JoinMatrix extends Field {
   function _createRow($rowNum) {
     $this->rows[$rowNum] = clone($this->protoRow);
     $this->rows[$rowNum]->setNamebase($this->name.'-'.$rowNum.'-');
+    $this->rows[$rowNum]->setFormname($this->formname);
   }
 
   /**
@@ -212,14 +217,14 @@ class JoinMatrix extends Field {
       $this->rows[$i]->fields[$this->jtVarKeyCol]->value = $this->table2All[$i][$this->table2IdCol];
       $this->rows[$i]->ignoreId = true;
       $this->rows[$i]->recStart = $i;
-      $this->rows[$i]->restriction = 
+      $this->rows[$i]->restriction =
                       $this->jtVarKeyCol   .'='. qw($this->table2All[$i][$this->table2IdCol])
-             .' AND '.$this->jtConstKeyCol .'='. qw($this->jtConstKeyId); 
+             .' AND '.$this->jtConstKeyCol .'='. qw($this->jtConstKeyId);
       $this->rows[$i]->fill();
 //       $this->rows[$i]->insertRow = ! ($this->rows[$i]->fields[$this->table2IdCol]->value > 0);
     }
   }
-  
+
   function display() {
     return $this->selectable();
   }
@@ -240,7 +245,7 @@ class JoinMatrix extends Field {
         $f =& $this->rows[$row]->fields[$this->header1[$field]->name];
         if ($this->editable) {
           $ft = $f->selectable();
-        } else { 
+        } else {
           $ft = $f->selectedValue();
         }
         $t .= '<td title="'.$f->description.'">'.$ft.'</td>'.$eol;
@@ -250,7 +255,7 @@ class JoinMatrix extends Field {
     $t .= '</table>';
     return $t;
   }
-  
+
   function selectedValue() {
     $editable = $this->editable;
     $this->editable = 0;
@@ -259,7 +264,7 @@ class JoinMatrix extends Field {
     return $t;
   }
 
-  function displayInTable($cols) {
+  function displayInTable($cols=3) {
     //check how many fields we need to have (again) as we might have to show more this time around.
     //$cols += $this->colspan;
     $eol = "\n";
@@ -295,8 +300,11 @@ class JoinMatrix extends Field {
   /**
   * trip the complex field within us to sync(), which allows us
   * to then know our actual value (at last).
+  *
+  * @param $name   (unused)
+  * @param $force  (unused)
   */
-  function sqlSetStr($name='') {
+  function sqlSetStr($name='', $force=false) {
     //$this->DEBUG=10;
     #echo "JoinData::sqlSetStr";
     $this->_joinSync();
@@ -319,11 +327,11 @@ class JoinMatrix extends Field {
       #echo " after sync row $i oob='".$this->oob_status."'";
     }
   }
-  
-  
+
+
   /**
   * override the isValid method of the Field class, using the
-  * checkValid method of each member row completed as well as 
+  * checkValid method of each member row completed as well as
   * cross checks on other fields.
   *
   * @return boolean data is valid
@@ -335,7 +343,7 @@ class JoinMatrix extends Field {
     }
     return $this->isValid;
   }
-  
+
   /**
   * Change the Id value of each row
   */
@@ -344,7 +352,7 @@ class JoinMatrix extends Field {
       $this->rows[$i]->setId($newId);
     }
   }
-  
+
   /**
   * Set the name base of the rows
   */
@@ -356,6 +364,16 @@ class JoinMatrix extends Field {
   }
 
   /**
+  * Set the form name of the rows
+  */
+  function setFormname($name='') {
+    for ($i=0; $i < $this->number; $i++) {
+      $this->rows[$i]->setFormname($name);
+    }
+    $this->protoRow->setFormname($name);
+  }
+
+  /**
   * set whether each row is editable
   */
   function setEditable($editable=false) {
@@ -364,7 +382,7 @@ class JoinMatrix extends Field {
     }
     $this->protoRow->setEditable($editable);
   }
-  
+
 } // class JoinMatrix
 
-?> 
+?>

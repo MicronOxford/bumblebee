@@ -1,9 +1,9 @@
 -- Creates the user and tables that will actually be used for the system
 --
 -- You can load this file using either phpMyAdmin or MySQL's command line tools
--- 
+--
 -- mysql -p --user root < bumbbelee.sql
--- 
+--
 -- $Id$
 
 DROP DATABASE IF EXISTS bumblebeedb;
@@ -35,6 +35,7 @@ CREATE TABLE users (
   suspended BOOL DEFAULT 0,
   isadmin BOOL DEFAULT 0,
   deleted BOOL DEFAULT 0,
+  permissions INTEGER UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
   UNIQUE KEY username (username)
 ) DEFAULT CHARACTER SET utf8;
@@ -116,13 +117,15 @@ CREATE TABLE permissions (
   unbook BOOL DEFAULT 1,
   haspriority BOOL DEFAULT 0,
   points SMALLINT UNSIGNED,
-  pointsrecharge SMALLINT UNSIGNED
+  pointsrecharge SMALLINT UNSIGNED,
+  permissions INTEGER UNSIGNED NOT NULL DEFAULT 0,
+  INDEX (userid, instrid)
 ) DEFAULT CHARACTER SET utf8;
 -- announce: receive announcement emails
 -- unbook: receive unbook announcement emails
 -- haspriority: is a priority user  (unused)
 -- points: current points balance  (unused)
--- pointsrecharge: how many points added per cycle  (unused) 
+-- pointsrecharge: how many points added per cycle  (unused)
 
 DROP TABLE IF EXISTS instrumentclass;
 CREATE TABLE instrumentclass (
@@ -239,8 +242,19 @@ CREATE TABLE consumables_use (
 --   PRIMARY KEY (id)
 -- );
 
+DROP TABLE IF EXISTS settings;
+CREATE TABLE settings (
+  section VARCHAR(64) CHARACTER SET utf8 NOT NULL,
+  parameter VARCHAR(64) CHARACTER SET utf8 NOT NULL,
+  value TEXT
+) DEFAULT CHARACTER SET utf8;
 
 --     Create an admin user
-INSERT INTO users (username,name,passwd,isadmin) VALUES
-  ('BumblebeeAdmin','Queen Bee',MD5('defaultpassword123'),1)
+INSERT INTO users (username,name,passwd,permissions) VALUES
+  ('BumblebeeAdmin','Queen Bee',MD5('defaultpassword123'),BBPERM_ADMIN_ALL)
+;
+--     Create some settings to show that we have been installed
+INSERT INTO settings (section,parameter,value) VALUES
+  ('meta','configuredversion','BUMBLEBEEVERSION'),
+  ('meta','dbversion','BUMBLEBEEVERSION')
 ;

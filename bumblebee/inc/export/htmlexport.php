@@ -8,164 +8,108 @@
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Export
+*
+* path (bumblebee root)/inc/export/htmlexport.php
 */
+
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
+/** base type for html export */
 
 /** constants for defining export formatting and codes */
 require_once 'inc/exportcodes.php';
-
+require_once 'inc/export/xmlexportbase.php';
 /**
 * Construct an HTML export from array representation
 *
 * @package    Bumblebee
 * @subpackage Export
 */
-class HTMLExport {
-  /** @var string       html-rendered data   */
-  var $export;
+class HTMLExport extends XMLExportBase {
+
   /** @var boolean      export the data as one big table with header rows between sections  */
   var $bigtable = true;
-  /** @var ArrayExport  data to export    */
-  var $ea;
+
   /** @var string       header to the report  */
   var $header;
-  
+
   /**
   *  Create the HTMLExport object
   *
   * @param ArrayExport  &$exportArray
   */
   function HTMLExport(&$exportArray) {
-    $this->ea =& $exportArray;
+      parent::XMLExportBase($exportArray);
   }
 
-  /**
-  * convert the 2D array into an HTML table representation of the data
-  */
-  function makeHTMLBuffer() {
-    //$this->log('Making HTML representation of data');
-    $ea =& $this->ea->export;
-    $eol = "\n";
-    $metaData = $ea['metadata'];
-    unset($ea['metadata']);
-    $buf = '';
-    $numrows = count($ea);
-    for ($i=0; $i<$numrows; $i++) {
-      if (! $this->bigtable) {
-        switch ($ea[$i]['type']) {
-          case EXPORT_REPORT_START:
-            $buf .= '<div id="bumblebeeExport">';
-            break;
-          case EXPORT_REPORT_END:
-            $buf .= '</div>';
-            break;
-          case EXPORT_REPORT_HEADER:
-            $buf .= '<div class="exportHeader">'.$ea[$i]['data'].'</div>'.$eol;
-            $this->header = $ea[$i]['data'];
-            break;
-          case EXPORT_REPORT_SECTION_HEADER:
-            $buf .= '<div class="exportSectionHeader">'.$ea[$i]['data'].'</div>'.$eol;
-            break;
-          case EXPORT_REPORT_TABLE_START:
-            $tableMetaData = $ea[$i]['metadata'];
-            $numcols = $tableMetaData['numcols'];
-            $buf .= '<table class="exportdata">'.$eol;
-            break;
-          case EXPORT_REPORT_TABLE_END:
-            $buf .= '</table>'.$eol;
-            break;
-          case EXPORT_REPORT_TABLE_HEADER:
-            $buf .= '<tr class="header">'
-                        .$this->_formatRowHTML($ea[$i]['data'], true)
-                    .'</tr>'.$eol;
-            break;
-          case EXPORT_REPORT_TABLE_TOTAL:
-            $buf .= '<tr class="totals">'
-                        .$this->_formatRowHTML($ea[$i]['data'])
-                    .'</tr>'.$eol;
-            break;
-          case EXPORT_REPORT_TABLE_FOOTER:
-            $buf .= '<tr class="footer">'
-                        .$this->_formatRowHTML($ea[$i]['data'])
-                    .'</tr>'.$eol;
-            break;
-          case EXPORT_REPORT_TABLE_ROW:
-            $buf .= '<tr>'
-                        .$this->_formatRowHTML($ea[$i]['data'])
-                    .'</tr>'.$eol;
-            break;
-        }
-      } else {
-        switch ($ea[$i]['type']) {
-          case EXPORT_REPORT_START:
-            $buf .= '<div id="bumblebeeExport">';
-            break;
-          case EXPORT_REPORT_END:
-            $buf .= '</table></div>';
-            break;
-          case EXPORT_REPORT_HEADER:
-            $buf .= '<div class="exportHeader">'.$ea[$i]['data'].'</div>'.$eol;
-            $buf .= '<table class="exportdata">'.$eol;
-            break;
-          case EXPORT_REPORT_SECTION_HEADER:
-            $tableMetaData = $ea[$i]['metadata'];
-            $numcols = $tableMetaData['numcols'];
-            $buf .= '<tr class="exportSectionHeader"><td colspan="'.$numcols.'" class="exportSectionHeader">'
-                        .$ea[$i]['data'].'</td></tr>'.$eol;
-            break;
-          case EXPORT_REPORT_TABLE_START:
-            break;
-          case EXPORT_REPORT_TABLE_END:
-            break;
-          case EXPORT_REPORT_TABLE_HEADER:
-            $buf .= '<tr class="header">'
-                        .$this->_formatRowHTML($ea[$i]['data'], true)
-                    .'</tr>'.$eol;
-            break;
-          case EXPORT_REPORT_TABLE_FOOTER:
-            $buf .= '<tr class="footer">'
-                        .$this->_formatRowHTML($ea[$i]['data'])
-                    .'</tr>'.$eol;
-            break;
-          case EXPORT_REPORT_TABLE_TOTAL:
-            $buf .= '<tr class="totals">'
-                        .$this->_formatRowHTML($ea[$i]['data'])
-                    .'</tr>'.$eol;
-            break;
-          case EXPORT_REPORT_TABLE_ROW:
-            $buf .= '<tr>'
-                        .$this->_formatRowHTML($ea[$i]['data'])
-                    .'</tr>'.$eol;
-            break;
-        }
-      }
-      # unset($ea[$i]); //FIXME: try to free memory as we are using it
-    }      
-    $this->export =& $buf;
-  }
-  
-  /**
-  * generate the report header
-  *
-  * @return string report header
-  * @todo i18n: report header
-  */
-  function _reportHeader() {
-    $start = $this->_daterange->getStart();
-    $stop  = $this->_daterange->getStop();
-    $s = $this->_export->description .' for '. $start->dateString() .' - '. $stop->dateString(); //FIXME
-    return $s;
-  }  
+  function do_start(&$data, $metadata=NULL) { return '<div id="bumblebeeExport">'; }
+  function do_end(&$data, $metadata = NULL) { return (!$this->bigtable)?('</div>'):('</table></div>'); }
 
-  /**
-  * generate the header for a section
-  *
-  * @return string section header
-  */
-  function _sectionHeader($row) {
-    $s = $row[$this->_export->breakField];
-    return $s;
-  }  
-  
+  function do_header(&$data, $metadata = NULL) {
+
+      $this->header = $data;
+
+      $temp  = '<div class="exportHeader">'.xssqw($data).'</div>'.EOL;
+
+      if($this->bigtable) {
+          $temp .= '<table class="exportdata">'.EOL;
+      } //end if
+
+      return $temp;
+  } //end do_report_header
+
+  function do_section_header(&$data, $metadata = NULL) {
+
+        if(!$this->bigtable) {
+
+            return '<div class="exportSectionHeader">'.xssqw($data).'</div>'.EOL;
+        } //end if
+
+        $numcols = $metadata['numcols'];
+        return '<tr class="exportSectionHeader"><td colspan="'.$numcols.'" class="exportSectionHeader">'
+                        .xssqw($data).'</td></tr>'.EOL;
+  } //end do_report_section_header
+
+  function do_table_start(&$data, $metadata = NULL) {
+
+      if(!$this->bigtable) {
+           return '<table class="exportdata">'.EOL;
+      } //end if
+  } //end do_report_table_start
+
+  function do_table_end(&$data, $metadata = NULL) {
+
+      if(!$this->bigtable) {
+           return '</table>'.EOL;
+      } //end if
+  } //end do_report_table_end
+
+  function do_table_header(&$data, $metadata = NULL) {
+
+      return '<tr class="header">' .$this->_formatRowHTML($data, true) .'</tr>'.EOL;
+
+  } //end do_report_table_header
+
+  function do_table_total(&$data, $metadata = NULL) {
+
+      return '<tr class="totals">'.$this->_formatRowHTML($data).'</tr>'.EOL;
+
+  } //end do_report_table_total
+
+  function do_table_footer(&$data, $metadata = NULL) {
+
+      return '<tr class="footer">'.$this->_formatRowHTML($data).'</tr>'.EOL;
+
+  } //end do_report_table_footer
+
+  function do_table_row(&$data, $metadata = NULL) {
+
+      return '<tr>'.$this->_formatRowHTML($data).'</tr>'.EOL;
+
+  } //end do_export_report_table_row
+
   /**
   * generate the HTML for a row
   *
@@ -203,57 +147,66 @@ class HTMLExport {
           $align='';
       }
       $align = ($align!='' ? 'align='.$align : '');
-      $t .= '<td '.$align.'>'.htmlentities($val).'</td>';
+      $t .= '<td '.$align.'>'.htmlentities($val, ENT_QUOTES, 'UTF-8').'</td>';
     } else {
       $t .= '<th>'.htmlentities($val).'</th>';
     }
     return $t;
   }
-  
+
   /**
-  * embed the html within a blank page to create the report in a separate window
-  *
-  * @global array   config settings
-  * @global string  base URL for installation
-  * @return string  html snippet that will open a new window with the html report
-  * @todo potential memory hog (stores HTML output in three places at once)
-  */
-  function wrapHTMLBuffer() {
-    global $CONFIG;
-    global $BASEPATH;
-    $filename = $CONFIG['export']['htmlWrapperFile'];
-    $fd = fopen($filename, 'r');
-    $contents = fread($fd, filesize ($filename));
-    fclose($fd); 
-    $title = T_('Data export');
-    $table = preg_replace('/\$/', '&#'.ord('$').';', $this->export);
-    $contents = preg_replace('/__TITLE__/', $title, $contents);
-    $contents = preg_replace('/__BASEPATH__/', $BASEPATH, $contents);
-    //return $contents;
-    //preDump($contents);
-    $contents = preg_replace('/__CONTENTS__/', $table, $contents);
-    //encode the HTML so that it doesn't get interpreted by the browser and cause big problems
-    //the PHP function rawurlencode() can be reversed by the JavaScript function unescape()
-    //which is then a convenient pairing to use rather than replacing everything manually.
-    $enchtml = rawurlencode($contents);
-    $jsbuf = '<script type="text/javascript">
-<!--
-  function BBwriteAll(data) {
-    bboutwin = window.open("", "bumblebeeOutput", "");
-    bboutwin.document.write(unescape(data));
-    bboutwin.document.close();
-  }
-  
-  data = "'.$enchtml.'";
-  
-  BBwriteAll(data);
-  
-//-->
-</script><a href="javascript:BBwriteAll(data)">'.T_('Open Window').'</a>';
-    return $jsbuf;
-  }
+   * embed the html within a blank page to create the report in a separate window
+   *
+   * @return nothing
+   * @todo //TODO: potential memory hog (stores HTML output in three places at once)
+   */
+    function get_export_new_window() {
+
+	    $conf = ConfigReader::getInstance();
+	    $filename = $conf->value('export', 'htmlWrapperFile');
+
+
+	    $this->replace_array['/__TITLE__/'] = T_('Data export');
+	    $this->replace_array['/__BASEPATH__/'] = $conf->BasePath;
+
+	    $this->_wrapBuffer($filename);
+	    #$enchtml = rawurlencode($this->export);
+	    $badchars = array(
+	           '/"/'       =>    '\u0022',
+	           "/'/"       =>    '\u0027',
+	           '/</'       =>    '\u003c',
+	           '/>/'       =>    '\u003e',
+	           '/&/'       =>    '\u0026',
+	           "/\n/"      =>    '\n',
+	           "/\r/"      =>    '\r');
+	    $enchtml = preg_replace(array_keys($badchars),
+	                            array_values($badchars),
+	                            $this->export);
+	    $jsbuf = '<script type="text/javascript">
+		    <!--
+		    function BBwriteAll(data) {
+			    bboutwin = window.open("", "bumblebeeOutput", "");
+			    bboutwin.document.write(data);
+			    bboutwin.document.close();
+		    }
+
+	    data = "'.$enchtml.'";
+
+	    BBwriteAll(data);
+
+	    //-->
+	    </script><a href="javascript:BBwriteAll(data)">'.T_('Open Window').'</a>';
+
+	    return $jsbuf;
+    }
+
+
+  function do_finalize() {
+
+
+  } //end do_finalize
 
 
 } // class HTMLExport
 
-?> 
+?>

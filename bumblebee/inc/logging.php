@@ -10,10 +10,17 @@
 * @subpackage Misc
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
+require_once 'inc/bb/configreader.php';
+
 function logmsg($priority, $message) {
-  global $auth, $action, $CONFIG;
-  if (! $CONFIG['error_handling']['UseLogFile'] ||
-      $priority >= $CONFIG['error_handling']['LogLevel']) return;
+  global $auth, $action;
+  $conf = ConfigReader::getInstance();
+  if (! $conf->value('error_handling', 'UseLogFile') ||
+      $priority >= $conf->value('error_handling', 'LogLevel')) return;
 
   // Log line format:
   // IP username (uid) [DD/Mon/YYYY:HH:MM:SS TZ] "action" "Message"\n
@@ -26,6 +33,6 @@ function logmsg($priority, $message) {
 
   $logstring = "$ip $username ($uid) [$date] \"$verb\" \"$message\"\n";
 
-  error_log($logstring, 3, $CONFIG['error_handling']['LogFile']);
+  error_log($logstring, 3, $conf->value('error_handling', 'LogFile'));
 }
-?> 
+?>

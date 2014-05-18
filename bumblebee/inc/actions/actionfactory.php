@@ -1,23 +1,32 @@
 <?php
 /**
-* Create Action object that will do whatever category of work is required in this invocation 
+* Create Action object that will do whatever category of work is required in this invocation
 *
-* @author    Stuart Prescott
+* @author     Stuart Prescott
 * @copyright  Copyright Stuart Prescott
 * @license    http://opensource.org/licenses/gpl-license.php GNU Public License
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Actions
+*
+* path (bumblebee root)/inc/actions/actionfactory.php
 */
+
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
 
 /**  permissions definitions */
 require_once 'inc/permissions.php';
 
-if (LOAD_ALL_PHP_FILES) {
+if (defined('LOAD_ALL_PHP_FILES') && LOAD_ALL_PHP_FILES) {
   /**  basic functions (user functions) */
   require_once 'login.php';
   require_once 'logout.php';
   require_once 'view.php';
+  require_once 'calendar.php';
+  require_once 'book.php';
+  require_once 'bookcontact.php';
   require_once 'password.php';
   require_once 'masquerade.php';
 
@@ -40,6 +49,7 @@ if (LOAD_ALL_PHP_FILES) {
   require_once 'export.php';
   require_once 'billing.php';
   require_once 'backupdatabase.php';
+  require_once 'settings.php';
 }
 
 require_once 'unknownaction.php';
@@ -48,12 +58,12 @@ require_once 'actions.php';
 
 /**
 * Factory class for creating Action objects
-*  
+*
 * An Action is a single operation requested by the user. What action is to be performed
 * is determined by the action-triage mechanism in the class ActionFactory.
 *
-* Everything done by an application suite (e.g. edit/create a user) can be reduced to 
-* broad categories of actions (e.g. edituser) which can be encapsulated within an 
+* Everything done by an application suite (e.g. edit/create a user) can be reduced to
+* broad categories of actions (e.g. edituser) which can be encapsulated within an
 * object framework in which every object has the same interface.
 *
 * The invoking code is thus boiled down to something quite simple:
@@ -63,7 +73,7 @@ require_once 'actions.php';
 * </code>
 * where ActionFactory does the work of deciding what is to be done on this
 * invocation and instantiates the appropriate action object.
-* 
+*
 * The action object then actually performs the tasks desired by the user.
 *
 * Here, we use the data from the browser (a PATH_INFO variable from the URL in the form
@@ -74,7 +84,7 @@ require_once 'actions.php';
 */
 class ActionFactory {
   /** @var string          the user-supplied "verb" (name of the action) e.g. "edituser" */
-  var $_verb; 
+  var $_verb;
   /** @var string          the actual user-supplied verb... we may pretend to do something else due to permissions  */
   var $_original_verb;
   /**  @var string         Each action has a description associated with it that we will put into the HTML title tag  */
@@ -91,8 +101,8 @@ class ActionFactory {
   var $actionListing;
   /**  @var ActionData     The action data object for this action  */
   var $_actionData;
-  
-  /** 
+
+  /**
   * Constructor for the class
   *
   * - Parse the submitted data
@@ -100,28 +110,34 @@ class ActionFactory {
   * - set up the title tag for the browser
   * - create the ActionAction descendent object that will perform the task
   *
-  * @param BumblebeeAuth $auth  user login credentials object
+  * @param BumblebeeAuth $auth      user login credentials object
+  * @param string        $forceVerb force a particular action
   */
-  function ActionFactory($auth) {
+  function ActionFactory($auth, $forceVerb=null) {
     $this->_auth = $auth;
     #$this->PDATA = $this->_eatPathInfo();
     $this->PDATA = $this->_eatGPCInfo();
     $this->actionListing = new ActionListing();
-    $this->_verb = $this->_checkActions();
+    $this->_verb = $this->_checkActions($forceVerb);
     $this->_actionData = $this->actionListing->actions[$this->_verb];
     $this->nextaction = $this->_actionData->next_action();
     $this->title = $this->_actionData->title();
     $this->_action = $this->_makeAction();
+    $this->_action->readOnly = ! $this->checkMagic();
   }
-  
-  /** 
+
+  /**
   * Fire the action: make things actually happen now
   */
   function go() {
     $this->_action->go();
   }
 
-  /** 
+  function verb() {
+    return $this->_verb;
+  }
+
+  /**
   * Determine what action should be performed.
   *
   * This is done by:
@@ -129,33 +145,36 @@ class ActionFactory {
   * - looking for hints in the user-supplied data for what the correct action is
   * - checking that the user is an admin user if admin functions were requested
   *
-  * @return string the name of the action (verb) to be undertaken
+  * @param string        $forceVerb  force a particular action
+  * @return string                   the name of the action (verb) to be undertaken
   */
-  function _checkActions() {
+  function _checkActions($forceVerb) {
+    if ($forceVerb !== null) return $forceVerb;
+
     $action = '';
-  
+
     # first, we need to determine if we are actually logged in or not
     # if we are not logged in, the the action *has* to be 'login'
     if (! $this->_auth->isLoggedIn()) return 'login';
-  
+
     #We can have action verbs past to us in three different ways.
     # 1. first PATH_INFO
     # 2. explicit PATH_INFO action=
-    # 3. action= form fields 
+    # 3. action= form fields
     # Later specifications are used in preference to earlier ones
-  
+
     $explicitaction = issetSet($this->PDATA, 'forceaction');
     $pathaction = issetSet($this->PDATA, 'action');
     $formaction = issetSet($_POST, 'action');
     #$pathaction = $PDATA['action'];
     #$formaction = $_POST['action'];
-  
-    if ($explicitaction) $action = $explicitaction;
-    if ($pathaction) $action = $pathaction;
+
     if ($formaction) $action = $formaction;
-  
+    if ($pathaction) $action = $pathaction;
+    if ($explicitaction) $action = $explicitaction;
+
     $this->_original_verb = $action;
-    
+
     // dump if unknown action
     if (! $this->actionListing->action_exists($action)) {
       return 'unknown';
@@ -164,14 +183,14 @@ class ActionFactory {
     if (! $this->_auth->permitted($this->actionListing->actions[$action]->permissions)) {
       return 'forbidden!';
     }
-  
+
     # We also need to check to see if we are trying to change privileges
     #if (isset($_POST['changemasq']) && $_POST['changemasq']) return 'masquerade';
-    
+
     return $action;
   }
 
-  /** 
+  /**
   * Trigger a restart of the action or a new action
   *
   * Sometimes, an action may need to be restarted or the action changed (e.g. logout => login)
@@ -183,8 +202,8 @@ class ActionFactory {
     $this->_action = $this->_makeAction();
     $this->go();
   }
-  
-  /** 
+
+  /**
   * Parse the user-supplied data in PATH_INFO part of URL
   *
   * @returns array  (key => $data)
@@ -210,8 +229,8 @@ class ActionFactory {
     }
     return $pd;
   }
-  
-  /** 
+
+  /**
   * Parse the user-supplied data from either the GET or POST data
   *
   * @returns array  (key => $data)
@@ -219,10 +238,21 @@ class ActionFactory {
   function _eatGPCInfo() {
     //$pd = $this->_eatPathInfo();
     //return array_merge($pd, $_GET, $_POST);
-    return array_merge($_GET, $_POST);
+    $data = array_merge($_GET, $_POST);
+    foreach ($data as $k => $v) {
+      if (preg_match('@^reflection_(.+)$@', $k, $matches)) {
+        $data[$matches[1]] = $v;
+        #print "Remapped $matches[1] => $v<br />";
+      }
+    }
+    return $data;
   }
-  
-  /** 
+
+  function checkMagic() {
+    return isset($this->_auth) && $this->_auth->isValidTag(issetSet($_POST, 'magicTag', NULL));
+  }
+
+  /**
   * Is it ok to allow the HTML template to dump to the browser from the output buffer?
   *
   * (see BufferedAction descendents)
@@ -232,8 +262,8 @@ class ActionFactory {
   function ob_flush_ok() {
     return $this->_action->ob_flush_ok;
   }
-  
-  /** 
+
+  /**
   * Cause buffered actions to output their data to the browser
   *
   * (see BufferedAction descendents)
@@ -244,12 +274,18 @@ class ActionFactory {
     }
   }
 
-  /** 
+  /**
   * create the action object (a descendent of ActionAction) for the user-defined verb
   */
-  function _makeaction() {
-    /** to reduce PHP processing overhead, include only the file that is required for this action */
-    require_once $this->_actionData->include_file();
+  function _makeAction() {
+    // to reduce PHP processing overhead, include only the file that is required for this action
+    // but make sure that the file actually exists first.
+    $includefile = file_exists_path($this->_actionData->include_file(), "inc/actions");
+    if ($includefile === false || ! is_readable($includefile)) {
+      return new ActionUnknown($this->_original_verb);
+    }
+
+    require_once $includefile;
     switch ($this->_verb) {
       case 'forbidden!':
         return new ActionUnknown($this->_original_verb, 1);
@@ -260,64 +296,8 @@ class ActionFactory {
         return new $class ($this->_auth, $this->PDATA);
     }
   }
-//     switch ($act[$this->_verb]) {
-//       case $act['login']:
-//         $this->nextaction = 'view';
-//         return new ActionPrintLoginForm($this->_auth, $this->PDATA);
-//       case $act['logout']:
-//         $this->_auth->logout();
-//         return new ActionLogout($this->_auth, $this->PDATA);
-//       case $act['view']:
-//         return new ActionView($this->_auth, $this->PDATA);
-//       case $act['passwd']:
-//         return new ActionPassword($this->_auth, $this->PDATA);
-//       // instrument-admin only
-//       case $act['masquerade']:
-//         return new ActionMasquerade($this->_auth, $this->PDATA);
-//       // admin only
-//       case $act['groups']:
-//         return new ActionGroup($this->_auth, $this->PDATA);
-//       case $act['projects']:
-//         return new ActionProjects($this->_auth, $this->PDATA);
-//       case $act['users']:
-//         return new ActionUsers($this->_auth, $this->PDATA);
-//       case $act['instruments']:
-//         return new ActionInstruments($this->_auth, $this->PDATA);
-//       case $act['consumables']:
-//         return new ActionConsumables($this->_auth, $this->PDATA);
-//       case $act['consume']:
-//         return new ActionConsume($this->_auth, $this->PDATA);
-//       case $act['deletedbookings']:
-//         return new ActionDeletedBookings($this->_auth, $this->PDATA);
-//       case $act['costs']:
-//         return new ActionCosts($this->_auth, $this->PDATA);
-//       case $act['specialcosts']:
-//         return new ActionSpecialCosts($this->_auth, $this->PDATA);
-//       case $act['instrumentclass']:
-//         return new ActionInstrumentClass($this->_auth, $this->PDATA);
-//       case $act['userclass']:
-//         return new ActionUserClass($this->_auth, $this->PDATA);
-//       /*case $act['bookmeta']:
-//         return new ActionBookmeta();
-//       case $act['adminconfirm']:
-//         return new ActionAdminconfirm();*/
-//       case $act['emaillist']:
-//         return new ActionEmaillist($this->_auth, $this->PDATA);
-//       case $act['backupdb']:
-//         return new ActionBackupDB($this->_auth, $this->PDATA);
-//       case $act['report']:
-//         return new ActionReport($this->_auth, $this->PDATA);
-//       case $act['export']:
-//         return new ActionExport($this->_auth, $this->PDATA);
-//       case $act['billing']:
-//         return new ActionBilling($this->_auth, $this->PDATA);
-//       case $act['forbidden!']:
-//         return new ActionUnknown($this->_original_verb, 1);
-//       default:
-//         return new ActionUnknown($this->_original_verb);
-//     }
-     
+
 }
  //class ActionFactory
- 
+
 ?>

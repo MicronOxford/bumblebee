@@ -8,14 +8,20 @@
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Actions
+*
+* path (bumblebee root)/inc/actions/logout.php
 */
+
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
 
 /** parent object */
 require_once 'inc/actions/actionaction.php';
 
 /**
 * Thank the user for using the system.
-*  
+*
 * Destruction of login credentials is undertaken by the class BumblebeeAuth
 * @package    Bumblebee
 * @subpackage Actions
@@ -23,8 +29,8 @@ require_once 'inc/actions/actionaction.php';
 class ActionLogout extends ActionAction {
 
   /**
-  * Initialising the class 
-  * 
+  * Initialising the class
+  *
   * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
@@ -43,4 +49,4 @@ class ActionLogout extends ActionAction {
   }
 }
 
-?> 
+?>

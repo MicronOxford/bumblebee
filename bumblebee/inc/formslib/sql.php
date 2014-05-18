@@ -6,15 +6,19 @@
 * to keep track of them, particularly for porting to other databases. Encapsulation is
 * done here with a functional interface not an object interface.
 *
-* @todo work out why we didn't just use PEAR::DB and be done with it right from the beginning
+* @todo //TODO: work out why we didn't just use PEAR::DB and be done with it right from the beginning
 *
-* @author    Stuart Prescott
+* @author     Stuart Prescott
 * @copyright  Copyright Stuart Prescott
 * @license    http://opensource.org/licenses/gpl-license.php GNU Public License
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage FormsLibrary
 */
+
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
 
 /** status codes for success/failure of database actions */
 require_once('inc/statuscodes.php');
@@ -27,6 +31,7 @@ require_once('inc/statuscodes.php');
 * @return integer status from statuscodes
 */
 function db_quiet($q, $fatal_sql=0) {
+  //preDump(debug_backtrace());
   // returns from statuscodes
   $sql = mysql_query($q);
   echoSQL($q);
@@ -45,6 +50,7 @@ function db_quiet($q, $fatal_sql=0) {
 * @return resource mysql query handle
 */
 function db_get($q, $fatal_sql=0) {
+  //preDump(debug_backtrace());
   // returns from statuscodes or a db handle
   $sql = mysql_query($q);
   echoSQL($q);
@@ -83,6 +89,7 @@ function db_new_id() {
 * @return array next row from query
 */
 function db_fetch_array($sql) {
+  if (! is_resource($sql)) return null;
   return mysql_fetch_array($sql);
 }
 
@@ -102,50 +109,47 @@ function db_num_rows($sql) {
 *
 * @param string $echo       the sql query
 * @param boolean $success   query was successful
-* @global boolean should the SQL be shown
 */
 function echoSQL($echo, $success=0) {
-  global $VERBOSESQL;
-  if ($VERBOSESQL) {
-    echo "<div class='sql'>$echo "
+  $conf = ConfigReader::getInstance();
+  if ($conf->VerboseSQL) {
+    echo "<div class='sql'>".xssqw($echo, false)
         .($success ? '<div>'.T_('(successful)').'</div>' : '')
         ."</div>";
   }
 }
-  
+
 
 /**
 * echo the SQL query to the browser
 *
 * @param string $echo       the sql query
 * @param boolean $fatal     die on error
-* @global boolean should the SQL be shown
-* @global string the email address of the administrator
 */
 function echoSQLerror($echo, $fatal=0) {
-  global $VERBOSESQL, $ADMINEMAIL;
+  $conf = ConfigReader::getInstance();
   if ($echo != '' && $echo) {
-    if ($VERBOSESQL) {
-      echo "<div class='sql error'>$echo</div>";
+    if ($conf->VerboseSQL) {
+      echo "<div class='sql error'>". xssqw($echo) ."</div>";
     }
    if ($fatal) {
       echo "<div class='sql error'>"
-        .sprintf(T_("Ooops. Something went very wrong. Please send the following log information to <a href='mailto:%s'>your Bumblebee Administrator</a> along with a description of what you were doing and ask them to pass it on to the Bumblebee developers. Thanks!"), $ADMINEMAIL)
+        .sprintf(T_("Ooops. Something went very wrong. Please send the following log information to <a href='mailto:%s'>your Bumblebee Administrator</a> along with a description of what you were doing and ask them to pass it on to the Bumblebee developers. Thanks!"), $conf->AdminEmail)
         .'</div>';
-      if ($VERBOSESQL) {
+      if ($conf->VerboseSQL) {
         preDump(debug_backtrace());
       } else {
         logmsg(1, "SQL ERROR=[$echo]");
-        logmsg(1, join("//", debug_backtrace()));
+        logmsg(1, serialize(debug_backtrace()));
       }
       die('<b>'.T_('Fatal SQL error. Aborting.').'</b>');
     }
   }
   return STATUS_ERR;
 }
-  
+
 /**
-* construct and perform a simple SQL select 
+* construct and perform a simple SQL select
 *
 * @param string  $table  name of the table (will have TABLEPREFIX added to it
 * @param mixed   $key    single column name or list of columns for the WHERE clause
@@ -153,7 +157,7 @@ function echoSQLerror($echo, $fatal=0) {
 * @param boolean $fatal     die on error
 * @param boolean $countonly   run a COUNT(*) query not a SELECT query
 * @return mixed   array if successful, false if error
-* @global string prefix for tabl nname 
+* @global string prefix for tabl nname
 */
 function quickSQLSelect($table, $key, $value, $fatal=1, $countonly=0) {
   global $TABLEPREFIX;
@@ -187,6 +191,8 @@ function quickSQLSelect($table, $key, $value, $fatal=1, $countonly=0) {
 * @return string database version
 */
 function db_get_version() {
+  $conf = ConfigReader::getInstance();
+  if (! $conf->status->database) return "unavailable";
   return mysql_get_server_info();
 }
 
@@ -198,4 +204,8 @@ function db_get_name() {
   return 'MySQL';
 }
 
-?> 
+function db_last_error() {
+  return mysql_error();
+}
+
+?>

@@ -1,6 +1,6 @@
 <?php
 /**
-* Consumables object 
+* Consumables object
 *
 * @author    Stuart Prescott
 * @copyright  Copyright Stuart Prescott
@@ -10,6 +10,12 @@
 * @subpackage DBObjects
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
+require_once 'inc/bb/configreader.php';
+
 /** parent object */
 require_once 'inc/formslib/dbrow.php';
 /** uses fields */
@@ -17,17 +23,20 @@ require_once 'inc/formslib/idfield.php';
 require_once 'inc/formslib/textfield.php';
 
 /**
-* Consumables object 
+* Consumables object
 *
 * @package    Bumblebee
 * @subpackage DBObjects
 */
 class Consumable extends DBRow {
-  
+
   function Consumable($id) {
     $this->DBRow('consumables', $id);
     $this->editable = 1;
     $this->deleteFromTable = 0;
+
+    $conf = ConfigReader::getInstance();
+
     $f = new IdField('id', T_('Consumable ID'));
     $f->editable = 0;
     $this->addElement($f);
@@ -42,10 +51,14 @@ class Consumable extends DBRow {
     $f->isValidTest = 'is_nonempty_string';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextField('cost', T_('Unit cost'));
+    $f = new CurrencyField('cost',
+                           sprintf(T_('Unit cost (%s)'),
+                                    sprintf($conf->value('language', 'money_format', '$%s'), '')),
+                            T_('Cost per item'));
     $f->required = 1;
-    $f->isValidTest = 'is_cost_amount';
-    $f->setAttr($attrs);
+    $f->setAttr(array_merge($attrs,
+                array('float' => true,
+                      'precision' => $conf->value('language', 'money_decimal_places', 2))));
     $this->addElement($f);
     $this->fill();
     $this->dumpheader = 'Consumables object';
@@ -55,10 +68,10 @@ class Consumable extends DBRow {
     return $this->displayAsTable();
   }
 
-  function displayAsTable() {
+  function displayAsTable($cols=2) {
     $t = '<table class="tabularobject">';
     foreach ($this->fields as $k => $v) {
-      $t .= $v->displayInTable(2);
+      $t .= $v->displayInTable($cols);
     }
     $t .= '</table>';
     return $t;

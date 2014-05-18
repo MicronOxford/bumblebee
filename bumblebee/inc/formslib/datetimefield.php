@@ -1,6 +1,6 @@
 <?php
 /**
-* a textfield designed for date-time data 
+* a textfield designed for date-time data
 *
 * @author    Stuart Prescott
 * @copyright  Copyright Stuart Prescott
@@ -9,6 +9,10 @@
 * @package    Bumblebee
 * @subpackage FormsLibrary
 */
+
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
 
 /** parent object */
 require_once 'field.php';
@@ -24,7 +28,7 @@ require_once 'inc/date.php';
 require_once 'inc/bookings/timeslotrule.php';
 
 /**
-* a textfield designed for date-time data 
+* a textfield designed for date-time data
 *
 * @package    Bumblebee
 * @subpackage FormsLibrary
@@ -45,7 +49,7 @@ class DateTimeField extends Field {
   var $representation;
   /** @var integer   manually specified representation of the time part (TF_* defines in TimeField class  */
   var $_manualRepresentation = TF_AUTO;
-  
+
     /**
   *  Create a new datetimefield object
   *
@@ -61,7 +65,7 @@ function DateTimeField($name, $longname='', $description='') {
     $this->date = new DateField($name.'-date', $longname, $description);
   }
 
-  function displayInTable($cols) {
+  function displayInTable($cols=3) {
     $errorclass = ($this->isValid ? '' : "class='inputerror'");
     $t = "<tr $errorclass><td>$this->longname</td>\n"
         ."<td title='$this->description'>";
@@ -92,11 +96,11 @@ function DateTimeField($name, $longname='', $description='') {
     $t .= $this->time->getdisplay();
     return $t;
   }
-  
+
   function hidden() {
     return $this->date->hidden() .' '. $this->time->hidden();
   }
-  
+
   /**
   * calculate the correct values for the separate (and possibly not editable!) parts of the field
   */
@@ -107,8 +111,8 @@ function DateTimeField($name, $longname='', $description='') {
     $this->date->setDate($val);
     $this->value = $this->date->value .' '. $this->time->value;
   }
-  
-  /** 
+
+  /**
   * overload the parent's value as we need to do some magic in here
   */
   function set($value) {
@@ -116,7 +120,7 @@ function DateTimeField($name, $longname='', $description='') {
     parent::set($value);
     $this->calcDateTimeParts();
   }
-  
+
   /**
   * overload the parent's update method so that local calculations can be performed
   *
@@ -135,8 +139,8 @@ function DateTimeField($name, $longname='', $description='') {
     }
     return $this->changed;
   }
-  
-  /** 
+
+  /**
   * associate a TimeSlotRule for validation of the times that we are using
   *
   * @param TimeSlotRule $list a TimeSlotRule
@@ -146,8 +150,8 @@ function DateTimeField($name, $longname='', $description='') {
     $this->time->setSlots($list);
     $this->calcDateTimeParts();
   }
-  
-  /** 
+
+  /**
   * set the appropriate date that we are refering to for the timeslot rule validation
   *
   * @param string $date passed to the TimeSlotRule
@@ -155,7 +159,7 @@ function DateTimeField($name, $longname='', $description='') {
   function setSlotStart($date) {
     $this->time->setSlotStart($date);
   }
-  
+
   /**
   * pass on any flags about the representation that we should use to our members
   *
@@ -165,7 +169,7 @@ function DateTimeField($name, $longname='', $description='') {
     $this->_manualRepresentation = $flag;
     $this->time->setManualRepresentation($flag);
   }
-  
+
   /**
   *  isValid test (extend Field::isValid), looking at the individual parts of the field
   */
@@ -174,7 +178,7 @@ function DateTimeField($name, $longname='', $description='') {
     $this->isValid = $this->isValid && $this->date->isValid() && $this->time->isValid();
     return $this->isValid;
   }
-  
+
   /**
   * Set the date and time parts of the field and mark them as editable
   *
@@ -189,12 +193,36 @@ function DateTimeField($name, $longname='', $description='') {
   }
 
   /**
+  *  Sets a new name base for row and all fields within it
+  *
+  * The name base is prepended to the field name in all html name="" sequences for the widgets
+  * @param string $newname  new name-base to use
+  */
+  function setNamebase($newname='') {
+    $this->namebase = $newname;
+    $this->time->setNamebase($newname);
+    $this->date->setNamebase($newname);
+  }
+
+  /**
+  *  Sets a form name base for row and all fields within it
+  *
+  * The name base is prepended to the field name in all html name="" sequences for the widgets
+  * @param string $newname  new name-base to use
+  */
+  function setFormName($newname='') {
+    $this->formname = $newname;
+    $this->time->setFormname($newname);
+    $this->date->setFormname($newname);
+  }
+
+  /**
   * return a SQL-injection-cleansed string that can be used in an SQL
   * UPDATE or INSERT statement. i.e. "name='Stuart'".
   *
   * @return string  in SQL assignable form
   */
-  function sqlSetStr($name='') {
+  function sqlSetStr($name='', $force=false) {
     if (empty($name)) {
       $name = $this->name;
     }
@@ -207,8 +235,8 @@ function DateTimeField($name, $longname='', $description='') {
   }
 
 
-      
+
 } // class DateTimeField
 
 
-?> 
+?>

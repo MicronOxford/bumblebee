@@ -10,6 +10,10 @@
 * @subpackage Bookings
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** date manipulation routines */
 require_once 'inc/date.php';
 /** parent object */
@@ -22,11 +26,11 @@ require_once 'timeslot.php';
 * @subpackage Bookings
 */
 class Vacancy extends TimeSlot {
-  
+
   /**
   *  Create a new vacancy slot
   *
-  * @param array  $arr   field => value  
+  * @param array  $arr   field => value
   */
   function Vacancy($arr='') {
     if (is_array($arr)) {
@@ -56,7 +60,7 @@ class Vacancy extends TimeSlot {
   function display() {
     return $this->displayInTable();
   }
-  
+
   /**
   * display the vacancy as a list of settings
   *
@@ -64,8 +68,8 @@ class Vacancy extends TimeSlot {
   */
   function displayInTable() {
     return '<tr><td>Vacant'
-            .'</td><td>'.$this->start->dateTimeString()
-            .'</td><td>'.$this->stop->dateTimeString()
+            .'</td><td>'.$this->start->getShortDateTimeString()
+            .'</td><td>'.$this->stop->getShortDateTimeString()
             .'</td><td>'
             .'</td></tr>'."\n";
   }
@@ -73,11 +77,10 @@ class Vacancy extends TimeSlot {
   /**
   * display the vacancy in a table calendar cell
   *
-  * @global string base path to the installation
   * @return string html representation of the slot
   */
   function displayInCell($isadmin=0) {
-    global $BASEPATH;
+    $conf = ConfigReader::getInstance();
     $t = '';
     #echo $this->isDisabled ? 'disabled ' : 'active ';
     if ($isadmin || ! $this->isDisabled) {
@@ -85,14 +88,18 @@ class Vacancy extends TimeSlot {
       $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
       $startticks = $start->ticks;
       $stopticks = $stop->ticks;
-      $timedescription = sprintf(T_('Make booking from %s to %s'), $start->dateTimeString(), $stop->dateTimeString());
+
+      static $timeDescStr = null;
+      if ($timeDescStr === null) $timeDescStr = T_('Make booking from %s to %s');
+
+      $timedescription = sprintf($timeDescStr, $start->getShortDateTimeString(), $stop->getShortDateTimeString());
       //$timedescription = $this->start->timeString().' - '.$this->stop->timeString();
       $isodate = $start->dateString();
       $t .= '<div style="float:right;">'
               .'<a href="'
                   .$this->href.'&amp;isodate='.$isodate.'&amp;startticks='.$startticks.'&amp;stopticks='.$stopticks.'" '
                   .'class="but" title="'.$timedescription.'">'
-                      .'<img src="'.$BASEPATH.'/theme/images/book.png" '
+                      .'<img src="'.$conf->BasePath.'/theme/images/book.png" '
                           .'alt="'.$timedescription.'" '
                           .'class="calicon" />'
               .'</a>'
@@ -119,9 +126,13 @@ class Vacancy extends TimeSlot {
     $start = isset($this->displayStart) ? $this->displayStart : $this->original->start;
     $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->original->stop;
     if ($this->isDisabled) {
-      $t = sprintf(T_('Unavailable from %s to %s'), $start->dateTimeString(), $stop->dateTimeString());
+      static $unavailableStr =  null;
+      if ($unavailableStr === null) $unavailableStr = T_('Unavailable from %s to %s');
+      $t = sprintf($unavailableStr, $start->getShortDateTimeString(), $stop->getShortDateTimeString());
     } else {
-      $t = sprintf(T_('Vacant from %s to %s'), $start->dateTimeString(), $stop->dateTimeString());
+      static $vacantStr =  null;
+      if ($vacantStr === null) $vacantStr = T_('Vacant from %s to %s');
+      $t = sprintf($vacantStr, $start->getShortDateTimeString(), $stop->getShortDateTimeString());
     }
     return $t;
   }

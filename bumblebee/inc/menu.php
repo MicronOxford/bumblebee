@@ -10,6 +10,10 @@
 * @subpackage Misc
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** permission codes */
 require_once 'inc/permissions.php';
 
@@ -18,7 +22,7 @@ require_once 'inc/permissions.php';
 *
 * @package    Bumblebee
 * @subpackage Misc
-* @todo combine the data storage with action.php for cleaner implementation
+* @todo //TODO: combine the data storage with action.php for cleaner implementation
 */
 class UserMenu {
   /**
@@ -101,7 +105,7 @@ class UserMenu {
   * @var boolean
   */
   var $showMenu       = true;
-  
+
   /**
   * logged in user's credentials
   * @var BumblebeeAuth
@@ -112,7 +116,7 @@ class UserMenu {
   * @var string
   */
   var $_verb;
-  
+
   /**
   * Constructor
   * @param BumblebeeAuth $auth  user's credentials
@@ -125,7 +129,7 @@ class UserMenu {
     $this->mainMenuHeader = T_('Main Menu');
     $this->adminHeader    = T_('Administration');
   }
-  
+
   /**
   * Generates an html representation of the menu
   * @return string       menu in html format
@@ -134,17 +138,24 @@ class UserMenu {
     if (! $this->showMenu) {
       return '';
     }
+
+    if($this->_auth->anonymous) {
+      $this->actionListing->actions[] = new ActionData('ActionLogin', 'login.php',
+                  array('login', array('changeuser'=>1)), _('Login'), T_('Login'), BBROLE_NONE);
+    } //endif
+
     $menu  = '<div'.($this->menuDivId ? ' id="'.$this->menuDivId.'"' :'' ).'>';
     $menu .= $this->menuStart;
     $menu .= $this->_constructMenuEntries();
-    if ($this->_auth->amMasqed() && $this->_verb != 'masquerade') 
+    if ($this->_auth->amMasqed() && $this->_verb != 'masquerade')
           $menu .= $this->_getMasqAlert();
+    
     $menu .= $this->_getHelpMenu();
     $menu .= $this->menuStop;
     $menu .= '</div>';
     return $menu;
   }
-  
+
   /**
   * Generates an html representation of the menu according to the current user's permissions
   * @return string       menu in html format
@@ -157,37 +168,47 @@ class UserMenu {
     $first_admin = true;
     #preDump($this->actionListing->actions);
     foreach ($this->actionListing->actions as $action) {
-      #print $action->name(). " required=".$action->permissions();
+      #print $action->name()."<br />\n";
+      #print $action->name(). " requires " . $action->permissions() . " have " .$this->_auth->system_permissions."<br />\n";
       if ($action->menu_visible() && $this->_auth->permitted($action->permissions())) {
         #print " visible";
-        if ($first_admin && $action->permitted(BBPERM_ADMIN)) {
+        if ($first_admin && $action->requires_admin()) {
           #print " admin header";
           $first_admin = false;
           if ($this->adminHeader) {
             $t .= $this->headerStart.$this->adminHeader.$this->headerStop;
           }
         }
+
+        $name = $action->name();
+
+        if(is_array($name)) { 
+          $get_string = makeURL($name[0], $name[1]);
+        } else { 
+          $get_string = makeURL($name);
+        } //end if-else
+
         $t .= $this->itemStart
-              .'<a href="'.makeURL($action->name()).'">'.$action->menu().'</a>'
+              .'<a href="'.$get_string.'">'.$action->menu().'</a>'
             .$this->itemStop;
       }
       #print "<br/>";
     }
     return $t;
   }
-  
+
   /**
   * Generates an html div to alert the user that masquerading is in action
   * @return string       menu in html format
   */
-  function _getMasqAlert() {  
+  function _getMasqAlert() {
     $t = '<'.$this->masqAlertTag.' id="'.$this->masqDivId.'">'
-             .'Mask: '.$this->_auth->eusername
+             .'Mask: '.xssqw($this->_auth->eusername)
              .' (<a href="'.makeURL('masquerade', array('id'=>-1)).'">end</a>)'
         .'</'.$this->masqAlertTag.'>';
     return $t;
   }
-    
+
   /**
   * Generates an html snippet to for the link to the online help
   * @return string       menu in html format
@@ -196,31 +217,93 @@ class UserMenu {
   function _getHelpMenu() {
     global $BUMBLEBEEVERSION;
     $help = $this->menuHelp;
-    $help = preg_replace(array('/__version__/',   '/__section__/'), 
-                         array($BUMBLEBEEVERSION, $this->_verb), 
+    $help = preg_replace(array('/__version__/',   '/__section__/'),
+                         array($BUMBLEBEEVERSION, $this->_verb),
                          $help);
     return $help;
   }
-  
+
 } // class UserMenu
-  
+
 
 /**
 * create a URL for an anchor
-* @param string $action    action to be performed
-* @param array  $list      (optional) key => value data to be added to the URL
+* @param string  $action    action to be performed
+* @param array   $list      (optional) key => value data to be added to the URL
+* @param boolean $escape    use &amp; rather than & in the URL
 * @return string URL
-* @global string base URL for the installation
 */
-function makeURL($action, $list=NULL) {
-  global $BASEURL;
+function makeURL($action=NULL, $list=NULL, $escape=true) {
+  $conf = ConfigReader::getInstance();
   $list = is_array($list) ? $list : array();
-  $list['action'] = $action;
+  if ($action !== NULL) $list['action'] = $action;
   $args = array();
   foreach ($list as $field => $value) {
+    if (is_array($value)) $value = join(',', $value);
     $args[] = $field.'='.urlencode($value);
   }
-  return $BASEURL.'?'.join('&amp;', $args);
+  $delim = $escape ? '&amp;' : '&';
+  if (count($args) > 0) return $conf->BaseURL.'?'.join($delim, $args);
+
+  return $conf->BaseURL;
 }
 
-?> 
+
+/**
+* Create an absolute URL for an anchor (include protocol and port)
+*
+* @param mixed   $target    what the URL should point to
+* @param boolean $escape    use &amp; rather than & in the URL
+* @return  string  Absolute URL
+*
+* If $target is an array, then $target[0] is the action and $target[1] is
+* the list of parameters that will be passed to makeURL().
+*
+* If $target is a scalar, it will be appended to the URL as is.
+*/
+function makeAbsURL($target=NULL, $escape=true) {
+
+  if (isset($_SERVER['HTTPS']) && !strcasecmp($_SERVER['HTTPS'], 'on')) {
+    $protocol = 'https';
+  } else {
+    $protocol = 'http';
+  }
+
+  $port = isset($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : 80;
+
+  // filter out well known ports from the URL
+  if (($protocol == 'http' && $port == 80) || ($protocol == 'https' && $port == 443)) {
+    unset($port);
+  }
+
+  $host = $_SERVER['SERVER_NAME'];
+  if (empty($host)) {
+    list($host) = explode(':', $_SERVER['HTTP_HOST']);
+  }
+
+  $serverPart = $protocol .'://'. $host . (isset($port) ? ':'. $port : '');
+
+  if (is_array($target) || $target === NULL) {
+    $pathPart = makeURL($target[0], $target[1], $escape);
+  } else {
+    $conf = ConfigReader::getInstance();
+    $pathPart = $conf->BasePath . $target;
+  }
+
+  $pathPart = preg_replace('@//+@', '/', $pathPart);
+
+  return $serverPart . $pathPart;
+}
+
+/**
+* Bounces the user to an alternative location, terminating execution of this script
+*
+* @param    string   $location    URL that the user should be redirected to
+* @returns  NEVER RETURNS
+*/
+function redirectUser($location) {
+  header("Location: ". $location);
+  exit;
+}
+
+?>

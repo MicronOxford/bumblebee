@@ -10,10 +10,12 @@
 * @subpackage FormsLibrary
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** field parent object */
 require_once 'field.php';
-/** type checking and data manipulation */
-require_once 'inc/typeinfo.php';
 
 /**
 * a checkbox object
@@ -46,7 +48,7 @@ class CheckBox extends Field {
     return $this->changed;
   }
 
-  function displayInTable($cols) {
+  function displayInTable($cols=3) {
     $errorclass = ($this->isValid ? '' : "class='inputerror'");
     $t = "<tr $errorclass><td>$this->longname</td>\n"
         ."<td title='$this->description'>";
@@ -54,7 +56,7 @@ class CheckBox extends Field {
       $t .= $this->selectable();
     } else {
       $t .= xssqw($this->value);
-      $t .= "<input type='hidden' name='$this->namebase$this->name' "
+      $t .= "<input type='hidden' name='$this->formname$this->namebase$this->name' "
            ."value='".xssqw($this->value)."' />";
     }
     $t .= "</td>\n";
@@ -66,7 +68,7 @@ class CheckBox extends Field {
   }
 
   function selectable() {
-    $t  = "<input type='checkbox' name='$this->namebase$this->name' "
+    $t  = "<input type='checkbox' name='$this->formname$this->namebase$this->name' "
          ."value='1' ";
     $t .= (($this->getValue()) ? 'checked="1"' : '');
     $t .= '/>';
@@ -75,4 +77,4 @@ class CheckBox extends Field {
 
 } // class CheckBox
 
-?> 
+?>

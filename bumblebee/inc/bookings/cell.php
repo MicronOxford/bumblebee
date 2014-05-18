@@ -10,6 +10,10 @@
 * @subpackage Bookings
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** cell is in the middle of a booking */
 define('MIDDLE_BOOKING',    1);
 /** cell is at the start of a booking */
@@ -38,7 +42,7 @@ class BookingCell {
   var $roton;
   /** @var string     class name to use if the cell is today  */
   var $todayClass;
-  
+
   /**
   *  Create a new display cell
   *
@@ -80,21 +84,54 @@ class BookingCell {
   *
   * @param string  $class   class name to use for the cell
   * @param string  $href    base href to be used for making links to book/edit
+  * @param boolean $popup   provide a popup layer with extra details of the booking
   * @param boolean $isadmin provide an admin view of the data
   */
-  function display($class, $href, $isadmin=0) {
+  function display($class, $href, $popup=false, $isadmin=0) {
+    $this->_makePopupScript();
     $t = '';
     if ($this->isStart || $this->isStartDay) {
       $class .= ' '.$this->booking->baseclass;
+      $popupControl='';
+      if ($popup) {
+        $message = '<b>'.$this->booking->generateBookingTitle().'</b><br />'
+                  .$this->booking->generateLongDescription();
+        $message = rawurlencode($message);
+        $popupControl = 'onMouseOver="showCalendarPopup(\''.$message.'\');" '
+                       .'onMouseOut="hideCalendarPopup();" ';;
+      }
       $t .= '<td rowspan="'.$this->rows.'" class="'.$class.'" '
+           .$popupControl
            .'title="'.$this->booking->generateBookingTitle().'">';
       $this->booking->href = $href;
       $t .= $this->booking->displayInCell($isadmin);
       $t .= '</td>';
     } else {
-      $t .= '<!-- c:'.$this->booking->id.'-->';
+      $t .= '<!-- c:'.xssqw($this->booking->id).'-->';
     }
     return $t;
   }
 
+  function _makePopupScript() {
+    static $onceOnly = false;
+
+    if ($onceOnly) return;
+    $onceOnly = true;
+
+    $width = 500;
+    $offsety = 50;
+    echo "
+      <script type='text/javascript'>
+      function showCalendarPopup(message) {
+        showPopup(message, $width, $offsety);
+      }
+      function hideCalendarPopup() {
+        return hidePopup();
+      }
+      </script>
+    ";
+  }
+
+
 } //class BookingCell
+?>

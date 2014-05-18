@@ -8,7 +8,15 @@
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Actions
+*
+* path (bumblebee root)/inc/actions/backupdatabase.php
 */
+
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
+require_once 'inc/bb/configreader.php';
 
 /** parent object */
 require_once 'inc/actions/bufferedaction.php';
@@ -21,10 +29,10 @@ require_once 'inc/statuscodes.php';
 * @subpackage Actions
 */
 class ActionBackupDB extends BufferedAction {
-  
+
   /**
-  * Initialising the class 
-  * 
+  * Initialising the class
+  *
   * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
@@ -37,7 +45,7 @@ class ActionBackupDB extends BufferedAction {
     $success = $this->makeDump();
     //echo $success;
     //echo $this->errorMessage;
-    echo $this->reportAction($success, 
+    echo $this->reportAction($success,
               array(STATUS_ERR =>  T_('Error making backup: ').$this->errorMessage
                    )
                );
@@ -48,7 +56,7 @@ class ActionBackupDB extends BufferedAction {
   */
   function makeDump() {
     // get a MySQL dump of the database
-    global $CONFIG;
+    $conf = ConfigReader::getInstance();
     $output = array();
     $retstring = exec($this->_mysqldump_invocation() .' 2>&1',
                 $output,
@@ -59,7 +67,7 @@ class ActionBackupDB extends BufferedAction {
     } else {
       // $dump now contains the data stream.
       // let's work out a nice filename and dump it out
-      $this->filename = $this->getFilename('backup', $CONFIG['database']['dbname'], 'sql');
+      $this->filename = $this->getFilename('backup', $conf->value('database', 'dbname'), 'sql');
       $this->bufferedStream = $dump;
       // the data itself will be dumped later by the action driver (index.php)
     }
@@ -75,20 +83,20 @@ class ActionBackupDB extends BufferedAction {
     system($this->_mysqldump_invocation(),
                 $returnError);
   }
-  
+
   /**
   * Obtain the correct mysqldump command line to make the backup
-  */  
+  */
   function _mysqldump_invocation() {
-    global $CONFIG;
-    return $CONFIG['sqldump']['mysqldump'].' '
-                .$CONFIG['sqldump']['options']
-                .' --host='.escapeshellarg($CONFIG['database']['dbhost'])
-                .' --user='.escapeshellarg($CONFIG['database']['dbusername'])
-                .' --password='.escapeshellarg($CONFIG['database']['dbpasswd'])
-                .' '.escapeshellarg($CONFIG['database']['dbname'])
+    $conf = ConfigReader::getInstance();
+    return $conf->value('sqldump', 'mysqldump').' '
+                .$conf->value('sqldump', 'options')
+                .' --host='.escapeshellarg($conf->value('database', 'host'))
+                .' --user='.escapeshellarg($conf->value('database', 'username'))
+                .' --password='.escapeshellarg($conf->value('database', 'passwd'))
+                .' '.escapeshellarg($conf->value('database', 'database'))
             ;
   }
 }
 
-?> 
+?>

@@ -13,12 +13,14 @@
 * @subpackage FormsLibrary
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** parent object */
 require_once 'field.php';
 /** uses ExampleEntries object */
 require_once 'exampleentries.php';
-/** type checking and data manipulation */
-require_once 'inc/typeinfo.php';
 
 /**
 * a non-editable reference object to explain a table entry
@@ -45,7 +47,7 @@ class ReferenceField extends Field {
   * add an extra field to the end of the formatted data
   *
   * @param string $table       db table for extra field
-  * @param string $matchfield  id/key field 
+  * @param string $matchfield  id/key field
   * @param string $field       field to return in the list of examples
   * @param integer $numentries (optional) the number of entries to return
   */
@@ -53,13 +55,13 @@ class ReferenceField extends Field {
     $this->example = new ExampleEntries('id', $table, $matchfield, $field, $numentries);
   }
 
-  function displayInTable($cols) {
+  function displayInTable($cols=3) {
     $t = "<tr><td>$this->longname</td>\n"
         ."<td title='$this->description'>";
     $t .= xssqw($this->getValue());
     $refdata = array('id'=>$this->getValue());
     $t .= ' ('. $this->example->format($refdata).')';
-    $t .= "<input type='hidden' name='$this->namebase$this->name' "
+    $t .= "<input type='hidden' name='$this->formname$this->namebase$this->name' "
          ."value='".xssqw($this->getValue())."' />";
     if (isset($this->duplicateName)) {
       $t .= "<input type='hidden' name='$this->duplicateName' "
@@ -76,4 +78,4 @@ class ReferenceField extends Field {
 } // class ReferenceField
 
 
-?> 
+?>

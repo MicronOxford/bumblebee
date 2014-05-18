@@ -10,6 +10,10 @@
 * @subpackage FormsLibrary
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** parent object */
 require_once 'choicelist.php';
 /** uses checkbox objects */
@@ -33,7 +37,7 @@ class CheckBoxTableList extends ChoiceList {
   /** @var string   html/css class for left-side table cell */
   var $tdlclass   = 'itemL';
   /** @var string   html/css class for right-side table cell */
-  var $tdrclass   = 'itemR';
+  var $tdrclass   = 'checkBoxEntry';
   /** @var string   html/css class for entire table */
   var $tableclass = 'selectlist';
   /** @var array    list of table headings to be put at the top of the table */
@@ -50,6 +54,12 @@ class CheckBoxTableList extends ChoiceList {
   var $footer;
   /** @var boolean  generate select/deselect links at the bottom of each column */
   var $includeSelectAll = false;
+  /** @var array of arary of checkboxes   for individual customisation of boxes before display */
+  var $boxMatrix = NULL;
+  /** @var array    list of values thar are checked */
+  var $valueList = array();
+  var $currentNumCols;
+  var $currentRow;
 
   /**
   *  Create a new AnchorTableList
@@ -75,7 +85,7 @@ class CheckBoxTableList extends ChoiceList {
   function setTableHeadings($headings) {
     $this->tableHeadings = $headings;
   }
-  
+
   /**
   * Add a new column of checkboxes to the table
   *
@@ -85,7 +95,7 @@ class CheckBoxTableList extends ChoiceList {
     $this->checkboxes[] = $cb;
     $this->numcols = count($this->checkboxes);
   }
-  
+
   /**
   * Add an extra hidden field to each row to record further details about what the selections mean
   *
@@ -106,7 +116,7 @@ class CheckBoxTableList extends ChoiceList {
   function addSelectAllFooter($bool) {
     $this->includeSelectAll = $bool;
   }
-  
+
   /**
   * Include an additional footer in the table
   *
@@ -116,20 +126,23 @@ class CheckBoxTableList extends ChoiceList {
     $this->footer = $f;
   }
 
-  function format($data, $j, $numcols) {
+  function format($data) {
+    $j = $this->currentRow;
+    $numcols = $this->currentNumCols;
+
     $aclass  = (isset($this->aclass) ? " class='$this->aclass'" : '');
     $trclass  = (isset($this->trclass) ? " class='$this->trclass'" : '');
     $tdlclass  = (isset($this->tdlclass) ? " class='$this->tdlclass'" : '');
     $tdrclass  = (isset($this->tdrclass) ? " class='$this->tdrclass'" : '');
 
-    $namebase = $this->name.'-'.$j.'-';
+    $namebase = $this->formname.$this->namebase.$this->name.'-'.$j.'-';
     $fh = $this->followHidden;
     $fh->value = $data[$this->followHiddenField];
     $fh->namebase = $namebase;
     $h = $this->hidden;
     $h->value = $j;
     $h->namebase = $namebase;
-    
+
     $t  = "<tr $trclass>"
          ."<td $tdlclass>";
     $t .= "<span $aclass>"
@@ -138,21 +151,42 @@ class CheckBoxTableList extends ChoiceList {
     $t .= $fh->hidden() . $h->hidden();
     $t .= "</td>\n";
     for ($i=1; $i<=$this->numExtraInfoCols; $i++) {
-      $t .= "<td $tdrclass>"
+      $t .= "<td $tdlclass>"
            .$this->formatter[$i]->format($data);
       $t .= "</td>";
     }
-    
+
     for ($i=0; $i<$this->numcols; $i++) {
-      $cb = $this->checkboxes[$i];
-      $cb->namebase = $namebase;
-      $t .= '<td>'.$cb->selectable().'</td>';
+      if ($this->boxMatrix !== NULL) {
+        $cb = $this->boxMatrix[$j][$i];
+      } else {
+        $cb = clone($this->checkboxes[$i]);
+        $cb->namebase = $namebase;
+        if (in_array($fh->value, $this->valueList)) {
+          $cb->value = 1;
+        }
+      }
+      $t .= "<td $tdrclass>".$cb->selectable().'</td>';
     }
     for ($i=0; $i<=$numcols; $i++) {
       $t .= '<th></th>';
     }
     $t .= "</tr>\n";
     return $t;
+  }
+
+  function MakeBoxMatrix($force=false) {
+    if (! is_array($this->list->choicelist)) return;
+    if ((! $force) && is_array($this->boxMatrix)) return;
+    $this->boxMatrix = array();
+    for ($j=0; $j<count($this->list->choicelist); $j++) {
+      $this->boxMatrix[$j]=array();
+      for ($i=0; $i<$this->numcols; $i++) {
+        $this->boxMatrix[$j][$i] = clone($this->checkboxes[$i]);
+        $this->boxMatrix[$j][$i]->namebase = $this->namebase.$this->name.'-'.$j.'-';
+        $this->boxMatrix[$j][$i]->formname = $this->formname;
+      }
+    }
   }
 
   function display() {
@@ -163,8 +197,8 @@ class CheckBoxTableList extends ChoiceList {
     return $t;
   }
 
-  
-  function displayInTable($numCols) {
+
+  function displayInTable($numCols=3) {
     $totalCols = 1 + $this->numExtraInfoCols + $this->numcols;
     $t='';
     if ($this->numExtraInfoCols = -1) {
@@ -187,10 +221,12 @@ class CheckBoxTableList extends ChoiceList {
     for ($i=$totalCols; $i<=$numCols; $i++) {
       $t .= '<th></th>';
     }
-    $t .= '</tr>'."\n";    
+    $t .= '</tr>'."\n";
     if (is_array($this->list->choicelist)) {
       for ($j=0; $j<count($this->list->choicelist); $j++) {
-        $t .= $this->format($this->list->choicelist[$j], $j, $numCols - $totalCols);
+        $this->currentRow = $j;
+        $this->currentNumCols = $numCols - $totalCols;
+        $t .= $this->format($this->list->choicelist[$j]);
       }
     }
     // SelectAll/DeselectAll footer
@@ -205,7 +241,7 @@ class CheckBoxTableList extends ChoiceList {
       for ($i=$totalCols; $i<=$numCols; $i++) {
         $t .= '<td></td>';
       }
-      $t .= '</tr>'."\n";    
+      $t .= '</tr>'."\n";
     }
     if (is_array($this->footer) && count($this->footer)) {
       $t .= '<tr>';
@@ -219,10 +255,10 @@ class CheckBoxTableList extends ChoiceList {
       for ($i=$totalCols; $i<=$numCols; $i++) {
         $t .= '<td></td>';
       }
-      $t .= '</tr>'."\n";    
+      $t .= '</tr>'."\n";
     }
     return $t;
-  }  
+  }
 
   /**
   * create a pair of select/deselect all quick buttons or links
@@ -230,14 +266,37 @@ class CheckBoxTableList extends ChoiceList {
   * @uses jsfunctions.php
   * @param integer $col  the column number to run the quick select sequence on.
   * @return string html for links
-  * @todo include interface for groups of instruments.
+  * @todo //TODO: include interface for groups of instruments.
   */
   function _getSelectAllFooter($col) {
-    return '(<a href="#" onclick="return deselectsome(\''.$this->name.'-\', '.$col.' ,'.$this->numcols.');">'.T_('deselect all').'</a>)<br />'
-        .'(<a href="#" onclick="return selectsome(\''.$this->name.'-\', '.$col.' ,'.$this->numcols.');">'.T_('select all').'</a>)';
+    return '(<a href="#" onclick="return deselectsome(\''.$this->namebase.$this->name.'-\', '.$col.' ,'.$this->numcols.');">'.T_('deselect all').'</a>)<br />'
+        .'(<a href="#" onclick="return selectsome(\''.$this->namebase.$this->name.'-\', '.$col.' ,'.$this->numcols.');">'.T_('select all').'</a>)';
   }
-  
+
+  /**
+  * PHP5 clone method
+  *
+  * PHP5 clone statement will perform only a shallow copy of the object. Any subobjects must also be cloned
+  */
+  function __clone() {
+    //echo "cloning checkboxtablelist";
+    parent::__clone();
+    // Force a copy of various members
+    if (is_object($this->followHidden)) $this->followHidden = clone($this->followHidden);
+    if (is_object($this->hidden))       $this->hidden       = clone($this->hidden);
+    if (is_object($this->tableHeading)) $this->tableHeading = clone($this->tableHeading);
+    if (is_object($this->checkboxes))   $this->checkboxes   = clone($this->checkboxes);
+
+    $bm = $this->boxMatrix;
+    for ($i=0; $i<count($bm); $i++) {
+      $this->boxMatrix[$i] = array();
+      for ($j=0; $j<count($bm[$i]); $j++) {
+        $this->boxMatrix[$i][$j] = $bm[$i][$j];
+      }
+    }
+  }
+
 } // class CheckBoxTableList
 
 
-?> 
+?>

@@ -10,6 +10,12 @@
 * @subpackage DBObjects
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
+require_once 'inc/bb/configreader.php';
+
 /** parent object */
 require_once 'inc/formslib/dbrow.php';
 require_once 'inc/formslib/idfield.php';
@@ -29,10 +35,10 @@ require_once 'inc/bookings/timeslotrule.php';
 */
 class Instrument extends DBRow {
 
-  var $_slotrule;  
+  var $_slotrule;
 
   function Instrument($id) {
-    global $CONFIG;
+    $conf = ConfigReader::getInstance();
     //$this->DEBUG=10;
     $this->DBRow('instruments', $id);
     $this->editable = 1;
@@ -58,52 +64,52 @@ class Instrument extends DBRow {
     $this->addElement($f);
     $f = new TextField('usualopen', T_('Calendar start time (HH:MM)'));
     $f->required = 1;
-    $f->defaultValue = $CONFIG['instruments']['usualopen'];
+    $f->defaultValue = $conf->value('instruments', 'usualopen');
     $f->isValidTest = 'is_valid_time';
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new TextField('usualclose', T_('Calendar end time (HH:MM)'));
     $f->required = 1;
-    $f->defaultValue = $CONFIG['instruments']['usualclose'];
+    $f->defaultValue = $conf->value('instruments', 'usualclose');
     $f->isValidTest = 'is_valid_time';
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new TextField('calprecision', T_('Precision of calendar display (seconds)'));
     $f->required = 1;
-    $f->defaultValue = $CONFIG['instruments']['usualprecision'];
+    $f->defaultValue = $conf->value('instruments', 'usualprecision');
     $f->isValidTest = 'is_number';
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new TextField('caltimemarks', T_('Time-periods per HH:MM displayed'));
     $f->required = 1;
-    $f->defaultValue = $CONFIG['instruments']['usualtimemarks'];
+    $f->defaultValue = $conf->value('instruments', 'usualtimemarks');
     $f->isValidTest = 'is_number';
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new TextField('callength', T_('Number of weeks displayed in calendar'));
     $f->required = 1;
-    $f->defaultValue = $CONFIG['instruments']['usualcallength'];
+    $f->defaultValue = $conf->value('instruments', 'usualcallength');
     $f->isValidTest = 'is_number';
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new TextField('calhistory', T_('Number of weeks history shown'));
     $f->required = 1;
-    $f->defaultValue = $CONFIG['instruments']['usualcalhistory'];
+    $f->defaultValue = $conf->value('instruments', 'usualcalhistory');
     $f->isValidTest = 'is_number';
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new TextField('calfuture', T_('Number of days into the future'));
     $f->required = 1;
-    $f->defaultValue = $CONFIG['instruments']['usualcalfuture'];
+    $f->defaultValue = $conf->value('instruments', 'usualcalfuture');
     $f->isValidTest = 'is_number';
     $f->setAttr($attrs);
     $this->addElement($f);
-    $f = new TextArea('calendarcomment', T_('Advisory text'), 
+    $f = new TextArea('calendarcomment', T_('Advisory text'),
           T_('Displayed at the bottom of instrument calendar and on booking form. HTML permitted.'));
     $f->setAttr(array('rows' =>5, 'cols' => 30));
     $f->required = 0;
     $this->addElement($f);
-    
+
     // associate with a charging class
     $f = new RadioList('class', T_('Charging class'));
     $f->connectDB('instrumentclass', array('id', 'name'));
@@ -123,13 +129,13 @@ class Instrument extends DBRow {
     $this->addElement($f);
     $f = new TextField('halfdaylength', T_('Hours in a half-day'));
     $f->required = 1;
-    $f->defaultValue = $CONFIG['instruments']['usualhalfdaylength'];
+    $f->defaultValue = $conf->value('instruments', 'usualhalfdaylength');
     $f->isValidTest = 'is_number';
     $f->setAttr($attrs);
     $this->addElement($f);
     $f = new TextField('fulldaylength', T_('Hours in a full-day'));
     $f->required = 1;
-    $f->defaultValue = $CONFIG['instruments']['usualfulldaylength'];
+    $f->defaultValue = $conf->value('instruments', 'usualfulldaylength');
     $f->isValidTest = 'is_number';
     $f->setAttr($attrs);
     $this->addElement($f);
@@ -142,7 +148,7 @@ class Instrument extends DBRow {
     $f = new TextField('timeslotpicture', T_('Time slot picture'));
     $f->required = 1;
     $f->hidden = 1;
-    $f->defaultValue = $CONFIG['instruments']['usualtimeslotpicture'];
+    $f->defaultValue = $conf->value('instruments', 'usualtimeslotpicture');
     $f->isValidTest = 'is_set';
     $f->setAttr($attrs);
     $this->addElement($f);
@@ -151,16 +157,16 @@ class Instrument extends DBRow {
     for ($day=0; $day<7; $day++) {
       $today = clone($weekstart);
       $today->addDays($day);
-      $f = new TextArea('tsr-'.$day, T_($today->dowStr()), T_('Slots in day, one per line'));
+      $f = new TextArea('tsr-'.$day, $today->dowStr(), T_('Slots in day, one per line'));
       $f->sqlHidden = 1;
       $f->setAttr(array('rows' =>3, 'cols' => 30));
       $f->required = 1;
       $this->addElement($f);
     }
-    
+
     $f = new TextField('mindatechange', T_('Minimum notice for booking change (hours)'));
     $f->required = 1;
-    $f->defaultValue = $CONFIG['instruments']['usualmindatechange'];
+    $f->defaultValue = $conf->value('instruments', 'usualmindatechange');
     $f->isValidTest = 'is_number';
     $f->setAttr($attrs);
     $this->addElement($f);
@@ -172,7 +178,7 @@ class Instrument extends DBRow {
     $f->defaultValue = 0;
     $f->setAttr($attrs);
     $this->addElement($f);
-    
+
     $this->fill();
     $this->dumpheader = 'Instrument object';
   }
@@ -182,12 +188,12 @@ class Instrument extends DBRow {
     //now edit the time slot representation fields
     $this->_calcSlotRepresentation();
   }
-  
+
   function sync() {
     //first construct a timeslot field from the submitted data, then do the sync
     $newslotrule = $this->_calcNewSlotRule();
     if ($this->fields['timeslotpicture']->value != $newslotrule /*&& $this->id > -1*/) {
-      $this->log('Instrument::sync(): indulging in timeslotrule munging: <br />'. 
+      $this->log('Instrument::sync(): indulging in timeslotrule munging: <br />'.
                     $newslotrule .'<br/>'.$this->fields['timeslotpicture']->value);
       $this->fields['timeslotpicture']->set($newslotrule);
       $this->fields['timeslotpicture']->changed = 1;
@@ -202,7 +208,7 @@ class Instrument extends DBRow {
    return parent::sync();
   }
 
-  function _calcSlotRepresentation() {  
+  function _calcSlotRepresentation() {
     $this->_slotrule = new TimeSlotRule($this->fields['timeslotpicture']->getValue());
     for ($day=0; $day<7; $day++) {
       $this->fields['tsr-'.$day]->value = '';
@@ -218,14 +224,14 @@ class Instrument extends DBRow {
       }
     }
   }
-  
+
   function _calcNewSlotRule() {
     $newslot = '';
     for ($day=0; $day<7; $day++) {
       //preDump($this->fields['tsr-'.$day]->value);
       $lines = preg_split('/[\n\r]+/', $this->fields['tsr-'.$day]->value);
       // get rid of blanks
-      $lines = preg_grep('/^\s*$/', $lines,PREG_GREP_INVERT);
+      $lines = preg_grep('/^\s*$/', $lines, PREG_GREP_INVERT);
       $rejects = preg_grep('{^\d\d:\d\d\-\d\d:\d\d/(\d+|\*)(\-\d+%)?(,.+)?$}', $lines,PREG_GREP_INVERT);
       if (count($rejects) > 0) {
         //then this input is invalid
@@ -236,9 +242,9 @@ class Instrument extends DBRow {
       $newslot .= '['.$day.']<'.join($lines,';').'>';
       $this->log('Calculated picture '. $newslot);
     }
-    return $newslot;    
+    return $newslot;
   }
-  
+
   function display() {
     return $this->displayAsTable();
   }

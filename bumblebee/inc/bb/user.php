@@ -10,13 +10,19 @@
 * @subpackage DBObjects
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
+require_once 'inc/bb/configreader.php';
+
 /** parent object */
 require_once 'inc/formslib/dbrow.php';
 require_once 'inc/formslib/idfield.php';
 require_once 'inc/formslib/textfield.php';
 require_once 'inc/formslib/radiolist.php';
 require_once 'inc/formslib/checkbox.php';
-#require_once 'inc/formslib/bitmaskpopup.php';
+require_once 'inc/formslib/bitmask.php';
 require_once 'inc/formslib/passwdfield.php';
 require_once 'inc/formslib/droplist.php';
 require_once 'inc/formslib/joindata.php';
@@ -26,18 +32,21 @@ require_once 'inc/formslib/joindata.php';
 *
 * @package    Bumblebee
 * @subpackage DBObjects
-* @todo       Editing method for new permissions model
-* @todo       Double password entry and require them to be the same
+* @todo //TODO:       Editing method for new permissions model
 */
 class User extends DBRow {
-  
+
   var $_localAuthPermitted;
   var $_authList;
   var $_magicPassList;
   var $_authMethod;
+  var $_auth;
 
-  function User($id, $passwdOnly=false) {
+  function User($auth, $id, $passwdOnly=false) {
+    $conf = ConfigReader::getInstance();
     $this->DBRow('users', $id);
+    #$this->DEBUG=10;
+    $this->_auth = $auth;
     $this->editable = ! $passwdOnly;
     $this->use2StepSync = 1;
     $this->deleteFromTable = 0;
@@ -65,19 +74,25 @@ class User extends DBRow {
     $f->isValidTest = 'is_empty_string';
     $f->setAttr($attrs);
     $this->addElement($f);
-    
+
     if (! $passwdOnly) {
       $f = new CheckBox('suspended', T_('Suspended'));
       $this->addElement($f);
-      $f = new CheckBox('isadmin', T_('System Administrator'));
-      $this->addElement($f);
-      
-      //// @FIXME: bitmask control
-/*      $f = new BitmaskPopup('perms', T_('User Permissions'), T_('Permissions'), T_('Perms'));
-      $f->setValuesArray(array(1=>'foo', 2=>'bar', 3=>'quux'), 'id', 'iv');
-      $this->addElement($f);*/
+
+      if (! $conf->value('auth', 'permissionsModel', false)) {
+        $f = new CheckBox('isadmin', T_('System Administrator'));
+        $this->addElement($f);
+      } else {
+        $f = new Bitmask('permissions',  T_('System permissions'), T_('Grant these system-wide permissions to the user'), T_('Grant'));
+        $f->setValuesArray($this->SystemPermissions(), 'id', 'iv');
+        $f->showHideButtons = true;
+        if ($id == -1) {
+          $f->set(BBPERM_USER_BASIC);
+        }
+        $this->addElement($f);
+      }
     }
-    
+
     // association of user with an authentication method
     $this->_findAuthMethods();
     $f = new RadioList('auth_method', T_('User authentication method'));
@@ -96,8 +111,18 @@ class User extends DBRow {
       $password->editable = 1;
       //$f->list->append(array('local','Local login: '), $password);
       $this->addElement($password);
+
+      //repeat the password field so that we can check that the user entered
+      //what they thought they did
+      $password_veri = new PasswdField('passwd_veri', T_('Please re-enter password'));
+      $password_veri->setAttr(array('size' => 24));
+      $password_veri->suppressValidation = 0;
+      $password_veri->editable = 1;
+      $password_veri->sqlHidden = true;
+
+      $this->addElement($password_veri);
     }
-    
+
     if (! $passwdOnly) {
       // association of users to projects
       $f = new JoinData('userprojects',
@@ -128,9 +153,19 @@ class User extends DBRow {
       $f->addElement($subscribeAnnounce);
       $unbookAnnounce = new CheckBox('unbook', T_('Subscribe: unbook'));
       $f->addElement($unbookAnnounce);
-      $instradmin = new CheckBox('isadmin', T_('Instrument admin'));
-      $f->addElement($instradmin);
-      /*  
+
+      if (! $conf->value('auth', 'permissionsModel', false)) {
+        $instradmin = new CheckBox('isadmin', T_('Instrument admin'));
+        $f->addElement($instradmin);
+      } else {
+        $bm = new Bitmask('permissions',  T_('Instrument permissions'), T_('Grant these instrument permissions to the user'), T_('Grant'));
+        $bm->setValuesArray($this->InstrumentPermissions(), 'id', 'iv');
+        $bm->showHideButtons = true;
+        $bm->defaultValue = BBPERM_INSTR_BASIC;
+        $f->addElement($bm);
+      }
+
+      /*
       //Add these fields in once we need this functinality
       $hasPriority = new CheckBox('haspriority', 'Booking priority');
       $f->addElement($hasPriority);
@@ -143,23 +178,24 @@ class User extends DBRow {
       $f->colspan = 2;
       $this->addElement($f);
     }
-    
+
     $this->fill($id);
     $this->dumpheader = 'User object';
   }
 
   function _findAuthMethods() {
-    global $CONFIG;
-    $this->_localAuthPermitted = isset($CONFIG['auth']['useLocal']) 
-                                        && $CONFIG['auth']['useLocal'];
+    $conf = ConfigReader::getInstance();
+
+    $this->_localAuthPermitted = ($conf->value('auth', 'useLocal') !== null)
+                                        && $conf->value('auth', 'useLocal')?true:false;
     $this->_authList = array();
-    foreach ($CONFIG['auth'] as $key => $val) {
+    foreach ($conf->getSection('auth') as $key => $val) {
       if (strpos($key, 'use') === 0 && $val) {
         $method = substr($key,3);
         $this->_authList[$method] = $method;
-        $this->_magicPassList[$method] = $CONFIG['auth'][$method.'PassToken'];
+        $this->_magicPassList[$method] = $conf->value('auth', $method.'PassToken');
       }
-    }  
+    }
   }
 
   function fill() {
@@ -172,14 +208,16 @@ class User extends DBRow {
       }
     }
     if ($this->_authMethod != 'Local') {
-     $this->fields['passwd']->crypt_method = '';
-    } else {
-     $this->fields['passwd']->crypt_method = $this->_magicPassList['Local'];
+      $this->fields['passwd']->encode = false;
     }
+//     $this->fields['passwd']->crypt_method = '';
+//     } else {
+//      $this->fields['passwd']->crypt_method = $this->_magicPassList['Local'];
+//     }
     $this->fields['auth_method']->set($this->_authMethod);
     //echo $this->fields['passwd']->value;
   }
-  
+
   function sync() {
     //$this->DEBUG = 10;
     //monkey the passwd/auth fields
@@ -189,21 +227,38 @@ class User extends DBRow {
     //echo $this->fields['auth_method']->changed.'/'.$this->fields['passwd']->value;
     $this->_authMethod = $this->fields['auth_method']->getValue();
     if ($this->_authMethod == 'Local') {
-      $this->fields['passwd']->crypt_method = $this->_magicPassList['Local'];
+//       $this->fields['passwd']->crypt_method = $this->_magicPassList['Local'];
       if (in_array($this->fields['passwd']->value, $this->_magicPassList)) {
         $this->fields['passwd']->value = '';
       }
     }
     if ($this->fields['auth_method']->changed || $this->fields['passwd']->changed) {
-      if ($this->_authMethod != 'Local' 
+
+      if($this->_authMethod == 'Local' &&
+	 $this->fields['passwd']->value != $this->fields['passwd_veri']->value) {
+
+	 $this->fields['passwd']->isValid = 0;
+	 $this->fields['passwd']->changed = 1;
+
+	 $this->fields['passwd_veri']->isValid = 0;
+	 $this->fields['passwd_veri']->changed = 0;
+
+
+	 $this->errorMessage .= T_('The supplied passwords did not match. Please retry.').'<br/>';
+	 $this->isValid = 0;
+	 $this->changed = 1;
+
+      } elseif ($this->_authMethod != 'Local'
             /*&& $this->fields['passwd']->value != ''*/
             && $this->fields['passwd']->value != $this->_magicPassList[$this->_authMethod]) {
         $this->log('User::sync(): indulging in password munging, '. $this->_authMethod);
-        $this->fields['passwd']->set($this->_magicPassList[$this->_authMethod]);
-        $this->fields['passwd']->crypt_method = '';
+        $this->fields['passwd']->encode = 0;
         $this->fields['passwd']->changed = 1;
+        $this->fields['passwd']->set($this->_magicPassList[$this->_authMethod]);
+//         $this->fields['passwd']->crypt_method = '';
         $this->changed = 1;
-      } elseif ($this->_authMethod == 'Local' && $this->fields['passwd']->value == '' 
+
+      } elseif ($this->_authMethod == 'Local' && $this->fields['passwd']->value == ''
                         && $this->fields['username']->value != '')  {
         $this->fields['passwd']->changed = 1;
         $this->fields['passwd']->isValid = 0;
@@ -214,18 +269,55 @@ class User extends DBRow {
     }
     return parent::sync();
   }
-  
-  /**
-   *  Suspend the user as well as deleting it.
-   *
-   *  Returns from statuscodes
-   */
-  function delete() {
-    return parent::delete("suspended='1'");
-  }
-  
+
   function display() {
     return $this->displayAsTable();
+  }
+
+  function SystemPermissions() {
+    $p = array();
+    $p[BBPERM_USER_VIEW_LIST_ALL]     = T_('View list of all instruments');
+    $p[BBPERM_USER_VIEW_CALENDAR_ALL] = T_('View calendar of all instruments');
+    $p[BBPERM_USER_VIEW_BOOKINGS_ALL] = T_('View bookings on all instruments');
+    $p[BBPERM_USER_MAKE_BOOKINGS_ALL] = T_('Make bookings on all instruments');
+    $p[BBPERM_USER_PASSWD]            = T_('Change own password');
+    $p[BBPERM_USER_LOGOUT]            = T_('Logout from system');
+    $p[BBPERM_ADMIN_GROUPS]           = T_('Admin: edit groups');
+    $p[BBPERM_ADMIN_PROJECTS]         = T_('Admin: edit projects');
+    $p[BBPERM_ADMIN_USERS]            = T_('Admin: edit users');
+    $p[BBPERM_ADMIN_INSTRUMENTS]      = T_('Admin: edit instruments');
+    $p[BBPERM_ADMIN_CONSUMABLES]      = T_('Admin: edit consumables');
+    $p[BBPERM_ADMIN_CONSUME]          = T_('Admin: record consumables');
+    $p[BBPERM_ADMIN_COSTS]            = T_('Admin: edit costs');
+    $p[BBPERM_ADMIN_DELETEDBOOKINGS]  = T_('Admin: view deleted bookings');
+    $p[BBPERM_ADMIN_MASQ]             = T_('Admin: masquerade as another user');
+    $p[BBPERM_ADMIN_EMAILLIST]        = T_('Admin: export email list');
+    $p[BBPERM_ADMIN_EXPORT]           = T_('Admin: export usage data');
+    $p[BBPERM_ADMIN_BILLING]          = T_('Admin: send out billing emails');
+    $p[BBPERM_ADMIN_BACKUPDB]         = T_('Admin: backup database');
+    $p[BBPERM_ADMIN_CONFIG]           = T_('Admin: change system config');
+    return $p;
+  }
+
+
+  function InstrumentPermissions() {
+    $p = array();
+    $p[BBPERM_INSTR_VIEW]          = T_('View booking sheet');
+    $p[BBPERM_INSTR_VIEW_BOOKINGS] = T_('View bookings');
+    $p[BBPERM_INSTR_BOOK]          = T_('Make bookings');
+    $p[BBPERM_INSTR_UNBOOK]        = T_('Delete own bookings');
+
+    $p[BBPERM_INSTR_VIEW_FUTURE]   = T_('View booking sheet into the future');
+    $p[BBPERM_INSTR_BOOK_FUTURE]   = T_('Make bookings into the future');
+    $p[BBPERM_INSTR_UNBOOK_PAST]   = T_('Delete own past bookings');
+
+    $p[BBPERM_INSTR_MASQ]          = T_('Masquerade as other users');
+    $p[BBPERM_INSTR_BOOK_FREE]     = T_('Make bookings at any time');
+    $p[BBPERM_INSTR_VIEW_DETAILS]  = T_('Admin: View detailed booking information');
+    $p[BBPERM_INSTR_EDIT_ALL]      = T_('Admin: Edit others\' bookings');
+    $p[BBPERM_INSTR_UNBOOK_OTHER]  = T_('Admin: Delete others\' bookings');
+    $p[BBPERM_INSTR_EDIT_CONFIG]   = T_('Admin: change instrument config');
+    return $p;
   }
 
 } //class User

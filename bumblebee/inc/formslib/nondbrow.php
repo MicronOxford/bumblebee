@@ -10,6 +10,10 @@
 * @subpackage FormsLibrary
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** database uber-object that we will emulate */
 require_once 'dbobject.php';
 /** status codes for success/failure of database actions */
@@ -33,7 +37,7 @@ require_once 'inc/statuscodes.php';
 * @package    Bumblebee
 * @subpackage FormsLibrary
 */
- 
+
 class nonDBRow {
   /** @var string   name of this field */
   var $name;
@@ -47,6 +51,8 @@ class nonDBRow {
   var $editable = 1;
   /** @var string   prefixed to all name="$field[name]" sections of the html code */
   var $namebase;
+  /** @var string   prefixed to all name="$field[name]" sections of the html code */
+  var $formname;
   /** @var string   current error message  */
   var $errorMessage = '';
   /** @var boolean  the fields in this row have changed cf the database */
@@ -63,11 +69,13 @@ class nonDBRow {
   var $extrarows;
   /** @var array    list of Field objects in this row */
   var $fields;
+  /** @var array    list of column headings for tabular display */
+  var $headings;
 
   /** @var integer   debug level 0=off    */
   var $DEBUG = 0;
-  
-  
+
+
   /**
   *  Create a new generic field/row object not linked to the db
   *
@@ -80,14 +88,14 @@ class nonDBRow {
     $this->longname = $longname;
     $this->description = $description;
   }
-  
-  /** 
+
+  /**
   *  Update the object with the user-submitted data
   *
-  *  update the value of each of the objects fields according to the user 
+  *  update the value of each of the objects fields according to the user
   *  input data, and validate the data if appropriate
   *  @param array user supplied data (field => $value)
-  *  @return boolean data is valid 
+  *  @return boolean data is valid
   */
   function update($data) {
     // We're a new object, but has the user filled the form in, or is the
@@ -102,7 +110,7 @@ class nonDBRow {
         $this->log('Still new '.$k.':unchanged');
       }
     }
-  
+
     // check each field in turn to allow it to update its data
     foreach (array_keys($this->fields) as $k) {
       $this->log("Check $k ov:".$this->fields[$k]->value
@@ -123,8 +131,9 @@ class nonDBRow {
   */
   function checkValid() {
     $this->isValid = 1;
+    if (! is_array($this->fields) && count($this->fields) < 1) return true;
     // check each field in turn to allow it to update its data
-    // if this object has not been filled in by the user, then 
+    // if this object has not been filled in by the user, then
     // suppress validation
     foreach (array_keys($this->fields) as $k) {
       if (! $this->newObject) {
@@ -144,7 +153,7 @@ class nonDBRow {
     return $this->isValid;
   }
 
-  /** 
+  /**
   * Add a new field to the row
   *
   * Add an element into the fields[] array. The element must conform
@@ -152,7 +161,7 @@ class nonDBRow {
   * assumed elsewhere in this object.
   * Inheritable attributes are also set here.
   *
-  * @param Field $el the field to add 
+  * @param Field $el the field to add
   */
   function addElement($el) {
     $this->fields[$el->name] = $el;
@@ -160,9 +169,10 @@ class nonDBRow {
       $this->fields[$el->name]->editable = $this->editable;
     }
     if (! isset($this->fields[$el->name]->namebase)) {
-      $this->fields[$el->name]->namebase = $this->namebase;
+      $this->fields[$el->name]->setNamebase($this->namebase);
       #echo "Altered field $el->name to $this->namebase\n";
     }
+    $this->fields[$el->name]->setFormname($this->formname);
     if ($this->fields[$el->name]->suppressValidation == -1) {
       $this->fields[$el->name]->suppressValidation = $this->suppressValidation;
       #echo "Altered field $el->name to $this->namebase\n";
@@ -171,11 +181,11 @@ class nonDBRow {
     #echo "foo:".$this->fields[$el->name]->name.":bar";
   }
 
-  /** 
+  /**
   * Add multiple new fields to the row
   *
   * Adds multiple elements into the fields[] array.
-  * 
+  *
   * @param array $els array of Field objects
   */
   function addElements($els) {
@@ -204,7 +214,8 @@ class nonDBRow {
   *
   * @return string object representation
   */
-  function display() {
+  function display($data=NULL) {
+    if ($data !== NULL) $this->update($data);
     return $this->text_dump();
   }
 
@@ -214,9 +225,17 @@ class nonDBRow {
   * @param integer $j      (optional) number of columns in the table (will pad as necessary)
   * @return string  html table
   */
-  function displayInTable($numCols=2) {
-    $t  = '<h3>'.$this->longname.'</h3>';
-    $t .= '<table class="tabularobject" title="'.$this->description.'">';
+  function displayInTable($numCols=2, $extraClass='') {
+    $t = '';
+    if ($this->longname !== NULL) $t  = '<h3>'.$this->longname.'</h3>';
+    $t .= '<table class="tabularobject '.$extraClass.'" title="'.$this->description.'">';
+    if (is_array($this->headings)) {
+      $t .= '<tr>';
+      foreach ($this->headings as $h) {
+        $t .= '<th>'.$h.'</th>';
+      }
+      $t .= '</tr>';
+    }
     foreach ($this->fields as $v) {
       $t .= $v->displayInTable($numCols);
     }
@@ -247,4 +266,4 @@ class nonDBRow {
 
 } // class dbrow
 
-?> 
+?>

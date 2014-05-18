@@ -10,6 +10,10 @@
 * @subpackage Misc
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** Status: there was nothing to do (NO-OP) */
 define('STATUS_NOOP',      0);
 /** Status: Everything was OK. */

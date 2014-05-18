@@ -10,6 +10,9 @@
 * @subpackage Installer
 */
 
+
+define('BUMBLEBEE', true);
+
 error_reporting(E_ALL);
 
 $sqlSetupFilename = 'bumbelebeeupgrade.sql';
@@ -25,6 +28,10 @@ loadInstalledConfig();
 require_once 'inc/db.php';
 require_once 'inc/formslib/sql.php';
 
+require_once 'inc/bb/configreader.php';
+$conf = ConfigReader::getInstance();
+$conf->MergeDatabaseTable();
+$conf->ParseConfig();
 
 require_once 'installer/installstep.php';
 
@@ -32,6 +39,7 @@ $steps = new InstallStepCollection();
 $steps->addStep(new InstallStep('Release notes',      'do_releasenotes'));
 $steps->addStep(new InstallStep('Check database',     'do_checkdb'));
 $steps->addStep(new InstallStep('Upgrade database',   'do_dbupgrade'));
+$steps->addStep(new InstallStep('Check upgrade',      'do_verifyupgrade'));
 $steps->addStep(new InstallStep('Clean-up',           'do_cleanup'));
 
 $data = $_POST;
@@ -44,16 +52,7 @@ if (! isset($_POST['havedata']) || isset($_POST['do_releasenotes'])) {
 
 $steps->increment();
 if (empty($_POST['old_db_version']) || isset($_POST['do_checkdb'])) {
-  $data['old_db_version'] = getCurrentDBVersion();
-  $data['old_version']    = $data['old_db_version'];
-  $data['new_version']    = $BUMBLEBEEVERSION;
-  $data['new_db_version'] = $data['new_version']; #substr($data['new_version'], 0, strrpos($data['new_version'], '.'));
-  if (version_compare($data['old_db_version'], $data['new_db_version']) == -1) {
-    // then the db needs upgrading
-    $data['db_upgrade'] = true;
-  } else {
-    $data["db_upgrade"] = false;
-  }
+  checkDatabaseVersion($data);
   printStepUpgradeCheck($data, $steps);
   exit;
 }
@@ -66,28 +65,34 @@ if (isset($_POST['do_dbupgrade'])) {
   $data['db-notes'] = $notes;
   printStepDBUpgrade($data, $steps);
   exit;
-} 
+}
 if (isset($_POST['submitsql'])) {
   list($sql, $notes) = makeUpgradeSQL($old_db_version);
   ob_end_clean();
   outputTextFile($sqlSetupFilename, $sql);
   exit;
-} 
+}
 if (isset($_POST['submitsqlload'])) {
   list($sql, $notes) = makeUpgradeSQL($old_db_version);
-  $results = loadSQL($sql, $CONFIG['database']['dbhost'], $_POST['sqlAdminUsername'], $_POST['sqlAdminPassword']);
+  $results = loadSQL($sql, $conf->value('database', 'host'), $_POST['sqlAdminUsername'], $_POST['sqlAdminPassword']);
   $data['db-notes']   = $notes;
   $data['db-results'] = $results;
   printStepDBUpgrade($data, $steps);
   exit;
-} 
+}
+
+$steps->increment();
+if (isset($_POST['do_verifyupgrade'])) {
+  checkDatabaseVersion($data);
+  printStepUpgradeVerify($data, $steps);
+  exit;
+}
 
 $steps->increment();
 if (isset($_POST['do_cleanup'])) {
-  $data['BASEURL'] = $BASEURL;
   printStepCleanup($data, $steps);
   exit;
-} 
+}
 
 
 
@@ -116,12 +121,12 @@ function printStepReleaseNotes($data, $steps) {
       <code>theme</code> and <code>config</code> directories back into the new installation
       (instead of using the new ones).
       You might find that many config options have been added to the <code>bumblebee.ini</code>
-      file that you won't even know about unless you at least look at the new file; 
+      file that you won't even know about unless you at least look at the new file;
       all new options have sensible defaults.</li>
     </ol>
       <p>After you have done these things, I'll guide you through the upgrade process.
       It shouldn't be too hard, but we'll see how we go.</p>
-      
+
   </fieldset>
     <div id='buttonbar'>
       <?php print $steps->getPrevNextButtons(); ?>
@@ -129,6 +134,7 @@ function printStepReleaseNotes($data, $steps) {
   <?php
   endHTML();
 }
+
 /**
 * Find out from the user what username and passwords to use for connecting to the database etc
 */
@@ -139,9 +145,9 @@ function printStepUpgradeCheck($data, $steps) {
       <legend>Upgrade information</legend>
       <p>Looking at your installation (you should have installed the new version of Bumblebee at this stage).</p>
       <p>It appears you are trying to upgrade to Bumblebee version <?php echo $data['new_version']; ?>.</p>
-      <p>Your old version of Bumblebee appears to be using the database format used with version 
+      <p>Your old version of Bumblebee appears to be using the database format used with version
       <?php echo $data['old_db_version']; ?>.</p>
-      <?php 
+      <?php
         if ($data['db_upgrade']) {
           echo "<p>Your database needs upgrading.</p>";
         } else {
@@ -150,7 +156,7 @@ function printStepUpgradeCheck($data, $steps) {
       ?>
     </fieldset>
     <div id='buttonbar'>
-      <?php print $data['db_upgrade'] ? $steps->getPrevNextButtons() : $steps->getPrevSkipToButtons(1); ?>
+      <?php print $data['db_upgrade'] ? $steps->getPrevNextButtons() : $steps->getPrevSkipToButtons(2); ?>
     </div>
   <?php
   endHTML();
@@ -172,7 +178,7 @@ function printStepDBUpgrade($data, $steps) {
       </fieldset>
     <?php
   }
-  printDatabaseSetupForm($data);
+  printDatabaseSetupForm($data, $steps->getNextActionName());
   if (isset($data['db-results'])) {
     ?>
       <fieldset>
@@ -181,13 +187,36 @@ function printStepDBUpgrade($data, $steps) {
         <blockquote>
           <?php print $data['db-results']; ?>
         </blockquote>
-        <p>If it all went well, then proceed to the next step. Otherwise, try to fix any 
+        <p>If it all went well, then proceed to the next step. Otherwise, try to fix any
         errors (wrong username and password, perhaps) in the forms and have another go using
         the script or try to fix it up using phpMyAdmin.</p>
       </fieldset>
     <?php
   }
   ?>
+    <div id='buttonbar'>
+      <?php print $steps->getPrevNextButtons(null, null, ! isset($data['db-results'])); ?>
+    </div>
+  <?php
+  endHTML();
+}
+
+/**
+* Find out from the user what username and passwords to use for connecting to the database etc
+*/
+function printStepUpgradeVerify($data, $steps) {
+  startHTML_upgrade($data, $steps);
+  ?>
+    <fieldset>
+      <legend>Verify database upgrade</legend>
+      <?php
+        if ($data['db_upgrade']) {
+          echo "<p>An error seems to have occurred! It looks like your database structure has not been succeessfully upgraded. This will either mean that newer features are not available or that the booking system will not function correctly until you fix this problem.</p><p>I was hoping to find that you were using version ".$data['new_version']." of the database structure, but I'm seeing version ".$data['old_db_version']."</p><p>Please use the 'Previous' button below to go back and have another go at upgrading the database structure.</p>";
+        } else {
+          echo "<p>Your database has been successfully upgraded. Great!!</p>";
+        }
+      ?>
+    </fieldset>
     <div id='buttonbar'>
       <?php print $steps->getPrevNextButtons(); ?>
     </div>
@@ -196,6 +225,8 @@ function printStepDBUpgrade($data, $steps) {
 }
 
 function printStepCleanup($values, $steps) {
+  $conf = ConfigReader::getInstance();
+  $values['BASEURL'] = $conf->BaseURL;
   startHTML_upgrade($values, $steps);
   genericCleanupInstructions($values, $steps);
   endHTML();

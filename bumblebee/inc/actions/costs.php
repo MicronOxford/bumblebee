@@ -8,7 +8,13 @@
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Actions
+*
+* path (bumblebee root)/inc/actions/costs.php
 */
+
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
 
 /** Costs object */
 require_once 'inc/bb/costs.php';
@@ -19,7 +25,7 @@ require_once 'inc/actions/actionaction.php';
 
 /**
 *  Edit and create costs for using instruments
-*  
+*
 * Costs for instrument usage are calculated using a matrix of the instrument class
 * and the user class. See { @link http://bumblebeeman.sf.net/ } for further details.
 * @package    Bumblebee
@@ -28,8 +34,8 @@ require_once 'inc/actions/actionaction.php';
 class ActionCosts extends ActionAction {
 
   /**
-  * Initialising the class 
-  * 
+  * Initialising the class
+  *
   * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
@@ -43,7 +49,8 @@ class ActionCosts extends ActionAction {
     if (! isset($this->PD['userclass'])) {
       $this->selectUserClass();
     } else {
-      $this->editCost();
+      if ($this->readOnly) $this->_dataCleanse('userclass');
+      $this->edit();
     }
     echo "<br /><br /><a href='".makeURL('costs')."'>"
                               .T_('Return to costs list')      ."</a><br /><br />";
@@ -54,7 +61,7 @@ class ActionCosts extends ActionAction {
     echo "<a href='".makeURL('userclass')."'>"
                               .T_('Edit user classes')         ."</a><br />";
   }
-  
+
 //   function mungeInputData() {
 //     $this->PD = array();
 //     foreach ($_POST as $k => $v) {
@@ -71,7 +78,7 @@ class ActionCosts extends ActionAction {
   *
   * - do DB look-ups on what instruments exist
   * - construct a table of links to allow the user to select which userclass to edit
-  * 
+  *
   * @return void nothing
   */
   function selectUserClass() {
@@ -89,14 +96,14 @@ class ActionCosts extends ActionAction {
   *
   * @return void nothing
   */
-  function editCost() {
+  function edit() {
     $classCost = new ClassCost($this->PD['userclass']);
     $classCost->update($this->PD);
     $classCost->checkValid();
-    echo $this->reportAction($classCost->sync(), 
+    echo $this->reportAction($classCost->sync(),
           array(
-              STATUS_OK =>   ($this->PD['userclass'] < 0 
-                                    ? T_('Cost schedule created') 
+              STATUS_OK =>   ($this->PD['userclass'] < 0
+                                    ? T_('Cost schedule created')
                                     : T_('Cost schedule updated')),
               STATUS_ERR =>  T_('Cost schedule could not be changed:').' '.$classCost->errorMessage
           )
@@ -104,7 +111,7 @@ class ActionCosts extends ActionAction {
     echo $classCost->display();
     echo '<input type="submit" name="submit" value="'.T_('Update entry').'" />';
   }
-  
+
 }
 
-?> 
+?>

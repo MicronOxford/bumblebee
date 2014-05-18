@@ -10,15 +10,19 @@
 * @subpackage FormsLibrary
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
+require_once 'inc/bb/configreader.php';
+
 /** parent object */
 require_once 'field.php';
-/** type checking and data manipulation */
-require_once 'inc/typeinfo.php';
 
 /**
 * The textfield widget primitive
 *
-* Designed for strings to be edited in a text field widget in the HTML form, 
+* Designed for strings to be edited in a text field widget in the HTML form,
 * but is inherited for TimeField, IdField etc
 *
 * @package    Bumblebee
@@ -35,9 +39,24 @@ class TextField extends Field {
   */
   function TextField($name, $longname='', $description='') {
     parent::Field($name, $longname, $description);
+    $this->valueCleaner = array($this, '_textCleaner');
   }
 
-  function displayInTable($cols) {
+  function _textCleaner($value) {
+    $value = trim($value);
+
+    if (issetSet($this->attr, 'float', false)) {
+      $conf = ConfigReader::getInstance();
+      if ($conf->value('language', 'use_comma_floats', false)) {
+        $value = commaFloat($value);
+        // also convert the original db value to a float so that the comparison will be numeric
+        $this->value = floatval($this->value);
+      }
+    }
+    return $value;
+  }
+
+  function displayInTable($cols=3) {
     $t = '';
     if (! $this->hidden) {
       $errorclass = ($this->isValid ? '' : 'class="inputerror"');
@@ -66,23 +85,28 @@ class TextField extends Field {
   function selectedValue() {
     return xssqw($this->getValue()).$this->hidden();
   }
-  
+
   function selectable() {
-    $t  = '<input type="text" name="'.$this->namebase.$this->name.'" ';
+    $value = $this->getValue();
+    if ($value !== null && $value !== '' &&
+        issetSet($this->attr, 'float', false) && $precision = issetSet($this->attr, 'precision', false)) {
+      $value = numberFormatter($value, $precision);
+    }
+    $t  = '<input type="text" name="'.$this->formname.$this->namebase.$this->name.'" ';
     $t .= 'title="'.$this->description.'" ';
-    $t .= 'value="'.xssqw($this->getValue()).'" ';
+    $t .= 'value="'.xssqw($value).'" ';
     $t .= (isset($this->attr['size']) ? 'size="'.$this->attr['size'].'" ' : '');
     $t .= (isset($this->attr['maxlength']) ? 'maxlength="'.$this->attr['maxlength'].'" ' : '');
     $t .= '/>';
     return $t;
   }
-  
+
   function hidden() {
-    return "<input type='hidden' name='$this->namebase$this->name' "
+    return "<input type='hidden' name='$this->formname$this->namebase$this->name' "
            ."value='".xssqw($this->getValue())."' />";
   }
 
 } // class TextField
 
 
-?> 
+?>

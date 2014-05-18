@@ -10,6 +10,10 @@
 * @subpackage FormsLibrary
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** DBO parent object */
 require_once 'dbobject.php';
 
@@ -69,7 +73,7 @@ class DBChoiceList extends DBO {
   /** @var array     the list of prepended entries  */
   var $prependedfields;
 
-  /** 
+  /**
   * Construct the DBlist object.
   *
   * Construct a new DBList object based on:
@@ -123,7 +127,7 @@ class DBChoiceList extends DBO {
     //preDump($this);
     global $TABLEPREFIX;
     $fields = $this->fields;
-    $fields[] = isset($this->idfieldreal) ? 
+    $fields[] = isset($this->idfieldreal) ?
                       array($this->idfieldreal, $this->idfield) :
                       $this->idfield;
     $aliasfields = array();
@@ -143,7 +147,7 @@ class DBChoiceList extends DBO {
         $restrictions = ($restrictions ? $restrictions.' AND ' : '') . $this->table.'.deleted<>1 ';
       }
     }
-    $q = 'SELECT '.($this->distinct?'DISTINCT ':'').$f 
+    $q = 'SELECT '.($this->distinct?'DISTINCT ':'').$f
         .' FROM '.$TABLEPREFIX.$this->table.' AS '.$this->table.' '
         .$joinSyntax
         .($restrictions != '' ? "WHERE $restrictions " : '')
@@ -166,7 +170,7 @@ class DBChoiceList extends DBO {
     }
     return 1;
   }
-  
+
   /**
    * Construct an array suitable for storing the field and the values it takes for later reuse
    * @param array $values list of values to be displayed
@@ -258,15 +262,15 @@ class DBChoiceList extends DBO {
     return "<pre>DBChoiceList:\n".print_r($this->choicelist, true)."</pre>";
   }
 
-  /** 
+  /**
   * update the value of the list based on user data:
   *   - if it is within the range of current values, then take the value
   *   - if the field contains a new value (and is allowed to) then keep
   *     an illegal value, mark as being changed, and wait until later for
   *     the field to be updated
-  *   - if the field contains a new value (and is not allowed to) or an 
+  *   - if the field contains a new value (and is not allowed to) or an
   *     out-of-range value, then flag as being invalid
-  * 
+  *
   * @param string $newval the (possibly) new value for the field
   * @param array ancillary user data (passed on to any appended or prepended fields)
   */
@@ -283,7 +287,7 @@ class DBChoiceList extends DBO {
         }
       }
       if ($isExisting) {
-        // it is a legal, existing value, so we adopt it 
+        // it is a legal, existing value, so we adopt it
         $this->log('isExisting');
         $this->changed += ($newval != $this->id);
         $this->id = $newval;
@@ -318,7 +322,7 @@ class DBChoiceList extends DBO {
   }
 
   /**
-  * sets the current value of the field 
+  * sets the current value of the field
   *
   * (providing interface to Field object)
   */
@@ -329,7 +333,7 @@ class DBChoiceList extends DBO {
 
   /**
   * synchronise with the database
-  * 
+  *
   * This also creates the true value for this field if it is undefined
   * @return code from statuscodes
   * @global string prefix for SQL table names
@@ -359,7 +363,7 @@ class DBChoiceList extends DBO {
 
   /**
   * Returns an SQL assignment clause
-  * 
+  *
   * @return string of form name='value'
   */
   function _sqlvals() {
@@ -419,11 +423,11 @@ class DBChoiceList extends DBO {
     //preDump($this->appendedfields);
     //preDump($this->prependedfields);
     // Force a copy of contents of $this->fields array, otherwise the fields will only be references
-    foreach ($this->appendedfields as $k => $f) { 
+    foreach ($this->appendedfields as $k => $f) {
       //print "cloning $k<br />";
       if (is_object($f['_field'])) $this->appendedfields[$k]['_field'] = clone($f['_field']);
     }
-    foreach ($this->prependedfields as $k => $f) { 
+    foreach ($this->prependedfields as $k => $f) {
       //print "cloning $k<br />";
       if (is_object($f['_field'])) $this->prependedfields[$k]['_field'] = clone($f['_field']);
     }
@@ -433,4 +437,4 @@ class DBChoiceList extends DBO {
 
 } // class DBChoiceList
 
-?> 
+?>

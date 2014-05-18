@@ -10,6 +10,10 @@
 * @subpackage FormsLibrary
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** parent object */
 require_once 'field.php';
 /** database row manipulation object */
@@ -30,8 +34,8 @@ require_once 'inc/db.php';
 * This may be used to determine the choices
 * that a user is permitted to select (e.g. dropdown list or radio buttons)
 *
-* Used in a many:many or many:1 relationships (i.e. a field in a 
-* table that is the listed in a join table 
+* Used in a many:many or many:1 relationships (i.e. a field in a
+* table that is the listed in a join table
 *
 * Typical usage:<code>
 *   $f = new JoinData('jointable', 'id1', $table1_key, 'fieldname', 'label1');
@@ -92,6 +96,7 @@ class JoinData extends Field {
     $this->jtLeftID = $jtLeftID;
     $this->protoRow = new DBRow($joinTable, $jtLeftID, $jtLeftIDCol);
     $field = new Field($jtLeftIDCol);
+    $field->defaultValue = $jtLeftID;
     $this->protoRow->addElement($field);
     $this->protoRow->editable = 1;
     $this->protoRow->autonumbering = 0;
@@ -148,8 +153,15 @@ class JoinData extends Field {
   * @param integer  $rowNum   number of this row (used as unique identifier in the namebase)
   */
   function _createRow($rowNum) {
+    #echo "NAMEBASE={$this->namebase}";
+    #echo "NAME={$this->name}";
     $this->rows[$rowNum] = clone($this->protoRow);
-    $this->rows[$rowNum]->setNamebase($this->name.'-'.$rowNum.'-');
+    $this->rows[$rowNum]->setNamebase($this->namebase.$this->name.'-'.$rowNum.'-');
+    $this->rows[$rowNum]->setFormname($this->formname);
+
+    #for ($i=0; $i<=$rowNum; $i++) {
+    #  echo "NB = ". $this->rows[$i]->namebase."<br />";
+    #}
   }
 
   /**
@@ -171,13 +183,16 @@ class JoinData extends Field {
       $this->rows[$i]->recNum = 1;
       $this->rows[$i]->recStart = $i;
       $this->rows[$i]->fill();
-      $this->rows[$i]->restriction = $this->jtRightIDCol .'='. qw($this->rows[$i]->fields[$this->jtRightIDCol]->value); 
+      $this->rows[$i]->restriction = $this->jtRightIDCol .'='. qw($this->rows[$i]->fields[$this->jtRightIDCol]->value);
       $this->rows[$i]->insertRow = ! ($this->rows[$i]->fields[$this->jtRightIDCol]->value > 0);
       $this->log('This row flagged with insertRow '.$this->rows[$i]->insertRow);
+      if ($this->rows[$i]->insertRow) {
+        $this->rows[$i]->fillWithDefaults();
+      }
     }
     //preDump($this->rows);
   }
-  
+
   function display() {
     //check how many fields we need to have (again) as we might have to show more this time around.
     $this->_fillFromProto();
@@ -188,7 +203,7 @@ class JoinData extends Field {
     $t = '';
     #$errorclass = ($this->isValid ? '' : "class='inputerror'");
     $errorclass = '';
-    for ($i=0; $i<$this->number; $i++) { 
+    for ($i=0; $i<$this->number; $i++) {
       $t .= "<tr $errorclass><td colspan='$this->colspan'>\n";
       #$t .= "FOO$i";
       $t .= $this->rows[$i]->displayInTable(2);
@@ -200,23 +215,23 @@ class JoinData extends Field {
     }
     return $t;
   }
-  
+
   function selectedValue() {
     return $this->selectable();
   }
 
-  function displayInTable($cols) {
+  function displayInTable($cols=3) {
     //check how many fields we need to have (again) as we might have to show more this time around.
     $this->_fillFromProto();
     //$cols += $this->colspan;
-    $t = "<tr><td colspan='$cols'>$this->description</td></tr>\n";
+    $t = "<tr><td colspan='$cols'>{$this->description}</td></tr>\n";
     if ($this->editable) {
       $t .= $this->selectable($cols);
     } else {
       //preDump($this);
       //preDump(debug_backtrace());
       $t .= $this->selectedValue();
-      $t .= "<input type='hidden' name='$this->name' value='$this->value' />";
+      $t .= "<input type='hidden' name='{$this->name}' value='".xssqw($this->value)." />";
     }
     return $t;
   }
@@ -242,7 +257,7 @@ class JoinData extends Field {
   /**
   *  Count the number of rows in the join table so we know how many to retrieve
   * @return integer number of rows found
-  */ 
+  */
   function _countRowsInJoin() {
     $g = quickSQLSelect($this->joinTable, $this->jtLeftIDCol, $this->jtLeftID, $this->fatalsql, 1);
     $this->log('Found '.$g[0].' rows currently in join');
@@ -255,16 +270,19 @@ class JoinData extends Field {
   * delayed for as long as possible as an INSERT might be needed before the value of the
   * selection is actually known, but that shouldn't be done until all the data has passed
   * all validation tests
+  *
+  * @param $name  (unused)
+  * @param $force (unused)
   * @return string  sql name=value sequence
   */
-  function sqlSetStr() {
+  function sqlSetStr($name='', $force=false) {
     //$this->DEBUG=10;
     #echo "JoinData::sqlSetStr";
     $this->_joinSync();
     if (count($this->reportFields) < 1) {
       //We return an empty string as this is only a join table entry,
       //so it has no representation within the row itself.
-      return ''; 
+      return '';
     } else {
       // then we can return the value of the first row (any more doesn't make sense)
       $t = array();
@@ -290,7 +308,7 @@ class JoinData extends Field {
       #echo "before sync row $i oob='".$this->oob_status."' ";
       $this->changed += $this->rows[$i]->changed;
       //preDump($this->rows[$i]->fields[$this->jtRightIDCol]);
-      if ($this->rows[$i]->fields[$this->jtRightIDCol]->value !== ''   // damned PHP '' == 0 
+      if ($this->rows[$i]->fields[$this->jtRightIDCol]->value !== ''   // damned PHP '' == 0
           && $this->rows[$i]->fields[$this->jtRightIDCol]->value == 0
           && $this->rows[$i]->fields[$this->jtRightIDCol]->changed) {
         //then this row is to be deleted...
@@ -305,13 +323,13 @@ class JoinData extends Field {
       #echo " after sync row $i oob='".$this->oob_status."'";
     }
   }
-  
-  
+
+
   /**
   * Check validity of data
   *
   * override the isValid method of the Field class, using the
-  * checkValid method of each member row completed as well as 
+  * checkValid method of each member row completed as well as
   * cross checks on other fields.
   * @return boolean data is valid
   */
@@ -322,12 +340,12 @@ class JoinData extends Field {
       #echo "val". $this->rows[$i]->fields[$this->jtRightIDCol]->value.";";
       //$this->log('Row: '.$i);
       $this->rows[$i]->isValid = 1;
-      if ($this->rows[$i]->fields[$this->jtRightIDCol]->value !== ''   // damned PHP '' == 0 
+      if ($this->rows[$i]->fields[$this->jtRightIDCol]->value !== ''   // damned PHP '' == 0
           && $this->rows[$i]->fields[$this->jtRightIDCol]->value == 0
           && $this->rows[$i]->changed) {
         // this row will be deleted to mark it valid in the mean time
         $this->rows[$i]->isValid = 1;
-      } elseif ( ($this->rows[$i]->fields[$this->jtRightIDCol]->value == -1 
+      } elseif ( ($this->rows[$i]->fields[$this->jtRightIDCol]->value == -1
                    || $this->rows[$i]->fields[$this->jtRightIDCol]->value > 0)
                  && $this->rows[$i]->changed) {
         //this row will be sync'd against the database, so check its validity
@@ -359,7 +377,7 @@ class JoinData extends Field {
     //echo "JoinData::isValid = '$this->isValid'";
     return $this->isValid;
   }
-  
+
   /**
   * Change the Id value of each row
   */
@@ -368,7 +386,7 @@ class JoinData extends Field {
       $this->rows[$i]->setId($newId);
     }
   }
-  
+
   /**
   * Set the name base of the rows
   */
@@ -377,6 +395,17 @@ class JoinData extends Field {
       $this->rows[$i]->setNamebase($namebase);
     }
     $this->protoRow->setNamebase($namebase);
+  }
+
+
+  /**
+  * Set the form name of the rows
+  */
+  function setFormname($name='') {
+    for ($i=0; $i < $this->number; $i++) {
+      $this->rows[$i]->setFormname($name);
+    }
+    $this->protoRow->setFormname($name);
   }
 
   /**
@@ -388,7 +417,7 @@ class JoinData extends Field {
     }
     $this->protoRow->setEditable($editable);
   }
-  
+
 } // class JoinData
 
-?> 
+?>

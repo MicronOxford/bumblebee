@@ -10,10 +10,12 @@
 * @subpackage FormsLibrary
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** parent object */
 require_once 'field.php';
-/** type checking and data manipulation */
-require_once 'inc/typeinfo.php';
 
 /**
 * a textarea widget
@@ -28,7 +30,7 @@ class TextArea extends TextField {
   }
 
   function selectable() {
-    $t  = '<textarea name="'.$this->namebase.$this->name.'" ';
+    $t  = '<textarea name="'.$this->formname.$this->namebase.$this->name.'" ';
     $t .= 'title="'.$this->description.'" ';
     $t .= (isset($this->attr['rows']) ? 'rows="'.$this->attr['rows'].'" ' : '');
     $t .= (isset($this->attr['cols']) ? 'cols="'.$this->attr['cols'].'" ' : '');
@@ -37,8 +39,8 @@ class TextArea extends TextField {
     $t .= '</textarea>';
     return $t;
   }
-  
+
 } // class TextArea
 
 
-?> 
+?>

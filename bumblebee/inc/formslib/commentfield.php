@@ -10,6 +10,10 @@
 * @subpackage FormsLibrary
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** parent object */
 require_once 'field.php';
 
@@ -35,7 +39,7 @@ class CommentField extends Field {
     $this->editable = 0;
   }
 
-  function displayInTable($cols) {
+  function displayInTable($cols=3) {
     $t = '';
     if (! $this->hidden) {
       $t .= '<tr><td>'.$this->longname.'</td>'."\n"
@@ -53,7 +57,7 @@ class CommentField extends Field {
   function selectable() {
     return xssqw($this->getValue());
   }
-  
+
   function hidden() {
     return '';
   }
@@ -61,4 +65,4 @@ class CommentField extends Field {
 } // class CommentField
 
 
-?> 
+?>

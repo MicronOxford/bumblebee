@@ -10,6 +10,10 @@
 * @subpackage FormsLibrary
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** parent object */
 require_once 'choicelist.php';
 
@@ -43,24 +47,18 @@ class DropList extends ChoiceList {
     $data['_field'] = '0';
     $selected = ($data[$this->formatid] == $this->getValue() ? " selected='1' " : '');
     $t  = '<option '
-         ."value='".$data[$this->formatid]."' $selected> ";
+         ."value='".xssqw($data[$this->formatid])."' $selected> ";
     foreach (array_keys($this->formatter) as $k) {
       $t .= $this->formatter[$k]->format($data);
     }
-    //if (isset($data['_field']) && $data['_field']) {
-    //  echo 'foo'.$data['_field'].'bar';
-    //  $t .= $data['_field']->selectable();
-    //}
-    $t .= "</option>\n";
+   $t .= "</option>\n";
     return $t;
   }
 
 
   function selectable() {
-    $t = "<select name='$this->namebase$this->name'>";
+    $t = "<select name='$this->formname$this->namebase$this->name'>";
     foreach ($this->list->choicelist as $v) {
-//       echo "droplist: $k => $v<br />\n";
-      //preDump($v);
       $t .= $this->format($v);
     }
     $t .= "</select>";
@@ -76,15 +74,15 @@ class DropList extends ChoiceList {
     }
     //preDump($data);
     $t  = '<input type="hidden" '
-          .'value="'.$data[$this->formatid].'" /> ';
+          .'value="'.xssqw($data[$this->formatid]).'" /> ';
     foreach (array_keys($this->formatter) as $k) {
       $t .= $this->formatter[$k]->format($data);
     }
     $t .= "\n";
     return $t;
   }
-  
+
 } // class DropList
 
 
-?> 
+?>

@@ -10,10 +10,12 @@
 * @subpackage FormsLibrary
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** parent object */
 require_once 'textfield.php';
-/** type checking and data manipulation */
-require_once 'inc/typeinfo.php';
 /** username and password checks */
 require_once 'inc/passwords.php';
 
@@ -22,11 +24,13 @@ require_once 'inc/passwords.php';
 *
 * @package    Bumblebee
 * @subpackage FormsLibrary
-* @todo old-passwd? retype passwd? js to check same? code to check same?
+* @todo //TODO:  js to check double entry passwd is the same
 */
 class PasswdField extends TextField {
-  /** @var string  algorithm used to encrypt the data  */
-  var $crypt_method = 'md5_compat';
+  //** @var string  algorithm used to encrypt the data  */
+  //var $crypt_method = 'md5_compat';
+  /** @var boolean   encode the data before sending to the database */
+  var $encode = true;
 
   /**
   *  Create a new password field object
@@ -41,7 +45,7 @@ class PasswdField extends TextField {
   }
 
   function selectable() {
-    $t  = '<input type="password" name="'.$this->namebase.$this->name.'" ';
+    $t  = '<input type="password" name="'.$this->formname.$this->namebase.$this->name.'" ';
     $t .= (isset($this->attr['size']) ? 'size="'.$this->attr['size'].'" ' : '');
     $t .= (isset($this->attr['maxlength']) ? 'maxlength="'.$this->attr['maxlength'].'" ' : '');
     $t .= '/>';
@@ -49,27 +53,27 @@ class PasswdField extends TextField {
   }
 
   /**
-  * Don't return data... 
+  * Don't return data...
   *
   * We shouldn't give up our data too easily.
-  */ 
+  */
   function getValue() {
     return '';
   }
-  
+
   /**
   * Update the value of the field from user-supplied data, but only if the field was filled in
   *
   * Empty values don't count -- that way an unfilled passwd field will never count as changed
   * @param array $data  list of field_name => value pairs
-  */ 
+  */
   function update($data) {
     if (parent::update($data)) {
       return ($this->changed = ($this->value != ''));
-    } 
+    }
     return false;
   }
-  
+
   /**
   * return a SQL-injection-cleansed string that can be used in an SQL
   * UPDATE or INSERT statement. i.e. "name='Stuart'".
@@ -77,21 +81,25 @@ class PasswdField extends TextField {
   * @param string $name the field name to be used
   * @return string  in SQL assignable form
   */
-  function sqlSetStr($name='') {
+  function sqlSetStr($name='', $force=false) {
     if (empty($name)) {
       $name = $this->name;
     }
     if (! $this->sqlHidden && $this->value != '') {
-      $pass = makePasswordHash($this->value);
-      return $name ."='$pass'";
+      if ($this->encode) {
+        $pass = makePasswordHash($this->value);
+        return $name ."='$pass'";
+      } else {
+        return $name .'='. qw($this->value);
+      }
     } else {
       return '';
     }
   }
 
-  
-  
+
+
 } // class PasswdField
 
 
-?> 
+?>

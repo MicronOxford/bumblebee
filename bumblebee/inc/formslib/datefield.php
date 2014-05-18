@@ -10,10 +10,12 @@
 * @subpackage FormsLibrary
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** parent object */
 require_once 'field.php';
-/** type checking and data manipulation */
-require_once 'inc/typeinfo.php';
 /** Date/Time classes */
 require_once 'inc/date.php';
 
@@ -42,7 +44,7 @@ class DateField extends Field {
     $this->date = new SimpleDate(0);
   }
 
-  function displayInTable($cols) {
+  function displayInTable($cols=3) {
     $errorclass = ($this->isValid ? "" : "class='inputerror'");
     $t = "<tr $errorclass><td>$this->longname</td>\n"
         ."<td title='$this->description'>";
@@ -55,7 +57,7 @@ class DateField extends Field {
     return $t;
   }
 
-  
+
   /**
   * Generate the complete html representation of the field
   *
@@ -75,40 +77,40 @@ class DateField extends Field {
     }
     return $t;
   }
-  
 
-  
+
+
   /**
   * Generate the html representation of the field in a textfield
   *
   * @return string html presentation
   */
   function selectable() {
-    $t  = "<input type='text' name='$this->namebase$this->name' "
+    $t  = "<input type='text' name='$this->formname$this->namebase$this->name' "
         ."value='".xssqw($this->date->dateString())."' ";
     $t .= (isset($this->attr['size']) ? "size='".$this->attr['size']."' " : "");
     $t .= (isset($this->attr['maxlength']) ? "maxlength='".$this->attr['maxlength']."' " : "");
     $t .= "/>";
     return $t;
   }
-  
+
   function hidden() {
-    return "<input type='hidden' name='$this->namebase$this->name' "
+    return "<input type='hidden' name='$this->formname$this->namebase$this->name' "
            ."value='".xssqw($this->value)."' />";
   }
 
-  
+
   /**
   * Set the date (and value)
   *
-  * @param SimpleDate $time 
+  * @param SimpleDate $time
   */
   function setDate($date) {
     $this->date = new SimpleDate($date);
     $this->value = $this->date->dateString();
 //     $this->set($this->time->timeString());
   }
-  
+
   /**
   * overload the parent's update method so that local calculations can be performed
   *
@@ -132,7 +134,7 @@ class DateField extends Field {
     $this->isValid = $this->isValid && $this->date->isValid;
     return $this->isValid;
   }
-    
+
 }
 
-?> 
+?>

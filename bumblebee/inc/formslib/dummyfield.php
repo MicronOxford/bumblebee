@@ -10,10 +10,12 @@
 * @subpackage FormsLibrary
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** parent object */
 require_once 'field.php';
-/** type checking and data manipulation */
-require_once 'inc/typeinfo.php';
 
 /**
 * a dummy field does not exist in the database but stores data in the form
@@ -34,28 +36,28 @@ class DummyField extends Field {
     parent::Field($name, $longname, $description);
   }
 
-  function displayInTable($cols) {
-    $t = "<input type='hidden' name='$this->name' "
+  function displayInTable($cols=3) {
+    $t = "<input type='hidden' name='{$this->formname}{$this->namebase}{$this->name}' "
              ."value='".xssqw($this->value)."' />";
     return $t;
   }
 
-  function update() {
+  function update($data) {
     return 0;
   }
-  
+
   function isValid() {
     return 1;
   }
-  
-  function set() {
+
+  function set($value) {
   }
-  
-  function sqlSetStr($name='') {
+
+  function sqlSetStr($name='', $force=false) {
     return '';
   }
-  
+
 } // class DummyField
 
 
-?> 
+?>

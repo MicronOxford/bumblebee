@@ -10,6 +10,10 @@
 * @subpackage DBObjects
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** parent object */
 require_once 'inc/formslib/dbrow.php';
 require_once 'inc/formslib/idfield.php';
@@ -25,7 +29,7 @@ require_once 'inc/formslib/joindata.php';
 * @subpackage DBObjects
 */
 class Project extends DBRow {
-  
+
   function Project($id) {
     $this->DBRow('projects', $id);
     //$this->DEBUG=10;
@@ -62,7 +66,7 @@ class Project extends DBRow {
     $f->isValidTest = 'is_valid_radiochoice';
     $this->addElement($f);
     $f = new JoinData('projectgroups',
-                       'projectid', $this->id, 
+                       'projectid', $this->id,
                        'groups', T_('Group membership (%)'));
     $groupfield = new DropList('groupid', 'Group');
     $groupfield->connectDB('groups', array('id', 'name', 'longname'));
@@ -72,6 +76,7 @@ class Project extends DBRow {
     $f->addElement($groupfield);
     $percentfield = new TextField('grouppc', '');
     $percentfield->isValidTest = 'is_number';
+    $percentfield->setAttr(array('size' => '16', 'float' => true, 'precision' => 2));
     $f->addElement($percentfield, 'sum_is_100');
     $f->joinSetup('groupid', array('total' => 3));
     $f->colspan = 2;

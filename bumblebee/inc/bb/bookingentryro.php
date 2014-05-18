@@ -10,6 +10,10 @@
 * @subpackage DBObjects
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** uses Booking object */
 require_once 'inc/bookings/booking.php';
 /** obtain data from database */

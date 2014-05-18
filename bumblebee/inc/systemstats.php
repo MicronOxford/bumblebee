@@ -2,13 +2,17 @@
 /**
 * Collate some stats on the current usage of the system (number of bookings etc)
 *
-* @author    Stuart Prescott
+* @author     Stuart Prescott
 * @copyright  Copyright Stuart Prescott
 * @license    http://opensource.org/licenses/gpl-license.php GNU Public License
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Misc
 */
+
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
 
 /**
 * Collate some stats on the current usage of the system (number of bookings etc)
@@ -28,7 +32,7 @@ class SystemStats {
   */
   var $tables;
 
-  /** 
+  /**
   * Constructor: load up the stats
   */
   function SystemStats() {
@@ -60,6 +64,7 @@ class SystemStats {
 * @return string name of the server software
 */
 function webserver_get_name() {
+  if (! isset($_SERVER['SERVER_SOFTWARE'])) return "";
   return substr($_SERVER['SERVER_SOFTWARE'], 0, strpos($_SERVER['SERVER_SOFTWARE'], '/'));
 }
 
@@ -67,6 +72,7 @@ function webserver_get_name() {
 * @return string version of the server software
 */
 function webserver_get_version() {
+  if (! isset($_SERVER['SERVER_SOFTWARE'])) return "";
   $slash   = strpos($_SERVER['SERVER_SOFTWARE'], '/');
   $version = substr($_SERVER['SERVER_SOFTWARE'], $slash+1);
   $space   = strpos($version, ' ');

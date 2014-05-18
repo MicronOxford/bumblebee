@@ -8,7 +8,13 @@
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Actions
+*
+* path (bumblebee root)/inc/actions/groups.php
 */
+
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
 
 /** Group object */
 require_once 'inc/bb/group.php';
@@ -26,8 +32,8 @@ require_once 'inc/actions/actionaction.php';
 class ActionGroups extends ActionAction  {
 
   /**
-  * Initialising the class 
-  * 
+  * Initialising the class
+  *
   * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
@@ -41,8 +47,13 @@ class ActionGroups extends ActionAction  {
     if (! isset($this->PD['id'])) {
       $this->select(issetSet($this->PD, 'showdeleted', false));
     } elseif (isset($this->PD['delete'])) {
-      $this->delete();
+      if ($this->readOnly) {
+        $this->readOnlyError();
+      } else {
+        $this->delete();
+      }
     } else {
+      if ($this->readOnly) $this->_dataCleanse('id');
       $this->edit();
     }
     echo "<br /><br /><a href='".makeURL('groups')."'>".T_('Return to group list')."</a>";
@@ -59,12 +70,12 @@ class ActionGroups extends ActionAction  {
     #echo $select->list->text_dump();
     echo $select->display();
   }
-  
+
   function edit() {
     $group = new Group($this->PD['id']);
     $group->update($this->PD);
     $group->checkValid();
-    echo $this->reportAction($group->sync(), 
+    echo $this->reportAction($group->sync(),
           array(
               STATUS_OK =>   ($this->PD['id'] < 0 ? T_('Group created') : T_('Group updated')),
               STATUS_ERR =>  T_('Group could not be changed:').' '.$group->errorMessage
@@ -85,12 +96,12 @@ class ActionGroups extends ActionAction  {
 
   function delete() {
     $group = new Group($this->PD['id']);
-    echo $this->reportAction($group->delete(), 
+    echo $this->reportAction($group->delete(),
               array(
                   STATUS_OK =>   $group->isDeleted ? T_('Group undeleted') : T_('Group deleted'),
                   STATUS_ERR =>  T_('Group could not be deleted:').'<br/><br/>'.$group->errorMessage
               )
-            );  
+            );
   }
 }
-?> 
+?>

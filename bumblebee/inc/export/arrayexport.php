@@ -8,7 +8,15 @@
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Export
+*
+* path (bumblebee root)/inc/export/arrayexport.php
 */
+
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
+require_once 'inc/bb/configreader.php';
 
 /** constants for defining export formatting and codes */
 require_once 'inc/exportcodes.php';
@@ -62,9 +70,9 @@ class ArrayExport {
   */
   function makeExportArray() {
     $ea = array();   //export array
-    $ea[] = array('type' => EXPORT_REPORT_START,  
+    $ea[] = array('type' => EXPORT_REPORT_START,
                   'data' => '');
-    $ea[] = array('type' => EXPORT_REPORT_HEADER, 
+    $ea[] = array('type' => EXPORT_REPORT_HEADER,
                   'data' => $this->header);
     $entry = 0;
     $numcols = count($this->dblist->formatdata[0]);
@@ -75,39 +83,39 @@ class ArrayExport {
     while ($entry < $numrows) {
       //$this->log('Row: '.$entry);
       $this->_resetTotals();
-      $ea[] = array('type' => EXPORT_REPORT_SECTION_HEADER, 
+      $ea[] = array('type' => EXPORT_REPORT_SECTION_HEADER,
                     'data' => $this->_sectionHeader($this->dblist->data[$entry]),
                     'metadata' => $this->_getColWidths($numcols, $entry));
       if ($breakReport) {
         $initial = $this->dblist->data[$entry][$breakfield];
       }
-      $ea[] = array('type' => EXPORT_REPORT_TABLE_START,  
+      $ea[] = array('type' => EXPORT_REPORT_TABLE_START,
                     'data' => '');
-      $ea[] = array('type' => EXPORT_REPORT_TABLE_HEADER, 
+      $ea[] = array('type' => EXPORT_REPORT_TABLE_HEADER,
                     'data' => $this->dblist->outputHeader());
-      while ($entry < $numrows 
+      while ($entry < $numrows
                 && (! $breakReport
                     || $initial == $this->dblist->data[$entry][$breakfield]) ) {
-        $ea[] = array('type' => EXPORT_REPORT_TABLE_ROW, 
+        $ea[] = array('type' => EXPORT_REPORT_TABLE_ROW,
                       'data' => $this->_formatRowData($this->dblist->formatdata[$entry]));
         $this->_incrementTotals($this->dblist->formatdata[$entry]);
         //if ($entry>0) unset($this->dblist->formatdata[$entry]);  //FIXME: this can save a couple of MB
         $entry++;
       }
       if ($this->_doingTotalCalcs) {
-        $ea[] = array('type' => EXPORT_REPORT_TABLE_TOTAL, 
+        $ea[] = array('type' => EXPORT_REPORT_TABLE_TOTAL,
                       'data' => $this->_getTotals());
       }
-      $ea[] = array('type' => EXPORT_REPORT_TABLE_END,   
+      $ea[] = array('type' => EXPORT_REPORT_TABLE_END,
                     'data' => '');
-    }  
-    $ea[] = array('type' => EXPORT_REPORT_END,  
+    }
+    $ea[] = array('type' => EXPORT_REPORT_END,
                   'data' => '');
     $ea['metadata'] = $this->_getMetaData();
     //preDump($ea);
     $this->export =& $ea;
   }
-  
+
   /**
   * create the section header
   *
@@ -122,8 +130,8 @@ class ArrayExport {
       $s .= $row[$this->breakfield];
     }
     return $s;
-  }  
-  
+  }
+
   /**
   * get the column widths for the columns (if defined)
   *
@@ -171,7 +179,7 @@ class ArrayExport {
       }
     }
   }
-  
+
   /**
   * increment each column subtotal
   */
@@ -183,7 +191,7 @@ class ArrayExport {
       }
     }
   }
-  
+
   /**
   * get the column subtotals
   */
@@ -200,7 +208,7 @@ class ArrayExport {
   /**
   * format a row of data using the formmatting information defined
   *
-  * @param array  &$row   data row 
+  * @param array  &$row   data row
   * @return array   formatted data row
   */
   function _formatRowData(&$row) {
@@ -211,7 +219,7 @@ class ArrayExport {
     }
     return $newrow;
   }
-  
+
   /**
   * format a data value according to the defined rules for decimal places and currency
   *
@@ -219,23 +227,36 @@ class ArrayExport {
   * @return string formatted value
   */
   function _formatVal($val, $format) {
-    global $CONFIG;
+    $conf = ConfigReader::getInstance();
     switch ($format & EXPORT_HTML_NUMBER_MASK) {
       case EXPORT_HTML_MONEY:
-        $val = sprintf($CONFIG['language']['moneyFormat'], $val);
+        $val = currencyFormatter($val);
+        break;
+      case EXPORT_HTML_INTEGER:
+        $val = numberFormatter($val, 0);
         break;
       case EXPORT_HTML_DECIMAL_1:
-        $val = sprintf('%.1f', $val);
+        $val = numberFormatter($val, 1);
         break;
       case EXPORT_HTML_DECIMAL_2:
-        $val = sprintf('%.2f', $val);
+        $val = numberFormatter($val, 2);
         break;
       default:
         //echo ($format& EXPORT_HTML_NUMBER_MASK).'<br/>';
     }
+    if ($format & EXPORT_HTML_DATETIME) {
+      $date = new SimpleDate($val);
+      $val = $date->getShortDateTimeString();
+    } elseif ($format & EXPORT_HTML_DATE) {
+      $date = new SimpleDate($val);
+      $val = $date->getShortDateString();
+    } elseif ($format & EXPORT_HTML_TIME) {
+      $time = new SimpleTime($val);
+      $val = $time->getShortString();
+    }
     return $val;
   }
-  
+
   /**
   * join another ArrayExport object into this one.
   *
@@ -244,8 +265,8 @@ class ArrayExport {
   function appendEA(&$ea) {
     $this->export = array_merge($this->export, $ea->export);
   }
-  
-      
+
+
 } // class ArrayExport
 
-?> 
+?>

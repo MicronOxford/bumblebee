@@ -10,6 +10,10 @@
 * @subpackage FormsLibrary
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** uses an OutputFormatter to format the data */
 require_once 'inc/formslib/outputformatter.php';
 /** export formatting codes */
@@ -20,7 +24,7 @@ require_once 'inc/exportcodes.php';
 *
 * @package    Bumblebee
 * @subpackage FormsLibrary
-* @todo codedoc
+* @todo //TODO: codedoc
 */
 class DBList {
   var $restriction;
@@ -41,7 +45,7 @@ class DBList {
   var $outputFormat = EXPORT_FORMAT_CUSTOM;
   var $breakfield;
   var $fatal_sql = 1;
-  
+
   /**
   *  Create a new DBList object
   *
@@ -87,7 +91,7 @@ class DBList {
         $u->restriction = array_merge($u->restriction, $this->unionrestriction);
         $union[] = $u->_getSQLsyntax();
       }
-      $q = '('.join($union, ') UNION (').')';
+      $q = '('.join($union, ') UNION ALL (').')';
       $q .= (is_array($this->order) ? ' ORDER BY '.join($this->order,', ') : '');
       $q .= (is_array($this->group) ? ' GROUP BY '.join($this->group,', ') : '');
     } else {
@@ -100,7 +104,7 @@ class DBList {
     }
     if (isset($this->manualGroup) && $this->manualGroup != '') {
       $sumdata = array();
-      $row=0; 
+      $row=0;
       $numrows = count($data);
       while ($row < $numrows) {
         $current = $data[$row][$this->manualGroup];
@@ -125,7 +129,7 @@ class DBList {
       $this->data = $data;
     }
   }
-  
+
   /**
   * generate the appropriate SQL syntax for this query
   *
@@ -167,11 +171,11 @@ class DBList {
       $this->formatdata[$i] = $this->format($this->data[$i]);
     }
   }
-    
+
   /**
-  * format a row of data 
+  * format a row of data
   * @param array $data   name=>value pairs of data
-  * @return string   formatter line of data 
+  * @return string   formatter line of data
   */
   function format($data/*, $isHeader=false*/) {
     $d = array();
@@ -183,19 +187,19 @@ class DBList {
         $d[$f] = $data[$f];
       }
     }
-    if (EXPORT_FORMAT_CSV & $this->outputFormat) 
-      return join(preg_replace(array('/"/',     '/^(.*,.*)$/'), 
+    if (EXPORT_FORMAT_CSV & $this->outputFormat)
+      return join(preg_replace(array('/"/',     '/^(.*,.*)$/'),
                                array('\\"',   '"$1"'       ), $d), ',');
-    if (EXPORT_FORMAT_TAB & $this->outputFormat) 
+    if (EXPORT_FORMAT_TAB & $this->outputFormat)
         return join(preg_replace("/^(.*\t.*)$/", '"$1"', $d), "\t");
-    if (EXPORT_FORMAT_USEARRAY & $this->outputFormat) 
+    if (EXPORT_FORMAT_USEARRAY & $this->outputFormat)
         return $this->_makeArray($d/*, $isHeader*/);
-        
+
     return $this->formatter->format($d);
   }
-    
+
   /**
-  * format a header row 
+  * format a header row
   * @return string   formatter header row
   */
   function outputHeader() {
@@ -227,7 +231,7 @@ class DBList {
   }
 
  /**
-  * Create a set of OutputFormatter objects to handle the display of this object. 
+  * Create a set of OutputFormatter objects to handle the display of this object.
   *
   * @param string $f1    sprintf format (see PHP manual)
   * @param array $v1     array of indices that will be used to fill the fields in the sprintf format from a $data array passed to the formatter later.
@@ -239,4 +243,4 @@ class DBList {
 } // class DBList
 
 
-?> 
+?>

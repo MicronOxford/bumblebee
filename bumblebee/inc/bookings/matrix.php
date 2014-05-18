@@ -10,12 +10,16 @@
 * @subpackage Bookings
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /**
 * Booking matrix object for display in a table
 *
 * @package    Bumblebee
 * @subpackage Bookings
-* @todo       documentation
+* @todo //TODO:       documentation
 */
 class BookingMatrix {
   var $dayStart;

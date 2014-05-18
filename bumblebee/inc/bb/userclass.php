@@ -10,6 +10,10 @@
 * @subpackage DBObjects
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** parent object */
 require_once 'inc/formslib/dbrow.php';
 require_once 'inc/formslib/textfield.php';

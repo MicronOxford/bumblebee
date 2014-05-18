@@ -10,6 +10,10 @@
 * @subpackage FormsLibrary
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** uses choice list object for examples */
 require_once 'dbchoicelist.php';
 /** sql manipulation routines */
@@ -62,21 +66,21 @@ class ExampleEntries {
   /**
   * Obtain the example entries from the db
   *
-  * @param string $id   the id number (or string) to match 
+  * @param string $id   the id number (or string) to match
   */
   function fill($id) {
     #echo "Filling for $id";
-    $safeid = qw($id);
+    $ids = join(',', array_qw(explode(',', $id)));
     $this->list = new DBChoiceList($this->table, $this->columnreturn,
-                             "{$this->columnmatch}=$safeid",
+                             "{$this->columnmatch} IN ($ids)",
                              $this->order,
                              $this->columnmatch, $this->limit);
   }
-    
+
   /**
   * Obtain the example entries and format them as appropriate
   *
-  * @param array  $data  $data[$this->source] contains the id for which we should find examples 
+  * @param array  $data  $data[$this->source] contains the id for which we should find examples
   * (passed by ref for efficiency only)
   * @return string list of examples
   */
@@ -85,7 +89,7 @@ class ExampleEntries {
     $this->fill($data[$this->source]);
     $entries = array();
     foreach ($this->list->choicelist as $v) {
-      $entries[] = $v[$this->columnreturn];
+      $entries[] = xssqw($v[$this->columnreturn]);
     }
     $t = implode($this->separator, $entries);
     return $t;
@@ -94,4 +98,4 @@ class ExampleEntries {
 } // class ExampleEntries
 
 
-?> 
+?>

@@ -8,7 +8,13 @@
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage Actions
+*
+* path (bumblebee root)/inc/actions/instruments.php
 */
+
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
 
 /** instrument object */
 require_once 'inc/bb/instrument.php';
@@ -25,8 +31,8 @@ require_once 'inc/actions/actionaction.php';
 class ActionInstruments extends ActionAction {
 
   /**
-  * Initialising the class 
-  * 
+  * Initialising the class
+  *
   * @param  BumblebeeAuth $auth  Authorisation object
   * @param  array $pdata   extra state data from the call path
   * @return void nothing
@@ -40,8 +46,13 @@ class ActionInstruments extends ActionAction {
     if (! isset($this->PD['id'])) {
       $this->select(issetSet($this->PD, 'showdeleted', false));
     } elseif (isset($this->PD['delete'])) {
-      $this->delete();
+      if ($this->readOnly) {
+        $this->readOnlyError();
+      } else {
+        $this->delete();
+      }
     } else {
+      if ($this->readOnly) $this->_dataCleanse('id');
       $this->edit();
     }
     echo "<br /><br /><a href='".makeURL('instruments')."'>".T_('Return to instruments list')."</a>";
@@ -63,9 +74,9 @@ class ActionInstruments extends ActionAction {
     $instrument = new Instrument($this->PD['id']);
     $instrument->update($this->PD);
     $instrument->checkValid();
-    echo $this->reportAction($instrument->sync(), 
+    echo $this->reportAction($instrument->sync(),
           array(
-              STATUS_OK =>   ($this->PD['id'] < 0 ? T_('Instrument created') 
+              STATUS_OK =>   ($this->PD['id'] < 0 ? T_('Instrument created')
                                                   : T_('Instrument updated')),
               STATUS_ERR =>  T_('Instrument could not be changed:').' '.$instrument->errorMessage
           )
@@ -85,14 +96,14 @@ class ActionInstruments extends ActionAction {
 
   function delete()   {
     $instrument = new Instrument($this->PD['id']);
-    echo $this->reportAction($instrument->delete(), 
+    echo $this->reportAction($instrument->delete(),
               array(
-                  STATUS_OK =>   $instrument->isDeleted ? T_('Instrument undeleted') 
+                  STATUS_OK =>   $instrument->isDeleted ? T_('Instrument undeleted')
                                                         : T_('Instrument deleted'),
                   STATUS_ERR =>  T_('Instrument could not be deleted:')
                                  .'<br/><br/>'.$instrument->errorMessage
               )
-            );  
+            );
   }
 }
-?> 
+?>

@@ -10,6 +10,10 @@
 * @subpackage Bookings
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** date manipulation routines */
 require_once 'inc/date.php';
 
@@ -21,15 +25,15 @@ require_once 'inc/date.php';
 */
 class TimeSlot {
   /** @var SimpleDate   start of the slot as used for calculating graphical representation   */
-  var $start;             
+  var $start;
   /** @var SimpleDate   end of the slot as used for calculating graphical representation  */
-  var $stop;              
+  var $stop;
   /** @var SimpleDate   date the start is on (i.e. $start with time of 00:00:00)   */
   var $_dayStart = NULL;
   /** @var SimpleDate   date the end is on (i.e. $stop with time of 00:00:00)  */
   var $_dayStop = NULL;
   /** @var SimpleTime   unused?  */
-  var $duration;      
+  var $duration;
   /** @var string       href to current page */
   var $href = '';
   /** @var string       html/css class to use for display */
@@ -41,16 +45,18 @@ class TimeSlot {
   /** @var boolean      timeslot is the start of a booking (bookings can go fro mone day to another)  */
   var $isStart = 0;
   /** @var SimpleDate   start of the slot for when time should be displayed   */
-  var $displayStart;     
+  var $displayStart;
   /** @var SimpleDate   end of the slot for when time should be displayed  */
-  var $displayStop; 
+  var $displayStop;
   /** @var boolean      start time is arbitrary from truncation due to db lookup */
-  var $arb_start = false; 
+  var $arb_start = false;
   /** @var boolean      stop time is arbitrary from truncation due to db lookup */
-  var $arb_stop  = false; 
+  var $arb_stop  = false;
   /** @var TimeSlotRule timeslot definitions */
   var $slotRule;
-  
+  /** @var boolean      only show free/busy information for the slot */
+  var $freeBusyOnly = false;
+
   /**
   *  Create a new timeslot to be superclassed by Booking or Vacancy object
   *
@@ -71,9 +77,9 @@ class TimeSlot {
   /**
   *  Set the start/stop times of the slot
   *
-  * @param SimpleDate  $start    start time and date 
-  * @param SimpleDate  $stop     stop time and date 
-  * @param SimpleTime  $duration duration of the slot 
+  * @param SimpleDate  $start    start time and date
+  * @param SimpleDate  $stop     stop time and date
+  * @param SimpleTime  $duration duration of the slot
   */
   function _TimeSlot_SimpleDate($start, $stop, $duration) {
     $this->start = $start;
@@ -114,6 +120,24 @@ class TimeSlot {
     $this->_dayStop = clone($this->stop);
     $this->_dayStop->dayRound();
     return $this->_dayStop;
+  }
+
+  /**
+  * construct a long description of the time slot for pop-ups
+  *
+  * @return string description
+  */
+  function generateLongDescription() {
+    return "";
+  }
+
+  /**
+  * work out the title (start and stop times) for the vacancy for display
+  *
+  * @return string title
+  */
+  function generateBookingTitle() {
+    return "";
   }
 
 } //class TimeSlot

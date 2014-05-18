@@ -10,12 +10,20 @@
 * @subpackage Misc
 */
 
+checkValidInclude();
+
+function checkValidInclude() {
+  if (! defined('BUMBLEBEE')) {
+    die('Internal error: access denied to this location.');
+  }
+}
+
 /**
 * If an array key is set, return that value, else return a default
 *
 * Combines isset and ternary operator to make for cleaner code that
 * is quiet when run with E_ALL.
-* 
+*
 * @param array &$a (passed by ref for efficiency only) array to lookup
 * @param string $k  the key to be checked
 * @param mixed $default (optional) the default value to return if not index not set
@@ -29,12 +37,13 @@ function issetSet(&$a, $k, $default=NULL) {
 * simple debugging function to print out arrays and objects
 *
 * uses print_r/var_dump or dBug within HTML pre tags for easier inspection of classes and arrays
-* @param mixed $v  object or array to print 
+* @param mixed $v  object or array to print
 */
 function preDump($v) {
-  // either use the dBug class for pretty printing or var_dump/print_r 
-  global $CONFIG;
-  if ($CONFIG['error_handling']['UseDBug']) {
+  // either use the dBug class for pretty printing or var_dump/print_r
+  $conf = ConfigReader::getInstance();
+  if ($conf->value('error_handling', 'UseDBug')) {
+    include_once 'dBug.php';
     new dBug($v);
   } else {
     echo '<pre>';
@@ -50,17 +59,26 @@ function preDump($v) {
 * @param boolean $DEBUG   print data if true
 */
 function echoData($v, $DEBUG=0) {
-  global $VERBOSEDATA;
-  if ($VERBOSEDATA || $DEBUG) {
+  $conf = ConfigReader::getInstance();
+  if ($conf->VerboseData || $DEBUG) {
     preDump($v);
   }
 }
 
+/**
+* provide some information about the function that called the current bit of code
+*
+* @returns string  the filename and function of the calling code
+*/
+function debug_caller() {
+  $l = debug_backtrace();
+  return "file= ". $l[1]['file'] .", line=".$l[1]['line'];
+}
 
 /**
 * is variable composed purely of alphabetic data [A-Za-z_-]
 * @param string $var string to be tested
-* @return boolean 
+* @return boolean
 */
 function is_alphabetic($var) {
   return preg_match('/^\w+$/', $var);
@@ -68,6 +86,16 @@ function is_alphabetic($var) {
 
 /**
 * Quote data for passing to the database, enclosing data in quotes etc
+*
+* @param string $v string to be quoted
+* @return string '$v' with slashes added as appropriate.
+*/
+function qw($v) {
+  return "'".q($v)."'";
+}
+
+/**
+* Quote data for passing to the database
 *
 * Fixes programatically generated data so that it is correctly escaped. Deals
 * with magic_quotes_gpc to remove slashes so that the input is sensible and
@@ -82,10 +110,10 @@ function is_alphabetic($var) {
 * injection vector rather than closing it.
 * For more info see:          http://shiflett.org/archive/184
 *
-* @param string $v string to be quoted
-* @return string '$v' with slashes added as appropriate.
+* @param string     $v string to be quoted
+* @return string    $v with slashes added as appropriate.
 */
-function qw($v) {
+function q($v) {
   if (! isUTF8($v)) {
     $orig = $v;
     // badness is here. this means that the user has tried to change the input
@@ -99,7 +127,7 @@ function qw($v) {
       // try converting from windows encoding to UTF-8
       $v = cp1252_to_utf8($v);
     }
-    if (!isUTF8($v)) {  
+    if (!isUTF8($v)) {
       // then we really don't know what to do so kill the data
       // better not to have a compromised db, really...
       $v = '';
@@ -109,16 +137,30 @@ function qw($v) {
   }
   // magic-quotes-gpc is a pain in the backside: I would rather I was just given
   // the data the user entered.
-  // We can't just return the data if magic_quotes_gpc is turned on because 
+  // We can't just return the data if magic_quotes_gpc is turned on because
   // that would be wrong if there was programatically set data in there.
-  if (get_magic_quotes_gpc()) { 
+  if (get_magic_quotes_gpc()) {
     // first remove any (partial or full) escaping then add it in properly
     $v = addslashes(stripslashes($v));
   } else {
     // just add in the slashes
     $v = addslashes($v);
   }
-  return "'".$v."'";
+  return $v;
+}
+
+/**
+* Quote each element in a set of values.
+*
+* @param array $list    list of values to qw quote for use in SQL
+* @returns array  list of quoted strings
+*/
+function array_qw($list) {
+  $newlist = array();
+  foreach ($list as $a) {
+    $newlist[] = qw($a);
+  }
+  return $newlist;
 }
 
 /**
@@ -141,10 +183,10 @@ function unqw($v) {
 * /u regexp is significantly faster than the more complicated byte-checking
 * version but the /u regexp doesn't always catch bad UTF-8 sequences.
 *
-* PCRE /u version from:  
+* PCRE /u version from:
 *      http://www.phpwact.org/php/i18n/charsets%23checking_utf-8_for_well_formedness
 *
-* Regexp version from 
+* Regexp version from
 *      http://w3.org/International/questions/qa-forms-utf-8.html
 *
 * @param string $v string to be tested
@@ -211,37 +253,87 @@ function cp1252_to_utf8($str) {
     "\xc2\x9e" => "\xc5\xbe",     /* LATIN SMALL LETTER Z WITH CARON */
     "\xc2\x9f" => "\xc5\xb8"      /* LATIN CAPITAL LETTER Y WITH DIAERESIS*/
   );
-  // utf8_encode() converts from ISO-8859-1 to UTF-8; the strtr() converts the 
+  // utf8_encode() converts from ISO-8859-1 to UTF-8; the strtr() converts the
   // differences between Windows-1252 and ISO-8859-1.
   return  strtr(utf8_encode($str), $cp1252_map);
 }
 
-
-
 /**
 * quote words against XSS attacks by converting tags to html entities
 *
-* replace some bad HTML characters with entities to protext against 
-* cross-site scripting attacks. the generated code should be clean of 
+* replace some bad HTML characters with entities to protext against
+* cross-site scripting attacks. the generated code should be clean of
 * nasty HTML
 *
 * @param string $v string to be quoted
+* @param boolean $strip   strip slashes first
 * @return string $v with html converted to entities
 */
-function xssqw($v) {
+function xssqw($v, $strip=true) {
   // once again magic_quotes_gpc gets in the way
-  if (get_magic_quotes_gpc()) { 
+  if ($strip && get_magic_quotes_gpc()) {
     // first remove any (partial or full) escaping then we'll do it properly below
     $v = stripslashes($v);
   }
   $replace = array(
         "/'/"                             =>   "&#039;",
+        '/"/'                             =>   "&#034;",
         '@<@'                             =>   '&lt;',
         '@>@'                             =>   '&gt;',
         '@&(?!(\#\d{1,4})|(\w{2,4});)@'   =>   '&amp;'  // allow &#123; and &lt; through
   );
   return preg_replace(array_keys($replace), array_values($replace), $v);
   #return htmlentities($v, ENT_QUOTES);
+}
+
+
+/**
+* quote words against XSS attacks but allow some html tags through
+* (unsafe attributes are removed)
+*
+* @param string $v string to be quoted
+* @return string $v with html converted to entities
+*/
+function xssqw_relaxed($v) {
+  // once again magic_quotes_gpc gets in the way
+  if (get_magic_quotes_gpc()) {
+    // first remove any (partial or full) escaping then we'll do it properly below
+    $v = stripslashes($v);
+  }
+  $keep = array(
+          "i"     => array("style", "class"),
+          "u"     => array("style", "class"),
+          "b"     => array("style", "class"),
+          "a"     => array("style", "class", "href", "id", "name"),
+          "div"   => array("style", "class", "id"),
+          "br"    => array(),
+          "hr"    => array("style", "class", "id")
+        );
+
+  $s = xssqw($v);
+  foreach ($keep as $tag => $attribs) {
+    $s = preg_replace("@&lt;\s*($tag)((?:(?!&gt;).)*)&gt;"
+                      ."((?:(?!&lt;\s*/\s*$tag).)*)"  // negative lookahead: no closing tag
+                      ."&lt;\s*/$tag\s*&gt;@ise",
+                      'xssqw_relaxed_helper($keep, "\1", "\2", "\3");',
+                      $s);
+    #echo $s;
+  }
+  return $s;
+}
+
+function xssqw_relaxed_helper($tags, $tag, $attribs, $content){
+  #echo "tag='$tag'; attribs='$attribs'; content='$content'<br />\n";
+  $attrlist = array();
+  foreach ($tags[$tag] as $a) {
+    $attrmatch = "@$a\s*=\s*(&#039;|&#034;)((?:[^\\1])*)\\1@";
+    $m = array();
+    if (preg_match($attrmatch, $attribs, $m)) {
+      $attrlist[] = "$a='$m[2]'";
+    }
+  }
+  $attrs = join($attrlist, " ");
+  return "<$tag $attrs>$content</$tag>";
 }
 
 /**
@@ -318,10 +410,20 @@ function is_number($v) {
 *
 * @param string $v string to test if it is a valid cost
 * @return boolean
-* @todo strengthen this test?
+* @todo //TODO: strengthen this test?
 */
 function is_cost_amount($v) {
    return is_numeric($v);
+}
+
+/**
+* tests if string is a amount for a price but allows blank entries
+*
+* @param string $v string to test if it is a valid cost
+* @return boolean
+*/
+function is_cost_amount_or_blank($v) {
+   return is_number($v) || $v === '' || $v === null;
 }
 
 /**
@@ -329,7 +431,7 @@ function is_cost_amount($v) {
 *
 * @param string $v string to test it is a date-time string
 * @return boolean
-* @todo can this be relaxed to be more user-friendly without introducing errors
+* @todo //TODO: can this be relaxed to be more user-friendly without introducing errors
 */
 function is_valid_datetime($v) {
   return (preg_match('/^\d\d\d\d-\d\d-\d\d \d\d:\d\d/',$v));
@@ -340,7 +442,7 @@ function is_valid_datetime($v) {
 *
 * @param string $v string to test it is a time string
 * @return boolean
-* @todo can this be relaxed to be more user-friendly without introducing errors
+* @todo //TODO: can this be relaxed to be more user-friendly without introducing errors
 */
 function is_valid_time($v) {
   return (preg_match('/^\d\d:\d\d/',$v) || preg_match('/^\d\d:\d\d:\d\d/',$v));
@@ -351,11 +453,10 @@ function is_valid_time($v) {
 *
 * @param string $v string to test if it is a time string
 * @return boolean
-* @todo can this be relaxed to be more user-friendly without introducing errors
+* @todo //TODO: can this be relaxed to be more user-friendly without introducing errors
 */
 function is_valid_nonzero_time($v) {
-  return (preg_match('/^\d\d:\d\d/',$v) || preg_match('/^\d\d:\d\d:\d\d/',$v)) 
-            && ! preg_match('/^00:00/',$v) && ! preg_match('/^00:00:00/',$v);
+  return (preg_match('/^\d+:\d\d(:\d\d)?/',$v) && ! preg_match('/^0+:00(:00)?/',$v));
 }
 
 /**
@@ -374,4 +475,61 @@ function sum_is_100($vs) {
   return ($sum == 100);
 }
 
-?> 
+function currencyValueCleaner($value) {
+  $conf = ConfigReader::getInstance();
+  $re = $conf->value('language', 'removedCurrencySymbols');
+  if ($re == '' || $re == null) return;
+
+  $re = preg_quote($re, '@');
+  $value = preg_replace("@[$re]@", '', $value);
+  return trim($value);
+}
+
+function numberFormatter($value, $dp) {
+  $conf = ConfigReader::getInstance();
+  return number_format($value, $dp,
+                       $conf->value('language', 'decimal_separator',   '.'),
+                       $conf->value('language', 'thousands_separator', ''));
+}
+
+function currencyFormatter($value) {
+  $conf = ConfigReader::getInstance();
+  $s = number_format($value,
+                      $conf->value('language', 'money_decimal_places',   2),
+                      $conf->value('language', 'decimal_separator',      '.'),
+                      $conf->value('language', 'thousands_separator',    ''));
+  return sprintf($conf->value('language', 'money_format',   '$%s'), $s);
+}
+
+function commaFloat($str) {
+  if(strstr($str, ',')) {
+    $str = str_replace('.', '',  $str); // remove dots that are (thousand seps)
+    $str = str_replace(',', '.', $str); // replace ',' with '.'
+  }
+  return floatval($str); // take some last chances with floatval
+}
+
+/**
+* Check the a path to see if a file exists
+*
+* @param   string  $file  filename to search for in the include path
+* @param   string  $path  (optional) the search path to use, defaults to the include_path
+* @return  mixed          false if file doesn't exist, filename if it does exist
+*/
+function file_exists_path ($file, $path=null) {
+  // fill out the optional argument
+  if ($path === null) $path = get_include_path();
+
+  $pathlist = explode(PATH_SEPARATOR, $path);
+
+  // work through each element of the path to look for the file
+  foreach ($pathlist as $dir) {
+    $filepath = $path .DIRECTORY_SEPARATOR. $file;
+    if (file_exists($filepath)) {
+      return $filepath;
+    }
+  }
+  return false;
+}
+
+?>

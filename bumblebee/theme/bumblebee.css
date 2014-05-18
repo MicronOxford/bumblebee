@@ -1,7 +1,7 @@
 /* $Id$ */
 
-/* Styles used within the bumblebee program 
- 
+/* Styles used within the bumblebee program
+
   All styles defined in here are used somewhere... if the theme is structured to include multiple
   stylesheets (this one first and then custom ones following that), then the minimum amount
   of work is required to implement the theme.
@@ -13,7 +13,7 @@ a {
 }
 
 body {
-  font-family: "Bitstream Vera Sans", Verdana, Helvetica, Arial, sans-serif; 
+  font-family: "Bitstream Vera Sans", Verdana, Helvetica, Arial, sans-serif;
 }
 
 #bumblebeecontent a:hover {
@@ -22,10 +22,10 @@ body {
   color: #1005A7;
 }
 
-#bumblebeecontent a:active 
-{ 
+#bumblebeecontent a:active
+{
   text-decoration: underline;
-  color: #DA4C71; 
+  color: #DA4C71;
 }
 
 pre {
@@ -60,12 +60,12 @@ td {
   font-size: 100%;
 }
 
-#bumblebeefooter a, #bumblebeefooter a:link, 
+#bumblebeefooter a, #bumblebeefooter a:link,
 #bumblebeefooter a:hover, #bumblebeefooter a:visited, #bumblebeefooter a:active  {
   color: #9999ff;
   text-decoration: none;
 }
-  
+
 #menulist li, #menulist ul {
 }
 
@@ -84,7 +84,7 @@ td {
   background-color: #ccffcc;
   text-decoration: none;
 }
-  
+
 .floatRight {
   clear: both;
   float: right;
@@ -296,7 +296,7 @@ td.dummy {
 /*   font-size: 1px; */
 }
 
-a.but { 
+a.but {
   background-color: #ccccff;
   color: black;
   text-decoration: none;
@@ -415,6 +415,22 @@ table.selectlist {
   border: 1px solid black;
 }
 
+tr.tableHeader {
+  border-collapse: collapse;
+  border-bottom: 1px solid black;
+  background-color: #000066;
+  color: #ffffff;
+  font-size: 105%;
+}
+
+.tableHeader th {
+  padding: 0.5em 0.5em 0.5em 0.5em;
+}
+
+.tableHeader a {
+  color: #ffffff;
+}
+
 td.itemL {
   padding-left: 0.3em;
   padding-right: 0.3em;
@@ -422,6 +438,10 @@ td.itemL {
 
 td.itemR {
   padding-right: 0.3em;
+}
+
+td.checkBoxEntry {
+  text-align: center;
 }
 
 tr.itemrow {
@@ -433,7 +453,7 @@ tr.itemrow:hover {
   background-color: #FFFF99;
 }
 
-td.itemL a {
+tr.itemrow a {
   display: block;
 }
 
@@ -461,6 +481,23 @@ input.radioitem {
    padding-top: 2em;
 }
 
+table.popup {
+  padding: 1em;
+  border-collapse: collapse;
+/*  border: 1px solid #3333cc;*/
+  font-size: 90%;
+  width: 100%;
+}
+
+.popup tr {
+  margin: 0.2em;
+}
+
+.popup td {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+
 #masquerade {
   border: 2px solid #cc6666;
   padding: 0.2em 0.2em 0.2em 0.2em;
@@ -470,7 +507,7 @@ input.radioitem {
   background-color: #ffeeee;
 }
 
-#masquerade a, #masquerade a:link, 
+#masquerade a, #masquerade a:link,
 #masquerade a:visited, #masquerade a:hover, #masquerade a:active {
   border: 0;
   display: inline;
@@ -526,7 +563,7 @@ input.radioitem {
   font-weight: bold;
 }
 
-#bumblebeeExport td.exportSectionHeader, #bumblebeeExport tr.exportSectionHeader { 
+#bumblebeeExport td.exportSectionHeader, #bumblebeeExport tr.exportSectionHeader {
   border-top: none;
   border-left: none;
   border-right: none;

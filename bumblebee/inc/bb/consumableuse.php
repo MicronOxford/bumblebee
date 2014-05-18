@@ -1,6 +1,6 @@
 <?php
 /**
-* Use of Consumables object 
+* Use of Consumables object
 *
 * @author    Stuart Prescott
 * @copyright  Copyright Stuart Prescott
@@ -10,19 +10,23 @@
 * @subpackage DBObjects
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** parent object */
 require_once 'inc/formslib/dbrow.php';
 require_once 'inc/formslib/textfield.php';
 require_once 'inc/formslib/referencefield.php';
 
 /**
-* Use of Consumables object 
+* Use of Consumables object
 *
 * @package    Bumblebee
 * @subpackage DBObjects
 */
 class ConsumableUse extends DBRow {
-  
+
   function ConsumableUse($id, $userid='', $consumableid='', $uid='', $ip='', $today='') {
     $this->DBRow('consumables_use', $id);
     $this->editable = 1;
@@ -53,14 +57,15 @@ class ConsumableUse extends DBRow {
       $f->editable = 0;
       $this->addElement($f);
       $f = new DropList('projectid', T_('Project'));
-      $f->connectDB('projects', 
-                    array('id', 'name', 'longname'), 
+      $f->connectDB('projects',
+                    array('id', 'name', 'longname'),
                     'userid='.qw($userid),
-                    'name', 
-                    'id', 
-                    NULL, 
+                    'name',
+                    'id',
+                    NULL,
                     array('userprojects'=>'projectid=id'));
       $f->setFormat('id', '%s', array('name'), ' (%35.35s)', array('longname'));
+      $f->isValidTest = 'is_valid_radiochoice';
       $this->addElement($f);
       $f = new TextField('usewhen', T_('Date'));
       $f->value = $today;
@@ -95,7 +100,7 @@ class ConsumableUse extends DBRow {
     $row = quickSQLSelect('consumables_use', 'id', $this->id);
     return $row['userid'];
   }
-  
+
   function display() {
     return $this->displayAsTable();
   }

@@ -3,7 +3,7 @@
 * Numeric codes for defining data export types and formats
 *
 * Export types include TAB and Comma delimited, formats include the number of decimal places to use.
-* The numeric codes for report sections aren't designed to be bitshifted (they 
+* The numeric codes for report sections aren't designed to be bitshifted (they
 * are mutually exclusive options) so they are not powers of 2.
 * Formatting options may be use with bitwise addition etc.
 *
@@ -14,6 +14,10 @@
 * @package    Bumblebee
 * @subpackage Export
 */
+
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
 
 /** use a user-defined function to create report */
 define('EXPORT_FORMAT_CUSTOM',         1);
@@ -61,13 +65,13 @@ define('EXPORT_REPORT_TABLE_HEADER',       6);
 define('EXPORT_REPORT_TABLE_ROW',          7);
 /** Totals row in a data table (HTML and PDF reports) */
 define('EXPORT_REPORT_TABLE_TOTAL',        8);
-/** Footer row in a data table (HTML and PDF reports) 
-* @todo EXPORT_REPORT_TABLE_FOOTER not implemented in styling */
+/** Footer row in a data table (HTML and PDF reports)
+* @todo //TODO: EXPORT_REPORT_TABLE_FOOTER not implemented in styling */
 define('EXPORT_REPORT_TABLE_FOOTER',       9);
 /** End of data table (HTML and PDF reports) */
 define('EXPORT_REPORT_TABLE_END',         10);
-  
-                                          
+
+
 /** Formatting code: alignment descriptions */
 define('EXPORT_HTML_ALIGN',      1);
 /** Formatting code: centre output */
@@ -81,21 +85,28 @@ define('EXPORT_HTML_ALIGN_MASK', EXPORT_HTML_CENTRE|EXPORT_HTML_RIGHT|EXPORT_HTM
 
 /** Formatting code: format as a number */
 define('EXPORT_HTML_NUMBER',       32);
-/** Formatting code: format as money (use defined currency symbol and 2 decimal places)
- * @todo 2d.p. isn't a good choice for all currencies
- */
+/** Formatting code: format as money (use defined currency symbol and 2 decimal places) */
 define('EXPORT_HTML_MONEY',        EXPORT_HTML_NUMBER|64);
 /** Formatting code: format to 1 decimal place, rounding appropriately */
-define('EXPORT_HTML_DECIMAL_1',    EXPORT_HTML_NUMBER|128);  // round to 1 sig figs
+define('EXPORT_HTML_INTEGER',      EXPORT_HTML_NUMBER|128);  // round to integer
+/** Formatting code: format to 1 decimal place, rounding appropriately */
+define('EXPORT_HTML_DECIMAL_1',    EXPORT_HTML_NUMBER|256);  // round to 1 sig figs
 /** Formatting code: format to 2 decimal places, rounding appropriately */
-define('EXPORT_HTML_DECIMAL_2',    EXPORT_HTML_NUMBER|256);  // round to 2 sig figs
+define('EXPORT_HTML_DECIMAL_2',    EXPORT_HTML_NUMBER|512);  // round to 2 sig figs
 /** Formatting code: format to x decimal places  bitmask */
-define('EXPORT_HTML_DECIMAL_MASK', EXPORT_HTML_DECIMAL_1|EXPORT_HTML_DECIMAL_2);
+define('EXPORT_HTML_DECIMAL_MASK', EXPORT_HTML_INTEGER|EXPORT_HTML_DECIMAL_1|EXPORT_HTML_DECIMAL_2);
 /** Formatting code: format as a number bitmask */
 define('EXPORT_HTML_NUMBER_MASK',  EXPORT_HTML_MONEY|EXPORT_HTML_DECIMAL_MASK);
 
 /** Formatting code: create an automatic total of the data for this column in the table */
 define('EXPORT_CALC_TOTAL',        2048);
+
+/** Formatting code: format value as date-time according to locale settings */
+define('EXPORT_HTML_DATETIME',     4096);
+/** Formatting code: format value as date according to locale settings */
+define('EXPORT_HTML_DATE',         8192);
+/** Formatting code: format value as time according to locale settings */
+define('EXPORT_HTML_TIME',         16384);
 
 /**
 * convert a string name for an export into the defined numeric code

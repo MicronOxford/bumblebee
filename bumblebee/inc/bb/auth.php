@@ -2,13 +2,17 @@
 /**
 * User Authentication and Authorisation (Login and Permissions object)
 *
-* @author    Stuart Prescott
+* @author     Stuart Prescott
 * @copyright  Copyright Stuart Prescott
 * @license    http://opensource.org/licenses/gpl-license.php GNU Public License
 * @version    $Id$
 * @package    Bumblebee
 * @subpackage DBObjects
 */
+
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
 
 /** inherit from basic auth module */
 require_once 'inc/bb/basicauth.php';
@@ -20,50 +24,63 @@ require_once 'inc/typeinfo.php';
 require_once 'inc/permissions.php';
 /** logging functions */
 require_once 'inc/logging.php';
+/** system configuration */
+require_once 'inc/bb/configreader.php';
 
 /**
-* User *authorisation* and *authentication* object 
+* User *authorisation* and *authentication* object
 *
 * @package    Bumblebee
 * @subpackage DBObjects
-* @todo update permissions system
-* @todo documentation
+* @todo //TODO: update permissions system
+* @todo //TODO: documentation
 */
 class BumblebeeAuth extends BasicAuth {
-  var $isadmin;
+  var $anonymous = false;
   var $euid;            //permit user masquerading like su. Effective UID
   var $ename;           //effective name
   var $eusername;       //effective username
   var $permissions = array();
-  var $system_permissions;
+  var $system_permissions = 0;
 
   /**
   *  Create the auth object
   *
   * @param array   $data    array containing keys 'username' and 'pass'
   * @param boolean $recheck (optional) ignore session data and check anyway
-  * @param string $table  (optional) db table from which login data should be taken
+  * @param string  $table  (optional) db table from which login data should be taken
   */
   function BumblebeeAuth($data, $recheck = false, $table='users') {
-    parent::BasicAuth($data, $recheck, $table);
-    
+    $this->_checkAnonymous($data);
+
+    parent::BasicAuth($data, $recheck || $this->changeUser(), $table);
+
     if ($this->_loggedin) {
       // set up Authorisation parts
-      $this->isadmin = $this->user_row['isadmin'];
-    }
-    
-    #FIXME
-    if ($this->isadmin) {
-      $this->system_permissions = BBPERM_ADMIN_ALL;
-    } else {
-      if ($this->localLogin) {
-        $this->system_permissions = BBPERM_USER_ALL | BBPERM_USER_PASSWD;
-      } else {
-        $this->system_permissions = BBPERM_USER_ALL;
+      $this->_loadPermissions();
+      $this->_checkMasq();
+
+      $conf = ConfigReader::getInstance();
+      if ($conf->value('display', 'AnonymousAllowed', false) &&
+          $this->username == $conf->value('display', 'AnonymousUsername')) {
+        $this->anonymous = true;
       }
+
     }
-    if ($this->masqPermitted()) {
-      $this->system_permissions |= BBPERM_MASQ;
+  }
+
+  function changeUser() {
+    if (isset($_POST['changeuser']) || isset($_GET['changeuser'])) {
+      return true;
+    }
+  }
+
+  function _checkAnonymous(&$data) {
+    $conf = ConfigReader::getInstance();
+    if ((isset($_POST['anonymous']) || isset($_GET['anonymous']))
+        && $conf->value('display', 'AnonymousAllowed', false)) {
+      $data['username'] = $conf->value('display', 'AnonymousUsername');
+      $data['pass']     = $conf->value('display', 'AnonymousPassword');
     }
   }
 
@@ -72,7 +89,6 @@ class BumblebeeAuth extends BasicAuth {
    * of time to make a bookings etc
   **/
   function _checkMasq() {
-    global $SESSIDX;
     if ($this->masqPermitted() && $this->_var_get('euid') != NULL) {
       $this->euid      = $this->_var_get('euid');
       $this->ename     = $this->_var_get('ename');
@@ -81,54 +97,93 @@ class BumblebeeAuth extends BasicAuth {
   }
 
   function isSystemAdmin() {
-    return $this->isadmin;
+    if($this->system_permissions == -1 || $this->system_permissions >= BBROLE_ADMIN_BASE) {
+      return true;
+    } else {
+      return false;
+    }
   }
-  
+
   function isInstrumentAdmin($instr) {
-    if (isset($this->permissions[$instr])) {
-      return $this->permissions[$instr];
+    trigger_error("Use of deprecated isInstrumentAdmin function: ".debug_caller(), E_USER_NOTICE);
+    return $this->isSystemAdmin() ||
+          ($this->instrument_permissions($instr) & BBPERM_INSTR_BOOK_FUTURE);
+  }
+
+
+  function instrument_permissions($instrument) {
+    $conf = ConfigReader::getInstance();
+
+    if (isset($this->permissions[$instrument])) {
+      return $this->permissions[$instrument];
     }
     $permission = 0;
-    if ($instr==0) {
-      // we can use cached queries for this too
-      if (in_array(1, $this->permissions)) {
-        return 1;
+    if ($instrument==0) {
+      // look for permissions across all instruments
+      $total = 0;
+      global $TABLEPREFIX;
+      $q = 'SELECT * '
+          .' FROM '.$TABLEPREFIX.'permissions'
+          .' WHERE userid=' . qw($this->uid);
+      $sql = db_get($q, false);
+      while ($row = db_fetch_array($sql)) {
+        if (isset($row['permissions']) && $conf->value('auth', 'permissionsModel', false)) {
+          $permission = $row['permissions'];
+        } else {
+          $permission = $this->_constructInstrumentPermission($row);
+        }
+        $this->permissions[$instrument] = $permission;
+        $total = ((int)$total) | ((int)$permission);
       }
-      // then we look at *any* instrument that we have this permission for
-       $row = quickSQLSelect('permissions',
-                                array('userid',  'isadmin'), 
-                                array($this->uid, 1)
-                            );
-      if (is_array($row)) {
-        $this->permissions[$instr] = 1;
-        $instr = $row['instrid'];
-        $permission = 1;
-      }
+      $permission = $total;
     } else {
       $row = quickSQLSelect('permissions',
-                              array('userid',   'instrid'), 
-                              array($this->uid, $instr)
+                              array('userid',   'instrid'),
+                              array($this->uid, $instrument)
                            );
-      $permission = (is_array($row) && $row['isadmin']);
+      if (is_array($row)) {
+        if (isset($row['permissions']) && $conf->value('auth', 'permissionsModel', false)) {
+          $permission = $row['permissions'];
+        } else {
+          $permission = $this->_constructInstrumentPermission($row);
+        }
+      }
     }
     //save the permissions to speed this up later
-    $this->permissions[$instr] = $permission;
-    return $this->permissions[$instr];
+    $this->permissions[$instrument] = (int)$permission;
+    return $this->permissions[$instrument];
   }
-  
+
+  /**
+  * make up the permissions for the instrument
+  *
+  * @param    array   $row   from the database
+  * @returns  integer        permissions
+  */
+  function _constructInstrumentPermission($row) {
+    logmsg(2, "Making up some permissions for instrument. Upgrade database format to get rid of this message.");
+    $permission = 0;
+    if (isset($row['isadmin']) && $row['isadmin']) {
+      $permission = BBPERM_INSTR_ALL;
+    } else {
+      $permission = BBPERM_INSTR_BASIC;
+    }
+    return $permission;
+  }
+
   function getEUID() {
     return (isset($this->euid) ? $this->euid : $this->uid);
   }
-   
+
   function masqPermitted($instr=0) {
-    return $this->isadmin || $this->isInstrumentAdmin($instr);
+    return $this->permitted(BBROLE_ADMIN_MASQ, $instr);
   }
 
   function amMasqed() {
     return (isset($this->euid) && $this->euid != $this->uid);
   }
-  
-  /** 
+
+  /**
   * start masquerading as another user
   */
   function assumeMasq($id) {
@@ -141,30 +196,75 @@ class BumblebeeAuth extends BasicAuth {
       return $row;
     } else {
       // masquerade not permitted
+      echo "Couldn't assume masq";
       return 0;
     }
   }
-   
-  /** 
+
+  /**
   * stop masquerading as another user
   */
   function removeMasq() {
-    global $SESSIDX;
     $this->_var_put('euid',        $this->euid      = null);
     $this->_var_put('eusername',   $this->eusername = null);
     $this->_var_put('ename',       $this->ename     = null);
   }
 
   function permitted($operation, $instrument=NULL) {
-    // print "Requested: $operation and have permissions $this->system_permissions<br/>";
-    if ($instrument===NULL) {
+    //print "Requested: $operation and have permissions $this->system_permissions<br/>";
+    // NOTE: Must cast to int before using PHP's bitwise operators else you will get stupid results
+    // due to the loose typing mechanism switching the variables to float or string on you.
+    if ($operation == BBROLE_NONE) return true;
+    if ($instrument === NULL) {
       // looking for system permissions
-      return $operation & $this->system_permissions;
+      return ((int) $operation & (int) $this->system_permissions) == $operation;
     } else {
-      return $operation & $this->instrument_permission($instrument);
+      if (is_array($instrument)) {
+        foreach ($instrument as $i) {
+          if (! $this->permitted($operation, $i)) return false;
+        }
+        return true;
+      } else {
+        #echo "op = ". $operation;
+        #echo "instr = " .(int) $this->instrument_permissions($instrument);
+        #echo "ok=". ((int) $this->instrument_permissions($instrument) & (int) $operation);
+        #echo "<br />";
+        return (((int) $operation)
+              & ( (int) $this->system_permissions | (int) $this->instrument_permissions($instrument) ))
+             == $operation;
+      }
     }
   }
-  
+
+  function _loadPermissions() {
+    $conf = ConfigReader::getInstance();
+
+    if (! $this->isLoggedIn()) return;
+
+    /// FIXME
+    if (isset($this->user_row['permissions']) && $conf->value('auth', 'permissionsModel', false)) {
+      $this->system_permissions = (int) $this->user_row['permissions'];
+    } else {
+      logmsg(2, "Making up some permissions for user. Upgrade database format to get rid of this message.");
+      $this->system_permissions = 0;
+      if (isset($this->user_row['isadmin']) && $this->user_row['isadmin']) {
+        $this->system_permissions |= BBPERM_ADMIN_ALL;
+      } else {
+        if ($this->localLogin) {
+          $this->system_permissions |= BBPERM_USER_BASIC | BBPERM_USER_PASSWD;
+        } else {
+          $this->system_permissions |= BBPERM_USER_BASIC;
+        }
+      }
+      if ($this->masqPermitted()) {
+        $this->system_permissions |= BBPERM_ADMIN_MASQ;
+      }
+    }
+    if (! $this->localLogin) {
+      $this->system_permissions = $this->system_permissions & (~ BBPERM_USER_PASSWD);
+    }
+  }
+
 } //BumblebeeAuth
 
-?> 
+?>

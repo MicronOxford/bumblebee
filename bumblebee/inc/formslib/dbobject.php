@@ -10,8 +10,10 @@
 * @subpackage FormsLibrary
 */
 
-/** type checking and data manipulation */
+/** Load ancillary functions */
 require_once 'inc/typeinfo.php';
+checkValidInclude();
+
 /** database connection script */
 require_once 'inc/db.php';
 /** sql manipulation routines */
@@ -54,6 +56,8 @@ class DBO {
   var $fatal_sql = 1;
   /** @var string   prefixed to all name="$field[name]" sections of the html code */
   var $namebase;
+  /** @var string   prefixed to all name="$field[name]" sections of the html code */
+  var $formname;
   /** @var string   current error message  */
   var $errorMessage = '';
   /** @var integer  status code from operation from statuscodes.php  */
@@ -63,7 +67,7 @@ class DBO {
 
   /** @var integer   debug level 0=off    */
   var $DEBUG = 0;
-  
+
   /**
   *  Create a new database object, designed to be superclasses
   *
@@ -82,7 +86,7 @@ class DBO {
     }
     $this->fields = array();
   }
-  
+
   /**
   *  Sets a new name base for row and all fields within it
   *
@@ -93,6 +97,19 @@ class DBO {
     $this->namebase = $newname;
     foreach (array_keys($this->fields) as $k) {
       $this->fields[$k]->setNamebase($newname);
+    }
+  }
+
+  /**
+  *  Sets a form name base for row and all fields within it
+  *
+  * The name base is prepended to the field name in all html name="" sequences for the widgets
+  * @param string $newname  new name-base to use
+  */
+  function setFormName($newname='') {
+    $this->formname = $newname;
+    foreach (array_keys($this->fields) as $k) {
+      $this->fields[$k]->setFormName($newname);
     }
   }
 
@@ -130,7 +147,7 @@ class DBO {
   function display() {
     return $this->text_dump();
   }
-  
+
   /**
   * Debug print function.
   *
@@ -149,12 +166,12 @@ class DBO {
   * PHP5 clone statement will perform only a shallow copy of the object. Any subobjects must also be cloned
   */
   function __clone() {
-   // print "send in the clones! I'm cloning a ".get_class($this);
+    //print "send in the clones! I'm cloning a ".get_class($this)."<br />";
     //preDump($this->fields);
     // Force a copy of contents of $this->fields array, otherwise the fields will only be references
     $fields = $this->fields;
     $this->fields = array();
-    foreach ($fields as $k => $f) { 
+    foreach ($fields as $k => $f) {
       //print "cloning $k<br />";
       $this->fields[$k] = clone($f);
     }
@@ -164,4 +181,4 @@ class DBO {
 
 } // class dbo
 
-?> 
+?>

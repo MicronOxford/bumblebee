@@ -10,6 +10,12 @@
 * @subpackage Bookings
 */
 
+/** Load ancillary functions */
+require_once 'inc/typeinfo.php';
+checkValidInclude();
+
+require_once 'inc/bb/configreader.php';
+
 /** date manipulation routines */
 require_once 'inc/date.php';
 /** parent object */
@@ -50,7 +56,11 @@ class Booking extends TimeSlot {
   var $masqusername;
   /** @var string     email address for user that booked the instrument */
   var $masqemail;
-  
+  /** @var string     instrument name */
+  var $instrumentName;
+  /** @var string     instrument description */
+  var $instrumentDescription;
+
   /**
   *  Create a booking object
   *
@@ -73,6 +83,8 @@ class Booking extends TimeSlot {
     $this->masquser = $arr['masquser'];
     $this->masqusername = $arr['masqusername'];
     $this->masqemail = $arr['masqemail'];
+    $this->instrumentName = $arr['instrumentname'];
+    $this->instrumentDescription = $arr['instrumentdescription'];
 
     #echo "Booking from ".$this->start->dateTimeString()." to ".$this->stop->dateTimeString()."<br />\n";
     $this->baseclass='booking';
@@ -88,7 +100,7 @@ class Booking extends TimeSlot {
   function display($displayAdmin, $displayOwner) {
     return $this->displayInTable(2, $displayAdmin, $displayOwner);
   }
-  
+
   /**
   * display the booking as a list of settings
   *
@@ -98,21 +110,21 @@ class Booking extends TimeSlot {
   */
   function displayInTable($cols, $displayAdmin, $displayOwner) {
     $t = '<tr><td>'.T_('Booking ID').'</td><td>'.$this->id.'</td></tr>'."\n"
-       . '<tr><td>'.T_('Start').'</td><td>'.$this->start->dateTimeString().'</td></tr>'."\n"
-       . '<tr><td>'.T_('Stop').'</td><td>'.$this->stop->dateTimeString().'</td></tr>'."\n"
-       . '<tr><td>'.T_('Duration').'</td><td>'.$this->duration->timeString()/*.$bookinglength*/.'</td></tr>'."\n"
-       . '<tr><td>'.T_('User').'</td><td><a href="mailto:'.$this->useremail.'">'.$this->name.'</a> ('.$this->username.')</td></tr>'."\n"
-       . '<tr><td>'.T_('Comments').'</td><td>'.$this->comments.'</td></tr>'."\n"
-       . '<tr><td>'.T_('Log').'</td><td>'.$this->log.'</td></tr>'."\n";
+       . '<tr><td>'.T_('Start').'</td><td>'.$this->start->getShortDateTimeString().'</td></tr>'."\n"
+        . '<tr><td>'.T_('Stop').'</td><td>'.$this->stop->getShortDateTimeString().'</td></tr>'."\n"
+        . '<tr><td>'.T_('Duration').'</td><td>'.$this->duration->getShortString()/*.$bookinglength*/.'</td></tr>'."\n"
+       . '<tr><td>'.T_('User').'</td><td><a href="mailto:'.xssqw($this->useremail).'">'.xssqw($this->name).'</a> ('.xssqw($this->username).')</td></tr>'."\n"
+       . '<tr><td>'.T_('Comments').'</td><td>'.xssqw($this->comments).'</td></tr>'."\n"
+       . '<tr><td>'.T_('Log').'</td><td>'.xssqw($this->log).'</td></tr>'."\n";
     if ($displayAdmin) {
       if ($this->masquser) {
-        $t .= '<tr><td>'.T_('Booked by').'</td><td><a href="mailto:'.$this->masqemail.'">'.$this->masquser.'</a> ('.$this->masqusername.')</td></tr>'."\n";
+        $t .= '<tr><td>'.T_('Booked by').'</td><td><a href="mailto:'.xssqw($this->masqemail).'">'.xssqw($this->masquser).'</a> ('.xssqw($this->masqusername).')</td></tr>'."\n";
       }
     }
     if ($displayAdmin || $displayOwner) {
-      $t .= '<tr><td>'.T_('Project').'</td><td>'.$this->project.'</td></tr>'."\n";
+      $t .= '<tr><td>'.T_('Project').'</td><td>'.xssqw($this->project).'</td></tr>'."\n";
       if ($this->discount) {
-        $t .= '<tr><td>'.T_('Discount').'</td><td>'.$this->discount.'</td></tr>'."\n";
+        $t .= '<tr><td>'.T_('Discount').'</td><td>'.xssqw($this->discount).'</td></tr>'."\n";
       }
     }
     return $t;
@@ -121,27 +133,37 @@ class Booking extends TimeSlot {
   /**
   * display the booking as a single cell in a calendar
   *
-  * @global string base path to the installation
-  * @global array  system config
-  *
   * @return string html representation of booking
   */
   function displayInCell(/*$isadmin=0*/) {
-    global $BASEPATH, $CONFIG;
+    $conf = ConfigReader::getInstance();
+    $BasePath = $conf->BasePath;
     $start = isset($this->displayStart) ? $this->displayStart : $this->start;
     $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
-    $timedescription = sprintf(T_('View or edit booking from %s to %s'), $start->dateTimeString(), $stop->dateTimeString());
+    if ($this->freeBusyOnly) {
+      static $freeBusyStr = null;
+      static $busyStr = null;
+      if ($freeBusyStr === null) {
+        $freeBusyStr = T_('Busy from %s to %s');
+        $busyStr     = T_('busy');
+      }
+      $timedescription = sprintf($freeBusyStr, $start->getShortDateTimeString(), $stop->shortDateTimeString());
+      return "<div title='$timedescription'>$busyStr</div>";
+    }
+    static $viewEditStr = null;
+    if ($viewEditStr === null) $viewEditStr = T_('View or edit booking from %s to %s');
+    $timedescription = sprintf($viewEditStr, $start->getShortDateTimeString(), $stop->getShortDateTimeString());
     //$timedescription = $this->start->timeString().' - '.$this->stop->timeString();
     $isodate = $start->dateString();
     $t = '';
     $t .= "<div style='float:right;'><a href='$this->href&amp;isodate=$isodate&amp;bookid=$this->id' "
-              ."title='$timedescription' class='but'><img src='$BASEPATH/theme/images/editbooking.png' "
+              ."title='$timedescription' class='but'><img src='$BasePath/theme/images/editbooking.png' "
               ."alt='$timedescription' class='calicon' /></a></div>";
     // Finally include details of the booking:
     $t .= '<div class="calbookperson">'
-         .'<a href="mailto:'.$this->useremail.'">'
-         .$this->name.'</a></div>';
-    if (isset($CONFIG['calendar']['showphone']) && $CONFIG['calendar']['showphone']) {
+         .'<a href="mailto:'.xssqw($this->useremail).'">'
+         .xssqw($this->name).'</a></div>';
+    if ($conf->value('calendar', 'showphone', false)) {
       $t .= '<div class="calphone">'
           .xssqw($this->userphone)
           .'</div>';
@@ -160,9 +182,42 @@ class Booking extends TimeSlot {
   * @return string title
   */
   function generateBookingTitle() {
+    static $bookingStr = null;
+    if ($bookingStr === null) $bookingStr = T_('Booking from %s - %s');
+
     $start = isset($this->displayStart) ? $this->displayStart : $this->start;
     $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
-    return sprintf(T_('Booking from %s - %s'), $start->dateTimeString(), $stop->dateTimeString());
+    return sprintf($bookingStr, $start->getShortDateTimeString(), $stop->getShortDateTimeString());
+  }
+
+  /**
+  * construct a long description of the time slot for pop-ups
+  *
+  * @return string description
+  */
+  function generateLongDescription($short=false) {
+    $s = '';
+    if (! $short && isset($this->children) && is_array($this->children)) {
+      $list = array();
+      foreach ($this->children as $b) {
+        $list[] = $b->generateLongDescription(true);
+      }
+      #print $s;
+      $s = '<table class="popup">'. join($list, "") .'</table>';
+    } elseif ($short) {
+      $instrument = $this->instrumentName;
+      $user = $this->name;
+      $start = isset($this->displayStart) ? $this->displayStart : $this->start;
+      $stop  = isset($this->displayStop)  ? $this->displayStop  : $this->stop;
+      $starttime = $start->getShortTimeString();
+      $stoptime  = $stop->getShortTimeString();
+      $s = "<tr><td>$instrument</td><td>$user</td><td>$starttime</td><td>$stoptime</td></tr>";
+    } else {
+      $s = '<table class="popup">'. $this->displayInTable(2, false, false) .'</table>';
+    }
+
+    #print $s;
+    return $s;
   }
 
 } //class Booking

@@ -1,92 +1,89 @@
 $Id$
 
-* 1.0 series
-------------
-Bugs:  
-  book dropdown on 10:00-16:00/6 includes times that would overlap bookings
-* double entry password in change passwd
+* Ongoing
+---------
+  * track dependencies:
+    - PEAR::Auth             http://pear.php.net/package/Auth/download
+    - TCPDF                  http://sourceforge.net/project/showfiles.php?group_id=128076
+    - PHP-gettext            http://download.savannah.gnu.org/releases/php-gettext/
+    - overlib                http://www.bosrup.com/web/overlib/?Download
+    - dBug                   http://dbug.ospinto.com/
 
 
-* 1.2 series
-------------
-Installer 
-  * artwork?
+* 1.2 series: required
+----------------------
+Base system features:
+  * [ 1583205 ] Mass setting permissions
+  * [ 1574626 ] list view of bookings
+
+Installer:
+  * artwork, logo, CSS
+  * make anonymous user for browsing?
   * test log file exists, writable
-  * test suite as 
-  * installer test suite as object suite?
-        All tests in the test suite should report their outcome in a consistent manner, making it easy for humans or computer programs to understand and to process them. The following test states, defined by EARL (the Evaluation And Report Language), have proved useful:
-          * cannotTell
-          * fail
-          * notApplicable
-          * notTested
-          * pass
+  * include database version in settings table
+  * make tests more robust
 
-
-Features:
-
-  * double entry password in change passwd
-  * more flexible data entry (amounts including currency symbols)
+Testing/optimisation:
   * report generation memory usage (can't generate NMR report for Q1 2006)
-  * longer bookings
-  * list view of bookings
-  * jump to dropdowns on calendar
-  * polite "offline" mode
+
+* 1.2 series: desirable
+-----------------------
+Features:
+  * [90%] polite "offline" mode (testing)
   * trap unconfigured and send to installer
   * trap configured and get out of installer
-  
-  * i18n:
-    - date/time customisation
-    
-  * logging
-    - include in more places
-    - include in installer/upgrader
-  
+  * logging included in more places
   * fix dropdown truncation (also for multi-byte chars)
-  * db hardening:
-    - put all column names and table names in back ticks, 
-    - integers in quotes
-    - check UTF8-ness of strings
+
+  * more reporting functions:
+    - future bookings by a user or group
+    - summary of bookings for each user
+    - summary of bookings for a set of instruments
+    - ??
+
+Demo site:
+  * Create self-consistent data set automatically with bookings into the future
+  * Limit permissions of admin user
+  * Auto reset database from a cron job
+  * mount demo site on sf.net
+
+
+* 2.0 series
+------------
+Features:
+  * automatic groups of instruments through dependency structures
+  * limit certain users to specific ranges of time on a particular instrument (Gordon Holtslander)
+  * adminconfirm bookings (display on calendar or not?)
+  * recurring scheduling
+  * import a set of users, allocate them to a single project and a list of instruments (from names or id numbers) from either a CSV of tab-delim file
+
+User interface:
+  * mark some pages as cachable so that back button doesn't lose user input; provide reset button
+  * reflect postdata in case of re-login
+    - when do sessions die? controllable?
+  * configuration interface
+  * bring email templates into the database
+  * pop-up calendar for "jump to day" on day view
   * use fieldset and label to beautify forms
   * beautify calendar
   * onMouseOver info window with more information about booking than current tooltip?
-  
-  
-  
-  * IE5Mac compatability?
-  * heirarchical+fine-grained permission system 
-  * groups of instruments
-  * bring email templates into the database
-  * limit certain users to specific ranges of time on a particular instrument (Gordon Holtslander)
+  * graceful handling of duplicate usernames (Not "oops.... message")
 
+  * group of instruments:
+    - calendar displays.
+    - permissions
+    - billing reports
 
-  * combine instruments onto the one calendar in some way. even just a free/busy with name
-  
-  * change all boolean fields to !fieldname instead of fieldname = true
-
-  * email ics file for booking to user
-  
-  * mark some pages as cachable so that back button doesn't lose user input; provide reset button
-
-
-i18n:
-  * HOWTO:
-      ./update-translations.sh
-      php-gettext: gettext.inc: $enable_cache=false  CachedFileReader
-
-
-
+Periodic jobs:
   * send email reminder at configurable interval before (cron job?)
+
+Export:
+  * email ics file for booking to user
   * ical export, free/busy
-  * timezone of server rel user
-  * overlay multiple instruments on one calendar
-  * show multiple instruments side-by-side in columns
-  * jump to day calendar on day view
-  * use http-refresh or js timeout to refresh calendar after n mins
-  * hold bookings for approval / display on calendar or not?
-  
-  * reportbug script that includes phpinfo() etc
-  
+
+Framework:
   * activity log in db rather than flat file?
+  * reportbug script that includes phpinfo() etc
 
 
 
@@ -96,75 +93,23 @@ i18n:
   * click+drag time selection?
 
 
-*recurring scheduling
-  
-  * graceful handling of duplicate usernames (Not "oops.... message")
-  
+  * full, user-configurable billing support included
+  * can export invoices or statements of usage
+  * can email invoices or statements of usage to groups
+  * unbooking an instrument causes an email to be sent to admin for some timeslots
+  * unbooking an instrument causes an email to be sent to the unbook list for some timeslots
 
-* a much more sophisticated permissions system that gives fine grained
- control over what users can do
- 
-* being able to set permissions on groups of instruments and groups of
- users 
- 
-* more reporting functions: future bookings by a user or group
+  * -ve consumable quantities (for returns)?
 
-* group of instruments:
-  - calendar displays.
-  - permissions
-  - billing reports
+  * email users with notification of booking
+  * email users a reminder that bookings are coming up (cron job)
 
-* book instruments for weeks/months.
-
-* instruments
-  - does not apply timeslot rule on create?  
-  
-* confirmation
-  - require confirmation for some instruments?
-
-
- * full, user-configurable billing support included
- * can export invoices or statements of usage
- * can email invoices or statements of usage to groups
- * unbooking an instrument causes an email to be sent to admin for some timeslots
- * unbooking an instrument causes an email to be sent to the unbook list for some timeslots
-
-* -ve consumable quantities (for returns)?
-
-* email users with notification of booking 
-* email users a reminder that bookings are coming up (cron job)
-
-* billing
-
-configure exporttypes from files?
-
-* data exports
-  - summary of bookings for each user
-  - summary of bookings for a set of instruments 
+Billing:
+  * configure exporttypes from files?
 
 * instruments
   - can we put some better validation on the timeslotrule input? e.g. making sure every hour is accounted for?
-  
-* installer
-  - create bumblebee.ini file?
-  - can only run once? delete itself?
 
-* ini file
-  - move bumblebee.ini to a db table? 
-
-* USER TESTING
-  - Firefox
-  - IE6
-  - Konq
-  - IE5.5
-  - IE5
-  - Safari
-  - Netscape 7 OSX
-
-
-
-create a real db with no bogus booking data and no dodgy invalid users etc
--> sf.net 
 
 
 * theme
@@ -176,16 +121,6 @@ create a real db with no bogus booking data and no dodgy invalid users etc
 
 radiolist always returns ischanged on update()
 
-reflect postdata in case of re-login
- - when do sessions die?
-
-
-
-$string = strip_tags($string, '<a><b><i><u>')
-also do this in qw? $string = strip_tags($string, '')
-
-
-$_SERVER['PHP_SELF']
 
 
 
@@ -202,15 +137,18 @@ select all/deselect all javascript buttons where applicable
 
 * unbook emails
 
-delete references to groups, projects in billing info, userprojects etc
--- should there be checks for this? cannot delete things if used elsewhere?
-
-
 
 Billing SQL notes:
 
 for billing analysis, write a smart parser that scans the template for keys to write the SQL. May need to do some clever parsing too.
 
+
+
+
+i18n:
+  * HOWTO:
+      ./update-translations.sh
+      php-gettext: gettext.inc: $enable_cache=false  CachedFileReader
 
 
 
