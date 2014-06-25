@@ -72,11 +72,13 @@ class ActionCalendar extends ActionViewBase {
 
     if (! $this->_loadMultiInstrument()) return;
 
+    $ret2instruments = "<br /><br /><a href='" . makeURL('view'). "'>"
+      . T_('Return to instrument list') . "</a>";
+
+    echo $ret2instruments;
     if (isset($this->PD['listview'])) {
       $this->instrumentListView();
       echo $this->_calendarViewLink($this->instrument);
-      echo "<br /><br /><a href='" . makeURL('view') . "'>"
-        . T_('Return to instrument list') . "</a>";
     } elseif (isset($this->PD['isodate']) &&
                     ! isset($this->PD['bookid']) &&
                     ! isset($this->PD['startticks']) ) {
@@ -84,15 +86,12 @@ class ActionCalendar extends ActionViewBase {
       $this->instrumentDay();
       echo $this->_calendarViewLink($this->instrument);
       echo $this->_calendarListViewLink($this->instrument);
-      echo "<br /><br /><a href='" . makeURL('view') . "'>"
-        . T_('Return to instrument list') . "</a>";
     } else {
       echo $this->_makeCalendarConfigDialogue();
       $this->instrumentMonth();
       echo $this->_calendarListViewLink($this->instrument);
-      echo "<br /><br /><a href='" . makeURL('view') . "'>"
-      . T_('Return to instrument list') . "</a>";
     }
+    echo $ret2instruments;
   }
 
   function mungeInputData() {
