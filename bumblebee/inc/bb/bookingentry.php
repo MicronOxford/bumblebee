@@ -530,7 +530,7 @@ class BookingEntry extends DBRow {
   function _legalSlot() {
     #$this->DEBUG=10;
     $starttime = new SimpleDate($this->fields['bookwhen']->getValue());
-    $stoptime = $starttime;
+    $stoptime = clone $starttime;
     $stoptime->addTime(new SimpleTime($this->fields['duration']->getValue()));
     $this->log('BookingEntry::_legalSlot '.$starttime->dateTimeString()
                   .' '.$stoptime->dateTimeString());
