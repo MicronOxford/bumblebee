@@ -381,18 +381,13 @@ function is_valid_radiochoice($v) {
 }
 
 /**
-* tests if string is a sensible email format
+* Test if string is a valid email address.
 *
-* does not test full RFC822 compliance or that the address exists, just that it looks
-* like a standard email address with a username part @ and domain part with at least one dot
 * @param string $v string to test for email format
 * @return boolean
 */
 function is_email_format($v) {
-  #echo "'val=$v' ";
-  #$pattern = '/^\w.+\@[A-Z_\-]+\.[A-Z_\-]/i';
-  $pattern = '/^[_a-z0-9\-]+(?:\.[_a-z0-9\-]+)*@[a-z0-9\-]+(?:\.[a-z0-9\-]{2,})+$/i';
-  return (preg_match($pattern, $v));
+  return filter_var($v, FILTER_VALIDATE_EMAIL);
 }
 
 /**
