@@ -109,7 +109,7 @@ class ActionMasquerade extends ActionAction {
     $this->auth->removeMasq();
     echo '<h3>' . T_('Masquerade finished') . '</h3>';
     echo '<p>'
-        . T_('Oh well. All good things have to come to an end. The music has stopped and you have taken your mask off. Hope you didn\'t get too much of a surprise when eveyrone else took their masks off too!')
+        . T_('Oh well. All good things have to come to an end. The music has stopped and you have taken your mask off. Hope you didn\'t get too much of a surprise when everyone else took their masks off too!')
         . '</p>';
   }
 
