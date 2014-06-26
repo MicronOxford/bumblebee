@@ -3,10 +3,12 @@
 * SQL interface functions, return statuscodes as appropriate
 *
 * The SQL functions are encapsulated here to make it easier
-* to keep track of them, particularly for porting to other databases. Encapsulation is
-* done here with a functional interface not an object interface.
+* to keep track of them, particularly for porting to other databases.
+* Encapsulation is done here with a functional interface not an object
+* interface.
 *
-* @todo //TODO: work out why we didn't just use PEAR::DB and be done with it right from the beginning
+* @todo //TODO: work out why we didn't just use PEAR::DB and be done with it
+* right from the beginning.
 *
 * @author     Stuart Prescott
 * @copyright  Copyright Stuart Prescott
@@ -30,16 +32,16 @@ require_once('inc/statuscodes.php');
 * @param boolean $fatal_sql   db errors are fatal
 * @return integer status from statuscodes
 */
-function db_quiet($q, $fatal_sql=0) {
+function db_quiet($q, $fatal_sql = 0)
+{
   //preDump(debug_backtrace());
   // returns from statuscodes
   $sql = mysql_query($q);
   echoSQL($q);
-  if (! $sql) {
+  if (! $sql)
     return echoSQLerror(mysql_error(), $fatal_sql);
-  } else {
+  else
     return STATUS_OK; // should this return the $sql handle?
-  }
 }
 
 /**
@@ -49,16 +51,16 @@ function db_quiet($q, $fatal_sql=0) {
 * @param boolean $fatal_sql   db errors are fatal
 * @return resource mysql query handle
 */
-function db_get($q, $fatal_sql=0) {
+function db_get($q, $fatal_sql = 0)
+{
   //preDump(debug_backtrace());
   // returns from statuscodes or a db handle
   $sql = mysql_query($q);
   echoSQL($q);
-  if (! $sql) {
+  if (! $sql)
     return echoSQLerror(mysql_error(), $fatal_sql);
-  } else {
+  else
     return $sql;
-  }
 }
 
 /**
@@ -68,7 +70,8 @@ function db_get($q, $fatal_sql=0) {
 * @param boolean $fatal_sql   db errors are fatal
 * @return mixed   array if successful, false if error
 */
-function db_get_single($q, $fatal_sql=0) {
+function db_get_single($q, $fatal_sql = 0)
+{
   $sql = db_get($q, $fatal_sql);
   //preDump($sql);
   return ($sql != STATUS_ERR ? mysql_fetch_array($sql) : false);
@@ -78,7 +81,8 @@ function db_get_single($q, $fatal_sql=0) {
 * return the last insert ID from the database
 * @return integer id (row number) of previous insert operation
 */
-function db_new_id() {
+function db_new_id()
+{
   return mysql_insert_id();
 }
 
@@ -88,11 +92,13 @@ function db_new_id() {
 * @param resource db query handle
 * @return array next row from query
 */
-function db_fetch_array($sql) {
-  if (! is_resource($sql)) return null;
-  return mysql_fetch_array($sql);
+function db_fetch_array($sql)
+{
+  if (! is_resource($sql))
+    return null;
+  else
+    return mysql_fetch_array($sql);
 }
-
 
 /**
 * get the number of rows returned by a query
@@ -100,7 +106,8 @@ function db_fetch_array($sql) {
 * @param resource db query handle
 * @return integer number of rows
 */
-function db_num_rows($sql) {
+function db_num_rows($sql)
+{
   return mysql_num_rows($sql);
 }
 
@@ -110,15 +117,16 @@ function db_num_rows($sql) {
 * @param string $echo       the sql query
 * @param boolean $success   query was successful
 */
-function echoSQL($echo, $success=0) {
+function echoSQL($echo, $success=0)
+{
   $conf = ConfigReader::getInstance();
-  if ($conf->VerboseSQL) {
-    echo "<div class='sql'>".xssqw($echo, false)
-        .($success ? '<div>'.T_('(successful)').'</div>' : '')
-        ."</div>";
-  }
+  if ($conf->VerboseSQL)
+    {
+      echo "<div class='sql'>" . xssqw($echo, false)
+            . ($success ? '<div>'.T_('(successful)').'</div>' : '')
+            . "</div>";
+    }
 }
-
 
 /**
 * echo the SQL query to the browser
@@ -126,25 +134,36 @@ function echoSQL($echo, $success=0) {
 * @param string $echo       the sql query
 * @param boolean $fatal     die on error
 */
-function echoSQLerror($echo, $fatal=0) {
+function echoSQLerror($echo, $fatal = 0)
+{
   $conf = ConfigReader::getInstance();
-  if ($echo != '' && $echo) {
-    if ($conf->VerboseSQL) {
-      echo "<div class='sql error'>". xssqw($echo) ."</div>";
+  if ($echo != '' && $echo)
+    {
+      if ($conf->VerboseSQL)
+        echo "<div class='sql error'>". xssqw($echo) ."</div>";
+
+      if ($fatal)
+        {
+          $i_errmsg = <<<'END'
+<div class='sql error'>
+Ooops. Something went very wrong. Please send the following log information
+to <a href='mailto:%s'>your Bumblebee Administrator</a> along with a
+description of what you were doing and ask them to pass it on to the
+Bumblebee developers. Thanks!
+</div>
+END;
+          echo sprintf(T_($i_errmsg), $conf->AdminEmail);
+
+          if ($conf->VerboseSQL)
+            preDump(debug_backtrace());
+          else
+            {
+              logmsg(1, "SQL ERROR=[$echo]");
+              logmsg(1, serialize(debug_backtrace()));
+            }
+          die('<b>' . T_('Fatal SQL error. Aborting.') . '</b>');
+        }
     }
-   if ($fatal) {
-      echo "<div class='sql error'>"
-        .sprintf(T_("Ooops. Something went very wrong. Please send the following log information to <a href='mailto:%s'>your Bumblebee Administrator</a> along with a description of what you were doing and ask them to pass it on to the Bumblebee developers. Thanks!"), $conf->AdminEmail)
-        .'</div>';
-      if ($conf->VerboseSQL) {
-        preDump(debug_backtrace());
-      } else {
-        logmsg(1, "SQL ERROR=[$echo]");
-        logmsg(1, serialize(debug_backtrace()));
-      }
-      die('<b>'.T_('Fatal SQL error. Aborting.').'</b>');
-    }
-  }
   return STATUS_ERR;
 }
 
@@ -152,37 +171,40 @@ function echoSQLerror($echo, $fatal=0) {
 * construct and perform a simple SQL select
 *
 * @param string  $table  name of the table (will have TABLEPREFIX added to it
-* @param mixed   $key    single column name or list of columns for the WHERE clause
+* @param mixed   $key    single column name or list of columns for the WHERE
+*                        clause
 * @param mixed   $value  single value or list of values for WHERE $key=$value
 * @param boolean $fatal     die on error
 * @param boolean $countonly   run a COUNT(*) query not a SELECT query
 * @return mixed   array if successful, false if error
 * @global string prefix for tabl nname
 */
-function quickSQLSelect($table, $key, $value, $fatal=1, $countonly=0) {
+function quickSQLSelect($table, $key, $value, $fatal = 1, $countonly = 0)
+{
   global $TABLEPREFIX;
-  if (! is_array($key)) {
-    if ($key != '') {
-      $key = array($key);
-    } else {
-      $key = array();
+  if (! is_array($key))
+    {
+      if ($key != '')
+        $key = array($key);
+      else
+        $key = array();
     }
-  }
-  if (! is_array($value)) {
-    if ($value != '') {
-      $value = array($value);
-    } else {
-      $value = array();
+  if (! is_array($value))
+    {
+      if ($value != '')
+        $value = array($value);
+      else
+        $value = array();
     }
-  }
+
   $where = array();
-  foreach ($key as $k => $col) {
+  foreach ($key as $k => $col)
     $where[] = $col.'='.qw($value[$k]);
-  }
-  $q = 'SELECT '.($countonly ? 'count(*)' : '*')
-      .' FROM '.$TABLEPREFIX.$table
-      .(count($where) ? ' WHERE '.join($where,' AND ') : '')
-      .' LIMIT 1';         // we only ever return one row from this func, so LIMIT the query.
+
+  $q = 'SELECT ' . ($countonly ? 'count(*)' : '*')
+     . ' FROM ' . $TABLEPREFIX . $table
+     . (count($where) ? ' WHERE ' . join($where,' AND ') : '')
+     . ' LIMIT 1'; // we only ever return one row from this func
   return db_get_single($q, $fatal);
 }
 
@@ -190,21 +212,26 @@ function quickSQLSelect($table, $key, $value, $fatal=1, $countonly=0) {
 * returns the current version of the database that is being talked to
 * @return string database version
 */
-function db_get_version() {
+function db_get_version()
+{
   $conf = ConfigReader::getInstance();
-  if (! $conf->status->database) return "unavailable";
-  return mysql_get_server_info();
+  if (! $conf->status->database)
+    return "unavailable";
+  else
+    return mysql_get_server_info();
 }
 
 /**
 * returns the name of the database software that is being talked to
 * @return string database server software name
 */
-function db_get_name() {
+function db_get_name()
+{
   return 'MySQL';
 }
 
-function db_last_error() {
+function db_last_error()
+{
   return mysql_error();
 }
 
