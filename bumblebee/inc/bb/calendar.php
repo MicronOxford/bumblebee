@@ -482,60 +482,95 @@ class Calendar {
 
     $today = new SimpleDate(time());
 
-    $viewday = T_('View day');
-    
     $t = $this->_makeRefreshScript();
-    
+
     if (count($this->bookinglist) == 0) {
       $t .= '<br/><br/>';
       $t .= T_('No bookings found in this period');
       return $t;
     }
 
-    $t .= '<h3>'.T_('List of bookings').'</h3>';
-    $t .= '<table class="tabularobject calendar" summary="'
-                    .T_('List view of instrument bookings').'">';
+    // Maps field names to a function that generates the text to display.
+    $fields = array(
+      "start"    => function ($b) {return $b->start->dateTimeString();},
+      "stop"     => function ($b) {return $b->stop->dateTimeString();},
+      "comments" => function ($b) {return $b->comments;},
+      "busy"     => function ($b) {return T_("Busy");},
+      "project"  => function ($b) {return $b->project;},
 
+      "id" => function ($b) {
+        return sprintf('<a href="%s&amp;isodate=%s&amp;bookid=%d">%d</a>',
+          call_user_func($this->bookhrefCallback, $b->start),
+          $b->start->dateString(),
+          $b->id,
+          $b->id
+        );
+      },
+      "duration" => function ($b) {
+        return (new SimpleTime($b->stop->subtract($b->start)))->timeString();
+      },
+      "user" => function ($b) {
+        return sprintf('<a href="mailto:%s">%s</a> (%s)',
+          $b->useremail, $b->name, $b->username
+        );
+      },
+      "view_day" => function ($b) {
+        return sprintf('<a href="%s&amp;isodate=%s">%s</a>',
+          $this->zoomhref,
+          $b->start->dateString(),
+          T_("View day")
+        );
+      },
+    );
+
+    // Choose which fields to add to the the table, and the column title.
     if (! $this->freeBusyOnly) {
-      $t .= sprintf('<tr><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th></tr>', 
-                          T_('ID'), T_('Start'), T_('Stop'), T_('Duration'), T_('User'), T_('Comments'), '');
-      foreach ($this->bookinglist as $b) {
-        #$t .= '<tr><td>'.$v[0].'</td><td>'.$v[1].'</td></tr>'."\n";
-        $duration = new SimpleTime($b->stop->subtract($b->start));
-        $isodate  = $b->start->dateString();
-        $class = $this->_getDayClass($today, $b->start);
-
-        $t .= sprintf('<tr class="%s"><td><a href="%s">%d</a></td><td>%s</td><td>%s</td><td>%s</td>
-                      <td><a href="mailto:%s">%s</a> (%s)</td><td>%s</td><td><a href="%s">%s</a></td></tr>',
-              $class,
-              call_user_func($this->bookhrefCallback, $b->start)."&amp;isodate=$isodate&amp;bookid={$b->id}",
-              $b->id,
-              $b->start->dateTimeString(),
-              $b->stop->dateTimeString(),
-              $duration->timeString(),
-              $b->useremail, $b->name, $b->username,
-              $b->comments,
-              $this->zoomhref.'&amp;isodate='.$isodate, $viewday
-          );
-      }
+      $headers = array(
+        "id"        => T_("ID"),
+        "start"     => T_("Start"),
+        "stop"      => T_("Stop"),
+        "duration"  => T_("Duration"),
+        "user"      => T_("User"),
+        "comments"  => T_("Comments"),
+        "view_day"  => "",
+      );
     } else {
-      $t .= sprintf('<tr><th></th><th>%s</th><th>%s</th><th>%s</th></tr>', 
-                                  T_('Start'), T_('Stop'), T_('Duration'));
-      foreach ($this->bookinglist as $b) {
-        #$t .= '<tr><td>'.$v[0].'</td><td>'.$v[1].'</td></tr>'."\n";
-        $duration = new SimpleTime($b->stop->subtract($b->start));
-        $t .= sprintf('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>',
-              T_('Busy'),
-              $b->start->dateTimeString(),
-              $b->stop->dateTimeString(),
-              $duration->timeString()
-          );
-      }
+      $headers = array(
+        "busy"      => "",
+        "start"     => T_("Start"),
+        "stop"      => T_("Stop"),
+        "duration"  => T_("Duration"),
+      );
     }
+
+    // Start creating the table
+    $t .= '<h3>' . T_('List of bookings') . '</h3>'
+     . '<table class="tabularobject calendar" summary="'
+     . T_('List view of instrument bookings').'">';
+
+    // Table header
+    $t .= "<tr>";
+    foreach (array_values($headers) as $h) {
+      $t .= "<th>" . $h . "</th>";
+    }
+    $t .= "</tr>";
+
+    // Table content
+    foreach ($this->bookinglist as $b) {
+      $isodate = $b->start->dateString();
+      $class = $this->_getDayClass($today, $b->start);
+
+      $t .= sprintf('<tr class="%s">', $class);
+      foreach (array_keys($headers) as $key) {
+        $t .= '<td>' . $fields[$key]($b) . '</td>';
+      }
+      $t .= '</tr>';
+    }
+
     $t .= '</table>';
 
     return $t;
-    
+
     $t .= '<tr><th colspan="2"></th>';
     for ($day=0; $day<7; $day++) {
       $current = clone($weekstart);
