@@ -22,6 +22,9 @@
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
+/** we need the connection made */
+require_once('inc/db.php');
+
 /** status codes for success/failure of database actions */
 require_once('inc/statuscodes.php');
 
@@ -34,13 +37,12 @@ require_once('inc/statuscodes.php');
 */
 function db_quiet($q, $fatal_sql = 0)
 {
+  global $DBH;
+
   //preDump(debug_backtrace());
   // returns from statuscodes
-  $sql = mysql_query($q);
-  echoSQL($q);
-  if (! $sql)
-    return echoSQLerror(mysql_error(), $fatal_sql);
-  else
+  $sql = db_get($q, $fatal_sql);
+  if ($sql)
     return STATUS_OK; // should this return the $sql handle?
 }
 
@@ -49,16 +51,18 @@ function db_quiet($q, $fatal_sql = 0)
 *
 * @param string $q       the sql query, properly constructed and quoted
 * @param boolean $fatal_sql   db errors are fatal
-* @return resource mysql query handle
+* @return PDOStatement
 */
 function db_get($q, $fatal_sql = 0)
 {
+  global $DBH;
+
   //preDump(debug_backtrace());
   // returns from statuscodes or a db handle
-  $sql = mysql_query($q);
+  $sql = $DBH->query($q);
   echoSQL($q);
   if (! $sql)
-    return echoSQLerror(mysql_error(), $fatal_sql);
+    return echoSQLerror($DBH->erroInfo()[2], $fatal_sql);
   else
     return $sql;
 }
@@ -74,7 +78,11 @@ function db_get_single($q, $fatal_sql = 0)
 {
   $sql = db_get($q, $fatal_sql);
   //preDump($sql);
-  return ($sql != STATUS_ERR ? mysql_fetch_array($sql) : false);
+  // XXX: we should refactor this. We could make comparisons here back when
+  // using the mysql_ module. The comparison will give a warning now that
+  // it is a PDOStatement. But db_get may be catching errors and returning
+  // a error so we have to do this until we fix this whole thing.
+  return (is_a($sql, 'PDOStatement') ? $sql->fetch() : false);
 }
 
 /**
@@ -83,32 +91,33 @@ function db_get_single($q, $fatal_sql = 0)
 */
 function db_new_id()
 {
-  return mysql_insert_id();
+  global $DBH;
+  return intval($DBH->lastInsertId());
 }
 
 /**
 * return the next row from a query
 *
-* @param resource db query handle
+* @param PDStatement
 * @return array next row from query
 */
 function db_fetch_array($sql)
 {
-  if (! is_resource($sql))
+  if (! is_a($sql, 'PDOStatement')
     return null;
   else
-    return mysql_fetch_array($sql);
+    return $sql->fetch();
 }
 
 /**
 * get the number of rows returned by a query
 *
-* @param resource db query handle
+* @param PDOStatement
 * @return integer number of rows
 */
 function db_num_rows($sql)
 {
-  return mysql_num_rows($sql);
+  return $sql::rowCount();
 }
 
 /**
@@ -182,6 +191,7 @@ END;
 function quickSQLSelect($table, $key, $value, $fatal = 1, $countonly = 0)
 {
   global $TABLEPREFIX;
+
   if (! is_array($key))
     {
       if ($key != '')
@@ -214,11 +224,13 @@ function quickSQLSelect($table, $key, $value, $fatal = 1, $countonly = 0)
 */
 function db_get_version()
 {
+  global $DBH;
+
   $conf = ConfigReader::getInstance();
   if (! $conf->status->database)
     return "unavailable";
   else
-    return mysql_get_server_info();
+    return $DBH->getAttribute(PDO::ATTR_SERVER_VERSION);
 }
 
 /**
@@ -227,12 +239,14 @@ function db_get_version()
 */
 function db_get_name()
 {
-  return 'MySQL';
+  global $DBH;
+  return $DBH->getAttribute(PDO::ATTR_DRIVER_NAME);
 }
 
 function db_last_error()
 {
-  return mysql_error();
+  global $DBH;
+  return $DBH->erroInfo()[2];
 }
 
 ?>

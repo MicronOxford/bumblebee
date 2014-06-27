@@ -24,7 +24,6 @@ require_once 'inc/menu.php';
 $conf = & ConfigReader::getInstance();
 $conf->MergeFile('db.ini');
 
-
 /**
 * $TABLEPREFIX is added to the beginning of all SQL table names to allow
 * database sharing.
@@ -40,21 +39,22 @@ require_once 'inc/formslib/sql.php';
 $DB_CONNECT_DEBUG = isset($DB_CONNECT_DEBUG) ? $DB_CONNECT_DEBUG : false;
 $NON_FATAL_DB     = isset($NON_FATAL_DB)     ? $NON_FATAL_DB     : false;
 
-if (($connection = mysql_pconnect(
-    $conf->value('database', 'host'),
-    $conf->value('database', 'username'),
-    $conf->value('database', 'passwd')
-  )) && ($db = mysql_select_db(
-    $conf->value('database', 'database'),
-    $connection
-  )) )
+$dns = 'mysql:'
+     . 'host=' . $conf->value('database', 'host') . ';'
+     . 'dbname=' . $conf->value('database', 'database') . ';'
+     . 'charset=utf8';
+
+try
 {
-  // we successfully logged on to the database
-  // automatically use UTF-8 for the connection encoding
-  db_quiet("SET NAMES 'utf8'");
+  $DBH = new PDO(
+      $dns,
+      $conf->value('database', 'username'),
+      $conf->value('database', 'passwd'),
+      array(PDO::ATTR_PERSISTENT => true)
+  );
   $conf->status->database = true;
 }
-else
+catch (PDOException $e)
 {
   $i_errmsg = <<<'END'
 <p>Sorry, I couldn't connect to the database, so there's nothing I can
