@@ -557,10 +557,7 @@ class Calendar {
 
     // Table content
     foreach ($this->bookinglist as $b) {
-      $isodate = $b->start->dateString();
-      $class = $this->_getDayClass($today, $b->start);
-
-      $t .= sprintf('<tr class="%s">', $class);
+      $t .= sprintf('<tr class="%s">', $this->_getDayClass($today, $b->start));
       foreach (array_keys($headers) as $key) {
         $t .= '<td>' . $fields[$key]($b) . '</td>';
       }
