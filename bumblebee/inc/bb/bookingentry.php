@@ -387,9 +387,10 @@ class BookingEntry extends DBRow {
   */
   function _getEmailText($instrument, $user) {
     $conf = ConfigReader::getInstance();
+    $email_template = "templates/" . $conf->value('display', 'template') . "/export/emailnotificationtemplate.txt";
 
-    $fh = fopen($conf->value('instruments', 'emailTemplate'), 'r');
-    $txt = fread($fh, filesize($conf->value('instruments', 'emailTemplate')));
+    $fh = fopen($email_template, 'r');
+    $txt = fread($fh, filesize($email_template));
     fclose($fh);
     $start    = new SimpleDate($this->fields['bookwhen']->getValue());
     $duration = new SimpleTime($this->fields['duration']->getValue());

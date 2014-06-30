@@ -291,6 +291,7 @@ class SettingsDescriptionList {
     $this->sections[] = $s;
 
     $s = new SettingsDescriptionSection('display', T_('User Interface'));
+    $s->parameters[] = new SettingsDescription('template', T_('Template to use, i.e., the name of the directory in the "templates" directory. Defaults to "bumblebee", the bumblebee template.'), SETTING_BOOLEAN);
     $s->parameters[] = new SettingsDescription('AllowAutocomplete', T_('Permit browsers to use the autocomplete features (it is recommended that this be turned off -- allowing form autocompletion can mess with the Edit User form with various popular browsers).'), SETTING_BOOLEAN);
     $s->parameters[] = new SettingsDescription('LoginPage', T_('Extra information (HTML format) to display on the login page next to the username and password boxes (e.g. "secured by XYZ", "check the certificate").'), SETTING_TEXTAREA);
     $s->parameters[] = new SettingsDescription('AnonymousAllowed', sprintf(T_('Permit users who are not logged in to see the calendars of selected instruments (once enabled, you can use <a href="%s">this URL</a> to provide anonymous access).'), $conf->BaseURL.'?anonymous'), SETTING_BOOLEAN);
@@ -322,11 +323,7 @@ class SettingsDescriptionList {
     $s->parameters[] = new SettingsDescription('usualmindatechange', T_('Default minimum notice required to change or delete a booking (in hours).'));
     $s->parameters[] = new SettingsDescription('emailSubject', T_('Subject to use for emails sent to instrument supervisors to notify them that the instrument has been booked (instrument name is prepended).'));
     $s->parameters[] = new SettingsDescription('emailFromName', T_('Name that booking notification emails will be shown as coming from.'));
-    ///TODO
-    //$s->parameters[] = new SettingsDescription('emailTemplate', T_('Email text that will be included in the email. The following tokens are replaced: '), SETTING_TEXTAREA);
     $s->parameters[] = new SettingsDescription('emailRequestSubject', T_('Subject to use for emails sent to instrument supervisors to request bookings by anonymous users (instrument name is prepended).'));
-    ///TODO
-    //$s->parameters[] = new SettingsDescription('emailRequestTemplate', T_('Email text that will be included in the email. The following tokens are replaced: '), SETTING_TEXTAREA);
     $this->sections[] = $s;
 
     $s = new SettingsDescriptionSection('calendar', T_('Calendar'));
@@ -338,8 +335,6 @@ class SettingsDescriptionList {
     $s = new SettingsDescriptionSection('export', T_('Export'));
     $s->parameters[] = new SettingsDescription('filename', T_('Filename template for creating export files. The following tokens are replaced: __action__ __what__ __date__'));
     $s->parameters[] = new SettingsDescription('enablePDF', T_('Enable PDF export (make sure your PDF library is installed as per the Bumblebee installation instructions).'), SETTING_BOOLEAN);
-    ///TODO
-    //$s->parameters[] = new SettingsDescription('htmlWrapperFile', T_('HTML file used as a wrapper around the HTML export'), SETTING_TEXTAREA);
     $this->sections[] = $s;
 
     $s = new SettingsDescriptionSection('pdfexport', T_('PDF'));
@@ -353,8 +348,6 @@ class SettingsDescriptionList {
     $s->parameters[] = new SettingsDescription('filename', T_('Filename to use for exporting the data.'));
     $s->parameters[] = new SettingsDescription('emailFromName', T_('Name to use as the sender of the emails.'));
     $s->parameters[] = new SettingsDescription('emailSubject', T_('Subject to use on the emails.'));
-    ///TODO
-    //$s->parameters[] = new SettingsDescription('emailTemplate', T_('Template for the email text.'), SETTING_TEXTAREA);
     $this->sections[] = $s;
 
     $s = new SettingsDescriptionSection('sqldump', T_('Backup'));

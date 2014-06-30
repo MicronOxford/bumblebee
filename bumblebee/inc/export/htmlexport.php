@@ -163,11 +163,11 @@ class HTMLExport extends XMLExportBase {
     function get_export_new_window() {
 
 	    $conf = ConfigReader::getInstance();
-	    $filename = $conf->value('export', 'htmlWrapperFile');
-
+	    $filename = "templates/" . $conf->value('display', 'template') . "/export/exporttemplate.html";
+	    $BaseTemplate = $conf->BasePath . "/templates/" . $conf->value('display', 'template');
 
 	    $this->replace_array['/__TITLE__/'] = T_('Data export');
-	    $this->replace_array['/__BASEPATH__/'] = $conf->BasePath;
+	    $this->replace_array['/__BASETEMPLATE__/'] = $BaseTemplate;
 
 	    $this->_wrapBuffer($filename);
 	    #$enchtml = rawurlencode($this->export);

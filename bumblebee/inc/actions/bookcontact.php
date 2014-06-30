@@ -100,8 +100,10 @@ class ActionBookContact extends ActionAction {
 
   function _getEmailText($data) {
     $conf = ConfigReder::getInstance();
-    $fh = fopen($conf->value('instruments', 'emailRequestTemplate'), 'r');
-    $txt = fread($fh, filesize($conf->value('instruments', 'emailRequestTemplate')));
+    $email_template = "templates/" . $conf->value('display', 'template') . "/export/emailrequesttemplate.txt";
+
+    $fh = fopen($email_template, 'r');
+    $txt = fread($fh, filesize($email_template));
     fclose($fh);
     $replace = array(
             '/__instrumentname__/'      => $data['contact-instrument'],

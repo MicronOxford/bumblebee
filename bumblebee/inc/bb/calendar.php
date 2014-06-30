@@ -598,7 +598,8 @@ class Calendar {
           $t .= '<td class="caldatecell '.$class.'">';
           $t .= '<div style="float:right;"><a href="'.$this->zoomhref.'&amp;isodate='.$isodate.'" '
                   .'class="but" title="'.$zoomwords .'">'
-               .'<img src="'.$conf->BasePath.'/theme/images/zoom.png" '
+               .'<img src="'.$conf->BasePath.'/templates/'
+               . $conf->value('display', 'template') .'/images/zoom.png" '
                   .'alt="'.$zoomwords .'" class="calicon" /></a></div>'."\n";
           $t .= '<div class="caldate">'
                   .$current->getShortDateString()
@@ -710,7 +711,8 @@ class Calendar {
           $t .= '<td class="caldatecell '.$class.'">';
           $t .= '<div style="float:right;"><a href="'.$this->zoomhref.'&amp;isodate='.$isodate.'" '
                   .'class="but" title="'.$zoomwords .'">'
-               .'<img src="'.$conf->BasePath.'/theme/images/zoom.png" '
+               .'<img src="'.$conf->BasePath.'/templates/'
+               . $conf->value('display', 'template') .'/images/zoom.png" '
                   .'alt="'.$zoomwords .'" class="calicon" /></a></div>'."\n";
           $t .= '<div class="caldate">'
                   .$current->getShortDateString()

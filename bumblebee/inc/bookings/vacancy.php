@@ -99,7 +99,7 @@ class Vacancy extends TimeSlot {
               .'<a href="'
                   .$this->href.'&amp;isodate='.$isodate.'&amp;startticks='.$startticks.'&amp;stopticks='.$stopticks.'" '
                   .'class="but" title="'.$timedescription.'">'
-                      .'<img src="'.$conf->BasePath.'/theme/images/book.png" '
+                      .'<img src="'.$conf->BasePath.'/templates/' . $conf->value('display', 'template') . '/images/book.png" '
                           .'alt="'.$timedescription.'" '
                           .'class="calicon" />'
               .'</a>'

@@ -407,8 +407,9 @@ class BrandedPDF extends TCPDF {
   }
 
   function Header() {
+    $conf = ConfigReader::getInstance();
     //Logo
-    $this->Image('theme/export/logo.png',10,8,33);
+    $this->Image('templates/'. $conf->value('display', 'template') .'/export/logo.png',10,8,33);
     //Arial bold 15
     $this->SetFont(PDF_FONT,'B',15);
     //Move to the right

@@ -14,8 +14,12 @@
 require_once 'inc/typeinfo.php';
 checkValidInclude();
 
+require_once 'inc/config.php';
+$conf = ConfigReader::getInstance();
+$template = $conf->value('display', 'template');
+
 /** there can be a contentfooter too */
-include 'theme/contentfooter.php';
+include "templates/$template/contentfooter.php";
 
 ?>
 

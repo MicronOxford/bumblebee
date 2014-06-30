@@ -90,8 +90,8 @@ class ActionView extends ActionViewBase {
     $instrselect->hrefbase = makeURL('calendar', array('instrid'=>'__id__'));
     
     $listurl   = preg_replace('/__id__/', '%d', makeURL('calendar', array('instrid'=>'__id__', 'listview'=>1)));
-    $linksview = sprintf("</a><a href='%s' style='display:inline'><img src='%s/theme/images/view_icon.png' width='16' height='16' alt='%s' /></a>&nbsp;<a href='%s' style='display:inline'><img src='%s/theme/images/view_text.png' width='16' height='16' alt='%s' /></a><a>",
-                          $listurl, $conf->BasePath, T_("calendar view"), $listurl, $conf->BasePath, T_("list view")
+    $linksview = sprintf("</a><a href='%s' style='display:inline'><img src='%s/templates/%s/images/view_icon.png' width='16' height='16' alt='%s' /></a>&nbsp;<a href='%s' style='display:inline'><img src='%s/templates/%s/images/view_text.png' width='16' height='16' alt='%s' /></a><a>",
+                          $listurl, $conf->BasePath, $conf->value('display', 'template'), T_("calendar view"), $listurl, $conf->BasePath, $conf->value('display', 'template'), T_("list view")
                         );
     $instrselect->setFormat('id', '%s', array('name'),
                                   ' %50.50s', array('longname'),

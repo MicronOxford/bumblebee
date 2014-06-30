@@ -333,8 +333,10 @@ class ActionBilling extends ActionExport {
   */
   function _getEmailText($group, $start, $stop) {
     $conf = ConfigReader::getInstance();
-    $fh = fopen($conf->value('billing', 'emailTemplate'), 'r');
-    $txt = fread($fh, filesize($conf->value('billing', 'emailTemplate')));
+    $email_template = "templates/" . $conf->value('display', 'template') . "/export/emailbillingtemplate.txt";
+
+    $fh = fopen($email_template, 'r');
+    $txt = fread($fh, filesize($email_template));
     fclose($fh);
     $replace = array(
             '/__name__/'      => $group['name'],

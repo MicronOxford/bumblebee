@@ -117,15 +117,15 @@ function pageStart($action, $auth) {
                             $action->verb() != 'logout');
   $usermenu->actionListing = $action->actionListing;
 
-  // $page* variables can be used in theme/pageheader.php
+  // $page* variables can be used in templates/pageheader.php
   $pagetitle  = $action->title . ' : ' . $conf->value('main', 'SiteTitle');
   $pageheader = $action->title;
   $pageBaseRef = makeURL($action->verb());
 
   /** display the HTML header section */
-  include 'theme/pageheader.php';
+  include 'templates/' . $conf->value('display', 'template') . '/pageheader.php';
   /** display the start of the html content */
-  include 'theme/contentheader.php';
+  include 'templates/' . $conf->value('display', 'template') . '/contentheader.php';
   /** popup information control */
   include 'inc/popups.php';
 }
@@ -148,8 +148,9 @@ function pageShowErrors($auth) {
 
 function pageStop() {
   global $BUMBLEBEEVERSION;
+  $conf = ConfigReader::getInstance();
   /** display the page footer and close off the html page */
-  include 'theme/pagefooter.php';
+  include 'templates/' . $conf->value('display', 'template') . '/pagefooter.php';
 }
 
 

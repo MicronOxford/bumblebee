@@ -21,14 +21,14 @@ require_once 'inc/config.php';
 $conf = ConfigReader::getInstance();
 
 $MENUCONTENTS = (isset($usermenu) && $usermenu !== null) ? $usermenu->getMenu() : '';
-$BasePath     = $conf->BasePath;
+$BaseTemplate = $conf->BasePath . "/templates/" . $conf->value('display', 'template');
 ?>
 <body>
 
 <div id="header">
   <div id="headerLeft">
     <a href='http://bumblebeeman.sf.net/' title="Bumblebee">
-      <img src='<?php echo $BasePath ?>/theme/images/logo.png' alt="Bumblebee logo" />
+      <img src='<?php echo $BaseTemplate ?>/images/logo.png' alt="Bumblebee logo" />
     </a>
   </div>
   <div id="headerRight">

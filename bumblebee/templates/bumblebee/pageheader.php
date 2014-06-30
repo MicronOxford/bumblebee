@@ -26,7 +26,7 @@ checkValidInclude();
 
 require_once 'inc/config.php';
 $conf = ConfigReader::getInstance();
-$BasePath     = $conf->BasePath;
+$BaseTemplate = $conf->BasePath . "/templates/" . $conf->value('display', 'template');
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -35,11 +35,11 @@ $BasePath     = $conf->BasePath;
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title><?php echo $pagetitle?></title>
-  <link rel="stylesheet" href="<?php echo $BasePath?>/theme/bumblebee.css" type="text/css" />
-  <link rel="stylesheet" href="<?php echo $BasePath?>/theme/bumblebee-custom-colours.css" type="text/css" />
-  <link rel="stylesheet" href="<?php echo $BasePath?>/theme/pagelayout.css" type="text/css" />
-  <link rel="icon" href="<?php echo $BasePath?>/theme/images/favicon.ico" />
-  <link rel="shortcut icon" href="<?php echo $BasePath?>/theme/images/favicon.ico" />
+  <link rel="stylesheet" href="<?php echo $BaseTemplate?>/bumblebee.css" type="text/css" />
+  <link rel="stylesheet" href="<?php echo $BaseTemplate?>/bumblebee-custom-colours.css" type="text/css" />
+  <link rel="stylesheet" href="<?php echo $BaseTemplate?>/pagelayout.css" type="text/css" />
+  <link rel="icon" href="<?php echo $BaseTemplate?>/images/favicon.ico" />
+  <link rel="shortcut icon" href="<?php echo $BaseTemplate?>/images/favicon.ico" />
 
 <?php
   include 'inc/jsfunctions.php'

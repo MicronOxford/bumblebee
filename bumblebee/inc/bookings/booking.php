@@ -157,7 +157,7 @@ class Booking extends TimeSlot {
     $isodate = $start->dateString();
     $t = '';
     $t .= "<div style='float:right;'><a href='$this->href&amp;isodate=$isodate&amp;bookid=$this->id' "
-              ."title='$timedescription' class='but'><img src='$BasePath/theme/images/editbooking.png' "
+              ."title='$timedescription' class='but'><img src='$BasePath/templates/" . $conf->value('display', 'template') . "/images/editbooking.png' "
               ."alt='$timedescription' class='calicon' /></a></div>";
     // Finally include details of the booking:
     $t .= '<div class="calbookperson">'
