@@ -292,7 +292,6 @@ class SettingsDescriptionList {
 
     $s = new SettingsDescriptionSection('display', T_('User Interface'));
     $s->parameters[] = new SettingsDescription('AllowAutocomplete', T_('Permit browsers to use the autocomplete features (it is recommended that this be turned off -- allowing form autocompletion can mess with the Edit User form with various popular browsers).'), SETTING_BOOLEAN);
-    $s->parameters[] = new SettingsDescription('server_signature', T_('Include webserver, PHP and database version in the footer of pages using the default theme.'), SETTING_BOOLEAN);
     $s->parameters[] = new SettingsDescription('LoginPage', T_('Extra information (HTML format) to display on the login page next to the username and password boxes (e.g. "secured by XYZ", "check the certificate").'), SETTING_TEXTAREA);
     $s->parameters[] = new SettingsDescription('AnonymousAllowed', sprintf(T_('Permit users who are not logged in to see the calendars of selected instruments (once enabled, you can use <a href="%s">this URL</a> to provide anonymous access).'), $conf->BaseURL.'?anonymous'), SETTING_BOOLEAN);
     $s->parameters[] = new SettingsDescription('AnonymousUsername', T_('Username that will be used to look up permissions for the anonymous user'));

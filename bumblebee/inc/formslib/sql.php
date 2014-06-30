@@ -218,31 +218,6 @@ function quickSQLSelect($table, $key, $value, $fatal = 1, $countonly = 0)
   return db_get_single($q, $fatal);
 }
 
-/**
-* returns the current version of the database that is being talked to
-* @return string database version
-*/
-function db_get_version()
-{
-  global $DBH;
-
-  $conf = ConfigReader::getInstance();
-  if (! $conf->status->database)
-    return "unavailable";
-  else
-    return $DBH->getAttribute(PDO::ATTR_SERVER_VERSION);
-}
-
-/**
-* returns the name of the database software that is being talked to
-* @return string database server software name
-*/
-function db_get_name()
-{
-  global $DBH;
-  return $DBH->getAttribute(PDO::ATTR_DRIVER_NAME);
-}
-
 function db_last_error()
 {
   global $DBH;

@@ -59,17 +59,6 @@ if ($conf->status->database) {
   print "<br />";
 }
 
-if ($conf->value('display','server_signature',true)) {
-  printf(
-    T_('Running under %s (%s), %s (%s), PHP (%s, %s mode) with %s (%s).'),
-    php_uname('s'), php_uname('r'),
-    webserver_get_name(), webserver_get_version(),
-    phpversion(), PHP_SAPI,
-    db_get_name(), db_get_version()
-  );
-  print "<br />";
-}
-
 printf(
   T_('Email the <a href="mailto:%s">system administrator</a> for help.'),
   $conf->AdminEmail
