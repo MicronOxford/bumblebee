@@ -103,7 +103,7 @@ function db_new_id()
 */
 function db_fetch_array($sql)
 {
-  if (! is_a($sql, 'PDOStatement')
+  if (! is_a($sql, 'PDOStatement'))
     return null;
   else
     return $sql->fetch();
