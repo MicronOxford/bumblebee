@@ -208,10 +208,6 @@ function printManualSettingsSetupForm($values, $next) {
       <td><?php echo xssqw($conf->value('main', 'SiteTitle')); ?></td>
     </tr>
     <tr>
-      <td>Copyright owner (page footer)</td>
-      <td><?php echo xssqw($conf->value('main', 'CopyrightOwner')); ?></td>
-    </tr>
-    <tr>
       <td>Administrative email (page footer, error messages)</td>
       <td><?php echo xssqw($conf->value('main', 'AdminEmail')); ?></td>
     </tr>

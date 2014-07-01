@@ -252,7 +252,6 @@ class SettingsDescriptionList {
 
     $s = new SettingsDescriptionSection('main', T_('General settings'));
     $s->parameters[] = new SettingsDescription('SiteTitle', T_('Name of your site, appended to the title tag of every page generated.'));
-    $s->parameters[] = new SettingsDescription('CopyrightOwner', T_('Copyright owner of your site, included in the footer of every page generated.'));
     $s->parameters[] = new SettingsDescription('AdminEmail', T_('Administrative contact email for this installation'));
     $s->parameters[] = new SettingsDescription('SystemEmail', T_('"From" address used in emails sent by Bumblebee'));
     $s->parameters[] = new SettingsDescription('BasePath', T_('Path to the base of the Bumblebee installation when viewed over your webserver (i.e. where is Bumblebee installed relative to your webserver\'s DocumentRoot?)  This is used to find the theme for images, css etc and to set the login cookie. If your installation is at <code>http://www.dept.example.edu/equipment/</code> then use the value of <code>/equipment</code> here (this value must start with a slash, it should not have a trailing slash and should not include <code>http://</code> or the server name). If this value is not set then Bumblebee will take a good guess at the correct value and will normally get it right.'));

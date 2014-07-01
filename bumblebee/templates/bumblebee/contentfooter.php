@@ -66,9 +66,8 @@ printf(
 print "</p>";
 print "<p class='bumblebeecopyright'>";
 printf(
-  T_('Booking information Copyright &copy; %s %s'),
-  date('Y'),
-  $conf->value('main', 'CopyrightOwner')
+  "Copyright &copy; 2004&ndash;%s Bumblebee Instrument Booking System",
+  date("Y")
 );
 print "</p>";
 print "</div>";
