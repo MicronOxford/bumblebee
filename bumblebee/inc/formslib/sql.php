@@ -62,7 +62,7 @@ function db_get($q, $fatal_sql = 0)
   $sql = $DBH->query($q);
   echoSQL($q);
   if (! $sql)
-    return echoSQLerror($DBH->erroInfo()[2], $fatal_sql);
+    return echoSQLerror($DBH->errorInfo()[2], $fatal_sql);
   else
     return $sql;
 }
