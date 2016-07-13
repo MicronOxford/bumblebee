@@ -153,7 +153,7 @@ class ActionViewBase extends ActionAction {
   */
   function displayInstrumentFooter() {
     $t = '';
-    $t .= $this->_instrumentNotes($this->row, true);
+    $t .= $this->_instrumentNotes(true);
     if ($this->row['supervisors']) {
       $t .= '<h3>'.T_('Instrument supervisors').'</h3>';
       $t .= '<ul>';
